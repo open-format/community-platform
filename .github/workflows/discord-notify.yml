@@ -14,13 +14,14 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           REPO_URL: https://github.com/${{ github.repository }}
-          COMMIT_SHA: ${{ github.sha }}
-          COMMIT_AUTHOR: ${{ github.actor }}
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
+          # Extract commit details using jq
+          COMMIT_MESSAGE=$(echo '${{ toJson(github.event) }}' | jq -r '.head_commit.message')
+          COMMIT_AUTHOR=$(echo '${{ toJson(github.event) }}' | jq -r '.head_commit.author.name')
+          COMMIT_URL="$REPO_URL/commit/${{ github.sha }}"
+
+          # Send the message to Discord
           curl -X POST \
           -H "Content-Type: application/json" \
-          -d '{
-                "content": "🚀 A new update has been pushed to our platform! **${{ github.repository }}**\n\n**Commit Message**: $COMMIT_MESSAGE\n**Author**: $COMMIT_AUTHOR\n[View Commit]('"$REPO_URL/commit/$COMMIT_SHA"')"
-              }' \
+          -d "{\"content\": \"🚀 A new update has been pushed to our platform! **${{ github.repository }}**\\n\\n**Commit Message**: $COMMIT_MESSAGE\\n**Author**: $COMMIT_AUTHOR\\n[View Commit]($COMMIT_URL)\"}" \
           $DISCORD_WEBHOOK_URL
