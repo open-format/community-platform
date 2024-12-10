@@ -13,12 +13,14 @@ jobs:
       - name: Send Discord Notification
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          GITHUB_REPO: ${{ github.repository }}
-          GITHUB_SHA: ${{ github.sha }}
+          REPO_URL: https://github.com/${{ github.repository }}
+          COMMIT_SHA: ${{ github.sha }}
+          COMMIT_AUTHOR: ${{ github.actor }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
           curl -X POST \
           -H "Content-Type: application/json" \
           -d '{
-                "content": "New commit pushed to main branch! [View Commit](https://github.com/$GITHUB_REPO/commit/$GITHUB_SHA)"
+                "content": "🚀 A new update has been pushed to our platform! **${{ github.repository }}**\n\n**Commit Message**: $COMMIT_MESSAGE\n**Author**: $COMMIT_AUTHOR\n[View Commit]('"$REPO_URL/commit/$COMMIT_SHA"')"
               }' \
           $DISCORD_WEBHOOK_URL
