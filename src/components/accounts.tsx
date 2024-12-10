@@ -6,6 +6,7 @@ import Image from "next/image";
 import Discord from "../../public/icons/discord.svg";
 import Google from "../../public/icons/google.svg";
 import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader } from "./ui/card";
 
 export default function Accounts() {
   const { user, linkDiscord, unlinkDiscord, linkGoogle, unlinkGoogle, linkEmail, unlinkEmail } = usePrivy();
@@ -35,27 +36,33 @@ export default function Accounts() {
   ];
 
   return (
-    <ul className="flex flex-col space-y-2">
-      <h3>Linked Accounts</h3>
-      {platforms.map((platform) => (
-        <li key={platform.id} className="flex items-center justify-between">
-          <div className="space-x-2 items-center flex">
-            <div className="flex items-center space-x-2">{platform.icon}</div>
-            {platform.username ? (
-              <span className="text-sm text-muted-foreground">{platform.username}</span>
-            ) : (
-              <Button variant="ghost" size="sm" onClick={platform.link} className="p-0 hover:bg-transparent">
-                <span className="capitalize font-semibold hover:underline">Connect {platform.id}</span>
-              </Button>
-            )}
-          </div>
-          {platform.username && (
-            <Button variant="ghost" size="sm" onClick={platform.unlink}>
-              <TrashIcon className="w-4 h-4 text-red-600" />
-            </Button>
-          )}
-        </li>
-      ))}
-    </ul>
+    <Card>
+      <CardHeader>
+        <h3>Wallet and Accounts</h3>
+      </CardHeader>
+      <CardContent>
+        <ul className="flex flex-col space-y-2">
+          {platforms.map((platform) => (
+            <li key={platform.id} className="flex items-center justify-between">
+              <div className="space-x-2 items-center flex">
+                <div className="flex items-center space-x-2">{platform.icon}</div>
+                {platform.username ? (
+                  <span className="text-sm text-muted-foreground">{platform.username}</span>
+                ) : (
+                  <Button variant="ghost" size="sm" onClick={platform.link} className="p-0 hover:bg-transparent">
+                    <span className="capitalize font-semibold hover:underline">Connect {platform.id}</span>
+                  </Button>
+                )}
+              </div>
+              {platform.username && (
+                <Button variant="ghost" size="sm" onClick={platform.unlink}>
+                  <TrashIcon className="w-4 h-4 text-red-600" />
+                </Button>
+              )}
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
   );
 }

@@ -20,3 +20,15 @@ type Badge = {
     [key: string]: string;
   };
 };
+
+interface LeaderboardEntry {
+  user: string;
+  xp_rewarded: string;
+  positionChange?: number | "new" | null;
+}
+
+type JourneyItem = {
+  id: number;
+  action: string;
+  date: number;
+};

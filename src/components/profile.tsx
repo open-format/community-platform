@@ -34,24 +34,6 @@ export default function Profile({ profile }: { profile: Profile | null }) {
           {/* Open Format Profile */}
           {profile && (
             <>
-              {/* Recent Activity */}
-              {Boolean(profile.completed_actions.length) && (
-                <>
-                  <Separator />
-                  <h2>Recent Activity</h2>
-                  <ul>
-                    {profile?.completed_actions.map((action) => (
-                      <li key={action.name + action.createdAt} className="flex items-center justify-between">
-                        <span className="font-semibold capitalize text-sm">{action.name}</span>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-green-600 font-semibold">+{action.xp_rewarded} points</span>
-                          <span className="text-sm text-muted-foreground">{timeAgo(Number(action.createdAt))}</span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
               {/* Collected Badges */}
               {Boolean(profile?.collected_badges?.length) && (
                 <>
