@@ -5,8 +5,6 @@ import { NextResponse } from "next/server";
 export async function middleware(request: NextRequest) {
   const user = await getCurrentUser();
 
-  console.log({ user });
-
   // Redirect to /communities if user is logged in and on home page or auth page
   if (user && (request.nextUrl.pathname === "/" || request.nextUrl.pathname === "/auth")) {
     return NextResponse.redirect(new URL("/communities", request.url));

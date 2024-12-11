@@ -9,19 +9,27 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { startTransition, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { appFactoryAbi } from "@/abis/AppFactory";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { chains } from "@/constants/chains";
+import { usePrivy } from "@privy-io/react-auth";
+import { writeContract } from "@wagmi/core";
 import { Loader2 } from "lucide-react";
+import { type Address, stringToHex } from "viem";
+import { useConfig } from "wagmi";
 
 export default function CreateCommunityForm() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const config = useConfig();
+  const { user } = usePrivy();
 
   function toggle() {
     setIsOpen((t) => !t);
@@ -39,9 +47,22 @@ export default function CreateCommunityForm() {
     formState: { isSubmitting },
   } = form;
 
-  async function handleFormSubmission(data: z.infer<typeof FormSchema>) {
-    // @TODO: Implement form submission
-    console.log({ data });
+  function handleFormSubmission(data: z.infer<typeof FormSchema>) {
+    // @TODO: Handle multichain support
+    startTransition(async () => {
+      await writeContract(config, {
+        address: chains.arbitrumSepolia.APP_FACTORY_ADDRESS,
+        abi: appFactoryAbi,
+        functionName: "create",
+        args: [stringToHex(data.name, { size: 32 }), user?.wallet?.address as Address],
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    });
   }
 
   return (

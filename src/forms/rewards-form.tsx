@@ -40,7 +40,6 @@ export default function RewardsForm() {
   function onSubmit(data: RewardsFormValues) {
     startTransition(async () => {
       // @TODO: Implement reward logic
-      console.log({ data });
     });
   }
 

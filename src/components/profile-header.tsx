@@ -27,8 +27,6 @@ export default function Profile() {
 
   if (!user) return null;
 
-  console.log(user);
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
