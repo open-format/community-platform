@@ -24,5 +24,8 @@ export async function getCurrentUser() {
     return null;
   }
 
-  return { id: user.id, wallet_address: walletAddress };
+  //@TODO: get apps from subgraph
+  const apps = ["0x123"];
+
+  return { id: user.id, wallet_address: walletAddress, apps };
 }

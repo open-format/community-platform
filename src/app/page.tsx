@@ -5,7 +5,7 @@ import { getUserProfile } from "@/lib/openformat";
 async function fetchUserProfile(user: string) {
   if (!user) return null;
 
-  const data = await getUserProfile(user);
+  const data = await getUserProfile();
 
   return data;
 }

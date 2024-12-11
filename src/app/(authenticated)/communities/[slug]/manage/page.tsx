@@ -1,4 +1,4 @@
-export default function Manage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function Manage({ params }: { params: Promise<{ slug: string }> }) {
+  const slug = (await params).slug;
   return <div>Authenticated Manage - {slug}</div>;
 }
