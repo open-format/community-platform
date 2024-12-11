@@ -16,14 +16,16 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { appFactoryAbi } from "@/abis/AppFactory";
+import { erc20FactoryAbi } from "@/abis/ERC20FactoryFacet";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { chains } from "@/constants/chains";
+import { getEventLog } from "@/helpers/contract";
 import { usePrivy } from "@privy-io/react-auth";
-import { writeContract } from "@wagmi/core";
+import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Loader2 } from "lucide-react";
-import { type Address, stringToHex } from "viem";
+import { type Address, parseEther, stringToHex } from "viem";
 import { useConfig } from "wagmi";
 
 export default function CreateCommunityForm() {
@@ -50,18 +52,35 @@ export default function CreateCommunityForm() {
   function handleFormSubmission(data: z.infer<typeof FormSchema>) {
     // @TODO: Handle multichain support
     startTransition(async () => {
-      await writeContract(config, {
-        address: chains.arbitrumSepolia.APP_FACTORY_ADDRESS,
-        abi: appFactoryAbi,
-        functionName: "create",
-        args: [stringToHex(data.name, { size: 32 }), user?.wallet?.address as Address],
-      })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.error(err);
+      try {
+        const transactionHash = await writeContract(config, {
+          address: chains.arbitrumSepolia.APP_FACTORY_ADDRESS,
+          abi: appFactoryAbi,
+          functionName: "create",
+          args: [stringToHex(data.name, { size: 32 }), user?.wallet?.address as Address],
         });
+
+        const transactionReceipt = await waitForTransactionReceipt(config, { hash: transactionHash });
+        const communityId = await getEventLog(transactionReceipt, appFactoryAbi, "Created");
+
+        if (!communityId) {
+          throw new Error("Failed to get community id");
+        }
+
+        const pointsTransactionHash = await writeContract(config, {
+          address: communityId,
+          abi: erc20FactoryAbi,
+          functionName: "createERC20",
+          // @TODO: Change "Base" implementation to "Point"
+          args: [data.name, "Points", 18, parseEther("0"), stringToHex("Base", { size: 32 })],
+        });
+
+        const pointsTransactionHashReceipt = await waitForTransactionReceipt(config, { hash: pointsTransactionHash });
+
+        console.log({ communityId, pointsTransactionHashReceipt });
+      } catch (err) {
+        console.error(err);
+      }
     });
   }
 

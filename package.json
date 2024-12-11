@@ -33,6 +33,7 @@
     "cmdk": "1.0.0",
     "dayjs": "^1.11.13",
     "drizzle-orm": "^0.38.0",
+    "graphql-request": "^7.1.2",
     "lucide-react": "^0.454.0",
     "next": "latest",
     "next-themes": "^0.3.0",

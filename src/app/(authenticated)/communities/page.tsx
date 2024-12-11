@@ -1,9 +1,15 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { YOUR_COMMUNITIES } from "@/dummy_data";
 import CreateCommunityForm from "@/forms/create-community";
+import { fetchAllCommunities } from "@/lib/openformat";
 import Link from "next/link";
 
-export default function Communities() {
+export default async function Communities() {
+  const communities = await fetchAllCommunities();
+
+  if (!communities) {
+    return <div>No communities found</div>;
+  }
+
   return (
     <div>
       <div className="flex justify-between items-center">
@@ -11,7 +17,7 @@ export default function Communities() {
         <CreateCommunityForm />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {YOUR_COMMUNITIES.map((community) => (
+        {communities.map((community) => (
           <Link key={community.id} href={`/communities/${community.id}`}>
             <Card>
               <CardHeader>
