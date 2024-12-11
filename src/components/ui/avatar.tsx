@@ -1,50 +1,42 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import * as AvatarPrimitive from "@radix-ui/react-avatar"
+import { cn } from "@/lib/utils";
 
-import { cn } from "@/lib/utils"
+export function Avatar({ seed = "seed", className }: { seed: string; className?: string }) {
+  function generateGradient(seed: string) {
+    // Ensure seed is not null or undefined
+    const safeSeed = seed || "defaultSeed";
 
-const Avatar = React.forwardRef<
-  React.ElementRef<typeof AvatarPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Root
-    ref={ref}
-    className={cn(
-      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
-      className
-    )}
-    {...props}
-  />
-))
-Avatar.displayName = AvatarPrimitive.Root.displayName
+    // Create multiple hash values from the seed for different color components
+    const hash1 = safeSeed.split("").reduce((acc, char, i) => acc + char.charCodeAt(0) * (i + 1), 0);
+    const hash2 = safeSeed.split("").reduce((acc, char, i) => acc + char.charCodeAt(0) * (i * 2 + 1), 0);
 
-const AvatarImage = React.forwardRef<
-  React.ElementRef<typeof AvatarPrimitive.Image>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Image
-    ref={ref}
-    className={cn("aspect-square h-full w-full", className)}
-    {...props}
-  />
-))
-AvatarImage.displayName = AvatarPrimitive.Image.displayName
+    // Generate primary hues with more variation
+    const hue1 = hash1 % 360;
+    const hue2 = (hash1 * hash2) % 360;
 
-const AvatarFallback = React.forwardRef<
-  React.ElementRef<typeof AvatarPrimitive.Fallback>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Fallback
-    ref={ref}
-    className={cn(
-      "flex h-full w-full items-center justify-center rounded-full bg-muted",
-      className
-    )}
-    {...props}
-  />
-))
-AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName
+    // Generate saturation and lightness with seed influence
+    const sat1 = 65 + (hash1 % 20);
+    const sat2 = 65 + (hash2 % 20);
+    const light1 = 45 + (hash2 % 15);
+    const light2 = 45 + (hash1 % 15);
 
-export { Avatar, AvatarImage, AvatarFallback }
+    // Create gradient with varying angle based on seed
+    const angle = (hash1 + hash2) % 360;
+
+    return `linear-gradient(
+      ${angle}deg, 
+      hsl(${hue1}, ${sat1}%, ${light1}%), 
+      hsl(${hue2}, ${sat2}%, ${light2}%)
+    )`;
+  }
+
+  return (
+    <div
+      className={cn("rounded-full h-16 w-16", className)}
+      style={{
+        background: generateGradient(seed),
+      }}
+    />
+  );
+}
