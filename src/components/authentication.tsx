@@ -1,6 +1,6 @@
 "use client";
 
-import { useLogin, useLogout, usePrivy } from "@privy-io/react-auth";
+import { useLogout, usePrivy } from "@privy-io/react-auth";
 import { RotateCw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
@@ -9,7 +9,6 @@ export default function Authentication() {
   const { ready, login, user } = usePrivy();
   const router = useRouter();
 
-  useLogin({ onComplete: (user) => router.push(`/?user=${user?.wallet?.address}`) });
   useLogout({ onSuccess: () => router.push("/") });
 
   if (!ready)

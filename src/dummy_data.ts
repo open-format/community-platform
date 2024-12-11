@@ -11,6 +11,12 @@ export const CURRENT_WALLET = "0xb98492ec79fcc78cb584eafacee18d9a4cdc3424";
 const now = Math.floor(Date.now() / 1000);
 const minutesAgo = (minutes: number) => now - minutes * 60;
 
+export const YOUR_COMMUNITIES = [
+  { id: "0x1234567890", name: "Community 1" },
+  { id: "0x1234567891", name: "Community 2" },
+  { id: "0x1234567892", name: "Community 3" },
+];
+
 // Dummy data
 export const PROFILE: Profile = {
   user_id: "0x123445678",

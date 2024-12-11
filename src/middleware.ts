@@ -7,8 +7,14 @@ export async function middleware(request: NextRequest) {
 
   console.log({ user });
 
-  if (!user) {
-    return NextResponse.redirect(new URL("/", request.url));
+  // Redirect to /communities if user is logged in and on home page or auth page
+  if (user && (request.nextUrl.pathname === "/" || request.nextUrl.pathname === "/auth")) {
+    return NextResponse.redirect(new URL("/communities", request.url));
+  }
+
+  // Redirect to auth if no user
+  if (!user && !request.nextUrl.pathname.startsWith("/auth")) {
+    return NextResponse.redirect(new URL("/auth", request.url));
   }
 
   // For the specific communities check
@@ -23,5 +29,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/(authenticated)/:path*", "/communities/:path*"],
+  matcher: ["/", "/(authenticated)/:path*", "/auth"],
 };

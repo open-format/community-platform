@@ -1,4 +1,3 @@
-import { ModeToggle } from "@/components/mode-toggle";
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
@@ -23,9 +22,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${manrope.variable} antialiased`}>
         <Providers>
-          <header className="hidden md:flex justify-end p-2 top-0 w-full">
-            <ModeToggle />
-          </header>
           <main>{children}</main>
         </Providers>
       </body>
