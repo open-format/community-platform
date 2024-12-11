@@ -17,7 +17,7 @@ jobs:
         run: |
           # Extract commit details using jq
           COMMIT_MESSAGE=$(echo '${{ toJson(github.event) }}' | jq -r '.head_commit.message')
-          COMMIT_AUTHOR=$(echo '${{ toJson(github.event) }}' | jq -r '.head_commit.author.name')
+          COMMIT_AUTHOR=$(echo '${{ toJson(github.event) }}' | jq -r '.head_commit.author.username')
           COMMIT_URL="$REPO_URL/commit/${{ github.sha }}"
 
           # Send the message to Discord

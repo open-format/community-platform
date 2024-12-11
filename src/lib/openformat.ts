@@ -1,6 +1,7 @@
 "use server";
 
 import axios from "axios";
+import { getCurrentUser } from "./privy";
 
 const apiClient = axios.create({
   baseURL: "https://api.openformat.tech/v1",
@@ -9,7 +10,13 @@ const apiClient = axios.create({
   },
 });
 
-export async function getUserProfile(user: string): Promise<Profile | null> {
+export async function getUserProfile(): Promise<Profile | null> {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return null;
+  }
+
   if (!process.env.OPENFORMAT_API_KEY && !process.env.OPENFORMAT_DAPP_ID) {
     return null;
   }
@@ -17,7 +24,7 @@ export async function getUserProfile(user: string): Promise<Profile | null> {
   try {
     const params = new URLSearchParams();
     params.set("chain", "arbitrum-sepolia");
-    params.set("user_id", user);
+    params.set("user_id", user.wallet_address);
 
     if (process.env.OPENFORMAT_DAPP_ID) {
       params.set("app_id", process.env.OPENFORMAT_DAPP_ID as string);

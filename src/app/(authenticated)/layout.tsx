@@ -1,5 +1,15 @@
-export default function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
-  //Get current user
+import { UserProvider } from "@/contexts/user-context";
 
-  return <div>{children}</div>;
+import { getCurrentUser } from "@/lib/privy";
+import { redirect } from "next/navigation";
+import type { ReactNode } from "react";
+
+export default async function AuthenticatedLayout({ children }: { children: ReactNode }) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/");
+  }
+
+  return <UserProvider value={{ user }}>{children}</UserProvider>;
 }

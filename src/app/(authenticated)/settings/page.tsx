@@ -1,3 +1,10 @@
+import SettingsForm from "./form";
+
 export default function Settings() {
-  return <div>Settings</div>;
+  return (
+    <div>
+      <h1>settings</h1>
+      <SettingsForm />
+    </div>
+  );
 }
