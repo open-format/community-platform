@@ -33,3 +33,41 @@ export async function fetchAllCommunities() {
   );
   return data.apps;
 }
+
+export async function fetchCommunity(communityId: string): Promise<Community | null> {
+  const query = `
+query ($app: ID!) {
+  app(id: $app) {
+    id
+    name
+    owner {
+      id  
+    }
+    badges {
+      id
+    }
+  }
+  fungibleTokens(where: {app_: {id: $app}}) {
+    name
+    symbol
+    id
+    totalSupply
+  }
+}
+  `;
+  try {
+    const data = await request<{
+      app: { id: string; name: string; owner: { id: string }; badges: { id: string }[] };
+      fungibleTokens: { name: string; symbol: string; id: string; totalSupply: string }[];
+    }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, { app: communityId });
+
+    return {
+      ...data.app,
+      tokens: data.fungibleTokens,
+    };
+    // @TODO: Create a generic error handler for subgraph requests
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
