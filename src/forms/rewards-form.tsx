@@ -23,7 +23,7 @@ const rewardsFormSchema = z.object({
 
 type RewardsFormValues = z.infer<typeof rewardsFormSchema>;
 
-export default function RewardsForm() {
+export default function RewardsForm({ community }: { community: Community }) {
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<RewardsFormValues>({
@@ -96,7 +96,12 @@ export default function RewardsForm() {
                 <FormItem className="flex flex-col gap-2">
                   <FormLabel>Token</FormLabel>
                   <FormControl>
-                    <TokenSelector tokens={[]} badges={[]} value={field.value} onChange={field.onChange} />
+                    <TokenSelector
+                      tokens={community.tokens}
+                      badges={[]}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

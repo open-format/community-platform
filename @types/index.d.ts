@@ -32,3 +32,21 @@ type JourneyItem = {
   action: string;
   date: number;
 };
+
+// @TODO: Clean up types above
+
+type Community = {
+  id: string;
+  name: string;
+  owner: {
+    id: string;
+  };
+  tokens: Token[];
+};
+
+type Token = {
+  name: string;
+  symbol: string;
+  id: string;
+  totalSupply: string;
+};
