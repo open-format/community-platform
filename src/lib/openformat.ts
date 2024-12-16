@@ -157,6 +157,8 @@ query ($user: ID!, $community: String!) {
     orderDirection: desc
     first: 10
   ) {
+    id
+    transactionHash
     metadataURI
     rewardId
     rewardType
