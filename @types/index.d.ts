@@ -24,12 +24,6 @@ interface LeaderboardEntry {
   positionChange?: number | "new" | null;
 }
 
-type JourneyItem = {
-  id: number;
-  action: string;
-  date: number;
-};
-
 // @TODO: Clean up types above
 
 type Mission = {
