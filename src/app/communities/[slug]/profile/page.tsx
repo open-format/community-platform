@@ -43,7 +43,7 @@ export default async function Profile({ params }: { params: Promise<{ slug: stri
         <CollectedBadges profile={PROFILE} />
 
         {/* Activity (Journey) */}
-        <Activity profile={PROFILE} />
+        {profile?.rewards && <Activity rewards={profile.rewards} />}
       </div>
     </div>
   );
