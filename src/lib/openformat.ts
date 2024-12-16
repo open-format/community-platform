@@ -26,11 +26,11 @@ export async function fetchAllCommunities() {
   }
 }
   `;
-  const data = await request<{ apps: { id: string; name: string; owner: { id: string } }[] }>(
-    chains.arbitrumSepolia.SUBGRAPH_URL,
-    query,
-    { owner: user.wallet_address }
-  );
+  const data = await request<{
+    apps: { id: string; name: string; owner: { id: string } }[];
+  }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, {
+    owner: user.wallet_address,
+  });
   return data.apps;
 }
 
@@ -41,33 +41,78 @@ query ($app: ID!) {
     id
     name
     owner {
-      id  
+      id
     }
     badges {
       id
+      name
+      metadataURI
+      totalAwarded
     }
-  }
-  fungibleTokens(where: {app_: {id: $app}}) {
-    name
-    symbol
-    id
-    totalSupply
+    tokens {
+      id
+      token {
+        name
+        symbol
+      }
+    }
   }
 }
   `;
   try {
     const data = await request<{
-      app: { id: string; name: string; owner: { id: string }; badges: { id: string }[] };
-      fungibleTokens: { name: string; symbol: string; id: string; totalSupply: string }[];
+      app: {
+        id: string;
+        name: string;
+        owner: { id: string };
+        badges: { id: string }[];
+        tokens: Token[];
+      };
     }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, { app: communityId });
+
+    const missions = await fetchAllMissionsByCommunity(communityId);
 
     return {
       ...data.app,
-      tokens: data.fungibleTokens,
+      missions,
     };
     // @TODO: Create a generic error handler for subgraph requests
   } catch (error) {
     console.error(error);
     return null;
   }
+}
+
+async function fetchAllMissionsByCommunity(communityId: string): Promise<Mission[]> {
+  // @TODO: Handle pagination
+  const query = `
+    query ($app: String!) {
+      missions(where: {app: $app}, orderBy: createdAt, orderDirection: desc) {
+        metadata {
+          name
+        }
+        user {
+          id
+        }
+        tokens {
+          amount_rewarded
+          token {
+            name
+          }
+        }
+        createdAt
+      }
+    }
+  `;
+
+  const data = await request<{
+    missions: {
+      metadata: { name: string };
+      user: { id: string };
+      tokens: { amount_rewarded: string; token: { name: string } }[];
+      createdAt: string;
+    }[];
+  }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, { app: communityId });
+
+  return data.missions;
 }
