@@ -77,6 +77,8 @@ type TokenBalance = {
 };
 
 type Reward = {
+  id: string;
+  transactionHash: string;
   metadataURI: string;
   rewardId: string;
   rewardType: string;
