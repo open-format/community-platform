@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
 // EDIT AS NEEDED
 const tiers: { name: string; pointsRequired: number; color: string }[] = [
@@ -30,9 +29,7 @@ const tiers: { name: string; pointsRequired: number; color: string }[] = [
   },
 ];
 
-export default function Tiers() {
-  const [currentPoints] = useState(1256);
-
+export default function Tiers({ currentPoints }: { currentPoints: number }) {
   const getCurrentTier = (points: number) => {
     // Return null if user hasn't reached first tier
     if (points < tiers[0].pointsRequired) return null;

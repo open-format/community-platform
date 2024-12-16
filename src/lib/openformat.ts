@@ -1,8 +1,16 @@
 "use server";
 
 import { chains } from "@/constants/chains";
+import axios from "axios";
 import { request } from "graphql-request";
 import { getCurrentUser } from "./privy";
+
+const apiClient = axios.create({
+  baseURL: process.env.OPENFORMAT_API_URL,
+  headers: {
+    "x-api-key": process.env.OPENFORMAT_API_KEY,
+  },
+});
 
 export async function fetchAllCommunities() {
   const user = await getCurrentUser();
@@ -115,4 +123,84 @@ async function fetchAllMissionsByCommunity(communityId: string): Promise<Mission
   }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, { app: communityId });
 
   return data.missions;
+}
+
+export async function fetchUserProfile(communityId: string) {
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    return null;
+  }
+
+  const query = `
+query ($user: ID!, $community: String!) {
+  user(id: $user) {
+    tokenBalances(where: {token_: {app: $community}}) {
+      balance
+      token {
+        app {
+          id
+        }
+      }
+    }
+    collectedBadges(where: {badge_: {app: $community}}) {
+      badge {
+        id
+        metadataURI
+      }
+      tokenId
+    }
+  }
+  rewards(
+    where: {user: $user, app: $community}
+    orderBy: createdAt
+    orderDirection: desc
+    first: 10
+  ) {
+    metadataURI
+    rewardId
+    rewardType
+    token {
+      id
+      name
+      symbol
+    }
+    tokenAmount
+    badge {
+      name
+      metadataURI
+    }
+    badgeTokens {
+      tokenId
+    }
+    createdAt
+  }
+}
+  `;
+
+  const data = await request<{
+    user: UserProfile;
+    rewards: Reward[];
+  }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, {
+    user: currentUser.wallet_address.toLowerCase(),
+    community: communityId,
+  });
+
+  return { ...data.user, rewards: data.rewards };
+}
+
+export async function generateLeaderboard(communityId: string, token: string) {
+  try {
+    const params = new URLSearchParams();
+    params.set("app_id", communityId);
+    params.set("token", token);
+    // @TODO: Make this dynamic
+    params.set("chain", "arbitrum-sepolia");
+
+    const response = await apiClient.get(`/leaderboard?${params}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }

@@ -65,3 +65,33 @@ type Token = {
     totalSupply: string;
   };
 };
+
+type UserProfile = {
+  tokenBalances: TokenBalance[];
+  collectedBadges: Badge[];
+};
+
+type TokenBalance = {
+  balance: string;
+  token: { app: { id: string } };
+};
+
+type Reward = {
+  metadataURI: string;
+  rewardId: string;
+  rewardType: string;
+  token: {
+    id: string;
+    name: string;
+    symbol: string;
+  };
+  tokenAmount: string;
+  badge: {
+    name: string;
+    metadataURI: string;
+  };
+  badgeTokens: {
+    tokenId: string;
+  }[];
+  createdAt: string;
+};
