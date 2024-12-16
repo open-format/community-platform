@@ -29,3 +29,32 @@ export async function getCurrentUser() {
 
   return { id: user.id, wallet_address: walletAddress, apps };
 }
+
+export async function findUserByHandle(
+  handle: string
+): Promise<{ type: "discord" | "telegram"; username: string | null; wallet: string | null } | null> {
+  if (!handle || typeof handle !== "string") {
+    return null;
+  }
+
+  try {
+    const [discordUser] = await Promise.all([privyClient.getUserByDiscordUsername(handle).catch(() => null)]);
+
+    // Return the first non-null user found
+    if (discordUser) {
+      return {
+        type: "discord",
+        username: discordUser.discord?.username ?? null,
+        wallet: discordUser.wallet?.address ?? null,
+      };
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error searching for user:", {
+      handle,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return null;
+  }
+}

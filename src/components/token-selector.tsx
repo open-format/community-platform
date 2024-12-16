@@ -76,9 +76,9 @@ export default function TokenSelector({
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup heading="Tokens">
               {tokens.map((item) => (
-                <CommandItem key={item.id} value={item.name} onSelect={() => handleSelect(item.id)}>
+                <CommandItem key={item.id} value={item.token.name} onSelect={() => handleSelect(item.id)}>
                   <CircleDollarSign className={cn("mr-2 h-4 w-4", value === item.id ? "opacity-100" : "opacity-40")} />
-                  {`${item.name} (${addressSplitter(item.id, 4)})`}
+                  {`${item.token.name} (${addressSplitter(item.id, 4)})`}
                   <Check className={cn("ml-auto h-4 w-4", value === item.id ? "opacity-100" : "opacity-0")} />
                 </CommandItem>
               ))}
