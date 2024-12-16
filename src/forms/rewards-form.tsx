@@ -3,28 +3,44 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 
+import { rewardFacetAbi } from "@/abis/RewardFacet";
 import TokenSelector from "@/components/token-selector";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import UserSelector from "@/components/user-selector";
+import { uploadMetadata } from "@/lib/thirdweb";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
+import { Plus, X } from "lucide-react";
 import { useTransition } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useFieldArray, useForm } from "react-hook-form";
+import { type Address, parseEther, stringToHex } from "viem";
+import { useConfig } from "wagmi";
 import * as z from "zod";
 
 const rewardsFormSchema = z.object({
   user: z.string().min(1, "User handle is required"),
   tokenAddress: z.string().min(1, "Token is required"),
-  tokenType: z.enum(["token", "badge"]),
   amount: z.coerce.number().min(10 ** -18, "Amount must be at least 0.000000000000000001"),
-  description: z.string().optional(),
+  rewardId: z.string().min(3, "Reward ID must be at least 3 characters"),
+  metadata: z
+    .array(
+      z.object({
+        key: z.string().min(1, "Key is required"),
+        value: z.string().min(1, "Value is required"),
+      })
+    )
+    .optional()
+    .default([])
+    // @TODO fix types
+    .transform((arr) => arr.reduce((acc, { key, value }) => ({ ...acc, [key]: value }), {})),
 });
 
 type RewardsFormValues = z.infer<typeof rewardsFormSchema>;
 
 export default function RewardsForm({ community }: { community: Community }) {
   const [isPending, startTransition] = useTransition();
+  const config = useConfig();
 
   const form = useForm<RewardsFormValues>({
     resolver: zodResolver(rewardsFormSchema),
@@ -32,15 +48,78 @@ export default function RewardsForm({ community }: { community: Community }) {
       user: "",
       tokenAddress: undefined,
       amount: undefined,
-
-      tokenType: "token" as const,
+      rewardId: "",
+      metadata: [
+        {
+          key: "platform",
+          value: "discord",
+        },
+      ],
     },
   });
 
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "metadata",
+  });
+
   function onSubmit(data: RewardsFormValues) {
-    startTransition(async () => {
-      // @TODO: Implement reward logic
-    });
+    try {
+      startTransition(async () => {
+        // Check if selected token is a badge or token
+        const isSelectedBadge = community.badges.some((badge) => badge.id === data.tokenAddress);
+        const isSelectedToken = community.tokens.some((token) => token.id === data.tokenAddress);
+
+        let ipfsHash = "";
+        // upload the metadata to IPFS
+        if (Object.keys(data.metadata).length > 0) {
+          ipfsHash = await uploadMetadata(data.metadata);
+          console.log({ ipfsHash });
+        }
+
+        // Use different contract function based on token type
+        if (isSelectedBadge) {
+          const badgeTransaction = await writeContract(config, {
+            address: community.id,
+            abi: rewardFacetAbi,
+            functionName: "mintBadge",
+            args: [
+              data.tokenAddress as Address,
+              data.user as Address,
+              stringToHex(data.rewardId, { size: 32 }),
+              stringToHex("MISSION", { size: 32 }),
+              stringToHex(ipfsHash),
+            ],
+          });
+
+          const badgeTransactionReceipt = await waitForTransactionReceipt(config, { hash: badgeTransaction });
+          console.log({ badgeTransactionReceipt });
+        } else if (isSelectedToken) {
+          // Handle ERC20 token minting (current implementation)
+          const hash = await writeContract(config, {
+            address: community.id,
+            abi: rewardFacetAbi,
+            functionName: "mintERC20",
+            args: [
+              data.tokenAddress as Address,
+              data.user as Address,
+              parseEther(data.amount.toString()),
+              stringToHex(data.rewardId, { size: 32 }),
+              stringToHex("MISSION", { size: 32 }),
+              ipfsHash,
+            ],
+          });
+
+          const receipt = await waitForTransactionReceipt(config, { hash });
+          console.log({ receipt });
+        }
+
+        // @TODO: Show a success message and confetti
+      });
+    } catch (e) {
+      // @TODO: Create error handler for contract calls
+      console.error(e);
+    }
   }
 
   return (
@@ -52,6 +131,7 @@ export default function RewardsForm({ community }: { community: Community }) {
       <CardContent>
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* User */}
             <FormField
               control={form.control}
               name="user"
@@ -59,36 +139,14 @@ export default function RewardsForm({ community }: { community: Community }) {
                 <FormItem>
                   <FormLabel>User Handle</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter user handle" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="tokenType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Reward Type</FormLabel>
-                  <FormControl>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select reward type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="token">Token</SelectItem>
-                        <SelectItem value="badge">Badge</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <UserSelector field={field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+            {/* Token */}
             <FormField
               control={form.control}
               name="tokenAddress"
@@ -98,7 +156,7 @@ export default function RewardsForm({ community }: { community: Community }) {
                   <FormControl>
                     <TokenSelector
                       tokens={community.tokens}
-                      badges={[]}
+                      badges={community.badges}
                       value={field.value}
                       onChange={field.onChange}
                     />
@@ -108,6 +166,7 @@ export default function RewardsForm({ community }: { community: Community }) {
               )}
             />
 
+            {/* Amount */}
             <FormField
               control={form.control}
               name="amount"
@@ -115,28 +174,63 @@ export default function RewardsForm({ community }: { community: Community }) {
                 <FormItem>
                   <FormLabel>Amount</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Enter amount" {...field} />
+                    <Input
+                      type="number"
+                      placeholder="Enter amount"
+                      value={field.value ?? ""}
+                      //@TODO improve onChange handling
+                      onChange={(e) => field.onChange(e.target.value === "" ? undefined : e.target.value)}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+            {/* Reward ID */}
             <FormField
               control={form.control}
-              name="description"
+              name="rewardId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description (Optional)</FormLabel>
+                  <FormLabel>Reward Identifier</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Enter description" {...field} />
+                    <Input placeholder="Enter reward identifier" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={isPending}>
+            {/* Metadata */}
+            <FormField
+              control={form.control}
+              name="metadata"
+              render={() => (
+                <FormItem>
+                  <FormLabel>Metadata (Optional)</FormLabel>
+                  <FormControl>
+                    <div className="flex flex-col gap-2">
+                      {fields.map((item, index) => (
+                        <div key={item.id} className="flex items-center gap-2">
+                          <Input type="text" placeholder="Key" {...form.register(`metadata.${index}.key`)} />
+                          <Input type="text" placeholder="Value" {...form.register(`metadata.${index}.value`)} />
+                          <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                      <Button type="button" variant="ghost" size="icon" onClick={() => append({ key: "", value: "" })}>
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" className="w-full" disabled={isPending || !form.formState.isValid}>
               {isPending ? "Processing..." : "Reward"}
             </Button>
           </form>

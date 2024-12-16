@@ -16,9 +16,6 @@ type Badge = {
   id: string;
   name: string;
   metadataURI: string;
-  metadata: {
-    [key: string]: string;
-  };
 };
 
 interface LeaderboardEntry {
@@ -35,18 +32,36 @@ type JourneyItem = {
 
 // @TODO: Clean up types above
 
-type Community = {
+type Mission = {
   id: string;
   name: string;
-  owner: {
+  user: {
     id: string;
   };
+  tokens: {
+    amount_rewarded: string;
+    token: {
+      name: string;
+    };
+  }[];
+};
+
+type Community = {
+  id: Address;
+  name: string;
+  owner: {
+    id: Address;
+  };
   tokens: Token[];
+  missions: Mission[];
+  badges: Badge[];
 };
 
 type Token = {
-  name: string;
-  symbol: string;
-  id: string;
-  totalSupply: string;
+  id: Address;
+  token: {
+    name: string;
+    symbol: string;
+    totalSupply: string;
+  };
 };
