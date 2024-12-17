@@ -12,11 +12,16 @@ type Action = {
   xp_rewarded: string;
 };
 
-type Badge = {
+interface Badge {
   id: string;
   name: string;
   metadataURI: string;
-};
+}
+
+interface BadgeWithCollectedStatus extends Badge {
+  isCollected: boolean;
+  tokenId: string | null;
+}
 
 interface LeaderboardEntry {
   user: string;

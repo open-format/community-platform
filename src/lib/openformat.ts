@@ -177,18 +177,41 @@ query ($user: ID!, $community: String!) {
     }
     createdAt
   }
+  badges(where: {app: $community}) {
+  id
+    name
+    metadataURI
+  }
 }
   `;
 
   const data = await request<{
     user: UserProfile;
     rewards: Reward[];
+    badges: Badge[];
   }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, {
     user: currentUser.wallet_address.toLowerCase(),
     community: communityId,
   });
 
-  return { ...data.user, rewards: data.rewards };
+  const userCollectedBadges = data.user.collectedBadges.reduce((acc, collected) => {
+    acc.set(collected.badge.id, collected.tokenId);
+    return acc;
+  }, new Map<string, string>());
+
+  const badgesWithCollectedStatus: BadgeWithCollectedStatus[] = data.badges.map((badge) => ({
+    ...badge,
+    isCollected: userCollectedBadges.has(badge.id),
+    tokenId: userCollectedBadges.get(badge.id) || null,
+  }));
+
+  console.log(badgesWithCollectedStatus);
+
+  return {
+    ...data.user,
+    rewards: data.rewards,
+    badges: badgesWithCollectedStatus,
+  };
 }
 
 export async function generateLeaderboard(communityId: string, token: string) {

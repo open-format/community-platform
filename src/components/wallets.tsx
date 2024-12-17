@@ -1,16 +1,16 @@
 "use client";
 
 import { addressSplitter } from "@/lib/utils";
-import { type User, usePrivy } from "@privy-io/react-auth";
+import { usePrivy } from "@privy-io/react-auth";
 import { CheckIcon, CopyIcon, KeyIcon, Wallet } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 
-export default function Wallets({ user }: { user: User }) {
-  const { exportWallet } = usePrivy();
+export default function Wallets() {
+  const { exportWallet, user } = usePrivy();
   const [copied, setCopied] = useState(false);
 
-  if (!user.wallet?.address) return null;
+  if (!user?.wallet?.address) return null;
 
   function handleCopy(value: string) {
     if (!value) return;

@@ -1,9 +1,9 @@
 import Accounts from "@/components/accounts";
 import Activity from "@/components/activity";
-import CollectedBadges from "@/components/collected-badges";
 import Leaderboard from "@/components/leaderboard";
+import ProfileBadgeGrid from "@/components/profile-badge-grid";
 import Tiers from "@/components/tiers";
-import { PROFILE } from "@/dummy_data";
+import Wallets from "@/components/wallets";
 import { fetchUserProfile, generateLeaderboard } from "@/lib/openformat";
 import { getCurrentUser } from "@/lib/privy";
 import { formatEther } from "viem";
@@ -37,10 +37,15 @@ export default async function Profile({ params }: { params: Promise<{ slug: stri
         </div>
 
         {/* Accounts */}
-        <Accounts />
+        <div>
+          <Accounts />
+          <Wallets />
+        </div>
 
         {/* Collected Badges */}
-        <CollectedBadges profile={PROFILE} />
+        <div>
+          <ProfileBadgeGrid badges={profile?.badges} />
+        </div>
 
         {/* Activity (Journey) */}
         {profile?.rewards && <Activity rewards={profile.rewards} />}
