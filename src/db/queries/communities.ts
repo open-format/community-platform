@@ -12,6 +12,11 @@ export async function createCommunity(communityId: string) {
   return newCommunity;
 }
 
+export async function getCommunities() {
+  const communities = await db.query.communities.findMany();
+  return communities;
+}
+
 export async function getCommunity(slugOrId: string) {
   const community = await db.query.communities.findFirst({
     where: or(eq(communities.slug, slugOrId), eq(communities.id, slugOrId)),

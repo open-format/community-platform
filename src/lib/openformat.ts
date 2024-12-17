@@ -1,7 +1,7 @@
 "use server";
 
 import { chains } from "@/constants/chains";
-import { getCommunity } from "@/db/queries/communities";
+import { getCommunities, getCommunity } from "@/db/queries/communities";
 import axios from "axios";
 import { request } from "graphql-request";
 import { revalidatePath } from "next/cache";
@@ -19,6 +19,7 @@ export async function revalidate() {
 }
 export async function fetchAllCommunities() {
   const user = await getCurrentUser();
+  const dbCommunities = await getCommunities();
 
   if (!user) {
     return null;
@@ -44,7 +45,14 @@ export async function fetchAllCommunities() {
   }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, {
     owner: user.wallet_address,
   });
-  return data.apps;
+
+  // Match subgraph communities with database communities
+  const matchedCommunities = data.apps.map((app) => ({
+    ...app,
+    pageConfiguration: dbCommunities.find((dbComm) => dbComm.id === app.id || dbComm.slug === app.id),
+  }));
+
+  return matchedCommunities;
 }
 
 export async function fetchCommunity(communityId: string): Promise<Community | null> {
@@ -137,8 +145,6 @@ export async function fetchUserProfile(slug: string) {
   const currentUser = await getCurrentUser();
   const community = await getCommunity(slug);
 
-  console.log({ community });
-
   if (!currentUser || !community) {
     return null;
   }
@@ -205,8 +211,6 @@ query ($user: ID!, $community: String!) {
     community: community.id.toLowerCase(),
   });
 
-  console.log({ data });
-
   const userCollectedBadges = data.user.collectedBadges.reduce((acc, collected) => {
     acc.set(collected.badge.id, collected.tokenId);
     return acc;
@@ -217,8 +221,6 @@ query ($user: ID!, $community: String!) {
     isCollected: userCollectedBadges.has(badge.id),
     tokenId: userCollectedBadges.get(badge.id) || null,
   }));
-
-  console.log(badgesWithCollectedStatus);
 
   return {
     ...data.user,
