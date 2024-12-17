@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { chains } from "@/constants/chains";
+import { createCommunity } from "@/db/queries/communities";
 import { getEventLog } from "@/helpers/contract";
 import { usePrivy } from "@privy-io/react-auth";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
@@ -66,6 +67,8 @@ export default function CreateCommunityForm() {
         if (!communityId) {
           throw new Error("Failed to get community id");
         }
+
+        await createCommunity(communityId);
 
         const pointsTransactionHash = await writeContract(config, {
           address: communityId,
