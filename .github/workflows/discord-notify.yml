@@ -15,15 +15,14 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           REPO_URL: https://github.com/${{ github.repository }}
         run: |
-          # Extract commit details and escape special characters for JSON
-          COMMIT_MESSAGE=$(echo '${{ toJson(github.event) }}' | jq -r '.head_commit.message' | sed 's/"/\\"/g')
+          # Extract commit details
           COMMIT_AUTHOR=$(echo '${{ toJson(github.event) }}' | jq -r '.head_commit.author.username')
           COMMIT_URL="$REPO_URL/commit/${{ github.sha }}"
 
-          # Create JSON payload with escaped message
+          # Create JSON payload
           JSON_PAYLOAD=$(cat <<EOF
           {
-            "content": "🚀 A new update has been pushed to our platform! **${{ github.repository }}**\n\n**Commit Message**: ${COMMIT_MESSAGE}\n**Author**: ${COMMIT_AUTHOR}\n[View Commit](${COMMIT_URL})"
+            "content": "🚀 A new update has been pushed to our platform! **${{ github.repository }}**\n\n**Author**: ${COMMIT_AUTHOR}\n[View Commit](${COMMIT_URL})"
           }
           EOF
           )
