@@ -12,7 +12,7 @@ export default function BadgeGrid({ badges }: { badges: Badge[] | undefined }) {
     return <div>Badges not found</div>;
   }
   return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-4">
       {badges.map((badge) => (
         <Item key={badge.id} badge={badge} metadataURI={badge.metadataURI} />
       ))}
@@ -49,7 +49,6 @@ function Item({ badge, metadataURI }: { badge: Badge; metadataURI: string }) {
         {metadata?.name ? (
           <div className="flex justify-between items-center w-full">
             <CardTitle>{metadata.name}</CardTitle>
-            <CardTitle>{badge.id}</CardTitle>
           </div>
         ) : badge.name ? (
           <CardTitle>{badge.name}</CardTitle>
