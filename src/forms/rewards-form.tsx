@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 import { rewardFacetAbi } from "@/abis/RewardFacet";
@@ -123,119 +122,111 @@ export default function RewardsForm({ community }: { community: Community }) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Reward User</CardTitle>
-        <CardDescription>Send tokens or badges</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <FormProvider {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* User */}
-            <FormField
-              control={form.control}
-              name="user"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>User Handle</FormLabel>
-                  <FormControl>
-                    <UserSelector field={field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {/* User */}
+        <FormField
+          control={form.control}
+          name="user"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>User Handle</FormLabel>
+              <FormControl>
+                <UserSelector field={field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            {/* Token */}
-            <FormField
-              control={form.control}
-              name="tokenAddress"
-              render={({ field }) => (
-                <FormItem className="flex flex-col gap-2">
-                  <FormLabel>Token</FormLabel>
-                  <FormControl>
-                    <TokenSelector
-                      tokens={community.tokens}
-                      badges={community.badges}
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        {/* Token */}
+        <FormField
+          control={form.control}
+          name="tokenAddress"
+          render={({ field }) => (
+            <FormItem className="flex flex-col gap-2">
+              <FormLabel>Token</FormLabel>
+              <FormControl>
+                <TokenSelector
+                  tokens={community.tokens}
+                  badges={community.badges}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            {/* Amount */}
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Amount</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Enter amount"
-                      value={field.value ?? ""}
-                      //@TODO improve onChange handling
-                      onChange={(e) => field.onChange(e.target.value === "" ? undefined : e.target.value)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        {/* Amount */}
+        <FormField
+          control={form.control}
+          name="amount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Amount</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder="Enter amount"
+                  value={field.value ?? ""}
+                  //@TODO improve onChange handling
+                  onChange={(e) => field.onChange(e.target.value === "" ? undefined : e.target.value)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            {/* Reward ID */}
-            <FormField
-              control={form.control}
-              name="rewardId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Reward Identifier</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter reward identifier" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        {/* Reward ID */}
+        <FormField
+          control={form.control}
+          name="rewardId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Reward Identifier</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter reward identifier" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            {/* Metadata */}
-            <FormField
-              control={form.control}
-              name="metadata"
-              render={() => (
-                <FormItem>
-                  <FormLabel>Metadata (Optional)</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-col gap-2">
-                      {fields.map((item, index) => (
-                        <div key={item.id} className="flex items-center gap-2">
-                          <Input type="text" placeholder="Key" {...form.register(`metadata.${index}.key`)} />
-                          <Input type="text" placeholder="Value" {...form.register(`metadata.${index}.value`)} />
-                          <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
-                      <Button type="button" variant="ghost" size="icon" onClick={() => append({ key: "", value: "" })}>
-                        <Plus className="h-4 w-4" />
+        {/* Metadata */}
+        <FormField
+          control={form.control}
+          name="metadata"
+          render={() => (
+            <FormItem>
+              <FormLabel>Metadata (Optional)</FormLabel>
+              <FormControl>
+                <div className="flex flex-col gap-2">
+                  {fields.map((item, index) => (
+                    <div key={item.id} className="flex items-center gap-2">
+                      <Input type="text" placeholder="Key" {...form.register(`metadata.${index}.key`)} />
+                      <Input type="text" placeholder="Value" {...form.register(`metadata.${index}.value`)} />
+                      <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
+                        <X className="h-4 w-4" />
                       </Button>
                     </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                  ))}
+                  <Button type="button" variant="ghost" size="icon" onClick={() => append({ key: "", value: "" })}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            <Button type="submit" className="w-full" disabled={isPending || !form.formState.isValid}>
-              {isPending ? "Processing..." : "Reward"}
-            </Button>
-          </form>
-        </FormProvider>
-      </CardContent>
-    </Card>
+        <Button type="submit" className="w-full" disabled={isPending || !form.formState.isValid}>
+          {isPending ? "Processing..." : "Reward"}
+        </Button>
+      </form>
+    </FormProvider>
   );
 }

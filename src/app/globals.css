@@ -68,6 +68,7 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    @apply font-semibold;
   }
   h1,
   h2,
