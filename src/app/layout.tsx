@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
@@ -24,6 +25,7 @@ export default function RootLayout({
         <Providers>
           <main>{children}</main>
         </Providers>
+        <Toaster position="top-center" />
       </body>
     </html>
   );

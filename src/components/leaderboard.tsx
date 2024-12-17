@@ -118,9 +118,7 @@ export default function Leaderboard({ data, currentWallet, isLoading = false }: 
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-2xl font-bold tracking-tight">Dan&apos;s Leaderboard</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              {data.length} {data.length === 1 ? "Participant" : "Participants"}
-            </p>
+            <p className="text-sm text-muted-foreground mt-1">{data.length === 1 ? "Participant" : "Participants"}</p>
           </div>
         </div>
       </CardHeader>

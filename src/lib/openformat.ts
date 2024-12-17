@@ -1,8 +1,10 @@
 "use server";
 
 import { chains } from "@/constants/chains";
+import { getCommunity } from "@/db/queries/communities";
 import axios from "axios";
 import { request } from "graphql-request";
+import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "./privy";
 
 const apiClient = axios.create({
@@ -12,6 +14,9 @@ const apiClient = axios.create({
   },
 });
 
+export async function revalidate() {
+  revalidatePath("/");
+}
 export async function fetchAllCommunities() {
   const user = await getCurrentUser();
 
@@ -80,9 +85,12 @@ query ($app: ID!) {
 
     const missions = await fetchAllMissionsByCommunity(communityId);
 
+    const pageConfiguration = await getCommunity(communityId);
+
     return {
       ...data.app,
       missions,
+      pageConfiguration,
     };
     // @TODO: Create a generic error handler for subgraph requests
   } catch (error) {
@@ -125,10 +133,13 @@ async function fetchAllMissionsByCommunity(communityId: string): Promise<Mission
   return data.missions;
 }
 
-export async function fetchUserProfile(communityId: string) {
+export async function fetchUserProfile(slug: string) {
   const currentUser = await getCurrentUser();
+  const community = await getCommunity(slug);
 
-  if (!currentUser) {
+  console.log({ community });
+
+  if (!currentUser || !community) {
     return null;
   }
 
@@ -191,8 +202,10 @@ query ($user: ID!, $community: String!) {
     badges: Badge[];
   }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, {
     user: currentUser.wallet_address.toLowerCase(),
-    community: communityId,
+    community: community.id.toLowerCase(),
   });
+
+  console.log({ data });
 
   const userCollectedBadges = data.user.collectedBadges.reduce((acc, collected) => {
     acc.set(collected.badge.id, collected.tokenId);
@@ -214,10 +227,16 @@ query ($user: ID!, $community: String!) {
   };
 }
 
-export async function generateLeaderboard(communityId: string, token: string) {
+export async function generateLeaderboard(slug: string, token: string) {
   try {
+    const community = await getCommunity(slug);
+
+    if (!community) {
+      return null;
+    }
+
     const params = new URLSearchParams();
-    params.set("app_id", communityId);
+    params.set("app_id", community.id);
     params.set("token", token);
     // @TODO: Make this dynamic
     params.set("chain", "arbitrum-sepolia");

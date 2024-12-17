@@ -54,6 +54,14 @@ type Community = {
   tokens: Token[];
   missions: Mission[];
   badges: Badge[];
+  pageConfiguration: {
+    title: string;
+    description: string;
+    primary_color: string;
+    slug: string;
+    secondary_color: string;
+    logo_url: string;
+  };
 };
 
 type Token = {

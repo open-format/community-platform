@@ -15,13 +15,21 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           REPO_URL: https://github.com/${{ github.repository }}
         run: |
-          # Extract commit details using jq
-          COMMIT_MESSAGE=$(echo '${{ toJson(github.event) }}' | jq -r '.head_commit.message')
+          # Extract commit details and escape special characters for JSON
+          COMMIT_MESSAGE=$(echo '${{ toJson(github.event) }}' | jq -r '.head_commit.message' | sed 's/"/\\"/g')
           COMMIT_AUTHOR=$(echo '${{ toJson(github.event) }}' | jq -r '.head_commit.author.username')
           COMMIT_URL="$REPO_URL/commit/${{ github.sha }}"
+
+          # Create JSON payload with escaped message
+          JSON_PAYLOAD=$(cat <<EOF
+          {
+            "content": "🚀 A new update has been pushed to our platform! **${{ github.repository }}**\n\n**Commit Message**: ${COMMIT_MESSAGE}\n**Author**: ${COMMIT_AUTHOR}\n[View Commit](${COMMIT_URL})"
+          }
+          EOF
+          )
 
           # Send the message to Discord
           curl -X POST \
           -H "Content-Type: application/json" \
-          -d "{\"content\": \"🚀 A new update has been pushed to our platform! **${{ github.repository }}**\\n\\n**Commit Message**: $COMMIT_MESSAGE\\n**Author**: $COMMIT_AUTHOR\\n[View Commit]($COMMIT_URL)\"}" \
+          -d "$JSON_PAYLOAD" \
           $DISCORD_WEBHOOK_URL
