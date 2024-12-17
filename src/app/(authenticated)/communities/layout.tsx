@@ -8,7 +8,7 @@ export default function CommunitiesLayout({ children }: { children: React.ReactN
         <Profile />
         <ModeToggle />
       </header>
-      <div className="p-lg">{children}</div>
+      <div>{children}</div>
     </div>
   );
 }
