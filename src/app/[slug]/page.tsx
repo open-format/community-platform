@@ -31,9 +31,12 @@ export default async function Profile({ params }: { params: Promise<{ slug: stri
         {/* Tiers */}
 
         {/* @TODO: How do we choose the token that is used for the tiers? */}
-        {profile?.tokenBalances[0].balance && (
+        {profile?.tokenBalances[0].balance && community?.tiers && (
           <div className="md:col-span-full">
-            <Tiers currentPoints={Number(formatEther(BigInt(profile?.tokenBalances[0].balance)))} />
+            <Tiers
+              tiers={community.tiers}
+              currentPoints={Number(formatEther(BigInt(profile?.tokenBalances[0].balance)))}
+            />
           </div>
         )}
 
