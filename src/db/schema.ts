@@ -1,12 +1,5 @@
-import { pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
-
-// Example user table
-export const users = pgTable("users", {
-  id: varchar("id", { length: 255 }).primaryKey(),
-  wallet_address: varchar("wallet_address", { length: 42 }).notNull(),
-  created_at: timestamp("created_at").defaultNow().notNull(),
-  updated_at: timestamp("updated_at").defaultNow().notNull(),
-});
+import { relations } from "drizzle-orm";
+import { pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const communities = pgTable("communities", {
   id: varchar("id", { length: 42 }).primaryKey(),
@@ -19,3 +12,39 @@ export const communities = pgTable("communities", {
   created_at: timestamp("created_at").defaultNow().notNull(),
   updated_at: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const workflows = pgTable("workflows", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: varchar("description", { length: 255 }),
+  app_id: varchar("app_id", { length: 42 }).notNull(),
+  owner: varchar("owner", { length: 42 }).notNull(),
+  webhook: varchar("webhook", { length: 255 }),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const workflowsRelations = relations(workflows, ({ many }) => ({
+  rewards: many(rewards),
+}));
+
+export const rewards = pgTable("rewards", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  workflow_id: uuid("workflow_id")
+    .notNull()
+    .references(() => workflows.id),
+  token: varchar("token", { length: 42 }).notNull(),
+  function_name: varchar("function_name", { length: 255 }).notNull(),
+  amount: varchar("amount", { length: 255 }).notNull(),
+  reward_id: varchar("reward_id", { length: 255 }).notNull(),
+  metadata_uri: varchar("metadata_uri", { length: 255 }),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const rewardsRelations = relations(rewards, ({ one }) => ({
+  workflow: one(workflows, {
+    fields: [rewards.workflow_id],
+    references: [workflows.id],
+  }),
+}));

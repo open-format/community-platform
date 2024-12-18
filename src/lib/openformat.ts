@@ -49,7 +49,7 @@ export async function fetchAllCommunities() {
   // Match subgraph communities with database communities
   const matchedCommunities = data.apps.map((app) => ({
     ...app,
-    pageConfiguration: dbCommunities.find((dbComm) => dbComm.id === app.id || dbComm.slug === app.id),
+    metadata: dbCommunities.find((dbComm) => dbComm.id === app.id || dbComm.slug === app.id),
   }));
 
   return matchedCommunities;
@@ -93,12 +93,12 @@ query ($app: ID!) {
 
     const missions = await fetchAllMissionsByCommunity(communityId);
 
-    const pageConfiguration = await getCommunity(communityId);
+    const metadata = await getCommunity(communityId);
 
     return {
       ...data.app,
       missions,
-      pageConfiguration,
+      metadata,
     };
     // @TODO: Create a generic error handler for subgraph requests
   } catch (error) {

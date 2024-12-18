@@ -54,7 +54,7 @@ type Community = {
   tokens: Token[];
   missions: Mission[];
   badges: Badge[];
-  pageConfiguration: {
+  metadata: {
     title: string;
     description: string;
     primary_color: string;

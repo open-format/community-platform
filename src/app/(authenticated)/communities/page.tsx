@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import CreateCommunityForm from "@/forms/create-community";
 import { fetchAllCommunities } from "@/lib/openformat";
 import { addressSplitter } from "@/lib/utils";
@@ -24,11 +24,8 @@ export default async function Communities() {
             <Card>
               <CardHeader>
                 <CardTitle>{community.name}</CardTitle>
-                <CardDescription>{community.pageConfiguration?.description}</CardDescription>
+                <CardDescription>{community.metadata?.description}</CardDescription>
               </CardHeader>
-              <CardContent>
-                <p>{community.pageConfiguration?.description}</p>
-              </CardContent>
               <CardFooter className="flex justify-between">
                 <p className="text-sm text-gray-500 font-semibold">Arbitrum Sepolia</p>
                 <Badge>{addressSplitter(community.id)}</Badge>

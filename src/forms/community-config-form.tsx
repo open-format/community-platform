@@ -37,12 +37,12 @@ export default function CommunityConfigForm({ community }: { community: Communit
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      title: community.pageConfiguration?.title ?? "",
-      description: community.pageConfiguration?.description ?? "",
-      primary_color: community.pageConfiguration?.primary_color ?? "#000000",
-      slug: community.pageConfiguration?.slug ?? "",
-      secondary_color: community.pageConfiguration?.secondary_color ?? "#FFFFFF",
-      logo_url: community.pageConfiguration?.logo_url ?? "",
+      title: community.metadata?.title ?? "",
+      description: community.metadata?.description ?? "",
+      primary_color: community.metadata?.primary_color ?? "#000000",
+      slug: community.metadata?.slug ?? "",
+      secondary_color: community.metadata?.secondary_color ?? "#FFFFFF",
+      logo_url: community.metadata?.logo_url ?? "",
     },
   });
 
@@ -113,7 +113,7 @@ export default function CommunityConfigForm({ community }: { community: Communit
                       .replace(/^-+|-+$/g, "");
                     field.onChange(transformed);
 
-                    if (transformed === community.pageConfiguration.slug) return;
+                    if (transformed === community.metadata.slug) return;
 
                     const isAvailable = await isSlugAvailable(transformed, community.id);
                     if (!isAvailable) {
@@ -132,35 +132,55 @@ export default function CommunityConfigForm({ community }: { community: Communit
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="primary_color"
-          render={({ field }) => (
-            <FormItem className="flex-1">
-              <FormLabel>Primary Color</FormLabel>
-              <FormControl>
-                <Input type="color" {...field} />
-              </FormControl>
-              <FormMessage />
-              <FormDescription>Main color for your community theme.</FormDescription>
-            </FormItem>
-          )}
-        />
+        <div className="flex gap-4">
+          <FormField
+            control={form.control}
+            name="primary_color"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Primary Color</FormLabel>
+                <FormControl>
+                  <Input
+                    type="color"
+                    {...field}
+                    className="w-12 h-12 p-0 border-2 rounded-full overflow-hidden cursor-pointer"
+                    style={{
+                      backgroundColor: field.value,
+                      appearance: "none",
+                      WebkitAppearance: "none",
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+                <FormDescription>Main color for your community theme.</FormDescription>
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="secondary_color"
-          render={({ field }) => (
-            <FormItem className="flex-1">
-              <FormLabel>Secondary Color</FormLabel>
-              <FormControl>
-                <Input type="color" {...field} />
-              </FormControl>
-              <FormMessage />
-              <FormDescription>Accent color for your community theme.</FormDescription>
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="secondary_color"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Secondary Color</FormLabel>
+                <FormControl>
+                  <Input
+                    type="color"
+                    {...field}
+                    className="w-12 h-12 p-0 border-2 rounded-full overflow-hidden cursor-pointer"
+                    style={{
+                      backgroundColor: field.value,
+                      appearance: "none",
+                      WebkitAppearance: "none",
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+                <FormDescription>Accent color for your community theme.</FormDescription>
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}
@@ -168,8 +188,32 @@ export default function CommunityConfigForm({ community }: { community: Communit
           render={({ field }) => (
             <FormItem className="flex-1">
               <FormLabel>Logo URL</FormLabel>
+              {field.value && (
+                <div className="mb-2">
+                  <img
+                    src={field.value}
+                    alt="Logo preview"
+                    className="h-20 w-20 object-contain"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                      form.setError("logo_url", {
+                        message: "Unable to load image from URL",
+                      });
+                    }}
+                  />
+                </div>
+              )}
               <FormControl>
-                <Input placeholder="https://example.com/logo.png" {...field} />
+                <Input
+                  placeholder="https://example.com/logo.png"
+                  {...field}
+                  onBlur={(e) => {
+                    field.onBlur();
+                    if (e.target.value) {
+                      form.clearErrors("logo_url");
+                    }
+                  }}
+                />
               </FormControl>
               <FormMessage />
               <FormDescription>URL to your community logo image.</FormDescription>
