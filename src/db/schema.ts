@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { integer, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const communities = pgTable("communities", {
   id: varchar("id", { length: 42 }).primaryKey(),
@@ -12,6 +12,10 @@ export const communities = pgTable("communities", {
   created_at: timestamp("created_at").defaultNow().notNull(),
   updated_at: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const communitiesRelations = relations(communities, ({ many }) => ({
+  tiers: many(tiers),
+}));
 
 export const workflows = pgTable("workflows", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -46,5 +50,24 @@ export const rewardsRelations = relations(rewards, ({ one }) => ({
   workflow: one(workflows, {
     fields: [rewards.workflow_id],
     references: [workflows.id],
+  }),
+}));
+
+export const tiers = pgTable("tiers", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  community_id: varchar("community_id", { length: 42 })
+    .notNull()
+    .references(() => communities.id),
+  name: varchar("name", { length: 255 }).notNull(),
+  points_required: integer("points_required").notNull(),
+  color: varchar("color", { length: 255 }).notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const tiersRelations = relations(tiers, ({ one }) => ({
+  community: one(communities, {
+    fields: [tiers.community_id],
+    references: [communities.id],
   }),
 }));

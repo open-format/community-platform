@@ -20,6 +20,11 @@ export async function getCommunities() {
 export async function getCommunity(slugOrId: string) {
   const community = await db.query.communities.findFirst({
     where: or(eq(communities.slug, slugOrId), eq(communities.id, slugOrId)),
+    with: {
+      tiers: {
+        orderBy: (tiers, { asc }) => [asc(tiers.points_required)],
+      },
+    },
   });
   return community;
 }

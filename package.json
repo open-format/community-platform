@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate": "drizzle-kit generate",
-    "migrate": "drizzle-kit migrate",
-    "studio": "drizzle-kit studio"
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "bun run src/db/seed.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

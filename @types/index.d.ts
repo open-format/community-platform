@@ -62,6 +62,7 @@ type Community = {
     secondary_color: string;
     logo_url: string;
   };
+  tiers: Tier[];
 };
 
 type Token = {
@@ -104,3 +105,13 @@ type Reward = {
   }[];
   createdAt: string;
 };
+
+interface Tier {
+  id: string;
+  name: string;
+  points_required: number;
+  color: string;
+  created_at: Date;
+  updated_at: Date;
+  community_id: string;
+}
