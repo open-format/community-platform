@@ -21,11 +21,11 @@ export default function ProfileBadgeGrid({
     return <div>Badges not found</div>;
   }
   return (
-    <Card variant="outline" style={theme}>
+    <Card variant="borderless" style={theme}>
       <CardHeader>
         <CardTitle>Badges</CardTitle>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 gap-3 md:grid-cols-2">
+      <CardContent className="grid grid-cols-1 gap-5 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-6">
         {badges.map((badge) => (
           <Item key={badge.id} badge={badge} metadataURI={badge.metadataURI} theme={theme} />
         ))}
@@ -53,32 +53,38 @@ function Item({ badge, metadataURI, theme }: { badge: BadgeWithCollectedStatus; 
   }, [metadataURI]);
 
   return (
-    <Link
-      href={`${chains.arbitrumSepolia.BLOCK_EXPLORER_URL}/nft/${badge.id}/${badge.tokenId}`}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <Card style={theme}>
-        <CardContent className="mt-5 space-y-md">
-          <Badge style={{ backgroundColor: theme.borderColor, color: theme.backgroundColor }}>
-            {badge.isCollected ? "Collected" : "Not Collected"}
-          </Badge>
-          <AspectRatio ratio={1 / 1.2} className="bg-muted rounded-md">
-            {image ? <Image src={image} alt={metadata?.name} fill className="rounded-md object-cover" /> : <Skeleton />}
+    <Card variant="borderless" style={theme}>
+      <Link
+        href={`${chains.arbitrumSepolia.BLOCK_EXPLORER_URL}/nft/${badge.id}/${badge.tokenId}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <CardContent className="flex items-center justify-center p-sm">
+          <AspectRatio ratio={1}>
+            {image ? (
+              <>
+                <Image src={image} alt={metadata?.name} fill className="rounded-full object-cover" />
+                {!badge.isCollected && <div className="absolute inset-0 bg-black bg-opacity-70 rounded-full" />}
+              </>
+            ) : (
+              <Skeleton />
+            )}
           </AspectRatio>
         </CardContent>
-        <CardFooter className="flex flex-col items-start space-y-4">
+        <CardFooter className="flex flex-col items-center justify-center w-full text-center whitespace-nowrap">
           {metadata?.name ? (
-            <div className="flex justify-between items-center w-full">
-              <CardTitle className="text-lg">{metadata.name}</CardTitle>
-            </div>
+            <Badge variant="outline" style={{ color: theme.color }}>
+              {metadata.name}
+            </Badge>
           ) : badge.name ? (
-            <CardTitle>{badge.name}</CardTitle>
+            <Badge variant="outline" style={{ color: theme.color }}>
+              {badge.name}
+            </Badge>
           ) : (
             <Skeleton />
           )}
         </CardFooter>
-      </Card>
-    </Link>
+      </Link>
+    </Card>
   );
 }

@@ -59,10 +59,9 @@ export default function Tiers({
       : Math.max(0, (currentTier ? nextTier : tiers[0]).points_required - currentPoints);
 
   return (
-    <Card variant="outline" style={theme}>
+    <Card variant="borderless" style={theme}>
       <CardHeader>
         <CardTitle className="text-2xl font-bold">Tier Progress</CardTitle>
-        <p className="text-sm">Your current tier and progress towards the next</p>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col space-y-4">
@@ -101,22 +100,19 @@ export default function Tiers({
               </span>
             </div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm pt-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(0,1fr))] gap-2 text-sm pt-4">
             {tiers.map((tier) => (
               <div
                 key={tier.name}
-                className={cn(
-                  "flex flex-col items-center p-3 rounded-lg transition-colors duration-200",
-                  // Only highlight if there's a current tier and it matches
-                  currentTier === tier ? "dark:bg-secondary/20 bg-secondary/30" : "dark:bg-secondary/10 bg-secondary/20"
-                )}
+                style={currentTier === tier ? { borderColor: theme.borderColor } : {}}
+                className={cn("flex flex-col items-center p-3 rounded-lg border-2")}
               >
                 <div
                   style={{ backgroundColor: tier.color }}
-                  className="w-3 h-3 rounded-full mb-2 transition-colors duration-200"
+                  className="w-6 h-6 rounded-full mb-2 transition-colors duration-200"
                 />
-                <span className="">{tier.name}</span>
-                <span className="text-xs">{tier.points_required} points</span>
+                <span className="text-2xl font-bold">{tier.name}</span>
+                <span>{tier.points_required} points</span>
               </div>
             ))}
           </div>

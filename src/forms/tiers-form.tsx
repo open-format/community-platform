@@ -188,18 +188,19 @@ export default function TiersForm({ communityId, tiers }: { communityId: string;
             </div>
           </div>
         ))}
-
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => append({ name: "", points_required: 0, color: "#000000" })}
-        >
-          Add Tier
-        </Button>
+        <div className="flex gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => append({ name: "", points_required: 0, color: "#000000" })}
+          >
+            Add Tier
+          </Button>
+          <Button type="submit" disabled={isPending}>
+            Save Tiers
+          </Button>
+        </div>
       </div>
-      <Button type="submit" disabled={isPending}>
-        Save Tiers
-      </Button>
     </form>
   );
 }

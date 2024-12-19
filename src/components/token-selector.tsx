@@ -44,9 +44,9 @@ export default function TokenSelector({
   };
 
   const getDisplayValue = () => {
-    const selectedItem = [...tokens, ...badges].find((item) => item.id === value);
+    const selectedItem = [...tokens, ...badges].find((item) => item.token?.id === value);
     if (selectedItem) {
-      return `${selectedItem.name} (${selectedItem.id})`;
+      return `${selectedItem.token?.name} (${selectedItem.token?.id})`;
     }
     if (isAddress(value)) {
       return value;
@@ -76,9 +76,9 @@ export default function TokenSelector({
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup heading="Tokens">
               {tokens.map((item) => (
-                <CommandItem key={item.id} value={item.token.name} onSelect={() => handleSelect(item.id)}>
+                <CommandItem key={item.token.id} value={item.token.name} onSelect={() => handleSelect(item.token.id)}>
                   <CircleDollarSign className={cn("mr-2 h-4 w-4", value === item.id ? "opacity-100" : "opacity-40")} />
-                  {`${item.token.name} (${addressSplitter(item.id, 4)})`}
+                  {`${item.token.name} (${addressSplitter(item.token.id, 4)})`}
                   <Check className={cn("ml-auto h-4 w-4", value === item.id ? "opacity-100" : "opacity-0")} />
                 </CommandItem>
               ))}

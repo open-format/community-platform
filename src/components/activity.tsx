@@ -19,7 +19,7 @@ export default function Activity({ rewards, theme }: { rewards: Reward[]; theme:
     return <CoinsIcon />;
   }
   return (
-    <Card style={theme}>
+    <Card variant="borderless" style={theme}>
       <CardHeader>
         <CardTitle>My Journey</CardTitle>
       </CardHeader>

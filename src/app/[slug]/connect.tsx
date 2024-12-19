@@ -3,23 +3,25 @@
 import { Button } from "@/components/ui/button";
 import { getContrastSafeColor } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
+import { LogOutIcon } from "lucide-react";
 
-export default function Connect({ style }: { style?: React.CSSProperties }) {
+export default function Connect({ theme }: { theme?: Theme }) {
   const { login, logout, authenticated, ready } = usePrivy();
 
   const buttonStyle = {
-    ...style,
-    color: style?.backgroundColor ? getContrastSafeColor(style.backgroundColor as string) : undefined,
+    backgroundColor: theme?.buttonColor,
+    color: theme?.buttonColor ? getContrastSafeColor(theme.buttonColor as string) : undefined,
   };
 
-  if (!ready) return <Button disabled>Loading...</Button>;
+  if (!ready) return <div></div>;
+
   return authenticated ? (
     <Button onClick={logout} style={buttonStyle}>
-      Disconnect Wallet
+      <LogOutIcon className="h-4 w-4" />
     </Button>
   ) : (
     <Button onClick={login} style={buttonStyle}>
-      Connect Wallet
+      Login
     </Button>
   );
 }

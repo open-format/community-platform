@@ -11,7 +11,7 @@ export default async function ProfileLayout({
   const community = await getCommunity(slug);
   return (
     <div
-      className="p-md"
+      className="px-24 py-2"
       style={{
         background: community?.background_color
           ? `linear-gradient(to bottom, ${community.background_color}, ${adjustColor(community.background_color, -10)})`
