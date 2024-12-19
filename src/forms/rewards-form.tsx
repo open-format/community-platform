@@ -47,7 +47,7 @@ export default function RewardsForm({ community }: { community: Community }) {
     resolver: zodResolver(rewardsFormSchema),
     defaultValues: {
       user: "",
-      tokenAddress: undefined,
+      tokenAddress: "",
       amount: undefined,
       rewardId: "",
       metadata: [
@@ -69,7 +69,7 @@ export default function RewardsForm({ community }: { community: Community }) {
       startTransition(async () => {
         // Check if selected token is a badge or token
         const isSelectedBadge = community.badges.some((badge) => badge.id === data.tokenAddress);
-        const isSelectedToken = community.tokens.some((token) => token.id === data.tokenAddress);
+        const isSelectedToken = community.tokens.some((token) => token.token.id === data.tokenAddress);
 
         let ipfsHash = "";
         // upload the metadata to IPFS
