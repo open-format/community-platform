@@ -28,7 +28,7 @@ export default function Wallets() {
       <li key={user?.wallet?.address}>
         <div className="space-x-2 items-center flex">
           <Wallet />
-          <span className="text-sm text-muted-foreground">{addressSplitter(user.wallet.address)}</span>
+          <span className="text-sm">{addressSplitter(user.wallet.address)}</span>
           <Button
             variant="ghost"
             className="hover:bg-transparent p-0"
@@ -46,11 +46,7 @@ export default function Wallets() {
       <li>
         <div className="space-x-2 items-center flex">
           <KeyIcon />
-          <Button
-            variant="ghost"
-            onClick={exportWallet}
-            className="text-sm text-muted-foreground p-0 hover:bg-transparent"
-          >
+          <Button variant="ghost" onClick={exportWallet} className="text-sm p-0 hover:bg-transparent">
             Export wallet
           </Button>
         </div>

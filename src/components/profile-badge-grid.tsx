@@ -7,23 +7,34 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AspectRatio } from "./ui/aspect-ratio";
 import { Badge } from "./ui/badge";
-import { Card, CardContent, CardFooter, CardTitle } from "./ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import { Skeleton } from "./ui/skeleton";
 
-export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollectedStatus[] | undefined }) {
+export default function ProfileBadgeGrid({
+  badges,
+  theme,
+}: {
+  badges: BadgeWithCollectedStatus[] | undefined;
+  theme: Theme;
+}) {
   if (!badges || !badges.length) {
     return <div>Badges not found</div>;
   }
   return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-      {badges.map((badge) => (
-        <Item key={badge.id} badge={badge} metadataURI={badge.metadataURI} />
-      ))}
-    </div>
+    <Card variant="outline" style={theme}>
+      <CardHeader>
+        <CardTitle>Badges</CardTitle>
+      </CardHeader>
+      <CardContent className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        {badges.map((badge) => (
+          <Item key={badge.id} badge={badge} metadataURI={badge.metadataURI} theme={theme} />
+        ))}
+      </CardContent>
+    </Card>
   );
 }
 
-function Item({ badge, metadataURI }: { badge: BadgeWithCollectedStatus; metadataURI: string }) {
+function Item({ badge, metadataURI, theme }: { badge: BadgeWithCollectedStatus; metadataURI: string; theme: Theme }) {
   const [metadata, setMetadata] = useState<{ [key: string]: string } | null>(null);
   const [image, setImage] = useState<string | null>(null);
 
@@ -47,9 +58,11 @@ function Item({ badge, metadataURI }: { badge: BadgeWithCollectedStatus; metadat
       target="_blank"
       rel="noopener noreferrer"
     >
-      <Card>
-        <CardContent className="mt-5">
-          <Badge>{badge.isCollected ? "Collected" : "Not Collected"}</Badge>
+      <Card style={theme}>
+        <CardContent className="mt-5 space-y-md">
+          <Badge style={{ backgroundColor: theme.borderColor, color: theme.backgroundColor }}>
+            {badge.isCollected ? "Collected" : "Not Collected"}
+          </Badge>
           <AspectRatio ratio={1 / 1.2} className="bg-muted rounded-md">
             {image ? <Image src={image} alt={metadata?.name} fill className="rounded-md object-cover" /> : <Skeleton />}
           </AspectRatio>

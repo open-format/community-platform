@@ -57,9 +57,11 @@ type Community = {
   metadata: {
     title: string;
     description: string;
-    primary_color: string;
+    background_color: string;
+    text_color: string;
+    accent_color: string;
+    button_color: string;
     slug: string;
-    secondary_color: string;
     logo_url: string;
   };
   tiers: Tier[];
@@ -115,3 +117,9 @@ interface Tier {
   updated_at: Date;
   community_id: string;
 }
+
+type Theme = {
+  backgroundColor: string;
+  color: string;
+  borderColor: string;
+};

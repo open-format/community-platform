@@ -16,9 +16,12 @@ import { toast } from "sonner";
 
 export default function CommunityConfigForm({ community }: { community: Community }) {
   const FormSchema = z.object({
-    title: z.string().min(3).max(32),
+    title: z.string().min(0).max(32),
     description: z.string().min(3),
-    primary_color: z.string().min(3),
+    background_color: z.string().min(3),
+    text_color: z.string().min(3),
+    accent_color: z.string().min(3),
+    button_color: z.string().min(3),
     slug: z
       .string()
       .min(3)
@@ -30,7 +33,6 @@ export default function CommunityConfigForm({ community }: { community: Communit
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-+|-+$/g, "")
       ),
-    secondary_color: z.string().min(3),
     logo_url: z.string().min(3),
   });
 
@@ -39,9 +41,11 @@ export default function CommunityConfigForm({ community }: { community: Communit
     defaultValues: {
       title: community.metadata?.title ?? "",
       description: community.metadata?.description ?? "",
-      primary_color: community.metadata?.primary_color ?? "#000000",
+      background_color: community.metadata?.background_color ?? "#000000",
+      text_color: community.metadata?.text_color ?? "#FFFFFF",
+      accent_color: community.metadata?.accent_color ?? "#6366F1",
+      button_color: community.metadata?.button_color ?? "#6366F1",
       slug: community.metadata?.slug ?? "",
-      secondary_color: community.metadata?.secondary_color ?? "#FFFFFF",
       logo_url: community.metadata?.logo_url ?? "",
     },
   });
@@ -135,10 +139,10 @@ export default function CommunityConfigForm({ community }: { community: Communit
         <div className="flex gap-4">
           <FormField
             control={form.control}
-            name="primary_color"
+            name="background_color"
             render={({ field }) => (
               <FormItem className="flex-1">
-                <FormLabel>Primary Color</FormLabel>
+                <FormLabel>Background Color</FormLabel>
                 <FormControl>
                   <Input
                     type="color"
@@ -159,10 +163,34 @@ export default function CommunityConfigForm({ community }: { community: Communit
 
           <FormField
             control={form.control}
-            name="secondary_color"
+            name="text_color"
             render={({ field }) => (
               <FormItem className="flex-1">
-                <FormLabel>Secondary Color</FormLabel>
+                <FormLabel>Text Color</FormLabel>
+                <FormControl>
+                  <Input
+                    type="color"
+                    {...field}
+                    className="w-12 h-12 p-0 border-2 rounded-full overflow-hidden cursor-pointer"
+                    style={{
+                      backgroundColor: field.value,
+                      appearance: "none",
+                      WebkitAppearance: "none",
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+                <FormDescription>Text color for your community theme.</FormDescription>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="accent_color"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Accent Color</FormLabel>
                 <FormControl>
                   <Input
                     type="color"
@@ -177,6 +205,29 @@ export default function CommunityConfigForm({ community }: { community: Communit
                 </FormControl>
                 <FormMessage />
                 <FormDescription>Accent color for your community theme.</FormDescription>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="button_color"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Button Color</FormLabel>
+                <FormControl>
+                  <Input
+                    type="color"
+                    {...field}
+                    className="w-12 h-12 p-0 border-2 rounded-full overflow-hidden cursor-pointer"
+                    style={{
+                      backgroundColor: field.value,
+                      appearance: "none",
+                      WebkitAppearance: "none",
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+                <FormDescription>Button color for your community theme.</FormDescription>
               </FormItem>
             )}
           />

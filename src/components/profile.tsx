@@ -2,7 +2,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { timeAgo } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
 import Image from "next/image";
 import Accounts from "./accounts";

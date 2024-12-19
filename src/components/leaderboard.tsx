@@ -2,16 +2,21 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+import { cn, getContrastSafeColor } from "@/lib/utils";
 import { ArrowDown, ArrowUp, Minus, Star, Trophy } from "lucide-react";
 
 interface LeaderboardRowProps {
   entry: LeaderboardEntry;
   position: number;
   currentWallet?: string;
+  theme: {
+    backgroundColor: string;
+    color: string;
+    borderColor: string;
+  };
 }
 
-const LeaderboardRow = ({ entry, position, currentWallet }: LeaderboardRowProps) => {
+const LeaderboardRow = ({ entry, position, currentWallet, theme }: LeaderboardRowProps) => {
   const isCurrentUser = currentWallet && entry.user.toLowerCase() === currentWallet.toLowerCase();
 
   const renderPositionChange = () => {
@@ -51,10 +56,8 @@ const LeaderboardRow = ({ entry, position, currentWallet }: LeaderboardRowProps)
 
   return (
     <div
-      className={cn(
-        "flex items-center justify-between py-4 px-4 rounded-lg transition-colors",
-        isCurrentUser ? "bg-purple-100 dark:bg-purple-900/50" : "hover:bg-zinc-100/80 dark:hover:bg-zinc-900/30"
-      )}
+      className={cn("flex items-center justify-between py-4 px-4 rounded-lg transition-colors")}
+      style={isCurrentUser ? { backgroundColor: theme.borderColor, color: getContrastSafeColor(theme.color) } : {}}
     >
       <div className="flex items-center gap-4 flex-1">
         <div
@@ -72,9 +75,12 @@ const LeaderboardRow = ({ entry, position, currentWallet }: LeaderboardRowProps)
           {position}
         </div>
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className="font-medium truncate">{entry.user}</span>
+          <span className="truncate">{entry.user}</span>
           {isCurrentUser && (
-            <span className="text-xs px-2 py-1 bg-purple-200 dark:bg-purple-800 text-purple-700 dark:text-purple-300 rounded-full whitespace-nowrap">
+            <span
+              style={{ backgroundColor: getContrastSafeColor(theme.backgroundColor) }}
+              className="text-xs px-2 py-1 rounded-full whitespace-nowrap"
+            >
               You
             </span>
           )}
@@ -89,15 +95,20 @@ const LeaderboardRow = ({ entry, position, currentWallet }: LeaderboardRowProps)
 };
 
 interface LeaderboardProps {
+  theme: {
+    backgroundColor: string;
+    color: string;
+    borderColor: string;
+  };
   data: LeaderboardEntry[];
   currentWallet?: string;
   isLoading?: boolean;
 }
 
-export default function Leaderboard({ data, currentWallet, isLoading = false }: LeaderboardProps) {
+export default function Leaderboard({ theme, data, currentWallet, isLoading = false }: LeaderboardProps) {
   if (isLoading) {
     return (
-      <Card>
+      <Card style={theme}>
         <CardHeader className="space-y-1 pb-4">
           <Skeleton className="h-8 w-40" />
         </CardHeader>
@@ -113,12 +124,12 @@ export default function Leaderboard({ data, currentWallet, isLoading = false }: 
   }
 
   return (
-    <Card>
+    <Card variant="outline" style={theme}>
       <CardHeader className="space-y-1 pb-4">
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-2xl font-bold tracking-tight">Dan&apos;s Leaderboard</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">{data.length === 1 ? "Participant" : "Participants"}</p>
+            <p className="text-sm mt-1">{data.length === 1 ? "Participant" : "Participants"}</p>
           </div>
         </div>
       </CardHeader>
@@ -130,6 +141,7 @@ export default function Leaderboard({ data, currentWallet, isLoading = false }: 
               entry={entry}
               position={data.findIndex((e) => e.user === entry.user) + 1}
               currentWallet={currentWallet}
+              theme={theme}
             />
           ))}
         </div>

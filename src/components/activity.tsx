@@ -7,7 +7,7 @@ import { timeAgo } from "@/lib/utils";
 import { CoinsIcon, ExternalLinkIcon, TrophyIcon } from "lucide-react";
 import Link from "next/link";
 
-export default function Activity({ rewards }: { rewards: Reward[] }) {
+export default function Activity({ rewards, theme }: { rewards: Reward[]; theme: Theme }) {
   // @TODO: Move idMapper to a utils file
   function idMapper(rewardId: string) {
     return rewardId.split("_").join(" ");
@@ -19,7 +19,7 @@ export default function Activity({ rewards }: { rewards: Reward[] }) {
     return <CoinsIcon />;
   }
   return (
-    <Card>
+    <Card style={theme}>
       <CardHeader>
         <CardTitle>My Journey</CardTitle>
       </CardHeader>
@@ -29,8 +29,10 @@ export default function Activity({ rewards }: { rewards: Reward[] }) {
             <div className="flex items-center space-x-4 py-2">
               {getIcon(reward)}
               <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium leading-none capitalize">{idMapper(reward.rewardId)}</p>
-                <p className="text-sm text-muted-foreground">{timeAgo(Number(reward.createdAt))}</p>
+                <p className="text-sm leading-none capitalize">{idMapper(reward.rewardId)}</p>
+                <p className="text-sm" style={{ color: theme.borderColor }}>
+                  {timeAgo(Number(reward.createdAt))}
+                </p>
               </div>
               <Link
                 href={`${chains.arbitrumSepolia.BLOCK_EXPLORER_URL}/tx/${reward.transactionHash}`}

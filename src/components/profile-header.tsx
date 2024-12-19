@@ -5,6 +5,7 @@ import { useUser } from "@/contexts/user-context";
 import { addressSplitter } from "@/lib/utils";
 import { useLogout, usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
+import { ModeToggle } from "./mode-toggle";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -39,6 +40,9 @@ export default function Profile() {
             <Button variant="ghost" onClick={logout}>
               Account Settings
             </Button>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <ModeToggle />
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem>

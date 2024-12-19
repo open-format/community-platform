@@ -5,7 +5,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
-export default function Tiers({ tiers, currentPoints }: { tiers: Tier[]; currentPoints: number }) {
+export default function Tiers({
+  tiers,
+  currentPoints,
+  theme,
+}: {
+  tiers: Tier[];
+  currentPoints: number;
+  theme: {
+    backgroundColor: string;
+    color: string;
+    borderColor: string;
+  };
+}) {
   const getCurrentTier = (points: number) => {
     // Return null if user hasn't reached first tier
     if (points < tiers[0].points_required) return null;
@@ -47,10 +59,10 @@ export default function Tiers({ tiers, currentPoints }: { tiers: Tier[]; current
       : Math.max(0, (currentTier ? nextTier : tiers[0]).points_required - currentPoints);
 
   return (
-    <Card>
+    <Card variant="outline" style={theme}>
       <CardHeader>
         <CardTitle className="text-2xl font-bold">Tier Progress</CardTitle>
-        <p className="text-sm text-muted-foreground">Your current tier and progress towards the next</p>
+        <p className="text-sm">Your current tier and progress towards the next</p>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col space-y-4">
@@ -58,18 +70,18 @@ export default function Tiers({ tiers, currentPoints }: { tiers: Tier[]; current
             <div className="flex items-center gap-2">
               {currentTier ? (
                 <>
-                  <span className="text-sm text-muted-foreground">Current Tier:</span>
+                  <span className="text-sm">Current Tier:</span>
                   <Badge style={{ backgroundColor: currentTier.color }} className="text-white">
                     {currentTier.name}
                   </Badge>
-                  <span className="text-xs text-muted-foreground">({currentPoints.toLocaleString()} points)</span>
+                  <span className="text-xs">({currentPoints.toLocaleString()} points)</span>
                 </>
               ) : (
-                <span className="text-sm text-muted-foreground">{currentPoints.toLocaleString()} points earned</span>
+                <span className="text-sm">{currentPoints.toLocaleString()} points earned</span>
               )}
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Next Tier:</span>
+              <span className="text-sm">Next Tier:</span>
               <Badge style={{ backgroundColor: nextTier.color }} className="text-white">
                 {nextTier.name}
               </Badge>
@@ -78,7 +90,7 @@ export default function Tiers({ tiers, currentPoints }: { tiers: Tier[]; current
           <div className="space-y-1">
             <Progress value={progress} className="w-full h-3" indicatorColor={currentTier?.color || nextTier.color} />
             <div className="flex justify-end">
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm">
                 {currentTier
                   ? pointsRemaining === 0
                     ? currentPoints >= tiers[tiers.length - 1].points_required
@@ -103,8 +115,8 @@ export default function Tiers({ tiers, currentPoints }: { tiers: Tier[]; current
                   style={{ backgroundColor: tier.color }}
                   className="w-3 h-3 rounded-full mb-2 transition-colors duration-200"
                 />
-                <span className="font-medium">{tier.name}</span>
-                <span className="text-xs text-muted-foreground">{tier.points_required} points</span>
+                <span className="">{tier.name}</span>
+                <span className="text-xs">{tier.points_required} points</span>
               </div>
             ))}
           </div>

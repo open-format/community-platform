@@ -13,8 +13,8 @@ export default async function ProfileLayout({
     <div
       className="p-md"
       style={{
-        background: community?.primary_color
-          ? `linear-gradient(to bottom, ${community.primary_color}, ${adjustColor(community.primary_color, -50)})`
+        background: community?.background_color
+          ? `linear-gradient(to bottom, ${community.background_color}, ${adjustColor(community.background_color, -10)})`
           : undefined,
       }}
     >

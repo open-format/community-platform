@@ -197,6 +197,9 @@ export default function TiersForm({ communityId, tiers }: { communityId: string;
           Add Tier
         </Button>
       </div>
+      <Button type="submit" disabled={isPending}>
+        Save Tiers
+      </Button>
     </form>
   );
 }
