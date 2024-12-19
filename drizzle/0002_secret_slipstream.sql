@@ -1,0 +1,1 @@
+ALTER TABLE "communities" ADD COLUMN "button_color" varchar(7) DEFAULT '#6366F1' NOT NULL;

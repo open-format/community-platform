@@ -8,8 +8,10 @@ async function seed() {
     title: "Demo Community",
     description: "A demo community for testing purposes",
     slug: "demo-community",
-    primary_color: "#3B82F6", // Blue
-    secondary_color: "#FFFFFF",
+    background_color: "#3B82F6", // Blue
+    text_color: "#FFFFFF",
+    accent_color: "#6366F1",
+    button_color: "#6366F1",
     logo_url: "https://avatars.githubusercontent.com/u/121942809?s=200&v=4",
   });
 
