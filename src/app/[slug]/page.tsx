@@ -1,23 +1,21 @@
-import Accounts from "@/components/accounts";
 import Activity from "@/components/activity";
 import Leaderboard from "@/components/leaderboard";
 import ProfileBadgeGrid from "@/components/profile-badge-grid";
 import Tiers from "@/components/tiers";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Wallets from "@/components/wallets";
 import { getCommunity } from "@/db/queries/communities";
 import { fetchUserProfile, generateLeaderboard } from "@/lib/openformat";
 import { getCurrentUser } from "@/lib/privy";
 import Image from "next/image";
 import { formatEther } from "viem";
 import Connect from "./connect";
+import ProfileComponent from "./profile-component";
 
 export default async function Profile({ params }: { params: Promise<{ slug: string }> }) {
   const slug = (await params).slug;
   const community = await getCommunity(slug);
   const user = await getCurrentUser();
   const profile = await fetchUserProfile(slug);
-  const leaderboard = await generateLeaderboard(slug, profile?.tokenBalances[0].token);
+  const leaderboard = await generateLeaderboard(slug, profile?.tokenBalances[0].token.id);
 
   const theme = {
     backgroundColor: community?.background_color || "#FFFFFF",
@@ -27,7 +25,7 @@ export default async function Profile({ params }: { params: Promise<{ slug: stri
   };
 
   return (
-    <div style={theme}>
+    <div style={{ color: theme.color }}>
       <div className="flex justify-between items-center py-lg">
         <div className="flex items-center gap-2">
           <div className="relative h-12 min-w-[120px] max-w-[200px]">
@@ -37,14 +35,22 @@ export default async function Profile({ params }: { params: Promise<{ slug: stri
               fill
               className="object-contain rounded-lg"
               priority
+              unoptimized={true}
             />
           </div>
-          <h1>{community?.title}</h1>
         </div>
-        <h2>{community?.description}</h2>
+        <div className="flex flex-col items-center">
+          <h1>{community?.title}</h1>
+          <h2>{community?.description}</h2>
+        </div>
         <Connect style={{ backgroundColor: theme.buttonColor }} />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* Profile Component */}
+        <div className="md:col-span-full">
+          <ProfileComponent user={user} theme={theme} />
+        </div>
+
         {/* Tiers */}
         {/* @TODO: How do we choose the token that is used for the tiers? */}
         {profile?.tokenBalances[0].balance && community?.tiers && (
@@ -57,29 +63,18 @@ export default async function Profile({ params }: { params: Promise<{ slug: stri
           </div>
         )}
 
-        {/* Leaderboard */}
-        <div className="md:col-span-full">
-          <Leaderboard theme={theme} data={leaderboard?.data} currentWallet={user?.wallet_address} isLoading={false} />
-        </div>
-
-        {/* Accounts */}
-        <Card variant="outline" style={theme}>
-          <CardHeader>
-            <CardTitle>Wallet and Accounts</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-md">
-            <Accounts />
-            <Wallets />
-          </CardContent>
-        </Card>
-
         {/* Collected Badges */}
-        <div>
+        <div className="md:col-span-full">
           <ProfileBadgeGrid theme={theme} badges={profile?.badges} />
         </div>
 
+        {/* Leaderboard */}
+        <div className="md:col-span-2">
+          <Leaderboard theme={theme} data={leaderboard?.data} currentWallet={user?.wallet_address} isLoading={false} />
+        </div>
+
         {/* Activity (Journey) */}
-        {profile?.rewards && <Activity theme={theme} rewards={profile.rewards} />}
+        <div className="md:col-span-2">{profile?.rewards && <Activity theme={theme} rewards={profile.rewards} />}</div>
       </div>
     </div>
   );
