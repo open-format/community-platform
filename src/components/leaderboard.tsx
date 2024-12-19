@@ -2,62 +2,25 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn, getContrastSafeColor } from "@/lib/utils";
-import { ArrowDown, ArrowUp, Minus, Star, Trophy } from "lucide-react";
+import { addressSplitter, cn, getContrastSafeColor } from "@/lib/utils";
+import { Badge } from "./ui/badge";
 
 interface LeaderboardRowProps {
   entry: LeaderboardEntry;
   position: number;
   currentWallet?: string;
-  theme: {
-    backgroundColor: string;
-    color: string;
-    borderColor: string;
-  };
+  theme: Theme;
 }
 
 const LeaderboardRow = ({ entry, position, currentWallet, theme }: LeaderboardRowProps) => {
   const isCurrentUser = currentWallet && entry.user.toLowerCase() === currentWallet.toLowerCase();
 
-  const renderPositionChange = () => {
-    const changes = {
-      first: position === 1 && <Trophy className="h-4 w-4" />,
-      new: entry.positionChange === "new" && <Star className="h-4 w-4" />,
-      unchanged: (!entry.positionChange || entry.positionChange === 0) && <Minus className="h-4 w-4" />,
-      up: entry.positionChange && entry.positionChange > 0 && (
-        <>
-          <ArrowUp className="h-4 w-4" />
-          {entry.positionChange}
-        </>
-      ),
-      down: entry.positionChange && entry.positionChange < 0 && (
-        <>
-          <ArrowDown className="h-4 w-4" />
-          {Math.abs(entry.positionChange)}
-        </>
-      ),
-    };
-
-    const change = Object.entries(changes).find(([_, value]) => value)?.[0] || "unchanged";
-    const colorMap = {
-      first: "text-yellow-500",
-      new: "text-blue-500",
-      unchanged: "text-gray-500",
-      up: "text-green-500",
-      down: "text-red-500",
-    };
-
-    return (
-      <span className={`flex items-center justify-end ${colorMap[change as keyof typeof colorMap]} text-sm w-16`}>
-        {changes[change as keyof typeof changes]}
-      </span>
-    );
-  };
-
   return (
     <div
       className={cn("flex items-center justify-between py-4 px-4 rounded-lg transition-colors")}
-      style={isCurrentUser ? { backgroundColor: theme.borderColor, color: getContrastSafeColor(theme.color) } : {}}
+      style={
+        isCurrentUser ? { backgroundColor: theme.borderColor, color: getContrastSafeColor(theme.borderColor) } : {}
+      }
     >
       <div className="flex items-center gap-4 flex-1">
         <div
@@ -75,20 +38,21 @@ const LeaderboardRow = ({ entry, position, currentWallet, theme }: LeaderboardRo
           {position}
         </div>
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className="truncate">{entry.user}</span>
+          <span className="truncate">{addressSplitter(entry.user)}</span>
           {isCurrentUser && (
-            <span
-              style={{ backgroundColor: getContrastSafeColor(theme.backgroundColor) }}
-              className="text-xs px-2 py-1 rounded-full whitespace-nowrap"
+            <Badge
+              style={{
+                backgroundColor: theme.buttonColor,
+                color: getContrastSafeColor(theme.buttonColor),
+              }}
             >
               You
-            </span>
+            </Badge>
           )}
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <div className="font-semibold w-40 text-right">{entry.xp_rewarded} Points</div>
-        {renderPositionChange()}
+        <div className="font-semibold text-right">{entry.xp_rewarded} Points</div>
       </div>
     </div>
   );
@@ -108,7 +72,7 @@ interface LeaderboardProps {
 export default function Leaderboard({ theme, data, currentWallet, isLoading = false }: LeaderboardProps) {
   if (isLoading) {
     return (
-      <Card style={theme}>
+      <Card style={theme} className="h-full">
         <CardHeader className="space-y-1 pb-4">
           <Skeleton className="h-8 w-40" />
         </CardHeader>
@@ -124,12 +88,11 @@ export default function Leaderboard({ theme, data, currentWallet, isLoading = fa
   }
 
   return (
-    <Card variant="outline" style={theme}>
+    <Card variant="borderless" style={theme} className="h-full">
       <CardHeader className="space-y-1 pb-4">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-2xl font-bold tracking-tight">Dan&apos;s Leaderboard</CardTitle>
-            <p className="text-sm mt-1">{data.length === 1 ? "Participant" : "Participants"}</p>
+            <CardTitle className="text-2xl font-bold tracking-tight">Leaderboard</CardTitle>
           </div>
         </div>
       </CardHeader>

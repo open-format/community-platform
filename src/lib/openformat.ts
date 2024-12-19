@@ -73,6 +73,7 @@ query ($app: ID!) {
     tokens {
       id
       token {
+        id
         name
         symbol
       }
@@ -155,6 +156,7 @@ query ($user: ID!, $community: String!) {
     tokenBalances(where: {token_: {app: $community}}) {
       balance
       token {
+        id
         app {
           id
         }
@@ -240,10 +242,13 @@ export async function generateLeaderboard(slug: string, token: string) {
     const params = new URLSearchParams();
     params.set("app_id", community.id);
     params.set("token", token);
+    params.set("start", "0");
+    params.set("end", "99999999999999999999999999");
     // @TODO: Make this dynamic
     params.set("chain", "arbitrum-sepolia");
 
     const response = await apiClient.get(`/leaderboard?${params}`);
+
     return response.data;
   } catch (error) {
     console.error(error);
