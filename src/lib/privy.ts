@@ -2,6 +2,7 @@
 
 import { PrivyClient } from "@privy-io/server-auth";
 import { cookies } from "next/headers";
+import type { Address } from "viem";
 
 if (!process.env.NEXT_PUBLIC_PRIVY_APP_ID || !process.env.PRIVY_APP_SECRET) {
   throw new Error("Privy app ID or secret is not set");
@@ -9,7 +10,7 @@ if (!process.env.NEXT_PUBLIC_PRIVY_APP_ID || !process.env.PRIVY_APP_SECRET) {
 
 const privyClient = new PrivyClient(process.env.NEXT_PUBLIC_PRIVY_APP_ID, process.env.PRIVY_APP_SECRET);
 
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<CurrentUser | null> {
   const cookieStore = await cookies();
   const authToken = cookieStore.get("privy-id-token")?.value;
 
@@ -30,9 +31,11 @@ export async function getCurrentUser() {
   return { id: user.id, wallet_address: walletAddress, apps };
 }
 
-export async function findUserByHandle(
-  handle: string
-): Promise<{ type: "discord" | "telegram"; username: string | null; wallet: string | null } | null> {
+export async function findUserByHandle(handle: string): Promise<{
+  type: "discord" | "telegram";
+  username: string | null;
+  wallet: string | null;
+} | null> {
   if (!handle || typeof handle !== "string") {
     return null;
   }
@@ -57,4 +60,17 @@ export async function findUserByHandle(
     });
     return null;
   }
+}
+
+export async function getUserHandle(wallet: Address) {
+  const user = await privyClient.getUserByWalletAddress(wallet);
+
+  if (user?.discord?.username) {
+    return user.discord.username;
+  }
+  if (user?.telegram?.username) {
+    return user.telegram.username;
+  }
+
+  return wallet;
 }

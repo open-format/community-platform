@@ -122,4 +122,11 @@ type Theme = {
   backgroundColor: string;
   color: string;
   borderColor: string;
+  buttonColor: string;
+};
+
+type CurrentUser = {
+  id: string;
+  wallet_address: Address;
+  apps: string[];
 };
