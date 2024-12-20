@@ -1,5 +1,6 @@
 "use client";
 
+import { ConfettiProvider } from "@/contexts/confetti-context";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { WagmiProvider, createConfig } from "@privy-io/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -31,7 +32,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <WagmiProvider config={config}>{children}</WagmiProvider>
+          <WagmiProvider config={config}>
+            <ConfettiProvider>{children}</ConfettiProvider>
+          </WagmiProvider>
         </QueryClientProvider>
       </PrivyProvider>
     </ThemeProvider>
