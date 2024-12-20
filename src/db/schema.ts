@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { integer, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const communities = pgTable("communities", {
   id: varchar("id", { length: 42 }).primaryKey(),
@@ -13,6 +13,7 @@ export const communities = pgTable("communities", {
   logo_url: varchar("logo_url", { length: 255 }),
   created_at: timestamp("created_at").defaultNow().notNull(),
   updated_at: timestamp("updated_at").defaultNow().notNull(),
+  show_social_handles: boolean("show_social_handles").notNull().default(false),
 });
 
 export const communitiesRelations = relations(communities, ({ many }) => ({

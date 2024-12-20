@@ -1,0 +1,1 @@
+ALTER TABLE "communities" ADD COLUMN "show_social_handles" varchar(10) DEFAULT 'true' NOT NULL;
