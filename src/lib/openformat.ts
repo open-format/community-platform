@@ -6,7 +6,8 @@ import axios from "axios";
 import { request } from "graphql-request";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
-import { getCurrentUser } from "./privy";
+import type { Address } from "viem";
+import { getCurrentUser, getUserHandle } from "./privy";
 
 const apiClient = axios.create({
   baseURL: process.env.OPENFORMAT_API_URL,
@@ -234,7 +235,7 @@ query ($user: ID!, $community: String!) {
   };
 }
 
-export async function generateLeaderboard(slug: string, token: string) {
+export async function generateLeaderboard(slug: string, token: string): Promise<LeaderboardEntry[]> {
   try {
     const community = await getCommunity(slug);
 
@@ -252,7 +253,16 @@ export async function generateLeaderboard(slug: string, token: string) {
 
     const response = await apiClient.get(`/leaderboard?${params}`);
 
-    return response.data;
+    // Fetch social handles for each user in the leaderboard
+    const leaderboardWithHandles = await Promise.all(
+      response.data.data.map(async (entry) => ({
+        ...entry,
+        handle: (await getUserHandle(entry.user as Address))?.username ?? "Anonymous",
+        type: (await getUserHandle(entry.user as Address))?.type ?? "unknown",
+      }))
+    );
+
+    return leaderboardWithHandles;
   } catch (error) {
     console.error(error);
     return null;

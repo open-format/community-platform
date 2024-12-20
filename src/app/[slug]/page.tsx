@@ -70,7 +70,13 @@ export default async function Profile({ params }: { params: Promise<{ slug: stri
 
         {/* Leaderboard */}
         <div className="md:col-span-2">
-          <Leaderboard theme={theme} data={leaderboard?.data} currentWallet={user?.wallet_address} isLoading={false} />
+          <Leaderboard
+            theme={theme}
+            data={leaderboard}
+            currentWallet={user?.wallet_address}
+            isLoading={false}
+            showSocialHandles={community?.show_social_handles}
+          />
         </div>
 
         {/* Activity (Journey) */}

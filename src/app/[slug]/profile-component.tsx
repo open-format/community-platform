@@ -5,7 +5,7 @@ import type { Address } from "viem";
 import LinkAccounts from "./linkAccounts";
 
 export default async function ProfileComponent({ user, theme }: { user: CurrentUser; theme: Theme }) {
-  const userHandle = await getUserHandle(user.wallet_address as Address);
+  const userHandle = (await getUserHandle(user.wallet_address as Address))?.username;
   return (
     <div
       className="flex flex-col md:flex-row items-center md:items-center justify-between mb-4 md:mb-8 w-full"

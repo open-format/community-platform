@@ -9,6 +9,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { isSlugAvailable, updateCommunity } from "@/db/queries/communities";
 import { revalidate } from "@/lib/openformat";
 import { Loader2 } from "lucide-react";
@@ -34,6 +35,7 @@ export default function CommunityConfigForm({ community }: { community: Communit
           .replace(/^-+|-+$/g, "")
       ),
     logo_url: z.string().min(3),
+    show_social_handles: z.boolean().default(false),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -268,6 +270,24 @@ export default function CommunityConfigForm({ community }: { community: Communit
               </FormControl>
               <FormMessage />
               <FormDescription>URL to your community logo image.</FormDescription>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="show_social_handles"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base">Show Social Handles</FormLabel>
+                <FormDescription>
+                  Display social handles in the leaderboard when available (wallet addresses will be shown as fallback)
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch checked={field.value} onCheckedChange={field.onChange} />
+              </FormControl>
             </FormItem>
           )}
         />

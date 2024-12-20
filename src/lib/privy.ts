@@ -62,15 +62,18 @@ export async function findUserByHandle(handle: string): Promise<{
   }
 }
 
-export async function getUserHandle(wallet: Address) {
+export async function getUserHandle(wallet: Address): Promise<{
+  type: "discord" | "telegram";
+  username: string | null;
+} | null> {
   const user = await privyClient.getUserByWalletAddress(wallet);
 
   if (user?.discord?.username) {
-    return user.discord.username;
+    return { type: "discord", username: user.discord.username };
   }
   if (user?.telegram?.username) {
-    return user.telegram.username;
+    return { type: "telegram", username: user.telegram.username };
   }
 
-  return wallet;
+  return null;
 }

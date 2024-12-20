@@ -3,6 +3,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { addressSplitter, cn, getContrastSafeColor } from "@/lib/utils";
+import Image from "next/image";
+import Discord from "../../public/icons/discord.svg";
+import Telegram from "../../public/icons/telegram.svg";
 import { Badge } from "./ui/badge";
 
 interface LeaderboardRowProps {
@@ -10,10 +13,14 @@ interface LeaderboardRowProps {
   position: number;
   currentWallet?: string;
   theme: Theme;
+  showSocialHandles?: boolean;
 }
 
-const LeaderboardRow = ({ entry, position, currentWallet, theme }: LeaderboardRowProps) => {
+const LeaderboardRow = ({ entry, position, currentWallet, theme, showSocialHandles }: LeaderboardRowProps) => {
   const isCurrentUser = currentWallet && entry.user.toLowerCase() === currentWallet.toLowerCase();
+
+  const SocialIcon =
+    showSocialHandles && (entry.type === "discord" ? Discord : entry.type === "telegram" ? Telegram : null);
 
   return (
     <div
@@ -38,7 +45,12 @@ const LeaderboardRow = ({ entry, position, currentWallet, theme }: LeaderboardRo
           {position}
         </div>
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className="truncate">{addressSplitter(entry.user)}</span>
+          <span className="truncate">{showSocialHandles ? entry.handle : addressSplitter(entry.user)}</span>
+          {SocialIcon && (
+            <div className="bg-white rounded-full p-1">
+              <Image src={SocialIcon} alt={entry.type} width={16} height={16} />
+            </div>
+          )}
           {isCurrentUser && (
             <Badge
               style={{
@@ -67,9 +79,16 @@ interface LeaderboardProps {
   data: LeaderboardEntry[];
   currentWallet?: string;
   isLoading?: boolean;
+  showSocialHandles?: boolean;
 }
 
-export default function Leaderboard({ theme, data, currentWallet, isLoading = false }: LeaderboardProps) {
+export default function Leaderboard({
+  theme,
+  data,
+  currentWallet,
+  isLoading = false,
+  showSocialHandles = false,
+}: LeaderboardProps) {
   if (isLoading) {
     return (
       <Card style={theme} className="h-full">
@@ -105,6 +124,7 @@ export default function Leaderboard({ theme, data, currentWallet, isLoading = fa
               position={data.findIndex((e) => e.user === entry.user) + 1}
               currentWallet={currentWallet}
               theme={theme}
+              showSocialHandles={showSocialHandles}
             />
           ))}
         </div>

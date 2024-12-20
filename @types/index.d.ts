@@ -27,6 +27,8 @@ interface LeaderboardEntry {
   user: string;
   xp_rewarded: string;
   positionChange?: number | "new" | null;
+  handle?: string;
+  type?: "discord" | "telegram" | "unknown";
 }
 
 // @TODO: Clean up types above
