@@ -65,7 +65,7 @@ query ($app: ID!) {
     owner {
       id
     }
-    badges {
+    badges(orderBy: createdAt, orderDirection: desc) {
       id
       name
       metadataURI
