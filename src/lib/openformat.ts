@@ -75,8 +75,10 @@ query ($app: ID!) {
       id
       token {
         id
+        tokenType
         name
         symbol
+        createdAt
       }
     }
   }

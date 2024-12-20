@@ -70,9 +70,12 @@ type Community = {
 type Token = {
   id: Address;
   token: {
+    id: string;
     name: string;
     symbol: string;
     totalSupply: string;
+    tokenType: string;
+    createdAt: string;
   };
 };
 
