@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { rewardFacetAbi } from "@/abis/RewardFacet";
+import { Confetti } from "@/components/confetti";
 import TokenSelector from "@/components/token-selector";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import UserSelector from "@/components/user-selector";
@@ -12,7 +13,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Plus, X } from "lucide-react";
 import { useState, useTransition } from "react";
-import Confetti from "react-confetti";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { type Address, parseEther, stringToHex } from "viem";
 import { useConfig } from "wagmi";
@@ -127,23 +127,7 @@ export default function RewardsForm({ community }: { community: Community }) {
 
   return (
     <FormProvider {...form}>
-      {showConfetti && (
-        <Confetti
-          width={window.innerWidth}
-          height={window.innerHeight}
-          style={{ position: "fixed", top: 0, left: 0, zIndex: 100 }}
-          confettiSource={{
-            x: 0,
-            y: window.innerHeight, // start from bottom
-            w: window.innerWidth,
-            h: 0,
-          }}
-          numberOfPieces={500}
-          recycle={false}
-          initialVelocityY={{ min: -30, max: -10 }} // negative values make it go upward
-          gravity={0.3} // increased gravity to make it fall back down
-        />
-      )}
+      <Confetti isVisible={showConfetti} />
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {/* User */}
         <FormField

@@ -24,6 +24,9 @@ export default async function Layout({
           <Link href="rewards" className="px-3 py-4 text-sm text-gray-500 hover:text-gray-700">
             Rewards
           </Link>
+          <Link href="tokens" className="px-3 py-4 text-sm text-gray-500 hover:text-gray-700">
+            Tokens
+          </Link>
           <Link href="badges" className="px-3 py-4 text-sm text-gray-500 hover:text-gray-700">
             Badges
           </Link>
