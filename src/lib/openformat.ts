@@ -5,6 +5,7 @@ import { getCommunities, getCommunity } from "@/db/queries/communities";
 import axios from "axios";
 import { request } from "graphql-request";
 import { revalidatePath } from "next/cache";
+import { cache } from "react";
 import { getCurrentUser } from "./privy";
 
 const apiClient = axios.create({
@@ -55,7 +56,7 @@ export async function fetchAllCommunities() {
   return matchedCommunities;
 }
 
-export async function fetchCommunity(communityId: string): Promise<Community | null> {
+export const fetchCommunity = cache(async (slug: string) => {
   const query = `
 query ($app: ID!) {
   app(id: $app) {
@@ -90,11 +91,11 @@ query ($app: ID!) {
         badges: { id: string }[];
         tokens: Token[];
       };
-    }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, { app: communityId });
+    }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, { app: slug });
 
-    const missions = await fetchAllMissionsByCommunity(communityId);
+    const missions = await fetchAllMissionsByCommunity(slug);
 
-    const metadata = await getCommunity(communityId);
+    const metadata = await getCommunity(slug);
 
     return {
       ...data.app,
@@ -106,7 +107,7 @@ query ($app: ID!) {
     console.error(error);
     return null;
   }
-}
+});
 
 async function fetchAllMissionsByCommunity(communityId: string): Promise<Mission[]> {
   // @TODO: Handle pagination
