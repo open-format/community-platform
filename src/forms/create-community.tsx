@@ -74,8 +74,7 @@ export default function CreateCommunityForm() {
           address: communityId,
           abi: erc20FactoryAbi,
           functionName: "createERC20",
-          // @TODO: Change "Base" implementation to "Point"
-          args: [data.name, "Points", 18, parseEther("0"), stringToHex("Base", { size: 32 })],
+          args: [data.name, "Points", 18, parseEther("0"), stringToHex("Point", { size: 32 })],
         });
 
         const pointsTransactionHashReceipt = await waitForTransactionReceipt(config, { hash: pointsTransactionHash });
