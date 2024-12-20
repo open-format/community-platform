@@ -1,3 +1,4 @@
+import TokenList from "@/components/token-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateTokenForm } from "@/forms/create-token-form";
 import { fetchCommunity } from "@/lib/openformat";
@@ -18,7 +19,9 @@ export default async function Tokens({ params }: { params: Promise<{ slug: strin
           <CreateTokenForm community={community} />
         </div>
       </CardHeader>
-      <CardContent>tokens</CardContent>
+      <CardContent>
+        <TokenList tokens={community.tokens} />
+      </CardContent>
     </Card>
   );
 }

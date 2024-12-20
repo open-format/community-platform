@@ -22,6 +22,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useConfetti } from "@/contexts/confetti-context";
+import { revalidate } from "@/lib/openformat";
 import { HelpCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { parseEther, stringToHex } from "viem";
@@ -40,6 +41,7 @@ interface CreateTokenFormProps {
 
 export function CreateTokenForm({ community }: CreateTokenFormProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { triggerConfetti } = useConfetti();
 
   const toggle = () => setIsOpen((t) => !t);
 
@@ -55,7 +57,6 @@ export function CreateTokenForm({ community }: CreateTokenFormProps) {
   const config = useConfig();
 
   const tokenType = form.watch("type");
-  const { triggerConfetti } = useConfetti();
 
   async function handleFormSubmission(data: z.infer<typeof FormSchema>) {
     try {
@@ -80,6 +81,7 @@ export function CreateTokenForm({ community }: CreateTokenFormProps) {
       form.reset();
       toggle();
       triggerConfetti();
+      revalidate();
     } catch (e: any) {
       console.log(e.message);
     }
