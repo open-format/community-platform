@@ -71,7 +71,7 @@ Instantly deploy your own copy of the template using Vercel or Netlify:
    npm run db:migrate // migrate the schema
    ```
 
-3. Copy the `.env.example` file to `.env.local` and fill in the missing values:
+3. Copy the `.env.example` file to `.env` and fill in the missing values:
 
    ```bash
    cp .env.example .env.local
