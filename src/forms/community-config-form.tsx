@@ -49,6 +49,7 @@ export default function CommunityConfigForm({ community }: { community: Communit
       button_color: community.metadata?.button_color ?? "#6366F1",
       slug: community.metadata?.slug ?? "",
       logo_url: community.metadata?.logo_url ?? "",
+      show_social_handles: community.metadata?.show_social_handles ?? false,
     },
   });
 

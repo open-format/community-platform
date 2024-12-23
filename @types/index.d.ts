@@ -65,6 +65,7 @@ type Community = {
     button_color: string;
     slug: string;
     logo_url: string;
+    show_social_handles: boolean;
   };
   tiers: Tier[];
 };

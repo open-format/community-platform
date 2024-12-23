@@ -1,14 +1,15 @@
 "use server";
 
+import config from "@/constants/config";
 import { PrivyClient } from "@privy-io/server-auth";
 import { cookies } from "next/headers";
 import type { Address } from "viem";
 
-if (!process.env.NEXT_PUBLIC_PRIVY_APP_ID || !process.env.PRIVY_APP_SECRET) {
+if (!config.NEXT_PUBLIC_PRIVY_APP_ID || !config.PRIVY_APP_SECRET) {
   throw new Error("Privy app ID or secret is not set");
 }
 
-const privyClient = new PrivyClient(process.env.NEXT_PUBLIC_PRIVY_APP_ID, process.env.PRIVY_APP_SECRET);
+const privyClient = new PrivyClient(config.NEXT_PUBLIC_PRIVY_APP_ID, config.PRIVY_APP_SECRET);
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   const cookieStore = await cookies();

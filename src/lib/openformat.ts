@@ -1,6 +1,7 @@
 "use server";
 
 import { chains } from "@/constants/chains";
+import config from "@/constants/config";
 import { getCommunities, getCommunity } from "@/db/queries/communities";
 import axios from "axios";
 import { request } from "graphql-request";
@@ -10,9 +11,9 @@ import type { Address } from "viem";
 import { getCurrentUser, getUserHandle } from "./privy";
 
 const apiClient = axios.create({
-  baseURL: process.env.OPENFORMAT_API_URL,
+  baseURL: config.OPENFORMAT_API_URL,
   headers: {
-    "x-api-key": process.env.OPENFORMAT_API_KEY,
+    "x-api-key": config.OPENFORMAT_API_KEY,
   },
 });
 

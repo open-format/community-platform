@@ -1,9 +1,10 @@
 "use server";
 
+import config from "@/constants/config";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
 
 const storage = new ThirdwebStorage({
-  secretKey: process.env.THIRDWEB_SECRET, // You can get one from dashboard settings
+  secretKey: config.THIRDWEB_SECRET, // You can get one from dashboard settings
 });
 
 export async function uploadMetadata(metadata: { [key: string]: string }) {
