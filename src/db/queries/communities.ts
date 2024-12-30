@@ -10,7 +10,12 @@ type Community = InferModel<typeof communities>;
 export async function createCommunity(communityId: string, name: string) {
   const newCommunity = await db
     .insert(communities)
-    .values({ id: communityId.toLowerCase(), slug: communityId.toLowerCase(), title: name.toLowerCase() })
+    .values({
+      id: communityId.toLowerCase(),
+      slug: communityId.toLowerCase(),
+      title: name.toLowerCase(),
+      description: `Welcome to the ${name} community!`,
+    })
     .returning();
 
   // Add default tiers
