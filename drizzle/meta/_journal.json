@@ -36,6 +36,13 @@
       "when": 1734696688875,
       "tag": "0004_fat_peter_quill",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1735558820735,
+      "tag": "0005_foamy_living_tribunal",
+      "breakpoints": true
     }
   ]
 }
