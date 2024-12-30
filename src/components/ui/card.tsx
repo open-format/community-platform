@@ -6,7 +6,7 @@ const cardVariants = cva("rounded-xl text-card-foreground shadow-sm", {
   variants: {
     variant: {
       default: "border bg-card/40",
-      borderless: "bg-card/40",
+      borderless: "bg-card/40 shadow-none",
       outline: "border-2 border-primary bg-transparent",
     },
   },

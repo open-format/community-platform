@@ -13,14 +13,14 @@ export default async function Communities() {
   }
 
   return (
-    <div>
+    <div className="space-y-lg">
       <div className="flex justify-between items-center">
         <h1>Your Communities</h1>
         <CreateCommunityForm />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-xl">
         {communities.map((community) => (
-          <Link key={community.id} href={`/communities/${community.id}`}>
+          <Link key={community.id} href={`/communities/${community.id}/overview`} prefetch={true}>
             <Card>
               <CardHeader>
                 <CardTitle>{community.name}</CardTitle>
