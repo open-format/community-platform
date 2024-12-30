@@ -18,7 +18,7 @@ export default function ProfileBadgeGrid({
   theme: Theme;
 }) {
   if (!badges || !badges.length) {
-    return <div>Badges not found</div>;
+    return null;
   }
   return (
     <Card variant="borderless" style={theme}>

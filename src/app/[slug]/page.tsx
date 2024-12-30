@@ -29,14 +29,16 @@ export default async function Profile({ params }: { params: Promise<{ slug: stri
       <div className="flex justify-between items-center py-lg">
         <div className="flex items-center gap-2">
           <div className="relative h-12 min-w-[120px] max-w-[200px]">
-            <Image
-              src={community?.logo_url || ""}
-              alt={community?.title || "Community logo"}
-              fill
-              className="object-contain rounded-lg"
-              priority
-              unoptimized={true}
-            />
+            {community?.logo_url && (
+              <Image
+                src={community?.logo_url || ""}
+                alt={community?.title || "Community logo"}
+                fill
+                className="object-contain rounded-lg"
+                priority
+                unoptimized={true}
+              />
+            )}
           </div>
         </div>
         <div className="flex flex-col items-center">

@@ -18,23 +18,27 @@ import { toast } from "sonner";
 export default function CommunityConfigForm({ community }: { community: Community }) {
   const FormSchema = z.object({
     title: z.string().min(0).max(32),
-    description: z.string().min(3),
+    description: z.string().min(3, "Description must be at least 3 characters").optional().or(z.literal("")),
     background_color: z.string().min(3),
     text_color: z.string().min(3),
     accent_color: z.string().min(3),
     button_color: z.string().min(3),
     slug: z
       .string()
-      .min(3)
-      .max(32)
-      .transform((value) =>
-        value
+      .min(1, "Slug is required")
+      .transform((str) =>
+        str
           .toLowerCase()
-          .trim()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-+|-+$/g, "")
+          .replace(/[^a-z0-9-_]/g, "-")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "")
       ),
-    logo_url: z.string().min(3),
+    logo_url: z
+      .string()
+      .optional()
+      .refine((val) => {
+        return !val || (val.startsWith("http") && val.match(/\.(jpg|jpeg|png|gif|webp)$/i));
+      }, "Please provide a valid image URL"),
     show_social_handles: z.boolean().default(false),
   });
 
@@ -251,7 +255,7 @@ export default function CommunityConfigForm({ community }: { community: Communit
                     onError={(e) => {
                       e.currentTarget.style.display = "none";
                       form.setError("logo_url", {
-                        message: "Unable to load image from URL",
+                        message: "Unable to load image from URL. Please check the URL and try again.",
                       });
                     }}
                   />
@@ -261,16 +265,14 @@ export default function CommunityConfigForm({ community }: { community: Communit
                 <Input
                   placeholder="https://example.com/logo.png"
                   {...field}
-                  onBlur={(e) => {
-                    field.onBlur();
-                    if (e.target.value) {
-                      form.clearErrors("logo_url");
-                    }
+                  onChange={(e) => {
+                    field.onChange(e);
+                    form.clearErrors("logo_url");
                   }}
                 />
               </FormControl>
               <FormMessage />
-              <FormDescription>URL to your community logo image.</FormDescription>
+              <FormDescription>Optional URL to your community logo image (JPG, PNG, GIF, or WebP).</FormDescription>
             </FormItem>
           )}
         />

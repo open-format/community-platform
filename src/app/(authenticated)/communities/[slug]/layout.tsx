@@ -30,9 +30,6 @@ export default async function Layout({
           <Link href="badges" className="px-3 py-4 text-sm text-gray-500 hover:text-gray-700">
             Badges
           </Link>
-          <Link href="activity" className="px-3 py-4 text-sm text-gray-500 hover:text-gray-700">
-            Activity
-          </Link>
           <Link href="tiers" className="px-3 py-4 text-sm text-gray-500 hover:text-gray-700">
             Tiers
           </Link>

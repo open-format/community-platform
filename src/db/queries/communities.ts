@@ -3,7 +3,7 @@
 import type { InferModel } from "drizzle-orm";
 import { and, eq, not, or, sql } from "drizzle-orm";
 import { db } from "..";
-import { communities } from "../schema";
+import { communities, tiers } from "../schema";
 
 type Community = InferModel<typeof communities>;
 
@@ -12,6 +12,29 @@ export async function createCommunity(communityId: string, name: string) {
     .insert(communities)
     .values({ id: communityId.toLowerCase(), slug: communityId.toLowerCase(), title: name.toLowerCase() })
     .returning();
+
+  // Add default tiers
+  await db.insert(tiers).values([
+    {
+      community_id: communityId.toLowerCase(),
+      name: "Bronze",
+      points_required: 0,
+      color: "#CD7F32",
+    },
+    {
+      community_id: communityId.toLowerCase(),
+      name: "Silver",
+      points_required: 100,
+      color: "#C0C0C0",
+    },
+    {
+      community_id: communityId.toLowerCase(),
+      name: "Gold",
+      points_required: 500,
+      color: "#FFD700",
+    },
+  ]);
+
   return newCommunity;
 }
 
