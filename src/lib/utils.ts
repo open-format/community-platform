@@ -47,3 +47,45 @@ export function getContrastSafeColor(color: string): string {
   // Use WCAG recommended threshold
   return luminance > 0.5 ? "#000000" : "#ffffff";
 }
+
+export function sanitizeString(
+  str: string,
+  options: {
+    allowedChars?: string;
+    replaceSpacesWith?: string;
+  } = {}
+): string {
+  if (!str) return "";
+
+  const { allowedChars = "", replaceSpacesWith = " " } = options;
+
+  return (
+    str
+      .normalize("NFKD")
+      .trim()
+      .toLowerCase()
+      // Replace spaces with specified character
+      .replace(/\s+/g, replaceSpacesWith)
+      // Remove unwanted characters, but keep the replaceSpacesWith character
+      .replace(new RegExp(`[^\\w${replaceSpacesWith}${allowedChars}]`, "g"), "")
+      .trim()
+  );
+}
+
+export function desanitizeString(
+  str: string,
+  options: {
+    replaceSpacesWith?: string;
+  } = {}
+): string {
+  if (!str) return "";
+
+  const { replaceSpacesWith = " " } = options;
+
+  return (
+    str
+      // Replace both hyphens, underscores, and the replaceSpacesWith character with spaces
+      .replace(new RegExp(`[-_${replaceSpacesWith}]`, "g"), " ")
+      .trim()
+  );
+}
