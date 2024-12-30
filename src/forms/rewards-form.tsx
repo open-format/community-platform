@@ -9,6 +9,7 @@ import TokenSelector from "@/components/token-selector";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import UserSelector from "@/components/user-selector";
 import { uploadMetadata } from "@/lib/thirdweb";
+import { sanitizeString } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Plus, X } from "lucide-react";
@@ -193,7 +194,13 @@ export default function RewardsForm({ community }: { community: Community }) {
             <FormItem>
               <FormLabel>Reward Identifier</FormLabel>
               <FormControl>
-                <Input placeholder="Enter reward identifier" {...field} />
+                <Input
+                  placeholder="Enter reward identifier"
+                  {...field}
+                  onBlur={(e) => {
+                    field.onChange(sanitizeString(e.target.value, { replaceSpacesWith: "-" }));
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -206,21 +213,46 @@ export default function RewardsForm({ community }: { community: Community }) {
           name="metadata"
           render={() => (
             <FormItem>
-              <FormLabel>Metadata (Optional)</FormLabel>
+              <div className="flex items-center justify-between">
+                <FormLabel>Metadata (Optional)</FormLabel>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => append({ key: "", value: "" })}
+                  className="h-8"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add Field
+                </Button>
+              </div>
               <FormControl>
-                <div className="flex flex-col gap-2">
+                <div className="space-y-2 mt-2">
                   {fields.map((item, index) => (
                     <div key={item.id} className="flex items-center gap-2">
-                      <Input type="text" placeholder="Key" {...form.register(`metadata.${index}.key`)} />
-                      <Input type="text" placeholder="Value" {...form.register(`metadata.${index}.value`)} />
-                      <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
+                      <Input
+                        type="text"
+                        placeholder="Key"
+                        className="flex-1"
+                        {...form.register(`metadata.${index}.key`)}
+                      />
+                      <Input
+                        type="text"
+                        placeholder="Value"
+                        className="flex-1"
+                        {...form.register(`metadata.${index}.value`)}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        onClick={() => remove(index)}
+                      >
                         <X className="h-4 w-4" />
                       </Button>
                     </div>
                   ))}
-                  <Button type="button" variant="ghost" size="icon" onClick={() => append({ key: "", value: "" })}>
-                    <Plus className="h-4 w-4" />
-                  </Button>
                 </div>
               </FormControl>
               <FormMessage />
