@@ -272,3 +272,28 @@ export async function generateLeaderboard(slug: string, token: string): Promise<
     return null;
   }
 }
+
+export async function fundAccount(walletAddress: Address) {
+  // @TODO: Handle multiple chains, check wallet balance, etc.
+  if (!config.ACCOUNT_BALANCE_SERVICE_URL || !config.ACCOUNT_BALANCE_SERVICE_AUTH_TOKEN) {
+    return null;
+  }
+
+  const data = {
+    user_address: walletAddress,
+    amount: config.ACCOUNT_BALANCE_AMOUNT,
+  };
+
+  try {
+    const response = await axios.post(`${config.ACCOUNT_BALANCE_SERVICE_URL}`, data, {
+      headers: {
+        Authorization: `Bearer ${config.ACCOUNT_BALANCE_SERVICE_AUTH_TOKEN}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}

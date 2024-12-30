@@ -1,9 +1,11 @@
 "use client";
 
+import { fundAccount } from "@/lib/openformat";
 import { useLogin, useModalStatus, usePrivy } from "@privy-io/react-auth";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import type { Address } from "viem";
 
 export default function Auth() {
   const { login, ready, authenticated } = usePrivy();
@@ -12,7 +14,10 @@ export default function Auth() {
   const router = useRouter();
 
   useLogin({
-    onComplete: () => {
+    onComplete: async (user, isNewUser) => {
+      if (isNewUser && user.wallet?.address) {
+        await fundAccount(user.wallet.address as Address);
+      }
       router.push("/communities");
     },
   });
