@@ -111,6 +111,9 @@ type Reward = {
   badgeTokens: {
     tokenId: string;
   }[];
+  user?: {
+    id: string;
+  };
   createdAt: string;
 };
 

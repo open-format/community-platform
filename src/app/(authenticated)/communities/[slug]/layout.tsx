@@ -42,7 +42,7 @@ export default async function Layout({
         </div>
         <Link
           className={buttonVariants()}
-          href={`/${community?.metadata.slug}`}
+          href={`/${community?.metadata?.slug}`}
           target="_blank"
           rel="noopener noreferrer"
         >

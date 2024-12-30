@@ -106,6 +106,21 @@ export default function Leaderboard({
     );
   }
 
+  if (!data?.length) {
+    return (
+      <Card variant="borderless" style={theme} className="h-full">
+        <CardHeader className="space-y-1 pb-4">
+          <CardTitle className="text-2xl font-bold tracking-tight">Leaderboard</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <p className="text-muted-foreground">No entries yet</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card variant="borderless" style={theme} className="h-full">
       <CardHeader className="space-y-1 pb-4">
