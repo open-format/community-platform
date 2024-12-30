@@ -20,7 +20,8 @@ const chainConfig = createConfig({
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    // @TODO: Remove enableSystem={false} once we have a dark mode
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
       <PrivyProvider
         appId={config.NEXT_PUBLIC_PRIVY_APP_ID as string}
         config={{
