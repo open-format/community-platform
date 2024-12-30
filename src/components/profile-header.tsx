@@ -30,7 +30,7 @@ export default function Profile() {
 
   return (
     <div className="flex items-center space-x-2">
-      <p className="font-bold text-xs truncate">{addressSplitter(user?.wallet_address, 10)}</p>
+      <p className="font-bold text-xs">{addressSplitter(user?.wallet_address, 10)}</p>
       <DropdownMenu>
         <DropdownMenuTrigger>
           <Avatar seed={user?.wallet_address} className="h-12 w-12" />

@@ -23,9 +23,9 @@ export default async function AuthenticatedLayout({ children }: { children: Reac
 
   return (
     <UserProvider value={{ user }}>
-      <div className="grid grid-cols-6">
+      <div className="flex">
         <SidebarNav items={sidebarItems} />
-        <div className="col-span-5">{children}</div>
+        <div className="flex-1">{children}</div>
       </div>
     </UserProvider>
   );

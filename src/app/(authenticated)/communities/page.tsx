@@ -18,7 +18,7 @@ export default async function Communities() {
         <h1>Your Communities</h1>
         <CreateCommunityForm />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl">
         {communities.map((community) => (
           <Link key={community.id} href={`/communities/${community.id}/overview`} prefetch={true}>
             <Card>
