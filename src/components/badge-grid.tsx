@@ -1,6 +1,7 @@
 "use client";
 
 import { getMetadata } from "@/lib/thirdweb";
+import { generateGradient, getContrastSafeColor } from "@/lib/utils";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { AspectRatio } from "./ui/aspect-ratio";
@@ -9,7 +10,24 @@ import { Skeleton } from "./ui/skeleton";
 
 export default function BadgeGrid({ badges }: { badges: Badge[] | undefined }) {
   if (!badges || !badges.length) {
-    return <div>Badges not found</div>;
+    return (
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-4">
+        <Card className="border-dashed">
+          <CardContent className="mt-5">
+            <AspectRatio
+              ratio={1 / 1.2}
+              className="bg-muted/50 rounded-md flex flex-col items-center justify-center"
+              style={{ background: generateGradient("hello") }}
+            >
+              <div className="text-4xl mb-2">🏅</div>
+              <p className="text-center text-muted-foreground px-4" style={{ color: getContrastSafeColor("#FFFFFF") }}>
+                Create your first badge to get started
+              </p>
+            </AspectRatio>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-4">
