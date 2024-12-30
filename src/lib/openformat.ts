@@ -97,13 +97,13 @@ query ($app: ID!) {
       };
     }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, { app: slug });
 
-    const missions = await fetchAllMissionsByCommunity(slug);
+    const rewards = await fetchAllRewardsByCommunity(slug);
 
     const metadata = await getCommunity(slug);
 
     return {
       ...data.app,
-      missions,
+      rewards,
       metadata,
     };
     // @TODO: Create a generic error handler for subgraph requests
@@ -113,38 +113,41 @@ query ($app: ID!) {
   }
 });
 
-async function fetchAllMissionsByCommunity(communityId: string): Promise<Mission[]> {
+async function fetchAllRewardsByCommunity(communityId: string): Promise<Reward[]> {
   // @TODO: Handle pagination
   const query = `
-    query ($app: String!) {
-      missions(where: {app: $app}, orderBy: createdAt, orderDirection: desc) {
-        metadata {
-          name
-        }
-        user {
-          id
-        }
-        tokens {
-          amount_rewarded
-          token {
-            name
-          }
-        }
-        createdAt
-      }
+   query ($app: String!) {
+  rewards(where: {app: $app}, orderBy: createdAt, orderDirection: desc, first: 10) {
+    id
+    transactionHash
+    metadataURI
+    rewardId
+    rewardType
+    token {
+      id
+      name
+      symbol
     }
-  `;
+    tokenAmount
+    badge {
+      name
+      metadataURI
+    }
+    badgeTokens {
+      tokenId
+    }
+    user {
+      id
+    }
+    createdAt
+  }
+}`;
 
   const data = await request<{
-    missions: {
-      metadata: { name: string };
-      user: { id: string };
-      tokens: { amount_rewarded: string; token: { name: string } }[];
-      createdAt: string;
-    }[];
+    rewards: Reward[];
   }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, { app: communityId });
 
-  return data.missions;
+  return data.rewards;
 }
 
 export async function fetchUserProfile(slug: string) {
@@ -236,7 +239,7 @@ query ($user: ID!, $community: String!) {
   };
 }
 
-export async function generateLeaderboard(slug: string, token: string): Promise<LeaderboardEntry[]> {
+export async function generateLeaderboard(slug: string, token: string): Promise<LeaderboardEntry[] | null> {
   try {
     const community = await getCommunity(slug);
 
