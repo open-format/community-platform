@@ -65,7 +65,7 @@ export default function LinkAccounts() {
               <span className="sr-only">Connected to {service.id}</span>
             </>
           ) : (
-            `Connect ${service.id}`
+            <span className="capitalize">Connect {service.id}</span>
           )}
         </Button>
       ))}

@@ -9,7 +9,7 @@ import Link from "next/link";
 export default async function CommunitySettings({ params }: { params: Promise<{ slug: string }> }) {
   const slug = (await params).slug;
   const community = await fetchCommunity(slug);
-  const leaderboard = await generateLeaderboard(slug, community?.tokens[0]?.id);
+  const leaderboard = await generateLeaderboard(slug);
 
   if (!community) {
     return <div>Community not found</div>;

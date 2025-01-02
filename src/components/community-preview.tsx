@@ -22,6 +22,7 @@ interface CommunityPreviewProps {
     accent_color: string;
     dark_mode: boolean;
     banner_url: string;
+    show_social_handles: boolean;
     tiers: {
       name: string;
       points_required: number;
@@ -30,31 +31,11 @@ interface CommunityPreviewProps {
       community_id?: string;
     }[];
   };
+  leaderboard: LeaderboardEntry[];
 }
 
-export default function CommunityPreview({ community, previewValues }: CommunityPreviewProps) {
+export default function CommunityPreview({ community, previewValues, leaderboard }: CommunityPreviewProps) {
   const { user } = usePrivy();
-
-  // TODO: Remove mock data
-  const mockLeaderboard: LeaderboardEntry[] = [
-    { user: user?.wallet?.address ?? "0x1234567890", xp_rewarded: "1000", positionChange: 1, handle: "@bobdole" },
-  ];
-
-  // TODO: Remove mock data
-  const mockRewards: Reward[] = [
-    {
-      id: "1",
-      transactionHash: "0x1234567890",
-      metadataURI: "https://via.placeholder.com/150",
-      rewardId: "bug_fix",
-      rewardType: "reward",
-      token: { id: "1", name: "Reward 1", symbol: "RWD" },
-      tokenAmount: "100",
-      badge: { name: "Badge 1", metadataURI: "https://via.placeholder.com/150" },
-      badgeTokens: [],
-      createdAt: new Date().toISOString(),
-    },
-  ];
 
   return (
     <div
@@ -85,15 +66,16 @@ export default function CommunityPreview({ community, previewValues }: Community
         </TabsList>
         <TabsContent value="leaderboard">
           <Leaderboard
-            data={mockLeaderboard}
+            data={leaderboard}
             metadata={{ user_label: previewValues.user_label, token_label: previewValues.token_label }}
+            showSocialHandles={Boolean(previewValues?.show_social_handles)}
           />
         </TabsContent>
         <TabsContent value="badges">
           <CommunityBadges badges={community?.badges} />
         </TabsContent>
         <TabsContent value="activity">
-          <Activity rewards={mockRewards} />
+          <Activity rewards={community?.rewards || []} />
         </TabsContent>
       </Tabs>
     </div>
