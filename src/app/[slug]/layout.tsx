@@ -1,4 +1,45 @@
-import { getCommunity } from "@/db";
+import { fetchCommunity } from "@/lib/openformat";
+import { cn } from "@/lib/utils";
+import type { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const community = await fetchCommunity(params.slug);
+
+  // Use VERCEL_URL in production, fallback to localhost in development
+  const baseUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+  // Generate the OG image URL
+  const ogImageUrl =
+    community?.metadata?.banner_url ||
+    `${baseUrl}/api/og?title=${encodeURIComponent(
+      community?.metadata?.title || "Community"
+    )}&accent=${encodeURIComponent(community?.metadata?.accent_color || "#6366F1")}`;
+
+  return {
+    title: community?.metadata?.title ?? "Community",
+    description: community?.metadata?.description ?? "Welcome to our community",
+    openGraph: {
+      title: community?.metadata?.title ?? "Community",
+      description: community?.metadata?.description ?? "Welcome to our community",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: community?.metadata?.title ?? "Community",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: community?.metadata?.title ?? "Community",
+      description: community?.metadata?.description ?? "Welcome to our community",
+      images: [ogImageUrl],
+    },
+  };
+}
 
 export default async function ProfileLayout({
   children,
@@ -8,27 +49,16 @@ export default async function ProfileLayout({
   params: Promise<{ slug: string }>;
 }) {
   const slug = (await params).slug;
-  const community = await getCommunity(slug);
+  const community = await fetchCommunity(slug);
+
   return (
     <div
-      className="px-24 py-2"
-      style={{
-        background: community?.background_color
-          ? `linear-gradient(to bottom, ${community.background_color}, ${adjustColor(community.background_color, -10)})`
-          : undefined,
-      }}
+      className={cn(
+        "md:px-24 h-full py-2 min-h-screen bg-background",
+        community?.metadata?.dark_mode ? "dark" : "light"
+      )}
     >
       {children}
     </div>
   );
-}
-
-// Helper function to darken/lighten hex colors
-function adjustColor(color: string, amount: number): string {
-  const hex = color.replace("#", "");
-  const r = Math.max(Math.min(Number.parseInt(hex.substring(0, 2), 16) + amount, 255), 0);
-  const g = Math.max(Math.min(Number.parseInt(hex.substring(2, 4), 16) + amount, 255), 0);
-  const b = Math.max(Math.min(Number.parseInt(hex.substring(4, 6), 16) + amount, 255), 0);
-
-  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 }
