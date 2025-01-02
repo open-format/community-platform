@@ -76,8 +76,6 @@ export function CreateTokenForm({ community }: CreateTokenFormProps) {
 
       const receipt = await waitForTransactionReceipt(config, { hash: transactionHash });
 
-      console.log({ receipt });
-
       form.reset();
       toggle();
       triggerConfetti();

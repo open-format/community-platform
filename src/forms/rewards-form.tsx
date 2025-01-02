@@ -95,7 +95,6 @@ export default function RewardsForm({ community }: { community: Community }) {
           });
 
           const badgeTransactionReceipt = await waitForTransactionReceipt(config, { hash: badgeTransaction });
-          console.log({ badgeTransactionReceipt });
         } else if (isSelectedToken) {
           // Handle ERC20 token minting (current implementation)
           const hash = await writeContract(config, {
@@ -113,7 +112,6 @@ export default function RewardsForm({ community }: { community: Community }) {
           });
 
           const receipt = await waitForTransactionReceipt(config, { hash });
-          console.log({ receipt });
         }
 
         // After successful transaction
