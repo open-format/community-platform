@@ -43,6 +43,41 @@
       "when": 1735558820735,
       "tag": "0005_foamy_living_tribunal",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1735813772623,
+      "tag": "0006_yummy_stellaris",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1735814165911,
+      "tag": "0007_majestic_metal_master",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1735818410002,
+      "tag": "0008_concerned_echo",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1735826820413,
+      "tag": "0009_married_dagger",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1735827215748,
+      "tag": "0010_tough_argent",
+      "breakpoints": true
     }
   ]
 }

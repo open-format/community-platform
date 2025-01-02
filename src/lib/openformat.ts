@@ -58,7 +58,13 @@ export async function fetchAllCommunities() {
   return matchedCommunities;
 }
 
-export const fetchCommunity = cache(async (slug: string) => {
+export const fetchCommunity = cache(async (slugOrId: string) => {
+  const communityFromDb = await getCommunity(slugOrId);
+
+  if (!communityFromDb) {
+    return null;
+  }
+
   const query = `
 query ($app: ID!) {
   app(id: $app) {
@@ -95,16 +101,14 @@ query ($app: ID!) {
         badges: { id: string }[];
         tokens: Token[];
       };
-    }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, { app: slug });
+    }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, { app: communityFromDb.id });
 
-    const rewards = await fetchAllRewardsByCommunity(slug);
-
-    const metadata = await getCommunity(slug);
+    const rewards = await fetchAllRewardsByCommunity(communityFromDb.id);
 
     return {
       ...data.app,
       rewards,
-      metadata,
+      metadata: communityFromDb,
     };
     // @TODO: Create a generic error handler for subgraph requests
   } catch (error) {
@@ -239,17 +243,17 @@ query ($user: ID!, $community: String!) {
   };
 }
 
-export async function generateLeaderboard(slug: string, token: string): Promise<LeaderboardEntry[] | null> {
+export async function generateLeaderboard(slugOrId: string): Promise<LeaderboardEntry[] | null> {
   try {
-    const community = await getCommunity(slug);
+    const communityFromDb = await getCommunity(slugOrId);
 
-    if (!community) {
+    if (!communityFromDb || !communityFromDb.token_to_display) {
       return null;
     }
 
     const params = new URLSearchParams();
-    params.set("app_id", community.id);
-    params.set("token", token);
+    params.set("app_id", communityFromDb.id);
+    params.set("token", communityFromDb.token_to_display);
     params.set("start", "0");
     params.set("end", "99999999999999999999999999");
     // @TODO: Make this dynamic

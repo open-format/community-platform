@@ -4,8 +4,20 @@ import type { InferModel } from "drizzle-orm";
 import { and, eq, not, or, sql } from "drizzle-orm";
 import { db } from "..";
 import { communities, tiers } from "../schema";
+import { upsertTiers } from "./tiers";
 
 type Community = InferModel<typeof communities>;
+
+type UpdateCommunityData = Partial<Community> & {
+  tiers?: Array<{
+    name: string;
+    points_required: number;
+    color: string;
+    tier_id?: string;
+    community_id?: string;
+  }>;
+  deletedTierIds?: string[];
+};
 
 export async function createCommunity(communityId: string, name: string) {
   const newCommunity = await db
@@ -60,9 +72,29 @@ export async function getCommunity(slugOrId: string) {
   return community;
 }
 
-export async function updateCommunity(communityId: string, data: Partial<Community>) {
+export async function updateCommunity(communityId: string, data: UpdateCommunityData) {
   try {
-    const updatedCommunity = await db.update(communities).set(data).where(eq(communities.id, communityId)).returning();
+    // Extract tiers data
+    const { tiers: tiersData, deletedTierIds, ...communityData } = data;
+
+    // Update community metadata
+    const updatedCommunity = await db
+      .update(communities)
+      .set(communityData)
+      .where(eq(communities.id, communityId))
+      .returning();
+
+    // Handle tiers update if provided
+    if (tiersData) {
+      // Add community_id to each tier
+      const tiersWithCommunityId = tiersData.map((tier) => ({
+        ...tier,
+        community_id: communityId,
+      }));
+
+      await upsertTiers(tiersWithCommunityId, deletedTierIds || []);
+    }
+
     return updatedCommunity;
   } catch (err) {
     console.error(err);
