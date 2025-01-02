@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchCommunity, fetchUserProfile, generateLeaderboard } from "@/lib/openformat";
 import { getCurrentUser } from "@/lib/privy";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export default async function CommunityPage({ params }: { params: Promise<{ slug: string }> }) {
   const slug = (await params).slug;
@@ -18,11 +19,19 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
 
   if (!community) {
     return (
-      <div className="text-center p-8 rounded-lg bg-muted">
-        <h2 className="text-2xl font-semibold mb-2">Well...this is awkward.</h2>
-        <p className="text-muted-foreground">
-          We couldn&apos;t find a community at this URL. Please verify the address and try again.
+      <div className="text-center min-h-[100vh] flex flex-col items-center justify-center p-12 rounded-lg bg-background text-foreground space-y-8">
+        <h2 className="text-4xl md:text-5xl font-bold">
+          Community Not Found <span className="inline-block animate-look-around">👀</span>
+        </h2>
+        <p className="text-xl max-w-2xl">
+          We looked, but couldn&apos;t find a community at this URL. Why not claim it before someone else does? 😏
         </p>
+        <Link
+          href="/auth"
+          className="inline-block px-8 py-4 text-lg rounded-lg border hover:bg-foreground/10 transition-colors"
+        >
+          Create Your Community →
+        </Link>
       </div>
     );
   }
