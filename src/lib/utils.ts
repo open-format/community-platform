@@ -91,24 +91,76 @@ export function desanitizeString(
 }
 
 export function generateGradient(seed: string) {
-  // Ensure seed is not null or undefined
-  const safeSeed = seed || "defaultSeed";
+  // Check if the input is a hex color
+  const hexColorRegex = /^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+  if (hexColorRegex.test(seed)) {
+    // Convert hex to HSL for the base color
+    const normalizedHex = seed.replace("#", "").toLowerCase();
+    const hex =
+      normalizedHex.length === 3
+        ? normalizedHex
+            .split("")
+            .map((char) => char + char)
+            .join("")
+        : normalizedHex;
 
-  // Create multiple hash values from the seed for different color components
+    const r = Number.parseInt(hex.slice(0, 2), 16) / 255;
+    const g = Number.parseInt(hex.slice(2, 4), 16) / 255;
+    const b = Number.parseInt(hex.slice(4, 6), 16) / 255;
+
+    // Convert RGB to HSL
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const l = (max + min) / 2;
+    const d = max - min;
+    let h, s;
+
+    if (d === 0) {
+      h = 0;
+      s = 0;
+    } else {
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h = (b - r) / d + 2;
+          break;
+        default:
+          h = (r - g) / d + 4;
+          break;
+      }
+      h *= 60;
+    }
+
+    // Create a gradient using the same hue but different lightness values
+    const sat = Math.round(s * 100);
+    const light = Math.round(l * 100);
+
+    // Create slightly darker and lighter versions
+    const darkerLight = Math.max(light - 15, 0);
+    const lighterLight = Math.min(light + 15, 100);
+
+    return `linear-gradient(
+      45deg, 
+      hsl(${h}, ${sat}%, ${darkerLight}%), 
+      hsl(${h}, ${sat}%, ${light}%),
+      hsl(${h}, ${sat}%, ${lighterLight}%)
+    )`;
+  }
+
+  // Original string-based seed logic
+  const safeSeed = seed || "defaultSeed";
   const hash1 = safeSeed.split("").reduce((acc, char, i) => acc + char.charCodeAt(0) * (i + 1), 0);
   const hash2 = safeSeed.split("").reduce((acc, char, i) => acc + char.charCodeAt(0) * (i * 2 + 1), 0);
 
-  // Generate primary hues with more variation
   const hue1 = hash1 % 360;
   const hue2 = (hash1 * hash2) % 360;
-
-  // Generate saturation and lightness with seed influence
   const sat1 = 65 + (hash1 % 20);
   const sat2 = 65 + (hash2 % 20);
   const light1 = 45 + (hash2 % 15);
   const light2 = 45 + (hash1 % 15);
-
-  // Create gradient with varying angle based on seed
   const angle = (hash1 + hash2) % 360;
 
   return `linear-gradient(
