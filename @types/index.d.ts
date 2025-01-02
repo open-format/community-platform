@@ -59,13 +59,15 @@ type Community = {
   metadata: {
     title: string;
     description: string;
-    background_color: string;
-    text_color: string;
     accent_color: string;
-    button_color: string;
+    token_label: string;
+    user_label: string;
+    participant_label: string;
     slug: string;
-    logo_url: string;
+    banner_url: string;
+    token_to_display: `0x${string}`;
     show_social_handles: boolean;
+    dark_mode: boolean;
   };
   tiers: Tier[];
 };

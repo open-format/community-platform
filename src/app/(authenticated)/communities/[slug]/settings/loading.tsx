@@ -5,7 +5,7 @@ export default function LoadingCommunitySettings() {
   return (
     <Card variant="borderless">
       <CardHeader>
-        <CardTitle>Community Settings</CardTitle>
+        <CardTitle>Community Page</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="w-full space-y-4">

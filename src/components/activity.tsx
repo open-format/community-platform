@@ -9,14 +9,12 @@ import Link from "next/link";
 
 export default function Activity({
   rewards,
-  theme,
   title = "Activity",
   showUserAddress = false,
 }: {
   rewards: Reward[];
-  theme: Theme;
-  showUserAddress?: boolean;
   title?: string;
+  showUserAddress?: boolean;
 }) {
   function getIcon(reward: Reward) {
     if (reward.badgeTokens.length > 0) {
@@ -24,8 +22,17 @@ export default function Activity({
     }
     return <CoinsIcon />;
   }
+
+  if (!rewards || rewards.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-8 text-center">
+        <p className="text-muted-foreground">No activity yet</p>
+      </div>
+    );
+  }
+
   return (
-    <Card variant="borderless" style={theme}>
+    <Card variant="borderless">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
@@ -51,7 +58,7 @@ export default function Activity({
                       <span className="capitalize">{desanitizeString(reward.rewardId)}</span>
                     )}
                   </p>
-                  <p className="text-sm" style={{ color: theme.borderColor }}>
+                  <p className="text-sm">
                     {showUserAddress ? `user: ${addressSplitter(reward.user?.id)}` : timeAgo(Number(reward.createdAt))}
                   </p>
                 </div>

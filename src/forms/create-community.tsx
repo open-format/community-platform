@@ -84,8 +84,6 @@ export default function CreateCommunityForm() {
 
         const pointsTransactionHashReceipt = await waitForTransactionReceipt(config, { hash: pointsTransactionHash });
 
-        console.log({ communityId, pointsTransactionHashReceipt });
-
         form.reset();
         toggle();
         triggerConfetti();

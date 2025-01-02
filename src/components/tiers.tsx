@@ -5,19 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
-export default function Tiers({
-  tiers,
-  currentPoints,
-  theme,
-}: {
-  tiers: Tier[];
-  currentPoints: number;
-  theme: {
-    backgroundColor: string;
-    color: string;
-    borderColor: string;
-  };
-}) {
+export default function Tiers({ tiers, currentPoints }: { tiers: Tier[]; currentPoints: number }) {
   const getCurrentTier = (points: number) => {
     // Return null if user hasn't reached first tier
     if (points < tiers[0].points_required) return null;
@@ -59,7 +47,7 @@ export default function Tiers({
       : Math.max(0, (currentTier ? nextTier : tiers[0]).points_required - currentPoints);
 
   return (
-    <Card variant="borderless" style={theme}>
+    <Card>
       <CardHeader>
         <CardTitle className="text-2xl font-bold">Tier Progress</CardTitle>
       </CardHeader>
@@ -102,16 +90,12 @@ export default function Tiers({
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(0,1fr))] gap-2 text-sm pt-4">
             {tiers.map((tier) => (
-              <div
-                key={tier.name}
-                style={currentTier === tier ? { borderColor: theme.borderColor } : {}}
-                className={cn("flex flex-col items-center p-3 rounded-lg border-2")}
-              >
+              <div key={tier.name} className={cn("flex flex-col items-center p-3 rounded-lg border-2")}>
                 <div
                   style={{ backgroundColor: tier.color }}
                   className="w-6 h-6 rounded-full mb-2 transition-colors duration-200"
                 />
-                <span className="text-2xl font-bold">{tier.name}</span>
+                <span className="font-bold">{tier.name}</span>
                 <span>{tier.points_required} points</span>
               </div>
             ))}

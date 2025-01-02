@@ -14,7 +14,10 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
 export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
   return (
     <nav
-      className={cn("w-64 flex flex-col bg-gray-100 h-screen justify-between p-xl border-r border-gray-200", className)}
+      className={cn(
+        "w-64 flex flex-col bg-gray-100 min-h-screen justify-between p-xl border-r border-gray-200",
+        className
+      )}
       {...props}
     >
       <div className="flex flex-col space-y-xl">

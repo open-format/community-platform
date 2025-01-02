@@ -82,8 +82,6 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
 
       const receipt = await waitForTransactionReceipt(config, { hash: transactionHash });
 
-      console.log({ receipt });
-
       form.reset();
       toggle();
       triggerConfetti();
