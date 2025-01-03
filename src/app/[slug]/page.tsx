@@ -44,7 +44,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
       )}
     >
       {/* Community Profile */}
-      <CommunityProfile user={user} />
+      <CommunityProfile />
 
       {/* Community Banner */}
       <CommunityBanner banner_url={community?.metadata?.banner_url} accent_color={community?.metadata?.accent_color} />

@@ -3,7 +3,6 @@
 import Tiers from "./tiers";
 
 import { cn } from "@/lib/utils";
-import { usePrivy } from "@privy-io/react-auth";
 import Activity from "./activity";
 import CommunityBadges from "./community-badges";
 import { CommunityBanner } from "./community-banner";
@@ -35,8 +34,6 @@ interface CommunityPreviewProps {
 }
 
 export default function CommunityPreview({ community, previewValues, leaderboard }: CommunityPreviewProps) {
-  const { user } = usePrivy();
-
   return (
     <div
       className={cn(
@@ -45,7 +42,7 @@ export default function CommunityPreview({ community, previewValues, leaderboard
       )}
     >
       {/* Community Profile */}
-      <CommunityProfile user={user} />
+      <CommunityProfile />
 
       {/* Community Banner */}
       <CommunityBanner banner_url={previewValues.banner_url} accent_color={previewValues.accent_color} />

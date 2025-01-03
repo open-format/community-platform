@@ -1,18 +1,8 @@
-import { SidebarNav } from "@/components/sidebar-nav";
 import { UserProvider } from "@/contexts/user-context";
 
 import { getCurrentUser } from "@/lib/privy";
-import { UsersRoundIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
-
-const sidebarItems = [
-  {
-    title: "Communities",
-    href: "/communities",
-    icon: <UsersRoundIcon />,
-  },
-];
 
 export default async function AuthenticatedLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentUser();
@@ -23,10 +13,7 @@ export default async function AuthenticatedLayout({ children }: { children: Reac
 
   return (
     <UserProvider value={{ user }}>
-      <div className="flex">
-        <SidebarNav items={sidebarItems} />
-        <div className="flex-1">{children}</div>
-      </div>
+      <div className="flex-1">{children}</div>
     </UserProvider>
   );
 }

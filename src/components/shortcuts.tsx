@@ -13,13 +13,13 @@ interface OnboardingProps {
 export default function Onboarding({ community }: OnboardingProps) {
   function copyInviteLink() {
     const baseUrl = window.location.origin;
-    const inviteLink = `${baseUrl}/${community.metadata.slug}`;
+    const inviteLink = `${baseUrl}/${community?.metadata?.slug}`;
     navigator.clipboard.writeText(inviteLink);
     toast.success("Invite link copied to clipboard");
   }
   return (
     <div className="space-y-4 py-lg">
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Configure and share community page */}
         <Card className="flex flex-col justify-between">
           <CardHeader>
@@ -29,13 +29,15 @@ export default function Onboarding({ community }: OnboardingProps) {
             <p>Configure your community page and share it with your members.</p>
           </CardContent>
           <CardFooter className="flex space-x-2">
-            <Link className={buttonVariants()} href={`/communities/${community.metadata.slug}/settings`}>
+            <Link className={buttonVariants()} href={`/communities/${community?.metadata?.slug}/settings`}>
               Configure
             </Link>
-            <Button variant="outline" onClick={copyInviteLink}>
-              Copy invite link
-              <CopyIcon className="w-4 h-4" />
-            </Button>
+            {community?.metadata?.slug && (
+              <Button variant="outline" onClick={copyInviteLink}>
+                Copy invite link
+                <CopyIcon className="w-4 h-4" />
+              </Button>
+            )}
           </CardFooter>
         </Card>
         {/* 2. Send your first reward */}
@@ -47,7 +49,7 @@ export default function Onboarding({ community }: OnboardingProps) {
             <p>Reward your community for their contributions.</p>
           </CardContent>
           <CardFooter className="flex space-x-2">
-            <Link className={buttonVariants()} href={`/communities/${community.metadata.slug}/rewards`}>
+            <Link className={buttonVariants()} href={`/communities/${community?.metadata?.slug}/rewards`}>
               Send reward
             </Link>
           </CardFooter>
@@ -61,10 +63,10 @@ export default function Onboarding({ community }: OnboardingProps) {
             <p>Create badges and tokens you can reward to your community.</p>
           </CardContent>
           <CardFooter className="flex space-x-2">
-            <Link className={buttonVariants()} href={`/communities/${community.metadata.slug}/badges`}>
+            <Link className={buttonVariants()} href={`/communities/${community?.metadata?.slug}/badges`}>
               Create badges
             </Link>
-            <Link className={buttonVariants()} href={`/communities/${community.metadata.slug}/tokens`}>
+            <Link className={buttonVariants()} href={`/communities/${community?.metadata?.slug}/tokens`}>
               Create tokens
             </Link>
           </CardFooter>

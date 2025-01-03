@@ -1,12 +1,11 @@
 "use client";
 
 import { Avatar } from "@/components/ui/avatar";
-import { useUser } from "@/contexts/user-context";
 import { addressSplitter } from "@/lib/utils";
 import { useLogout, usePrivy } from "@privy-io/react-auth";
+import { CopyIcon, ExternalLink, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { ModeToggle } from "./mode-toggle";
-import { Button } from "./ui/button";
+import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,11 +13,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { Skeleton } from "./ui/skeleton";
 
 export default function Profile() {
-  const { user } = useUser();
+  const { user, ready, exportWallet } = usePrivy();
   const { logout } = usePrivy();
   const router = useRouter();
+
+  function copyAddress() {
+    navigator.clipboard.writeText(user?.wallet?.address || "");
+    toast.success("Address copied to clipboard");
+  }
 
   useLogout({
     onSuccess: () => {
@@ -26,32 +31,31 @@ export default function Profile() {
     },
   });
 
-  if (!user) return null;
+  const exportEnabled = user?.wallet?.walletClientType === "privy";
 
   return (
-    <div className="flex items-center space-x-2">
-      <p className="font-bold text-xs">{addressSplitter(user?.wallet_address, 10)}</p>
-      <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Avatar seed={user?.wallet_address} className="h-12 w-12" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem>
-            <Button variant="ghost" onClick={logout}>
-              Account Settings
-            </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        {ready ? <Avatar seed={user?.wallet?.address || ""} /> : <Skeleton className="h-12 w-12 rounded-full" />}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem onClick={copyAddress} className="font-bold">
+          <span>{addressSplitter(user?.wallet?.address || "")}</span>
+          <CopyIcon className="ml-auto" />
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        {exportEnabled && (
+          <DropdownMenuItem onClick={exportWallet} className="font-bold">
+            <span>Export Wallet</span>
+            <ExternalLink className="ml-auto" />
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <ModeToggle />
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <Button variant="ghost" onClick={logout}>
-              Logout
-            </Button>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+        )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={logout} className="font-bold">
+          <span>Logout</span>
+          <LogOut className="ml-auto" />
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
