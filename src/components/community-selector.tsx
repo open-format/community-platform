@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import * as React from "react";
 
@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { fetchAllCommunities } from "@/lib/openformat";
-import { cn } from "@/lib/utils";
 
 export default function CommunitySelector() {
   const [open, setOpen] = React.useState(false);
@@ -80,14 +79,8 @@ export default function CommunitySelector() {
                             router.push(`/communities/${community.id}/${getCurrentPath()}`);
                             setOpen(false);
                           }}
-                          className="font-bold capitalize"
+                          className="font-bold capitalize pl-4"
                         >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              community.metadata?.slug === currentSlug ? "opacity-100" : "opacity-0"
-                            )}
-                          />
                           {community.name}
                         </CommandItem>
                       ))}
