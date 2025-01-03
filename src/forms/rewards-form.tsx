@@ -70,6 +70,8 @@ export default function RewardsForm({ community }: { community: Community }) {
     name: "metadata",
   });
 
+  const isSelectedBadge = (tokenAddress: string) => community.badges.some((badge) => badge.id === tokenAddress);
+
   function onSubmit(data: RewardsFormValues) {
     try {
       startTransition(async () => {
@@ -103,7 +105,8 @@ export default function RewardsForm({ community }: { community: Community }) {
               ],
             });
 
-            await waitForTransactionReceipt(config, { hash: badgeTransaction });
+            const receipt = await waitForTransactionReceipt(config, { hash: badgeTransaction });
+            setTransactionHash(receipt.transactionHash);
             toast.success("Badge successfully awarded!", { id: toastId });
           } else if (isSelectedToken) {
             // Handle ERC20 token minting (current implementation)
@@ -122,16 +125,16 @@ export default function RewardsForm({ community }: { community: Community }) {
             });
 
             const receipt = await waitForTransactionReceipt(config, { hash });
-            setTransactionHash(receipt.transactionHash);
-            setRewardSuccessDialog(true);
             toast.success("Tokens successfully awarded!", { id: toastId });
-            revalidate();
+            setTransactionHash(receipt.transactionHash);
             form.reset();
           }
 
           // After successful transaction
           setShowConfetti(true);
           setTimeout(() => setShowConfetti(false), 5000); // Hide confetti after 5 seconds
+          setRewardSuccessDialog(true);
+          revalidate();
         } catch (error) {
           toast.error("Failed to process reward", { id: toastId });
           throw error;
@@ -175,6 +178,13 @@ export default function RewardsForm({ community }: { community: Community }) {
                   badges={community.badges}
                   value={field.value}
                   onChange={field.onChange}
+                  onTokenTypeChange={(isBadge) => {
+                    if (isBadge) {
+                      form.setValue("amount", 1);
+                    } else {
+                      form.setValue("amount", undefined);
+                    }
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -193,9 +203,13 @@ export default function RewardsForm({ community }: { community: Community }) {
                 <Input
                   type="number"
                   placeholder="Enter amount"
-                  value={field.value ?? ""}
-                  //@TODO improve onChange handling
-                  onChange={(e) => field.onChange(e.target.value === "" ? undefined : e.target.value)}
+                  value={isSelectedBadge(form.watch("tokenAddress")) ? 1 : field.value ?? ""}
+                  onChange={(e) => {
+                    if (!isSelectedBadge(form.watch("tokenAddress"))) {
+                      field.onChange(e.target.value === "" ? undefined : e.target.value);
+                    }
+                  }}
+                  disabled={isSelectedBadge(form.watch("tokenAddress"))}
                 />
               </FormControl>
               <FormMessage />

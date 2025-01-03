@@ -22,17 +22,26 @@ export default function TokenSelector({
   badges,
   value,
   onChange,
+  onTokenTypeChange,
 }: {
   tokens: Token[];
   badges: Badge[];
   value: string;
   onChange: (value: string) => void;
+  onTokenTypeChange?: (isBadge: boolean) => void;
 }) {
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
 
   const handleSelect = (currentValue: string) => {
-    onChange(currentValue === value ? "" : currentValue);
+    const newValue = currentValue === value ? "" : currentValue;
+    onChange(newValue);
+
+    if (onTokenTypeChange) {
+      const isBadge = badges.some((badge) => badge.id === newValue);
+      onTokenTypeChange(isBadge);
+    }
+
     setOpen(false);
   };
 
