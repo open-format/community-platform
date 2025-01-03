@@ -24,12 +24,12 @@ export default function CommunitySelector() {
   const router = useRouter();
   const currentSlug = params?.slug as string;
 
-  // @TODO: Can this be done better?
   const getCurrentPath = () => {
-    if (typeof window === "undefined") return "";
+    if (typeof window === "undefined") return "overview";
     const pathSegments = window.location.pathname.split("/");
+    if (pathSegments.length <= 2) return "overview";
     const currentTab = pathSegments[pathSegments.length - 1];
-    return currentTab === "overview" ? "overview" : currentTab;
+    return currentTab === params.slug ? "overview" : currentTab;
   };
 
   React.useEffect(() => {
@@ -61,7 +61,7 @@ export default function CommunitySelector() {
                   className="w-[200px] justify-between font-bold capitalize"
                 >
                   {currentSlug
-                    ? communities.find((community) => community.metadata?.slug === currentSlug)?.name ?? "Loading..."
+                    ? communities.find((community) => community.id === currentSlug)?.name ?? "Loading..."
                     : "Select community..."}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
