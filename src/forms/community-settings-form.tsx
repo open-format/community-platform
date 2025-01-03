@@ -64,9 +64,11 @@ type FormValues = z.infer<typeof FormSchema>;
 export default function CommunitySettingsForm({
   community,
   leaderboard,
+  badges,
 }: {
   community: Community;
   leaderboard: LeaderboardEntry[];
+  badges: BadgeWithCollectedStatus[];
 }) {
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -466,7 +468,12 @@ export default function CommunitySettingsForm({
         </Form>
       </div>
       <div className="col-span-2">
-        <CommunityPreview community={community} previewValues={previewValues} leaderboard={leaderboard} />
+        <CommunityPreview
+          community={community}
+          previewValues={previewValues}
+          leaderboard={leaderboard}
+          badges={badges}
+        />
       </div>
     </div>
   );

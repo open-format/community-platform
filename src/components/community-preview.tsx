@@ -31,9 +31,10 @@ interface CommunityPreviewProps {
     }[];
   };
   leaderboard: LeaderboardEntry[];
+  badges: BadgeWithCollectedStatus[];
 }
 
-export default function CommunityPreview({ community, previewValues, leaderboard }: CommunityPreviewProps) {
+export default function CommunityPreview({ community, previewValues, leaderboard, badges }: CommunityPreviewProps) {
   return (
     <div
       className={cn(
@@ -69,7 +70,7 @@ export default function CommunityPreview({ community, previewValues, leaderboard
           />
         </TabsContent>
         <TabsContent value="badges">
-          <CommunityBadges badges={community?.badges} />
+          <CommunityBadges badges={badges} />
         </TabsContent>
         <TabsContent value="activity">
           <Activity rewards={community?.rewards || []} />

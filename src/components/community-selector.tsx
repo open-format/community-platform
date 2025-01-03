@@ -24,6 +24,14 @@ export default function CommunitySelector() {
   const router = useRouter();
   const currentSlug = params?.slug as string;
 
+  // @TODO: Can this be done better?
+  const getCurrentPath = () => {
+    if (typeof window === "undefined") return "";
+    const pathSegments = window.location.pathname.split("/");
+    const currentTab = pathSegments[pathSegments.length - 1];
+    return currentTab === "overview" ? "overview" : currentTab;
+  };
+
   React.useEffect(() => {
     async function loadCommunities() {
       const data = await fetchAllCommunities();
@@ -69,7 +77,7 @@ export default function CommunitySelector() {
                           key={community.id}
                           value={community.name}
                           onSelect={() => {
-                            router.push(`/communities/${community.id}/overview`);
+                            router.push(`/communities/${community.id}/${getCurrentPath()}`);
                             setOpen(false);
                           }}
                           className="font-bold capitalize"

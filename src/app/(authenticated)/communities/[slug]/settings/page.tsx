@@ -1,7 +1,7 @@
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import CommunitySettingsForm from "@/forms/community-settings-form";
-import { fetchCommunity, generateLeaderboard } from "@/lib/openformat";
+import { fetchCommunity, fetchUserProfile, generateLeaderboard } from "@/lib/openformat";
 import { cn } from "@/lib/utils";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -10,6 +10,7 @@ export default async function CommunitySettings({ params }: { params: Promise<{ 
   const slug = (await params).slug;
   const community = await fetchCommunity(slug);
   const leaderboard = await generateLeaderboard(slug);
+  const profile = await fetchUserProfile(slug);
 
   if (!community) {
     return <div>Community not found</div>;
@@ -35,7 +36,7 @@ export default async function CommunitySettings({ params }: { params: Promise<{ 
         </div>
       </CardHeader>
       <CardContent>
-        <CommunitySettingsForm community={community} leaderboard={leaderboard} />
+        <CommunitySettingsForm community={community} leaderboard={leaderboard} badges={profile?.badges} />
       </CardContent>
     </Card>
   );

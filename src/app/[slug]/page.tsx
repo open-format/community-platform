@@ -6,7 +6,6 @@ import CommunityProfile from "@/components/community-profile";
 import Leaderboard from "@/components/leaderboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchCommunity, fetchUserProfile, generateLeaderboard } from "@/lib/openformat";
-import { getCurrentUser } from "@/lib/privy";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -15,7 +14,6 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
   const community = await fetchCommunity(slug);
   const leaderboard = await generateLeaderboard(slug);
   const profile = await fetchUserProfile(slug);
-  const user = await getCurrentUser();
 
   if (!community) {
     return (
