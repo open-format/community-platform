@@ -51,7 +51,7 @@ const FormSchema = z.object({
           required_error: "Points are required",
           invalid_type_error: "Points are required",
         })
-        .min(1, "Points must be at least 1"),
+        .min(0, "Points must be at least 1"),
       color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Invalid color hex code"),
       tier_id: z.string().optional(),
       community_id: z.string().optional(),
@@ -321,7 +321,7 @@ export default function CommunitySettingsForm({
                           <Input {...field} />
                         </FormControl>
                         <FormMessage />
-                        <FormDescription>How to refer to users in your community.</FormDescription>
+                        <FormDescription>How to refer to members in your community.</FormDescription>
                       </FormItem>
                     )}
                   />

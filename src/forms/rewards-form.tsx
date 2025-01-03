@@ -8,6 +8,8 @@ import { Confetti } from "@/components/confetti";
 import TokenSelector from "@/components/token-selector";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import UserSelector from "@/components/user-selector";
+import RewardSuccessDialog from "@/dialogs/reward-success-dialog";
+import { revalidate } from "@/lib/openformat";
 import { uploadMetadata } from "@/lib/thirdweb";
 import { sanitizeString } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,6 +17,7 @@ import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Plus, X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { type Address, parseEther, stringToHex } from "viem";
 import { useConfig } from "wagmi";
 import * as z from "zod";
@@ -43,6 +46,8 @@ export default function RewardsForm({ community }: { community: Community }) {
   const [isPending, startTransition] = useTransition();
   const [showConfetti, setShowConfetti] = useState(false);
   const config = useConfig();
+  const [rewardSuccessDialog, setRewardSuccessDialog] = useState(false);
+  const [transactionHash, setTransactionHash] = useState<string | undefined>(undefined);
 
   const form = useForm<RewardsFormValues>({
     resolver: zodResolver(rewardsFormSchema),
@@ -53,8 +58,8 @@ export default function RewardsForm({ community }: { community: Community }) {
       rewardId: "",
       metadata: [
         {
-          key: "platform",
-          value: "discord",
+          key: "member_type",
+          value: "developer",
         },
       ],
     },
@@ -68,59 +73,73 @@ export default function RewardsForm({ community }: { community: Community }) {
   function onSubmit(data: RewardsFormValues) {
     try {
       startTransition(async () => {
+        // Show initial toast
+        const toastId = toast.loading("Processing reward...");
+
         // Check if selected token is a badge or token
         const isSelectedBadge = community.badges.some((badge) => badge.id === data.tokenAddress);
         const isSelectedToken = community.tokens.some((token) => token.token.id === data.tokenAddress);
 
-        let ipfsHash = "";
-        // upload the metadata to IPFS
-        if (Object.keys(data.metadata).length > 0) {
-          ipfsHash = await uploadMetadata(data.metadata);
-          console.log({ ipfsHash });
+        try {
+          let ipfsHash = "";
+          // upload the metadata to IPFS
+          if (Object.keys(data.metadata).length > 0) {
+            ipfsHash = await uploadMetadata(data.metadata);
+            console.log({ ipfsHash });
+          }
+
+          // Use different contract function based on token type
+          if (isSelectedBadge) {
+            const badgeTransaction = await writeContract(config, {
+              address: community.id,
+              abi: rewardFacetAbi,
+              functionName: "mintBadge",
+              args: [
+                data.tokenAddress as Address,
+                data.user as Address,
+                stringToHex(data.rewardId, { size: 32 }),
+                stringToHex("MISSION", { size: 32 }),
+                stringToHex(ipfsHash),
+              ],
+            });
+
+            await waitForTransactionReceipt(config, { hash: badgeTransaction });
+            toast.success("Badge successfully awarded!", { id: toastId });
+          } else if (isSelectedToken) {
+            // Handle ERC20 token minting (current implementation)
+            const hash = await writeContract(config, {
+              address: community.id,
+              abi: rewardFacetAbi,
+              functionName: "mintERC20",
+              args: [
+                data.tokenAddress as Address,
+                data.user as Address,
+                parseEther(data.amount.toString()),
+                stringToHex(data.rewardId, { size: 32 }),
+                stringToHex("MISSION", { size: 32 }),
+                ipfsHash,
+              ],
+            });
+
+            const receipt = await waitForTransactionReceipt(config, { hash });
+            setTransactionHash(receipt.transactionHash);
+            setRewardSuccessDialog(true);
+            toast.success("Tokens successfully awarded!", { id: toastId });
+            revalidate();
+            form.reset();
+          }
+
+          // After successful transaction
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 5000); // Hide confetti after 5 seconds
+        } catch (error) {
+          toast.error("Failed to process reward", { id: toastId });
+          throw error;
         }
-
-        // Use different contract function based on token type
-        if (isSelectedBadge) {
-          const badgeTransaction = await writeContract(config, {
-            address: community.id,
-            abi: rewardFacetAbi,
-            functionName: "mintBadge",
-            args: [
-              data.tokenAddress as Address,
-              data.user as Address,
-              stringToHex(data.rewardId, { size: 32 }),
-              stringToHex("MISSION", { size: 32 }),
-              stringToHex(ipfsHash),
-            ],
-          });
-
-          const badgeTransactionReceipt = await waitForTransactionReceipt(config, { hash: badgeTransaction });
-        } else if (isSelectedToken) {
-          // Handle ERC20 token minting (current implementation)
-          const hash = await writeContract(config, {
-            address: community.id,
-            abi: rewardFacetAbi,
-            functionName: "mintERC20",
-            args: [
-              data.tokenAddress as Address,
-              data.user as Address,
-              parseEther(data.amount.toString()),
-              stringToHex(data.rewardId, { size: 32 }),
-              stringToHex("MISSION", { size: 32 }),
-              ipfsHash,
-            ],
-          });
-
-          const receipt = await waitForTransactionReceipt(config, { hash });
-        }
-
-        // After successful transaction
-        setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 5000); // Hide confetti after 5 seconds
       });
     } catch (e) {
-      // @TODO: Create error handler for contract calls
       console.error(e);
+      toast.error("An unexpected error occurred");
     }
   }
 
@@ -193,7 +212,7 @@ export default function RewardsForm({ community }: { community: Community }) {
               <FormLabel>Reward Identifier</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter reward identifier"
+                  placeholder="welcome-to-the-community, first-post, bug-fix etc."
                   {...field}
                   onBlur={(e) => {
                     field.onChange(sanitizeString(e.target.value, { replaceSpacesWith: "-" }));
@@ -259,9 +278,15 @@ export default function RewardsForm({ community }: { community: Community }) {
         />
 
         <Button type="submit" className="w-full" disabled={isPending || !form.formState.isValid}>
-          {isPending ? "Processing..." : "Reward"}
+          {isPending ? "Rewarding..." : "Reward"}
         </Button>
       </form>
+      <RewardSuccessDialog
+        open={rewardSuccessDialog}
+        onOpenChange={setRewardSuccessDialog}
+        communityId={community.id}
+        transactionHash={transactionHash}
+      />
     </FormProvider>
   );
 }
