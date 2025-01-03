@@ -1,7 +1,12 @@
 import type { appFactoryAbi } from "@/abis/AppFactory";
+import type { erc20FactoryAbi } from "@/abis/ERC20FactoryFacet";
 import { BaseError, type TransactionReceipt, parseEventLogs } from "viem";
 
-export async function getEventLog(receipt: TransactionReceipt, abi: typeof appFactoryAbi, eventName: "Created") {
+export async function getEventLog(
+  receipt: TransactionReceipt,
+  abi: typeof appFactoryAbi | typeof erc20FactoryAbi,
+  eventName: "Created"
+) {
   try {
     const logs = parseEventLogs({
       abi,

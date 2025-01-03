@@ -38,7 +38,7 @@ export default function UserSelector({ field }: UserSelectorProps) {
           {...field}
           value={displayValue}
           className={cn({ "pl-2xl": userState.data?.type })}
-          placeholder="Enter Telegram or Discord handle"
+          placeholder="Enter wallet address, discord handle, or telegram handle"
           onChange={(e) => {
             setDisplayValue(e.target.value);
             field.onChange(e.target.value);

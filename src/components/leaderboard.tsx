@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
@@ -54,10 +54,6 @@ export default function Leaderboard({
 
   return (
     <Card variant="borderless" className="h-full">
-      <CardHeader>
-        <CardTitle>Leaderboard</CardTitle>
-        <CardDescription>A list of users who have earned the most points in this community.</CardDescription>
-      </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>

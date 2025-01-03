@@ -2,6 +2,7 @@
 
 import type { InferModel } from "drizzle-orm";
 import { and, eq, not, or, sql } from "drizzle-orm";
+import type { Address } from "viem";
 import { db } from "..";
 import { communities, tiers } from "../schema";
 import { upsertTiers } from "./tiers";
@@ -19,13 +20,14 @@ type UpdateCommunityData = Partial<Community> & {
   deletedTierIds?: string[];
 };
 
-export async function createCommunity(communityId: string, name: string) {
+export async function createCommunity(communityId: Address, name: string, pointsCommunityId?: Address | null) {
   const newCommunity = await db
     .insert(communities)
     .values({
       id: communityId.toLowerCase(),
       slug: communityId.toLowerCase(),
       title: name.toLowerCase(),
+      token_to_display: pointsCommunityId?.toLowerCase() ?? null,
       description: `Welcome to the ${name} community!`,
     })
     .returning();

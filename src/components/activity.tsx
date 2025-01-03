@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { chains } from "@/constants/chains";
 import { addressSplitter, desanitizeString, timeAgo } from "@/lib/utils";
@@ -33,9 +33,6 @@ export default function Activity({
 
   return (
     <Card variant="borderless">
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
       <CardContent>
         {!rewards.length ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
