@@ -171,7 +171,7 @@ export default function RewardsForm({ community }: { community: Community }) {
           name="tokenAddress"
           render={({ field }) => (
             <FormItem className="flex flex-col gap-2">
-              <FormLabel>Token</FormLabel>
+              <FormLabel>Token or Badge</FormLabel>
               <FormControl>
                 <TokenSelector
                   tokens={community.tokens}

@@ -20,7 +20,7 @@ export default async function Badges({ params }: { params: Promise<{ slug: strin
         </div>
       </CardHeader>
       <CardContent>
-        <BadgeGrid badges={community.badges} />
+        <BadgeGrid badges={community.badges} communityId={community.id} />
       </CardContent>
     </Card>
   );

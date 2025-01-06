@@ -3,12 +3,14 @@
 import { getMetadata } from "@/lib/thirdweb";
 import { generateGradient, getContrastSafeColor } from "@/lib/utils";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AspectRatio } from "./ui/aspect-ratio";
-import { Card, CardContent, CardFooter, CardTitle } from "./ui/card";
+import { buttonVariants } from "./ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardTitle } from "./ui/card";
 import { Skeleton } from "./ui/skeleton";
 
-export default function BadgeGrid({ badges }: { badges: Badge[] | undefined }) {
+export default function BadgeGrid({ badges, communityId }: { badges: Badge[] | undefined; communityId: string }) {
   if (!badges || !badges.length) {
     return (
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-4">
@@ -32,13 +34,13 @@ export default function BadgeGrid({ badges }: { badges: Badge[] | undefined }) {
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-4">
       {badges.map((badge) => (
-        <Item key={badge.id} badge={badge} metadataURI={badge.metadataURI} />
+        <Item key={badge.id} badge={badge} metadataURI={badge.metadataURI} communityId={communityId} />
       ))}
     </div>
   );
 }
 
-function Item({ badge, metadataURI }: { badge: Badge; metadataURI: string }) {
+function Item({ badge, metadataURI, communityId }: { badge: Badge; metadataURI: string; communityId: string }) {
   const [metadata, setMetadata] = useState<{ [key: string]: string } | null>(null);
   const [image, setImage] = useState<string | null>(null);
 
@@ -65,8 +67,12 @@ function Item({ badge, metadataURI }: { badge: Badge; metadataURI: string }) {
       </CardContent>
       <CardFooter className="flex flex-col items-start space-y-4">
         {metadata?.name ? (
-          <div className="flex justify-between items-center w-full">
+          <div className="flex flex-col justify-between w-full space-y-2">
             <CardTitle>{metadata.name}</CardTitle>
+            <CardDescription>{metadata.description}</CardDescription>
+            <Link className={buttonVariants()} href={`/communities/${communityId}/rewards`}>
+              Reward Badge
+            </Link>
           </div>
         ) : badge.name ? (
           <CardTitle>{badge.name}</CardTitle>
