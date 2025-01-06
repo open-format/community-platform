@@ -5,10 +5,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { usePrivy } from "@privy-io/react-auth";
 import Image from "next/image";
 import Discord from "../../../public/icons/discord.svg";
-import Telegram from "../../../public/icons/telegram.svg";
 
 export default function LinkAccounts() {
-  const { user, linkDiscord, unlinkDiscord, linkTelegram, unlinkTelegram, ready } = usePrivy();
+  const { user, linkDiscord, unlinkDiscord, ready } = usePrivy();
 
   const services = [
     {
@@ -19,15 +18,6 @@ export default function LinkAccounts() {
       },
       icon: <Image src={Discord} alt="Discord" width={20} height={20} />,
       linkedAccount: user?.discord?.username,
-    },
-    {
-      id: "telegram",
-      actions: {
-        link: linkTelegram,
-        unlink: unlinkTelegram,
-      },
-      linkedAccount: user?.telegram?.username,
-      icon: <Image src={Telegram} alt="Telegram" width={20} height={20} />,
     },
   ];
 
