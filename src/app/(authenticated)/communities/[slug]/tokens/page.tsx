@@ -1,3 +1,4 @@
+import RefreshButton from "@/components/refresh-button";
 import TokenList from "@/components/token-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateTokenForm } from "@/forms/create-token-form";
@@ -15,7 +16,10 @@ export default async function Tokens({ params }: { params: Promise<{ slug: strin
     <Card variant="borderless">
       <CardHeader>
         <div className="flex justify-between items-center">
-          <CardTitle>Tokens</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <h1>Tokens</h1>
+            <RefreshButton />
+          </CardTitle>
           <CreateTokenForm community={community} />
         </div>
       </CardHeader>
