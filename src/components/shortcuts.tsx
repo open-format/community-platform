@@ -40,21 +40,8 @@ export default function Onboarding({ community }: OnboardingProps) {
             )}
           </CardFooter>
         </Card>
-        {/* 2. Send your first reward */}
-        <Card className="flex flex-col justify-between">
-          <CardHeader>
-            <CardTitle>Reward your community</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>Reward your community for their contributions.</p>
-          </CardContent>
-          <CardFooter className="flex space-x-2">
-            <Link className={buttonVariants()} href={`/communities/${community?.metadata?.slug}/rewards`}>
-              Send reward
-            </Link>
-          </CardFooter>
-        </Card>
-        {/* 3. Create badge */}
+
+        {/* 2. Create Badges & Tokens */}
         <Card className="flex flex-col justify-between">
           <CardHeader>
             <CardTitle>Create Badges & Tokens</CardTitle>
@@ -68,6 +55,20 @@ export default function Onboarding({ community }: OnboardingProps) {
             </Link>
             <Link className={buttonVariants()} href={`/communities/${community?.metadata?.slug}/tokens`}>
               Create tokens
+            </Link>
+          </CardFooter>
+        </Card>
+        {/* 3. Send your first reward */}
+        <Card className="flex flex-col justify-between">
+          <CardHeader>
+            <CardTitle>Reward your community</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>Reward your community for their contributions.</p>
+          </CardContent>
+          <CardFooter className="flex space-x-2">
+            <Link className={buttonVariants()} href={`/communities/${community?.metadata?.slug}/rewards`}>
+              Send reward
             </Link>
           </CardFooter>
         </Card>
