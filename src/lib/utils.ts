@@ -1,7 +1,9 @@
+import type { User } from "@privy-io/react-auth";
 import { type ClassValue, clsx } from "clsx";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { twMerge } from "tailwind-merge";
+import type { Address } from "viem";
 dayjs.extend(relativeTime);
 
 export function cn(...inputs: ClassValue[]) {
@@ -168,4 +170,16 @@ export function generateGradient(seed: string) {
     hsl(${hue1}, ${sat1}%, ${light1}%), 
     hsl(${hue2}, ${sat2}%, ${light2}%)
   )`;
+}
+
+export function getAddress(user: User | null): Address | null {
+  if (!user) return null;
+
+  const address = user?.linkedAccounts.find(
+    (account) => account.type === "wallet" && account.connectorType === "injected"
+  )?.address as Address;
+
+  if (!address) return null;
+
+  return address;
 }

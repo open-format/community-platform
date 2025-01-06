@@ -24,6 +24,7 @@ import {
 import { useConfetti } from "@/contexts/confetti-context";
 import { revalidate } from "@/lib/openformat";
 import { uploadFileToIPFS, uploadMetadata } from "@/lib/thirdweb";
+import { getAddress } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { stringToHex } from "viem";
@@ -55,7 +56,7 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
   });
   const config = useConfig();
   const { user } = usePrivy();
-  const address = user?.wallet?.address;
+  const address = getAddress(user);
   const image = form.watch("image");
 
   async function handleFormSubmission(data: z.infer<typeof FormSchema>) {

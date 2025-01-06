@@ -15,7 +15,7 @@ import { useConfetti } from "@/contexts/confetti-context";
 import { createCommunity } from "@/db/queries/communities";
 import { getEventLog } from "@/helpers/contract";
 import { revalidate } from "@/lib/openformat";
-import { cn } from "@/lib/utils";
+import { cn, getAddress } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Loader2 } from "lucide-react";
@@ -35,6 +35,7 @@ export default function CreateCommunityForm() {
   const { triggerConfetti } = useConfetti();
   const config = useConfig();
   const { user } = usePrivy();
+  const address = getAddress(user);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -57,7 +58,7 @@ export default function CreateCommunityForm() {
           address: chains.arbitrumSepolia.APP_FACTORY_ADDRESS,
           abi: appFactoryAbi,
           functionName: "create",
-          args: [stringToHex(data.name, { size: 32 }), user?.wallet?.address as Address],
+          args: [stringToHex(data.name, { size: 32 }), address as Address],
         });
 
         const transactionReceipt = await waitForTransactionReceipt(config, { hash: transactionHash });

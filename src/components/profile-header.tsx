@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar } from "@/components/ui/avatar";
-import { addressSplitter } from "@/lib/utils";
+import { addressSplitter, getAddress } from "@/lib/utils";
 import { useLogout, usePrivy } from "@privy-io/react-auth";
 import { CopyIcon, ExternalLink, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -17,6 +17,7 @@ import { Skeleton } from "./ui/skeleton";
 
 export default function Profile() {
   const { user, ready, exportWallet } = usePrivy();
+  const address = getAddress(user);
   const { logout } = usePrivy();
   const router = useRouter();
 
@@ -36,11 +37,11 @@ export default function Profile() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        {ready ? <Avatar seed={user?.wallet?.address || ""} /> : <Skeleton className="h-12 w-12 rounded-full" />}
+        {ready ? <Avatar seed={address || ""} /> : <Skeleton className="h-12 w-12 rounded-full" />}
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem onClick={copyAddress} className="font-bold">
-          <span>{addressSplitter(user?.wallet?.address || "")}</span>
+          <span>{addressSplitter(address || "")}</span>
           <CopyIcon className="ml-auto" />
         </DropdownMenuItem>
         <DropdownMenuSeparator />

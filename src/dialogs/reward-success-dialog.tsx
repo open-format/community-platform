@@ -30,9 +30,7 @@ export default function RewardSuccessDialog({
         <DialogHeader>
           <DialogTitle>Reward Sent Successfully! 🎉</DialogTitle>
         </DialogHeader>
-        <DialogDescription className="space-y-4">
-          <p>The reward has been successfully sent to the member.</p>
-        </DialogDescription>
+        <DialogDescription className="space-y-4">The reward has been successfully sent to the member</DialogDescription>
         <DialogFooter>
           <Link href={`/communities/${communityId}/overview`} className={buttonVariants()}>
             View in Activity
