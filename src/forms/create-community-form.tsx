@@ -15,7 +15,7 @@ import { useConfetti } from "@/contexts/confetti-context";
 import { createCommunity } from "@/db/queries/communities";
 import { getEventLog } from "@/helpers/contract";
 import { revalidate } from "@/lib/openformat";
-import { cn, sanitizeString } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Loader2 } from "lucide-react";
@@ -53,12 +53,11 @@ export default function CreateCommunityForm() {
           description: "Deploying your community on-chain...",
         });
 
-        const sanitizedName = sanitizeString(data.name, { replaceSpacesWith: "-" });
         const transactionHash = await writeContract(config, {
           address: chains.arbitrumSepolia.APP_FACTORY_ADDRESS,
           abi: appFactoryAbi,
           functionName: "create",
-          args: [stringToHex(sanitizedName, { size: 32 }), user?.wallet?.address as Address],
+          args: [stringToHex(data.name, { size: 32 }), user?.wallet?.address as Address],
         });
 
         const transactionReceipt = await waitForTransactionReceipt(config, { hash: transactionHash });
