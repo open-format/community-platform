@@ -9,7 +9,6 @@ import Link from "next/link";
 
 export default function Activity({
   rewards,
-  title = "Activity",
   showUserAddress = false,
 }: {
   rewards: Reward[];

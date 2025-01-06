@@ -10,12 +10,15 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
   const leaderboard = await generateLeaderboard(slug);
   const community = await fetchCommunity(slug);
 
-  const theme = {
-    backgroundColor: "#FFFFFF",
-    color: "#000000",
-    borderColor: "#6366F1",
-    buttonColor: "#6366F1",
-  };
+  if (!community) {
+    return (
+      <div className="flex flex-col items-center justify-center text-center p-6 max-w-prose mx-auto text-muted-foreground">
+        <h1 className="text-5xl font-bold mb-4 text-foreground">We&apos;re sorry 😭</h1>
+        <p className="text-muted-foreground mb-4">There was an error loading your community.</p>
+        <p>Please double check the URL and try refreshing the page.</p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -27,8 +30,15 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
             <CardTitle className="text-2xl font-bold tracking-tight">Leaderboard</CardTitle>
             <CardDescription>A list of members who have earned the most points in this community.</CardDescription>
           </CardHeader>
-          <CardContent>
-            <Leaderboard theme={theme} data={leaderboard} />
+          <CardContent className="p-0">
+            <Leaderboard
+              data={leaderboard}
+              showSocialHandles={community.metadata.show_social_handles}
+              metadata={{
+                user_label: community.metadata.user_label,
+                token_label: community.metadata.token_label,
+              }}
+            />
           </CardContent>
         </Card>
 
@@ -38,7 +48,7 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
             <CardDescription>A list of the most recent rewards in this community.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Activity rewards={community?.rewards || []} theme={theme} showUserAddress={true} />
+            <Activity rewards={community?.rewards || []} showUserAddress={true} />
           </CardContent>
         </Card>
       </div>

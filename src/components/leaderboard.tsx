@@ -1,17 +1,17 @@
 "use client";
 
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { usePrivy } from "@privy-io/react-auth";
 import Image from "next/image";
 import Discord from "../../public/icons/discord.svg";
 import Telegram from "../../public/icons/telegram.svg";
 import { Badge } from "./ui/badge";
+import { Skeleton } from "./ui/skeleton";
 
 interface LeaderboardProps {
-  data: LeaderboardEntry[];
-  currentWallet?: string;
+  data: LeaderboardEntry[] | null;
   isLoading?: boolean;
   showSocialHandles?: boolean;
   metadata?: {
@@ -20,53 +20,73 @@ interface LeaderboardProps {
   };
 }
 
+const LeaderboardHeader = ({ metadata }: Pick<LeaderboardProps, "metadata">) => (
+  <TableHeader>
+    <TableRow>
+      <TableHead>Rank</TableHead>
+      <TableHead>{metadata?.user_label ?? "User"}</TableHead>
+      <TableHead className="text-right">{metadata?.token_label ?? "Points"}</TableHead>
+    </TableRow>
+  </TableHeader>
+);
+
+const LeaderboardSkeleton = () => (
+  <Card className="h-full">
+    <CardContent className="pt-6">
+      <Table>
+        <LeaderboardHeader />
+        <TableBody>
+          {[...Array(7)].map((_, i) => (
+            <TableRow key={i}>
+              <TableCell colSpan={3}>
+                <Skeleton className="h-16 w-full" />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </CardContent>
+  </Card>
+);
+
+const EmptyState = ({ metadata }: Pick<LeaderboardProps, "metadata">) => (
+  <Card variant="borderless" className="h-full">
+    <CardContent>
+      <Table>
+        <LeaderboardHeader metadata={metadata} />
+        <TableBody>
+          <TableRow>
+            <TableCell colSpan={3} className="text-center text-muted-foreground py-4">
+              No leaderboard data yet
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </CardContent>
+  </Card>
+);
+
 export default function Leaderboard({
   data,
   metadata,
-  currentWallet,
   isLoading = false,
   showSocialHandles = false,
 }: LeaderboardProps) {
-  if (isLoading) {
-    return (
-      <Card className="h-full">
-        <CardHeader className="space-y-1 pb-4">
-          <Skeleton className="h-8 w-40" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[...Array(7)].map((_, i) => (
-              <Skeleton key={i} className="h-16 w-full" />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const { user } = usePrivy();
 
-  if (!data || data.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-8 text-center">
-        <p className="text-muted-foreground">No leaderboard data yet</p>
-      </div>
-    );
-  }
+  if (isLoading) return <LeaderboardSkeleton />;
+  if (!data || data.length === 0) return <EmptyState metadata={metadata} />;
 
   return (
     <Card variant="borderless" className="h-full">
       <CardContent>
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Rank</TableHead>
-              <TableHead>{metadata?.user_label ?? "User"}</TableHead>
-              <TableHead className="text-right">{metadata?.token_label ?? "Points"}</TableHead>
-            </TableRow>
-          </TableHeader>
+          <LeaderboardHeader metadata={metadata} />
           <TableBody>
-            {data?.map((entry, index) => {
+            {data.map((entry, index) => {
               const position = index + 1;
-              const isCurrentUser = currentWallet && entry.user.toLowerCase() === currentWallet.toLowerCase();
+              const isCurrentUser =
+                user?.wallet?.address && entry.user.toLowerCase() === user?.wallet?.address.toLowerCase();
               const SocialIcon =
                 showSocialHandles && (entry.type === "discord" ? Discord : entry.type === "telegram" ? Telegram : null);
 
