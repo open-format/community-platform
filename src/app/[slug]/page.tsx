@@ -4,6 +4,7 @@ import { CommunityBanner } from "@/components/community-banner";
 import CommunityInfo from "@/components/community-info";
 import CommunityProfile from "@/components/community-profile";
 import Leaderboard from "@/components/leaderboard";
+import Tiers from "@/components/tiers";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchCommunity, fetchUserProfile, generateLeaderboard } from "@/lib/openformat";
 import { cn } from "@/lib/utils";
@@ -45,13 +46,15 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
       <CommunityProfile />
 
       {/* Community Banner */}
-      <CommunityBanner banner_url={community?.metadata?.banner_url} accent_color={community?.metadata?.accent_color} />
+      <CommunityBanner banner_url={community.metadata.banner_url} accent_color={community.metadata.accent_color} />
 
       {/* Community Info */}
       <CommunityInfo title={community?.metadata?.title} description={community?.metadata?.description} />
 
       {/* Tiers */}
-      {community?.tiers && community?.tiers.length > 0 && <Tiers tiers={community?.tiers} currentPoints={25} />}
+      {community.metadata.tiers && community.metadata.tiers.length > 0 && (
+        <Tiers tiers={community?.metadata?.tiers} currentPoints={25} />
+      )}
 
       <Tabs defaultValue="leaderboard" className="w-full">
         <TabsList className="w-full">
