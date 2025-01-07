@@ -1,11 +1,12 @@
 "use server";
 
-import { chains } from "@/constants/chains";
+import { ChainName, getChain } from "@/constants/chains";
 import config from "@/constants/config";
 import { getCommunities, getCommunity } from "@/db/queries/communities";
 import axios from "axios";
 import { request } from "graphql-request";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { cache } from "react";
 import type { Address } from "viem";
 import { getCurrentUser, getUserHandle } from "./privy";
@@ -20,7 +21,21 @@ const apiClient = axios.create({
 export async function revalidate() {
   revalidatePath("/");
 }
+
+export async function getChainFromCookie() {
+  const cookieStore = await cookies();
+  const chainName = cookieStore.get("chainName");
+  return chainName ? getChain(chainName.value as ChainName) : null;
+}
+
 export async function fetchAllCommunities() {
+  const chain = await getChainFromCookie();
+
+  if (!chain) {
+    console.log("No chain found for chainName:", chain);
+    return null;
+  }
+
   const user = await getCurrentUser();
   const dbCommunities = await getCommunities();
 
@@ -45,7 +60,7 @@ export async function fetchAllCommunities() {
   `;
   const data = await request<{
     apps: { id: string; name: string; owner: { id: string } }[];
-  }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, {
+  }>(chain.SUBGRAPH_URL, query, {
     owner: user.wallet_address,
   });
 
@@ -59,6 +74,12 @@ export async function fetchAllCommunities() {
 }
 
 export const fetchCommunity = cache(async (slugOrId: string) => {
+  const chain = await getChainFromCookie();
+
+  if (!chain) {
+    return null;
+  }
+
   const communityFromDb = await getCommunity(slugOrId);
 
   if (!communityFromDb) {
@@ -101,7 +122,7 @@ query ($app: ID!) {
         badges: { id: string }[];
         tokens: Token[];
       };
-    }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, { app: communityFromDb.id });
+    }>(chain.SUBGRAPH_URL, query, { app: communityFromDb.id });
 
     const rewards = await fetchAllRewardsByCommunity(communityFromDb.id);
 
@@ -117,7 +138,13 @@ query ($app: ID!) {
   }
 });
 
-async function fetchAllRewardsByCommunity(communityId: string): Promise<Reward[]> {
+async function fetchAllRewardsByCommunity(communityId: string): Promise<Reward[] | null> {
+  const chain = await getChainFromCookie();
+
+  if (!chain) {
+    return null;
+  }
+
   // @TODO: Handle pagination
   const query = `
    query ($app: String!) {
@@ -149,7 +176,7 @@ async function fetchAllRewardsByCommunity(communityId: string): Promise<Reward[]
 
   const data = await request<{
     rewards: Reward[];
-  }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, { app: communityId });
+  }>(chain.SUBGRAPH_URL, query, { app: communityId });
 
   return data.rewards;
 }
@@ -157,8 +184,9 @@ async function fetchAllRewardsByCommunity(communityId: string): Promise<Reward[]
 export async function fetchUserProfile(slug: string) {
   const currentUser = await getCurrentUser();
   const community = await getCommunity(slug);
+  const chain = await getChainFromCookie();
 
-  if (!currentUser || !community) {
+  if (!currentUser || !community || !chain) {
     return null;
   }
 
@@ -220,7 +248,7 @@ query ($user: ID!, $community: String!) {
     user: UserProfile;
     rewards: Reward[];
     badges: Badge[];
-  }>(chains.arbitrumSepolia.SUBGRAPH_URL, query, {
+  }>(chain.SUBGRAPH_URL, query, {
     user: currentUser.wallet_address.toLowerCase(),
     community: community.id.toLowerCase(),
   });
@@ -244,6 +272,12 @@ query ($user: ID!, $community: String!) {
 }
 
 export async function generateLeaderboard(slugOrId: string): Promise<LeaderboardEntry[] | null> {
+  const chain = await getChainFromCookie();
+
+  if (!chain) {
+    return null;
+  }
+
   try {
     const communityFromDb = await getCommunity(slugOrId);
 
@@ -253,11 +287,11 @@ export async function generateLeaderboard(slugOrId: string): Promise<Leaderboard
 
     const params = new URLSearchParams();
     params.set("app_id", communityFromDb.id);
-    params.set("token", communityFromDb.token_to_display);
+    params.set("token_id", communityFromDb.token_to_display);
     params.set("start", "0");
     params.set("end", "99999999999999999999999999");
     // @TODO: Make this dynamic
-    params.set("chain", "arbitrum-sepolia");
+    params.set("chain", chain.name === ChainName.AURORA ? "aurora" : "arbitrum-sepolia");
 
     const response = await apiClient.get(`/leaderboard?${params}`);
 
@@ -277,14 +311,16 @@ export async function generateLeaderboard(slugOrId: string): Promise<Leaderboard
   }
 }
 
-export async function fundAccount(walletAddress: Address) {
+export async function fundAccount() {
+  const currentUser = await getCurrentUser();
+  console.log({ currentUser });
   // @TODO: Handle multiple chains, check wallet balance, etc.
   if (!config.ACCOUNT_BALANCE_SERVICE_URL || !config.ACCOUNT_BALANCE_SERVICE_AUTH_TOKEN) {
     return null;
   }
 
   const data = {
-    user_address: walletAddress,
+    user_address: currentUser?.wallet_address,
     amount: config.ACCOUNT_BALANCE_AMOUNT,
   };
 

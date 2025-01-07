@@ -9,12 +9,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchCommunity, fetchUserProfile, generateLeaderboard } from "@/lib/openformat";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { formatEther } from "viem";
 
 export default async function CommunityPage({ params }: { params: Promise<{ slug: string }> }) {
   const slug = (await params).slug;
   const community = await fetchCommunity(slug);
   const leaderboard = await generateLeaderboard(slug);
   const profile = await fetchUserProfile(slug);
+
+  // community?.metadata.token_to_display
+  const currentPoints = profile?.tokenBalances.find(
+    (token) => token.token.id === community?.metadata.token_to_display
+  )?.balance;
 
   if (!community) {
     return (
@@ -52,8 +58,8 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
       <CommunityInfo title={community?.metadata?.title} description={community?.metadata?.description} />
 
       {/* Tiers */}
-      {community.metadata.tiers && community.metadata.tiers.length > 0 && (
-        <Tiers tiers={community?.metadata?.tiers} currentPoints={25} />
+      {community.metadata.tiers && community.metadata.tiers.length > 0 && currentPoints && (
+        <Tiers tiers={community?.metadata?.tiers} currentPoints={Number(formatEther(BigInt(currentPoints)))} />
       )}
 
       <Tabs defaultValue="leaderboard" className="w-full">

@@ -9,9 +9,9 @@ import Link from "next/link";
 export default async function Communities() {
   const communities = await fetchAllCommunities();
 
-  if (!communities) {
+  if (!communities || communities.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center">
         <Card>
           <CardHeader>
             <CardTitle>Create your first community</CardTitle>

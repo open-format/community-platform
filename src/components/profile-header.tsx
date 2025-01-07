@@ -2,10 +2,10 @@
 
 import { Avatar } from "@/components/ui/avatar";
 import { addressSplitter, getAddress } from "@/lib/utils";
-import { useLogout, usePrivy } from "@privy-io/react-auth";
+import { usePrivy } from "@privy-io/react-auth";
 import { CopyIcon, ExternalLink, LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,26 +15,22 @@ import {
 } from "./ui/dropdown-menu";
 import { Skeleton } from "./ui/skeleton";
 
-export default function Profile() {
-  const { user, ready, exportWallet } = usePrivy();
+export default function Profile({ logoutAction }: { logoutAction: () => void }) {
+  const { user, ready, exportWallet, authenticated, login } = usePrivy();
   const address = getAddress(user);
-  const { logout } = usePrivy();
-  const router = useRouter();
 
   function copyAddress() {
-    navigator.clipboard.writeText(user?.wallet?.address || "");
+    navigator.clipboard.writeText(address || "");
     toast.success("Address copied to clipboard");
   }
 
-  useLogout({
-    onSuccess: () => {
-      router.push("/auth");
-    },
-  });
-
   const exportEnabled = user?.wallet?.walletClientType === "privy";
 
-  return (
+  if (!ready) {
+    return <Skeleton className="h-12 w-12 rounded-full" />;
+  }
+
+  return authenticated ? (
     <DropdownMenu>
       <DropdownMenuTrigger>
         {ready ? <Avatar seed={address || ""} /> : <Skeleton className="h-12 w-12 rounded-full" />}
@@ -52,11 +48,13 @@ export default function Profile() {
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={logout} className="font-bold">
+        <DropdownMenuItem onClick={logoutAction} className="font-bold">
           <span>Logout</span>
           <LogOut className="ml-auto" />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  ) : (
+    <Button onClick={login}>Login</Button>
   );
 }

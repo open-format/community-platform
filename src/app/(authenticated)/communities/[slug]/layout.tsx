@@ -20,6 +20,9 @@ export default async function Layout({ children }: { children: React.ReactNode }
           <Link href="badges" className="px-3 py-4 text-sm text-gray-500 hover:text-gray-700">
             Badges
           </Link>
+          <Link href="agents" className="px-3 py-4 text-sm text-gray-500 hover:text-gray-700">
+            Community Agents
+          </Link>
         </div>
       </nav>
       <main className="m-lg">{children}</main>

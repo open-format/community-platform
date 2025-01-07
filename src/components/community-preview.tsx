@@ -22,6 +22,7 @@ interface CommunityPreviewProps {
     dark_mode: boolean;
     banner_url: string;
     show_social_handles: boolean;
+    token_to_display: string;
     tiers: {
       name: string;
       points_required: number;

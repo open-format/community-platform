@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePrivy } from "@privy-io/react-auth";
 import Image from "next/image";
-import Discord from "../../../public/icons/discord.svg";
+import Discord from "../../public/icons/discord.svg";
+import Github from "../../public/icons/github.svg";
 
 export default function LinkAccounts() {
-  const { user, linkDiscord, unlinkDiscord, ready } = usePrivy();
+  const { user, linkDiscord, unlinkDiscord, ready, linkGithub, unlinkGithub } = usePrivy();
 
   const services = [
     {
@@ -18,6 +19,15 @@ export default function LinkAccounts() {
       },
       icon: <Image src={Discord} alt="Discord" width={20} height={20} />,
       linkedAccount: user?.discord?.username,
+    },
+    {
+      id: "github",
+      actions: {
+        link: linkGithub,
+        unlink: unlinkGithub,
+      },
+      icon: <Image src={Github} alt="Github" width={20} height={20} />,
+      linkedAccount: user?.github?.username,
     },
   ];
 

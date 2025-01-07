@@ -172,14 +172,16 @@ export function generateGradient(seed: string) {
   )`;
 }
 
-export function getAddress(user: User | null): Address | null {
+export function getAddress(user: User | null): Address {
   if (!user) return null;
 
   const address = user?.linkedAccounts.find(
     (account) => account.type === "wallet" && account.connectorType === "injected"
   )?.address as Address;
 
-  if (!address) return null;
+  if (!address) {
+    return user?.wallet?.address as Address;
+  }
 
   return address;
 }

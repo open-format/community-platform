@@ -2,24 +2,21 @@
 
 import { ChevronsUpDown } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import * as React from "react";
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import Cookies from "js-cookie";
+
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import type { ChainName } from "@/constants/chains";
 import { fetchAllCommunities } from "@/lib/openformat";
+import { useEffect, useState } from "react";
 
 export default function CommunitySelector() {
-  const [open, setOpen] = React.useState(false);
-  const [communities, setCommunities] = React.useState<any[]>([]);
+  const [open, setOpen] = useState(false);
+  const [communities, setCommunities] = useState<any[]>([]);
   const params = useParams();
+  const chainName = Cookies.get("chainName") as ChainName;
   const router = useRouter();
   const currentSlug = params?.slug as string;
 
@@ -31,7 +28,7 @@ export default function CommunitySelector() {
     return currentTab === params.slug ? "overview" : currentTab;
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function loadCommunities() {
       const data = await fetchAllCommunities();
       if (data) {
@@ -39,59 +36,46 @@ export default function CommunitySelector() {
       }
     }
     loadCommunities();
-  }, []);
+  }, [chainName]);
 
   return (
-    <div className="flex items-center">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/communities">Communities</BreadcrumbLink>
-          </BreadcrumbItem>
-
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  className="w-[200px] justify-between font-bold capitalize"
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-[200px] justify-between font-bold capitalize"
+        >
+          {currentSlug
+            ? communities.find((community) => community.id === currentSlug)?.name ?? "Loading..."
+            : "Select community..."}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[200px] p-0">
+        <Command>
+          <CommandInput placeholder="Search communities..." />
+          <CommandList>
+            <CommandEmpty>No communities found.</CommandEmpty>
+            <CommandGroup>
+              {communities.map((community) => (
+                <CommandItem
+                  key={community.id}
+                  value={community.name}
+                  onSelect={() => {
+                    router.push(`/communities/${community.id}/${getCurrentPath()}`);
+                    setOpen(false);
+                  }}
+                  className="font-bold capitalize pl-4"
                 >
-                  {currentSlug
-                    ? communities.find((community) => community.id === currentSlug)?.name ?? "Loading..."
-                    : "Select community..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
-                <Command>
-                  <CommandInput placeholder="Search communities..." />
-                  <CommandList>
-                    <CommandEmpty>No communities found.</CommandEmpty>
-                    <CommandGroup>
-                      {communities.map((community) => (
-                        <CommandItem
-                          key={community.id}
-                          value={community.name}
-                          onSelect={() => {
-                            router.push(`/communities/${community.id}/${getCurrentPath()}`);
-                            setOpen(false);
-                          }}
-                          className="font-bold capitalize pl-4"
-                        >
-                          {community.name}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-    </div>
+                  {community.name}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }

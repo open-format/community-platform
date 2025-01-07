@@ -44,6 +44,7 @@
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.0",
     "graphql-request": "^7.1.2",
+    "js-cookie": "^3.0.5",
     "lucide-react": "^0.454.0",
     "next": "latest",
     "next-themes": "^0.4.4",
@@ -59,6 +60,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
