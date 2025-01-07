@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSwitchChain } from "wagmi";
-import { type ChainName, chains } from "../constants/chains";
+import { ChainName, chains } from "../constants/chains";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Skeleton } from "./ui/skeleton";
 
@@ -14,7 +14,13 @@ export default function NetworkSelector() {
 
   useEffect(() => {
     const chainName = Cookies.get("chainName") as ChainName;
-    setCurrentChainName(chainName);
+
+    if (!chainName) {
+      Cookies.set("chainName", ChainName.ARBITRUM_SEPOLIA);
+      setCurrentChainName(ChainName.ARBITRUM_SEPOLIA);
+    } else {
+      setCurrentChainName(chainName);
+    }
   }, []);
 
   function handleChainChange(chainName: string) {
