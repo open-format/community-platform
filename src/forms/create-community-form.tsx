@@ -10,14 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { chains } from "@/constants/chains";
 import { useConfetti } from "@/contexts/confetti-context";
-import { createCommunity } from "@/db/queries/communities";
+import { createCommunity, updateCommunity } from "@/db/queries/communities";
 import { getEventLog } from "@/helpers/contract";
-import { revalidate } from "@/lib/openformat";
+import { getChainFromCookie, revalidate } from "@/lib/openformat";
 import { cn, getAddress } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
-import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
+import { simulateContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
@@ -46,27 +45,72 @@ export default function CreateCommunityForm() {
     },
   });
 
+  function simulateCreateCommunity(name: string) {
+    startTransition(async () => {
+      console.log({ name });
+      const chain = await getChainFromCookie();
+      if (!chain) {
+        throw new Error("No chain found");
+      }
+
+      await simulateContract(config, {
+        address: chain.APP_FACTORY_ADDRESS,
+        abi: appFactoryAbi,
+        functionName: "create",
+        args: [stringToHex(name, { size: 32 }), address as Address],
+        ...chain.transactionOverrides,
+      }).catch((error) => {
+        if (error.metaMessages?.[0]?.includes("nameAlreadyUsed")) {
+          form.setError("name", {
+            type: "manual",
+            message: "Community name already in use",
+          });
+        } else {
+          form.setError("name", {
+            type: "manual",
+            message: error.message,
+          });
+        }
+      });
+    });
+  }
+
   function handleFormSubmission(data: z.infer<typeof FormSchema>) {
     setIsSubmitting(true);
+    let communityId: Address | null = null;
     startTransition(async () => {
       try {
         toast.message("Creating Community", {
           description: "Deploying your community on-chain...",
         });
 
+        const chain = await getChainFromCookie();
+
+        if (!chain) {
+          toast.error("Error", {
+            description: "Failed to get chain. Please try again.",
+          });
+          return;
+        }
+
         const transactionHash = await writeContract(config, {
-          address: chains.arbitrumSepolia.APP_FACTORY_ADDRESS,
+          address: chain.APP_FACTORY_ADDRESS,
           abi: appFactoryAbi,
           functionName: "create",
           args: [stringToHex(data.name, { size: 32 }), address as Address],
+          ...chain.transactionOverrides,
         });
 
-        const transactionReceipt = await waitForTransactionReceipt(config, { hash: transactionHash });
-        const communityId = await getEventLog(transactionReceipt, appFactoryAbi, "Created");
+        const transactionReceipt = await waitForTransactionReceipt(config, {
+          hash: transactionHash,
+        });
+        communityId = await getEventLog(transactionReceipt, appFactoryAbi, "Created");
 
         if (!communityId) {
           throw new Error("Failed to get community id");
         }
+
+        await createCommunity(communityId, data.name);
 
         let pointsCommunityId = null;
         if (data.createPoints) {
@@ -74,18 +118,24 @@ export default function CreateCommunityForm() {
             description: "Deploying your community points token...",
           });
 
+          console.log({ communityId });
+
           const pointsTransactionHash = await writeContract(config, {
             address: communityId,
             abi: erc20FactoryAbi,
             functionName: "createERC20",
+            // @DEV Deploy points contracts to aurora
             args: [data.name, "Points", 18, parseEther("0"), stringToHex("Point", { size: 32 })],
+            ...chain.transactionOverrides,
           });
 
           const pointsTransactionReceipt = await waitForTransactionReceipt(config, { hash: pointsTransactionHash });
           pointsCommunityId = await getEventLog(pointsTransactionReceipt, erc20FactoryAbi, "Created");
         }
 
-        await createCommunity(communityId, data.name, pointsCommunityId);
+        await updateCommunity(communityId, {
+          token_to_display: pointsCommunityId,
+        });
 
         toast.success("Success!", {
           description: "Your community has been created.",
@@ -94,7 +144,6 @@ export default function CreateCommunityForm() {
         form.reset();
         triggerConfetti();
         revalidate();
-        router.push(`/communities/${communityId}`);
       } catch (err) {
         console.error(err);
         toast.error("Error", {
@@ -102,6 +151,9 @@ export default function CreateCommunityForm() {
         });
       } finally {
         setIsSubmitting(false);
+        if (communityId) {
+          router.push(`/communities/${communityId}`);
+        }
       }
     });
   }
@@ -117,7 +169,18 @@ export default function CreateCommunityForm() {
             <FormItem className="flex-1">
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Name" {...field} />
+                <Input
+                  placeholder="Name"
+                  {...field}
+                  onBlur={() => {
+                    field.onChange(field.value.toLowerCase());
+                    simulateCreateCommunity(field.value.toLowerCase());
+                  }}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    form.clearErrors("name");
+                  }}
+                />
               </FormControl>
               <FormMessage />
               <FormDescription>
