@@ -59,7 +59,11 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
 
       {/* Tiers */}
       {community.metadata.tiers && community.metadata.tiers.length > 0 && currentPoints && (
-        <Tiers tiers={community?.metadata?.tiers} currentPoints={Number(formatEther(BigInt(currentPoints)))} />
+        <Tiers
+          tiers={community?.metadata?.tiers}
+          currentPoints={Number(formatEther(BigInt(currentPoints)))}
+          tokenLabel={community?.metadata?.token_label}
+        />
       )}
 
       <Tabs defaultValue="leaderboard" className="w-full">

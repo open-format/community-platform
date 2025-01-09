@@ -13,7 +13,8 @@ import { Switch } from "@/components/ui/switch";
 import { useConfetti } from "@/contexts/confetti-context";
 import { createCommunity, updateCommunity } from "@/db/queries/communities";
 import { getEventLog } from "@/helpers/contract";
-import { getChainFromCookie, revalidate } from "@/lib/openformat";
+import { useCurrentChain } from "@/hooks/useCurrentChain";
+import { revalidate } from "@/lib/openformat";
 import { cn, getAddress } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
 import { simulateContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
@@ -36,6 +37,7 @@ export default function CreateCommunityForm() {
   const { user } = usePrivy();
   const address = getAddress(user);
   const router = useRouter();
+  const chain = useCurrentChain();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -47,8 +49,6 @@ export default function CreateCommunityForm() {
 
   function simulateCreateCommunity(name: string) {
     startTransition(async () => {
-      console.log({ name });
-      const chain = await getChainFromCookie();
       if (!chain) {
         throw new Error("No chain found");
       }
@@ -87,8 +87,6 @@ export default function CreateCommunityForm() {
         toast.message("Creating Community", {
           description: "Deploying your community on-chain...",
         });
-
-        const chain = await getChainFromCookie();
 
         if (!chain) {
           toast.error("Error", {

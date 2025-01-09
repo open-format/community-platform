@@ -1,6 +1,6 @@
 "use server";
 
-import { ChainName, getChain } from "@/constants/chains";
+import { type Chain, ChainName, getChain } from "@/constants/chains";
 import config from "@/constants/config";
 import { getCommunities, getCommunity } from "@/db/queries/communities";
 import axios from "axios";
@@ -22,7 +22,7 @@ export async function revalidate() {
   revalidatePath("/");
 }
 
-export async function getChainFromCookie() {
+export async function getChainFromCookie(): Promise<Chain | null> {
   const cookieStore = await cookies();
   const chainName = cookieStore.get("chainName");
   return chainName ? getChain(chainName.value as ChainName) : null;

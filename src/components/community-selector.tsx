@@ -3,12 +3,10 @@
 import { ChevronsUpDown } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 
-import Cookies from "js-cookie";
-
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import type { ChainName } from "@/constants/chains";
+import { useCurrentChain } from "@/hooks/useCurrentChain";
 import { fetchAllCommunities } from "@/lib/openformat";
 import { useEffect, useState } from "react";
 
@@ -16,7 +14,7 @@ export default function CommunitySelector() {
   const [open, setOpen] = useState(false);
   const [communities, setCommunities] = useState<any[]>([]);
   const params = useParams();
-  const chainName = Cookies.get("chainName") as ChainName;
+  const chain = useCurrentChain();
   const router = useRouter();
   const currentSlug = params?.slug as string;
 
@@ -36,7 +34,7 @@ export default function CommunitySelector() {
       }
     }
     loadCommunities();
-  }, [chainName]);
+  }, [chain]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

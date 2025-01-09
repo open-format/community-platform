@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { chains } from "@/constants/chains";
+import { useCurrentChain } from "@/hooks/useCurrentChain";
 import { ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
 
@@ -24,6 +24,7 @@ export default function RewardSuccessDialog({
   transactionHash,
   communityId,
 }: RewardSuccessDialogProps) {
+  const chain = useCurrentChain();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -35,15 +36,17 @@ export default function RewardSuccessDialog({
           <Link href={`/communities/${communityId}/overview`} className={buttonVariants()}>
             View in Activity
           </Link>
-          <Link
-            className={buttonVariants({ variant: "outline" })}
-            href={`${chains.arbitrumSepolia.BLOCK_EXPLORER_URL}/tx/${transactionHash}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View Transaction
-            <ExternalLinkIcon className="w-4 h-4" />
-          </Link>
+          {chain?.BLOCK_EXPLORER_URL && transactionHash && (
+            <Link
+              className={buttonVariants({ variant: "outline" })}
+              href={`${chain.BLOCK_EXPLORER_URL}/tx/${transactionHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Transaction
+              <ExternalLinkIcon className="w-4 h-4" />
+            </Link>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

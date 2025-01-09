@@ -66,7 +66,6 @@ export default function CommunitySettingsForm({
   community,
   leaderboard,
   badges,
-  chain,
 }: {
   community: Community;
   leaderboard: LeaderboardEntry[];
@@ -477,7 +476,6 @@ export default function CommunitySettingsForm({
           previewValues={previewValues}
           leaderboard={leaderboard}
           badges={badges}
-          chain={chain}
         />
       </div>
     </div>

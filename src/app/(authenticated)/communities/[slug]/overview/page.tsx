@@ -1,5 +1,6 @@
 import Activity from "@/components/activity";
 import Leaderboard from "@/components/leaderboard";
+import RefreshButton from "@/components/refresh-button";
 import Shortcuts from "@/components/shortcuts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -27,7 +28,10 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
       <div className="grid grid-cols-2 gap-4">
         <Card variant="borderless" className="h-full">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-2xl font-bold tracking-tight">Leaderboard</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-2xl font-bold tracking-tight">Leaderboard</CardTitle>
+              <RefreshButton />
+            </div>
             <CardDescription>A list of members who have earned the most points in this community.</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
@@ -44,7 +48,10 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
 
         <Card variant="borderless">
           <CardHeader>
-            <CardTitle>Activity</CardTitle>
+            <div className="flex items-center gap-2">
+              <h1>Activity</h1>
+              <RefreshButton />
+            </div>
             <CardDescription>A list of the most recent rewards in this community.</CardDescription>
           </CardHeader>
           <CardContent>

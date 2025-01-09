@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { chains } from "@/constants/chains";
+import { useCurrentChain } from "@/hooks/useCurrentChain";
 import { addressSplitter, desanitizeString, timeAgo } from "@/lib/utils";
 import { CoinsIcon, ExternalLinkIcon, TrophyIcon } from "lucide-react";
 import Link from "next/link";
@@ -15,6 +15,7 @@ export default function Activity({
   title?: string;
   showUserAddress?: boolean;
 }) {
+  const chain = useCurrentChain();
   function getIcon(reward: Reward) {
     if (reward.badgeTokens.length > 0) {
       return <TrophyIcon />;
@@ -58,13 +59,15 @@ export default function Activity({
                     {showUserAddress ? `user: ${addressSplitter(reward.user?.id)}` : timeAgo(Number(reward.createdAt))}
                   </p>
                 </div>
-                <Link
-                  href={`${chains.arbitrumSepolia.BLOCK_EXPLORER_URL}/tx/${reward.transactionHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <ExternalLinkIcon className="h-4 w-4" />
-                </Link>
+                {chain?.BLOCK_EXPLORER_URL && reward.transactionHash && (
+                  <Link
+                    href={`${chain.BLOCK_EXPLORER_URL}/tx/${reward.transactionHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <ExternalLinkIcon className="h-4 w-4" />
+                  </Link>
+                )}
               </div>
               {index < rewards.length - 1 && <Separator className="my-2" />}
             </div>

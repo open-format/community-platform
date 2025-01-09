@@ -1,13 +1,15 @@
+import RefreshButton from "@/components/refresh-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import CreateCommunityDialog from "@/dialogs/create-community-dialog";
 import CreateCommunityForm from "@/forms/create-community-form";
-import { fetchAllCommunities } from "@/lib/openformat";
+import { fetchAllCommunities, getChainFromCookie } from "@/lib/openformat";
 import { addressSplitter } from "@/lib/utils";
 import Link from "next/link";
 
 export default async function Communities() {
   const communities = await fetchAllCommunities();
+  const chain = await getChainFromCookie();
 
   if (!communities || communities.length === 0) {
     return (
@@ -28,7 +30,10 @@ export default async function Communities() {
   return (
     <div className="space-y-lg">
       <div className="flex justify-between items-center">
-        <h1>Your Communities</h1>
+        <div className="flex items-center gap-2">
+          <h1>Your Communities</h1>
+          <RefreshButton />
+        </div>
         <CreateCommunityDialog />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl">
@@ -40,7 +45,7 @@ export default async function Communities() {
                 <CardDescription>{community.metadata?.description}</CardDescription>
               </CardHeader>
               <CardFooter className="flex justify-between">
-                <p className="text-sm text-gray-500 font-semibold">Arbitrum Sepolia</p>
+                <p className="text-sm text-gray-500 font-semibold">{chain?.name}</p>
                 <Badge>{addressSplitter(community.id)}</Badge>
               </CardFooter>
             </Card>
