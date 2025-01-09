@@ -1,6 +1,6 @@
 "use client";
 
-import { chains } from "@/constants/chains";
+import { useCurrentChain } from "@/hooks/useCurrentChain";
 import { getMetadata } from "@/lib/thirdweb";
 import { cn } from "@/lib/utils";
 import { ExternalLinkIcon } from "lucide-react";
@@ -38,6 +38,7 @@ export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollecte
 function Item({ badge, metadataURI }: { badge: BadgeWithCollectedStatus; metadataURI: string }) {
   const [metadata, setMetadata] = useState<{ [key: string]: string } | null>(null);
   const [image, setImage] = useState<string | null>(null);
+  const chain = useCurrentChain();
 
   useEffect(() => {
     async function fetchMetadata() {
@@ -71,10 +72,10 @@ function Item({ badge, metadataURI }: { badge: BadgeWithCollectedStatus; metadat
         <CardDescription>{metadata?.description}</CardDescription>
       </CardHeader>
       <CardFooter>
-        {badge.isCollected ? (
+        {badge.isCollected && chain?.BLOCK_EXPLORER_URL ? (
           <Link
             className={cn(buttonVariants(), "w-full")}
-            href={`${chains.arbitrumSepolia.BLOCK_EXPLORER_URL}/nft/${badge.id}/${badge.tokenId}`}
+            href={`${chain.BLOCK_EXPLORER_URL}/nft/${badge.id}/${badge.tokenId}`}
             target="_blank"
             rel="noopener noreferrer"
           >

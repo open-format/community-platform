@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { chains } from "@/constants/chains";
+import { getChainFromCookie } from "@/lib/openformat";
 import { timeAgo } from "@/lib/utils";
 import { ExternalLinkIcon, HelpCircle } from "lucide-react";
 import Link from "next/link";
@@ -9,7 +9,8 @@ interface TokenListProps {
   tokens: Token[];
 }
 
-export default function TokenList({ tokens }: TokenListProps) {
+export default async function TokenList({ tokens }: TokenListProps) {
+  const chain = await getChainFromCookie();
   const tokenTypes = {
     Base: "ERC20",
     Point: "Points",
@@ -53,13 +54,15 @@ export default function TokenList({ tokens }: TokenListProps) {
             <TableCell>{token.token.name}</TableCell>
             <TableCell className="flex items-center gap-2">
               {token.token.id}
-              <Link
-                href={`${chains.arbitrumSepolia.BLOCK_EXPLORER_URL}/token/${token.token.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <ExternalLinkIcon className="w-4 h-4" />
-              </Link>
+              {chain?.BLOCK_EXPLORER_URL && (
+                <Link
+                  href={`${chain.BLOCK_EXPLORER_URL}/token/${token.token.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ExternalLinkIcon className="w-4 h-4" />
+                </Link>
+              )}
             </TableCell>
             <TableCell>{tokenTypes[token.token.tokenType as keyof typeof tokenTypes]}</TableCell>
             <TableCell>{timeAgo(Number.parseInt(token.token.createdAt))}</TableCell>
