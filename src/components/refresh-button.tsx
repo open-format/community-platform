@@ -12,17 +12,27 @@ interface RefreshButtonProps {
 
 export default function RefreshButton({ onClick }: RefreshButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  const handleClick = async () => {
+  const handleClick = () => {
     setIsLoading(true);
-    try {
-      if (onClick) {
-        await onClick();
-      }
-      await revalidate();
-    } finally {
-      setIsLoading(false);
+
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
     }
+
+    const newTimeout = setTimeout(async () => {
+      try {
+        if (onClick) {
+          await onClick();
+        }
+        await revalidate();
+      } finally {
+        setIsLoading(false);
+      }
+    }, 5000); // 5 seconds debounce
+
+    setDebounceTimeout(newTimeout as NodeJS.Timeout);
   };
 
   return (
