@@ -10,7 +10,15 @@ export default function Logout() {
 
   useEffect(() => {
     logout();
-    router.push("/auth");
+    setTimeout(() => {
+      router.push("/auth");
+    }, 1000);
   }, [logout]);
-  return <div>Logging out...</div>;
+
+  return (
+    <div className="text-center min-h-[100vh] flex flex-col items-center justify-center p-12 rounded-lg bg-background text-foreground space-y-8">
+      <p className="text-4xl md:text-5xl font-bold">Bye Friend! 👋😢</p>
+      <p>Hope to see you again soon!</p>
+    </div>
+  );
 }
