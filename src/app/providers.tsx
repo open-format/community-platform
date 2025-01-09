@@ -31,6 +31,10 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         // @TODO: Issue with embedded wallets on Aurora and turboChain - awaiting Privy support
         supportedChains: [arbitrumSepolia, aurora, turboChain],
         defaultChain: arbitrumSepolia,
+        appearance: {
+          showWalletLoginFirst: true,
+          walletChainType: "ethereum-only",
+        },
       }}
     >
       <QueryClientProvider client={queryClient}>

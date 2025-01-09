@@ -28,8 +28,13 @@ export default function Auth() {
   }, [disableLogin, isOpen]);
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <Loader2 className="mr-2 h-12 w-12 animate-spin" />
+    <div>
+      <div className="text-center text-sm text-gray-500 bg-foreground/10 p-4 font-semibold">
+        Notice: Aurora and Turbo chains don&apos;t currently support social logins. We&apos;re working on a fix.
+      </div>
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="mr-2 h-12 w-12 animate-spin" />
+      </div>
     </div>
   );
 }
