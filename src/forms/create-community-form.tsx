@@ -59,19 +59,23 @@ export default function CreateCommunityForm() {
         functionName: "create",
         args: [stringToHex(name, { size: 32 }), address as Address],
         ...chain.transactionOverrides,
-      }).catch((error) => {
-        if (error.metaMessages?.[0]?.includes("nameAlreadyUsed")) {
-          form.setError("name", {
-            type: "manual",
-            message: "Community name already in use",
-          });
-        } else {
-          form.setError("name", {
-            type: "manual",
-            message: error.message,
-          });
-        }
-      });
+      })
+        .then((result) => {
+          console.log({ result });
+        })
+        .catch((error) => {
+          if (error.metaMessages?.[0]?.includes("nameAlreadyUsed")) {
+            form.setError("name", {
+              type: "manual",
+              message: "Community name already in use",
+            });
+          } else {
+            form.setError("name", {
+              type: "manual",
+              message: error.message,
+            });
+          }
+        });
     });
   }
 
@@ -93,13 +97,14 @@ export default function CreateCommunityForm() {
           return;
         }
 
-        const transactionHash = await writeContract(config, {
+        const { request } = await simulateContract(config, {
           address: chain.APP_FACTORY_ADDRESS,
           abi: appFactoryAbi,
           functionName: "create",
           args: [stringToHex(data.name, { size: 32 }), address as Address],
-          ...chain.transactionOverrides,
         });
+
+        const transactionHash = await writeContract(config, request);
 
         const transactionReceipt = await waitForTransactionReceipt(config, {
           hash: transactionHash,
@@ -126,7 +131,6 @@ export default function CreateCommunityForm() {
             functionName: "createERC20",
             // @DEV Deploy points contracts to aurora
             args: [data.name, "Points", 18, parseEther("0"), stringToHex("Point", { size: 32 })],
-            ...chain.transactionOverrides,
           });
 
           const pointsTransactionReceipt = await waitForTransactionReceipt(config, { hash: pointsTransactionHash });
