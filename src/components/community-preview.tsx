@@ -54,7 +54,7 @@ export default function CommunityPreview({ community, previewValues, leaderboard
 
       {/* Tiers */}
       {previewValues.tiers && previewValues.tiers.length > 0 && (
-        <Tiers tiers={previewValues.tiers} currentPoints={25} />
+        <Tiers tiers={previewValues.tiers} currentPoints={25} tokenLabel={previewValues.token_label} />
       )}
 
       <Tabs defaultValue="leaderboard" className="w-full">
@@ -66,7 +66,10 @@ export default function CommunityPreview({ community, previewValues, leaderboard
         <TabsContent value="leaderboard">
           <Leaderboard
             data={leaderboard}
-            metadata={{ user_label: previewValues.user_label, token_label: previewValues.token_label }}
+            metadata={{
+              user_label: previewValues.user_label,
+              token_label: previewValues.token_label,
+            }}
             showSocialHandles={Boolean(previewValues?.show_social_handles)}
           />
         </TabsContent>

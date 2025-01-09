@@ -5,7 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
-export default function Tiers({ tiers, currentPoints }: { tiers: Tier[]; currentPoints: number }) {
+export default function Tiers({
+  tiers,
+  currentPoints,
+  tokenLabel = "Points",
+}: {
+  tiers: Tier[];
+  currentPoints: number;
+  tokenLabel?: string | null;
+}) {
   const getCurrentTier = (points: number) => {
     // Return null if user hasn't reached first tier
     if (points < tiers[0].points_required) return null;
@@ -61,10 +69,14 @@ export default function Tiers({ tiers, currentPoints }: { tiers: Tier[]; current
                   <Badge style={{ backgroundColor: currentTier.color }} className="text-white">
                     {currentTier.name}
                   </Badge>
-                  <span className="text-xs">({currentPoints.toLocaleString()} points)</span>
+                  <span className="text-xs">
+                    ({currentPoints.toLocaleString()} {tokenLabel})
+                  </span>
                 </>
               ) : (
-                <span className="text-sm">{currentPoints.toLocaleString()} points earned</span>
+                <span className="text-sm">
+                  {currentPoints.toLocaleString()} {tokenLabel} earned
+                </span>
               )}
             </div>
             <div className="flex items-center gap-2">
@@ -81,10 +93,10 @@ export default function Tiers({ tiers, currentPoints }: { tiers: Tier[]; current
                 {currentTier
                   ? pointsRemaining === 0
                     ? currentPoints >= tiers[tiers.length - 1].points_required
-                      ? `Max tier reached (${currentPoints} points)`
+                      ? `Max tier reached (${currentPoints} ${tokenLabel})`
                       : "Max tier reached"
-                    : `${pointsRemaining} points to ${nextTier.name}`
-                  : `${tiers[0].points_required - currentPoints} points to ${tiers[0].name}`}
+                    : `${pointsRemaining} ${tokenLabel} to ${nextTier.name}`
+                  : `${tiers[0].points_required - currentPoints} ${tokenLabel} to ${tiers[0].name}`}
               </span>
             </div>
           </div>
@@ -96,7 +108,9 @@ export default function Tiers({ tiers, currentPoints }: { tiers: Tier[]; current
                   className="w-6 h-6 rounded-full mb-2 transition-colors duration-200"
                 />
                 <span className="font-bold">{tier.name}</span>
-                <span>{tier.points_required} points</span>
+                <span>
+                  {tier.points_required} {tokenLabel}
+                </span>
               </div>
             ))}
           </div>

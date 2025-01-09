@@ -33,6 +33,10 @@ export default function TokenSelector({
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
 
+  if (tokens.length === 0) {
+    return <div>No tokens found</div>;
+  }
+
   const handleSelect = (currentValue: string) => {
     const newValue = currentValue === value ? "" : currentValue;
     onChange(newValue);

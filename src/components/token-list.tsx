@@ -15,6 +15,10 @@ export default function TokenList({ tokens }: TokenListProps) {
     Point: "Points",
   };
 
+  if (tokens.length === 0) {
+    return <div>No tokens found</div>;
+  }
+
   // @TODO: Ask dev team why subgraph can't sort tokens by createdAt
   const sortedTokens = [...tokens].sort(
     (a, b) => Number.parseInt(b.token.createdAt) - Number.parseInt(a.token.createdAt)

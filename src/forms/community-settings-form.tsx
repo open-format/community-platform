@@ -13,6 +13,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import type { Chain } from "@/constants/chains";
 import { isSlugAvailable, updateCommunity } from "@/db/queries/communities";
 import { revalidate } from "@/lib/openformat";
 import { Loader2 } from "lucide-react";
@@ -65,10 +66,12 @@ export default function CommunitySettingsForm({
   community,
   leaderboard,
   badges,
+  chain,
 }: {
   community: Community;
   leaderboard: LeaderboardEntry[];
   badges: BadgeWithCollectedStatus[];
+  chain: Chain;
 }) {
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -81,7 +84,7 @@ export default function CommunitySettingsForm({
       slug: community.metadata?.slug ?? "",
       dark_mode: community.metadata?.dark_mode ?? false,
       banner_url: community.metadata?.banner_url ?? "",
-      token_to_display: community.metadata.token_to_display ?? null,
+      token_to_display: community.metadata.token_to_display ?? community.tokens[0].id,
       show_social_handles: community.metadata?.show_social_handles ?? false,
       tiers:
         community.metadata?.tiers?.map((tier) => ({
@@ -442,6 +445,7 @@ export default function CommunitySettingsForm({
                             badges={[]}
                             value={field.value}
                             onChange={field.onChange}
+                            defaultValue={form.getValues("token_to_display")}
                           />
                         </FormControl>
                         <FormMessage />
@@ -473,6 +477,7 @@ export default function CommunitySettingsForm({
           previewValues={previewValues}
           leaderboard={leaderboard}
           badges={badges}
+          chain={chain}
         />
       </div>
     </div>
