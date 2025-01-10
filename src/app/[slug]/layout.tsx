@@ -2,8 +2,9 @@ import { fetchCommunity } from "@/lib/openformat";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const community = await fetchCommunity(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const slug = (await params).slug;
+  const community = await fetchCommunity(slug);
 
   // Use VERCEL_URL in production, fallback to localhost in development
   const baseUrl = process.env.VERCEL_URL
