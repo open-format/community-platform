@@ -16,7 +16,7 @@ export default async function TokenList({ tokens }: TokenListProps) {
     Point: "Points",
   };
 
-  if (tokens.length === 0) {
+  if (tokens?.length === 0) {
     return <div>No tokens found</div>;
   }
 
