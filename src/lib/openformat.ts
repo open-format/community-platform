@@ -25,7 +25,7 @@ export async function revalidate() {
 export async function getChainFromCookie(): Promise<Chain | null> {
   const cookieStore = await cookies();
   const chainName = cookieStore.get("chainName");
-  return chainName ? getChain(chainName.value as ChainName) : null;
+  return chainName ? getChain(chainName.value as ChainName) : getChain(ChainName.ARBITRUM_SEPOLIA);
 }
 
 export async function fetchAllCommunities() {
