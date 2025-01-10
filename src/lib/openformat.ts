@@ -1,6 +1,6 @@
 "use server";
 
-import { type Chain, ChainName, getChain } from "@/constants/chains";
+import { type Chain, ChainName, getChain, getChainById } from "@/constants/chains";
 import config from "@/constants/config";
 import { getCommunities, getCommunity } from "@/db/queries/communities";
 import axios from "axios";
@@ -22,14 +22,34 @@ export async function revalidate() {
   revalidatePath("/");
 }
 
-export async function getChainFromCookie(): Promise<Chain | null> {
-  const cookieStore = await cookies();
-  const chainName = cookieStore.get("chainName");
-  return chainName ? getChain(chainName.value as ChainName) : getChain(ChainName.ARBITRUM_SEPOLIA);
+export async function getChainFromCommunityOrCookie(
+  communityIdOrSlug?: string,
+  chain_id?: number
+): Promise<Chain | null> {
+  let chain: Chain | null = null;
+
+  if (communityIdOrSlug) {
+    const community = await getCommunity(communityIdOrSlug);
+    if (community?.chain_id) {
+      chain = getChainById(Number(community.chain_id));
+    }
+  }
+
+  if (!chain && chain_id) {
+    chain = getChainById(Number(chain_id));
+  }
+
+  if (!chain) {
+    const cookieStore = await cookies();
+    const chainName = cookieStore.get("chainName");
+    chain = chainName ? getChain(chainName.value as ChainName) : getChain(ChainName.ARBITRUM_SEPOLIA);
+  }
+
+  return chain;
 }
 
 export async function fetchAllCommunities() {
-  const chain = await getChainFromCookie();
+  const chain = await getChainFromCommunityOrCookie();
 
   if (!chain) {
     console.log("No chain found for chainName:", chain);
@@ -74,13 +94,9 @@ export async function fetchAllCommunities() {
 }
 
 export const fetchCommunity = cache(async (slugOrId: string) => {
-  const chain = await getChainFromCookie();
-
-  if (!chain) {
-    return null;
-  }
-
   const communityFromDb = await getCommunity(slugOrId);
+
+  const chain = await getChainFromCommunityOrCookie(slugOrId);
 
   if (!communityFromDb) {
     return null;
@@ -139,7 +155,7 @@ query ($app: ID!) {
 });
 
 async function fetchAllRewardsByCommunity(communityId: string): Promise<Reward[] | null> {
-  const chain = await getChainFromCookie();
+  const chain = await getChainFromCommunityOrCookie();
 
   if (!chain) {
     return null;
@@ -184,7 +200,7 @@ async function fetchAllRewardsByCommunity(communityId: string): Promise<Reward[]
 export async function fetchUserProfile(slug: string) {
   const currentUser = await getCurrentUser();
   const community = await getCommunity(slug);
-  const chain = await getChainFromCookie();
+  const chain = await getChainFromCommunityOrCookie();
 
   if (!currentUser || !community || !chain) {
     return null;
@@ -272,7 +288,7 @@ query ($user: ID!, $community: String!) {
 }
 
 export async function generateLeaderboard(slugOrId: string): Promise<LeaderboardEntry[] | null> {
-  const chain = await getChainFromCookie();
+  const chain = await getChainFromCommunityOrCookie(slugOrId);
 
   if (!chain) {
     return null;

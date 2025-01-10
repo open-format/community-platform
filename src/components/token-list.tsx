@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { getChainFromCookie } from "@/lib/openformat";
+import { getChainFromCommunityOrCookie } from "@/lib/openformat";
 import { timeAgo } from "@/lib/utils";
 import { ExternalLinkIcon, HelpCircle } from "lucide-react";
 import Link from "next/link";
@@ -10,7 +10,7 @@ interface TokenListProps {
 }
 
 export default async function TokenList({ tokens }: TokenListProps) {
-  const chain = await getChainFromCookie();
+  const chain = await getChainFromCommunityOrCookie();
   const tokenTypes = {
     Base: "ERC20",
     Point: "Points",

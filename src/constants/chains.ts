@@ -70,3 +70,7 @@ export const chains: Record<ChainName, Chain> = {
 export const getChain = (chainName: ChainName): Chain | null => {
   return chains[chainName] || null;
 };
+
+export const getChainById = (chainId: number): Chain | null => {
+  return Object.values(chains).find((chain) => chain.id === chainId) || null;
+};

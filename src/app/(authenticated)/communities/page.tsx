@@ -3,13 +3,13 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import CreateCommunityDialog from "@/dialogs/create-community-dialog";
 import CreateCommunityForm from "@/forms/create-community-form";
-import { fetchAllCommunities, getChainFromCookie } from "@/lib/openformat";
+import { fetchAllCommunities, getChainFromCommunityOrCookie } from "@/lib/openformat";
 import { addressSplitter } from "@/lib/utils";
 import Link from "next/link";
 
 export default async function Communities() {
   const communities = await fetchAllCommunities();
-  const chain = await getChainFromCookie();
+  const chain = await getChainFromCommunityOrCookie();
 
   if (!communities || communities.length === 0) {
     return (
