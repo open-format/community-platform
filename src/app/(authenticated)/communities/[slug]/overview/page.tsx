@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { fetchCommunity, generateLeaderboard } from "@/lib/openformat";
 
 export default async function Overview({ params }: { params: Promise<{ slug: string }> }) {
-  const slug = (await params).slug;
+  const slug = (await params).slug as `0x${string}`;
   const leaderboard = await generateLeaderboard(slug);
   const community = await fetchCommunity(slug);
 

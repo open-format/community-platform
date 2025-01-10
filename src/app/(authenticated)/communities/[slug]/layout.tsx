@@ -1,6 +1,29 @@
+import { createCommunity } from "@/db";
+import { fetchCommunity, getChainFromCommunityOrCookie } from "@/lib/openformat";
 import Link from "next/link";
 import type React from "react";
-export default async function Layout({ children }: { children: React.ReactNode }) {
+
+async function handleCommunityCreation(slug: `0x${string}`) {
+  const chain = await getChainFromCommunityOrCookie(slug);
+  if (chain?.id) {
+    await createCommunity(slug, "New Community", chain.id);
+  }
+}
+
+export default async function Layout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ slug: string }>;
+}) {
+  const slug = (await params).slug as `0x${string}`;
+  const community = await fetchCommunity(slug);
+
+  if (!community) {
+    await handleCommunityCreation(slug);
+  }
+
   return (
     <div>
       <nav className="border-b border-gray-200 flex flex-col px-4 -m-lg">
