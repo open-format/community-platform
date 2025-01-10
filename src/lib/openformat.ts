@@ -31,12 +31,12 @@ export async function getChainFromCommunityOrCookie(
   if (communityIdOrSlug) {
     const community = await getCommunity(communityIdOrSlug);
     if (community?.chain_id) {
-      chain = getChainById(Number(community.chain_id));
+      chain = getChainById(community.chain_id);
     }
   }
 
   if (!chain && chain_id) {
-    chain = getChainById(Number(chain_id));
+    chain = getChainById(chain_id);
   }
 
   if (!chain) {
