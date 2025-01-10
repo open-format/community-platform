@@ -4,13 +4,13 @@ module.exports = {
     [
       "@semantic-release/commit-analyzer",
       {
-        preset: "atom",
+        preset: "angular",
       },
     ],
     [
       "@semantic-release/release-notes-generator",
       {
-        preset: "atom",
+        preset: "angular",
       },
     ],
     [
