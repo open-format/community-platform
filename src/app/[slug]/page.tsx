@@ -86,7 +86,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
           />
         </TabsContent>
         <TabsContent value="badges">
-          <CommunityBadges badges={profile?.badges} />
+          <CommunityBadges badges={profile?.badges || community.badges} />
         </TabsContent>
         <TabsContent value="activity">
           <Activity rewards={profile?.rewards} />
