@@ -1,3 +1,12 @@
+## [0.1.3](https://github.com/open-format/community-platform/compare/v0.1.2...v0.1.3) (2025-01-10)
+
+
+### Bug Fixes
+
+* handle optional chaining for token display in community settings form ([96839fd](https://github.com/open-format/community-platform/commit/96839fd018f4868adac37fb967b3599844f72160))
+* semantic-release config ([4d62370](https://github.com/open-format/community-platform/commit/4d6237003fda3ef965a395acc536085206720485))
+* use angular preset instead of atom in release config ([ab4489f](https://github.com/open-format/community-platform/commit/ab4489ff96154488b4c58d1092e9e120c6438761))
+
 ## [0.1.2](https://github.com/open-format/community-platform/compare/v0.1.1...v0.1.2) (2025-01-10)
 
 
