@@ -20,15 +20,15 @@ type UpdateCommunityData = Partial<Community> & {
   deletedTierIds?: string[];
 };
 
-export async function createCommunity(communityId: Address, name: string, pointsCommunityId?: Address | null) {
+export async function createCommunity(communityId: Address, name: string, chainId: number) {
   const newCommunity = await db
     .insert(communities)
     .values({
       id: communityId.toLowerCase(),
       slug: communityId.toLowerCase(),
       title: name.toLowerCase(),
-      token_to_display: pointsCommunityId?.toLowerCase() ?? null,
       description: `Welcome to the ${name} community!`,
+      chain_id: chainId,
     })
     .returning();
 

@@ -16,7 +16,7 @@ export const communities = pgTable("communities", {
   created_at: timestamp("created_at").defaultNow().notNull(),
   updated_at: timestamp("updated_at").defaultNow().notNull(),
   show_social_handles: boolean("show_social_handles").notNull().default(false),
-  chain_id: varchar("chain_id", { length: 42 }),
+  chain_id: integer("chain_id"),
 });
 
 export const communitiesRelations = relations(communities, ({ many }) => ({

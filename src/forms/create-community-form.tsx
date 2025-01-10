@@ -58,7 +58,6 @@ export default function CreateCommunityForm() {
         abi: appFactoryAbi,
         functionName: "create",
         args: [stringToHex(name, { size: 32 }), address as Address],
-        ...chain.transactionOverrides,
       })
         .then((result) => {
           console.log({ result });
@@ -113,7 +112,7 @@ export default function CreateCommunityForm() {
           throw new Error("Failed to get community id");
         }
 
-        await createCommunity(communityId, data.name);
+        await createCommunity(communityId, data.name, chain.id);
 
         let pointsCommunityId = null;
         if (data.createPoints) {
