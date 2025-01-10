@@ -291,8 +291,14 @@ export async function generateLeaderboard(slugOrId: string): Promise<Leaderboard
     params.set("start", "0");
     params.set("end", "99999999999999999999999999");
     // @TODO: Make this dynamic
-    params.set("chain", chain.name === ChainName.AURORA ? "aurora" : "arbitrum-sepolia");
-
+    params.set(
+      "chain",
+      chain.apiChainName === ChainName.AURORA
+        ? "aurora"
+        : chain.apiChainName === ChainName.TURBO
+        ? "turbo"
+        : "arbitrum-sepolia"
+    );
     const response = await apiClient.get(`/leaderboard?${params}`);
 
     // Fetch social handles for each user in the leaderboard

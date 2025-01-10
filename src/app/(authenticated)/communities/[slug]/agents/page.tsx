@@ -21,7 +21,7 @@ export default function Agents() {
         <Input placeholder="Ask me a question..." className="rounded-lg p-4" />
         <div className="flex gap-2 items-center justify-center">
           <Badge className="gap-1">
-            Reward your top GitHub contributors
+            Reward the top GitHub contributors
             <ArrowUpRight className="h-4 w-4" />
           </Badge>
           <Badge className="gap-1">

@@ -1,4 +1,4 @@
-import { type Address, parseGwei } from "viem";
+import type { Address } from "viem";
 import { type Chain as ViemChain, arbitrumSepolia, aurora } from "viem/chains";
 
 export const turboChain: ViemChain = {
@@ -28,6 +28,7 @@ export type Chain = {
   BLOCK_EXPLORER_URL: string;
   id: number;
   name: string;
+  apiChainName: string;
   transactionOverrides?: {
     maxFeePerGas: bigint;
     maxPriorityFeePerGas: bigint;
@@ -47,22 +48,21 @@ export const chains: Record<ChainName, Chain> = {
       "https://subgraph.satsuma-prod.com/7238a0e24f3c/openformat--330570/open-format-arbitrum-sepolia/version/v0.1.1/api",
     BLOCK_EXPLORER_URL: "https://sepolia.arbiscan.io",
     ...arbitrumSepolia,
+    apiChainName: "arbitrum-sepolia",
   },
   aurora: {
     APP_FACTORY_ADDRESS: "0x2eBF7f4572c218217ca01CE2883E3EfF93626a8E",
     SUBGRAPH_URL: "https://api.studio.thegraph.com/query/82634/open-format-aurora/version/latest",
     BLOCK_EXPLORER_URL: "https://aurorascan.io",
+    apiChainName: "aurora",
     ...aurora,
-    transactionOverrides: {
-      maxFeePerGas: parseGwei("0.07"),
-      maxPriorityFeePerGas: parseGwei("0.07"),
-    },
   },
   turbo: {
     APP_FACTORY_ADDRESS: "0x7e405FbA4c29B8B05B5ecF97bA664729C34803B8",
     // @TODO: Update to production subgraph when ready
     SUBGRAPH_URL: "https://openformat-turbo-graph-node-staging.fly.dev/subgraphs/name/open-format-local",
     BLOCK_EXPLORER_URL: "https://explorer.turbo.aurora.dev",
+    apiChainName: "turbo",
     ...turboChain,
   },
 };
