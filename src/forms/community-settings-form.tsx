@@ -83,7 +83,7 @@ export default function CommunitySettingsForm({
       slug: community.metadata?.slug ?? "",
       dark_mode: community.metadata?.dark_mode ?? false,
       banner_url: community.metadata?.banner_url ?? "",
-      token_to_display: community.metadata.token_to_display ?? community.tokens[0].id,
+      token_to_display: community.metadata.token_to_display ?? community.tokens[0]?.id,
       show_social_handles: community.metadata?.show_social_handles ?? false,
       tiers:
         community.metadata?.tiers?.map((tier) => ({
