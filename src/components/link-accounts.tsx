@@ -8,7 +8,7 @@ import Discord from "../../public/icons/discord.svg";
 import Github from "../../public/icons/github.svg";
 
 export default function LinkAccounts() {
-  const { user, linkDiscord, unlinkDiscord, ready, linkGithub, unlinkGithub } = usePrivy();
+  const { user, linkDiscord, unlinkDiscord, ready, linkGithub, unlinkGithub, login, authenticated } = usePrivy();
 
   const services = [
     {
@@ -46,7 +46,7 @@ export default function LinkAccounts() {
         <Button
           key={service.id}
           variant="outline"
-          onClick={() => service.actions.link()}
+          onClick={() => (authenticated ? service.actions.link() : login())}
           className="bg-background text-foreground"
           disabled={Boolean(service.linkedAccount)}
           aria-disabled={Boolean(service.linkedAccount)}
