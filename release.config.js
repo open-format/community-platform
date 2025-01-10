@@ -11,12 +11,6 @@ module.exports = {
       "@semantic-release/release-notes-generator",
       {
         preset: "atom",
-        parserOpts: {
-          noteKeywords: ["BREAKING CHANGE", "BREAKING CHANGES", "BREAKING"],
-        },
-        writerOpts: {
-          commitsSort: ["subject", "scope"],
-        },
       },
     ],
     [
