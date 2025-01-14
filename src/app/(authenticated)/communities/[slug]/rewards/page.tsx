@@ -11,7 +11,7 @@ export default async function Rewards({ params }: { params: Promise<{ slug: stri
   }
 
   return (
-    <Card variant="borderless">
+    <Card variant="borderless" className="max-w-prose mx-auto">
       <CardHeader>
         <CardTitle>Rewards</CardTitle>
       </CardHeader>

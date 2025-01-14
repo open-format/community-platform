@@ -11,7 +11,7 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   title: "Open Format Rewards",
-  description: "On-chain rewards for your community",
+  description: "onchain rewards for your community",
 };
 
 export default function RootLayout({

@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
 
   // Redirect to auth if no user
   if (!user && !request.nextUrl.pathname.startsWith("/auth")) {
-    return NextResponse.redirect(new URL("/auth", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   // For the specific communities check
@@ -27,5 +27,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/(authenticated)/:path*", "/auth"],
+  matcher: ["/(authenticated)/:path*", "/auth"],
 };
