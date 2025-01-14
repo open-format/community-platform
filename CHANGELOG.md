@@ -1,3 +1,10 @@
+## [0.1.5](https://github.com/open-format/community-platform/compare/v0.1.4...v0.1.5) (2025-01-14)
+
+
+### Bug Fixes
+
+* handle empty leaderboard data and improve error logging ([99f9ae0](https://github.com/open-format/community-platform/commit/99f9ae0c3463761afd7b99f658c17d666230f769))
+
 ## [0.1.4](https://github.com/open-format/community-platform/compare/v0.1.3...v0.1.4) (2025-01-14)
 
 
