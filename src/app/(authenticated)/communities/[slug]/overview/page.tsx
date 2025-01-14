@@ -36,7 +36,7 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
           </CardHeader>
           <CardContent className="p-0">
             <Leaderboard
-              data={leaderboard}
+              data={leaderboard || []}
               showSocialHandles={community.metadata.show_social_handles}
               metadata={{
                 user_label: community.metadata.user_label,

@@ -328,8 +328,8 @@ export async function generateLeaderboard(slugOrId: string): Promise<Leaderboard
 
     return leaderboardWithHandles;
   } catch (error) {
-    console.error(error);
-    return null;
+    console.error("Error fetching leaderboard:", error);
+    return { error: "Failed to fetch leaderboard data. Please try again later." };
   }
 }
 
