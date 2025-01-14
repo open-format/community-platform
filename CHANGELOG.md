@@ -1,3 +1,10 @@
+## [0.1.6](https://github.com/open-format/community-platform/compare/v0.1.5...v0.1.6) (2025-01-14)
+
+
+### Bug Fixes
+
+* update subgraph URL for arbitrumSepolia chain ([1d31b06](https://github.com/open-format/community-platform/commit/1d31b067e3e0eb7a3c808363ba9c410dd00ebfec))
+
 ## [0.1.5](https://github.com/open-format/community-platform/compare/v0.1.4...v0.1.5) (2025-01-14)
 
 
