@@ -21,6 +21,15 @@ type UpdateCommunityData = Partial<Community> & {
 };
 
 export async function createCommunity(communityId: Address, name: string, chainId: number) {
+  // Check if the community already exists
+  const existingCommunity = await db.query.communities.findFirst({
+    where: or(eq(communities.id, communityId.toLowerCase()), eq(communities.slug, communityId.toLowerCase())),
+  });
+
+  if (existingCommunity) {
+    return existingCommunity;
+  }
+
   const newCommunity = await db
     .insert(communities)
     .values({
