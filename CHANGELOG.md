@@ -1,3 +1,10 @@
+# [0.2.0](https://github.com/open-format/community-platform/compare/v0.1.6...v0.2.0) (2025-01-14)
+
+
+### Features
+
+* add community existence check in createCommunity function ([a1cd0ff](https://github.com/open-format/community-platform/commit/a1cd0ff1c28bb5f85df9a6690e0dbc5e47be1c1a))
+
 ## [0.1.6](https://github.com/open-format/community-platform/compare/v0.1.5...v0.1.6) (2025-01-14)
 
 
