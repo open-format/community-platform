@@ -2,6 +2,7 @@ import { toast } from "sonner";
 import {
   type BaseError,
   ChainDisconnectedError,
+  EstimateGasExecutionError,
   HttpRequestError,
   InternalRpcError,
   InvalidInputRpcError,
@@ -22,6 +23,7 @@ export function handleViemError(error: BaseError) {
   let message = "An unexpected error occurred.";
 
   const errorMappings = [
+    { type: EstimateGasExecutionError, message: "You have insufficient funds to cover gas for this transaction." },
     { type: UserRejectedRequestError, message: "User rejected the request." },
     { type: ChainDisconnectedError, message: "The blockchain network is disconnected." },
     { type: HttpRequestError, message: "Network request failed. Please check your internet connection." },
@@ -40,6 +42,8 @@ export function handleViemError(error: BaseError) {
   ];
 
   error.walk((err) => {
+    // @TODO: Remove this after beta
+    console.log({ err });
     for (const { type, message: msg } of errorMappings) {
       if (err instanceof type) {
         message = msg;

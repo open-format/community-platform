@@ -133,6 +133,7 @@ export default function RewardsForm({ community }: { community: Community }) {
           }
 
           // After successful transaction
+          toast.dismiss(toastId);
           setShowConfetti(true);
           setTimeout(() => setShowConfetti(false), 5000); // Hide confetti after 5 seconds
           setRewardSuccessDialog(true);
