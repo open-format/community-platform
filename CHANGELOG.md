@@ -1,3 +1,10 @@
+## [0.2.4](https://github.com/open-format/community-platform/compare/v0.2.3...v0.2.4) (2025-01-15)
+
+
+### Bug Fixes
+
+* enhance error handling in fetchAllCommunities function ([6804b1f](https://github.com/open-format/community-platform/commit/6804b1f4c098a37489bf5e8b4d5d17b3f6c4d2c4))
+
 ## [0.2.3](https://github.com/open-format/community-platform/compare/v0.2.2...v0.2.3) (2025-01-15)
 
 
