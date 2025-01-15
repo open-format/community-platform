@@ -60,7 +60,7 @@ export default function Tiers({
         <CardTitle className="text-2xl font-bold">Tier Progress</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-4 text-center">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               {currentTier ? (

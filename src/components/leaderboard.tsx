@@ -83,7 +83,7 @@ export default function Leaderboard({
         <Table>
           <LeaderboardHeader metadata={metadata} />
           <TableBody>
-            {data.map((entry, index) => {
+            {data?.map((entry, index) => {
               const position = index + 1;
               const isCurrentUser =
                 user?.wallet?.address && entry.user.toLowerCase() === user?.wallet?.address.toLowerCase();

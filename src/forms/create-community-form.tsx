@@ -13,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { useConfetti } from "@/contexts/confetti-context";
 import { createCommunity, updateCommunity } from "@/db/queries/communities";
 import { getEventLog } from "@/helpers/contract";
+import { handleViemError } from "@/helpers/errors";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
 import { revalidate } from "@/lib/openformat";
 import { cn, getAddress } from "@/lib/utils";
@@ -22,7 +23,7 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
 import { toast } from "sonner";
-import { type Address, parseEther, stringToHex } from "viem";
+import { type Address, BaseError, parseEther, stringToHex } from "viem";
 import { useConfig } from "wagmi";
 
 const FormSchema = z.object({
@@ -80,10 +81,11 @@ export default function CreateCommunityForm() {
 
   function handleFormSubmission(data: z.infer<typeof FormSchema>) {
     setIsSubmitting(true);
+    let loadingToastId: string | number;
     let communityId: Address | null = null;
     startTransition(async () => {
       try {
-        toast.message("Creating Community", {
+        loadingToastId = toast.loading("Creating Community", {
           description: "Deploying your community on-chain...",
         });
 
@@ -126,7 +128,6 @@ export default function CreateCommunityForm() {
             address: communityId,
             abi: erc20FactoryAbi,
             functionName: "createERC20",
-            // @DEV Deploy points contracts to aurora
             args: [data.name, "Points", 18, parseEther("0"), stringToHex("Point", { size: 32 })],
           });
 
@@ -146,7 +147,12 @@ export default function CreateCommunityForm() {
         triggerConfetti();
         revalidate();
       } catch (err) {
-        console.error(err);
+        if (loadingToastId) {
+          toast.dismiss(loadingToastId);
+        }
+        if (err instanceof BaseError) {
+          return handleViemError(err);
+        }
         toast.error("Error", {
           description: "Failed to create community. Please try again.",
         });

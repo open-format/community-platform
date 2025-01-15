@@ -9,6 +9,7 @@ import TokenSelector from "@/components/token-selector";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import UserSelector from "@/components/user-selector";
 import RewardSuccessDialog from "@/dialogs/reward-success-dialog";
+import { handleViemError } from "@/helpers/errors";
 import { revalidate } from "@/lib/openformat";
 import { uploadMetadata } from "@/lib/thirdweb";
 import { sanitizeString } from "@/lib/utils";
@@ -18,7 +19,7 @@ import { Plus, X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { type Address, parseEther, stringToHex } from "viem";
+import { type Address, BaseError, parseEther, stringToHex } from "viem";
 import { useConfig } from "wagmi";
 import * as z from "zod";
 
@@ -75,14 +76,13 @@ export default function RewardsForm({ community }: { community: Community }) {
   function onSubmit(data: RewardsFormValues) {
     try {
       startTransition(async () => {
-        // Show initial toast
         const toastId = toast.loading("Processing reward...");
 
-        // Check if selected token is a badge or token
-        const isSelectedBadge = community.badges.some((badge) => badge.id === data.tokenAddress);
-        const isSelectedToken = community.tokens.some((token) => token.token.id === data.tokenAddress);
-
         try {
+          // Check if selected token is a badge or token
+          const isSelectedBadge = community.badges.some((badge) => badge.id === data.tokenAddress);
+          const isSelectedToken = community.tokens.some((token) => token.token.id === data.tokenAddress);
+
           let ipfsHash = "";
           // upload the metadata to IPFS
           if (Object.keys(data.metadata).length > 0) {
@@ -105,7 +105,9 @@ export default function RewardsForm({ community }: { community: Community }) {
               ],
             });
 
-            const receipt = await waitForTransactionReceipt(config, { hash: badgeTransaction });
+            const receipt = await waitForTransactionReceipt(config, {
+              hash: badgeTransaction,
+            });
             setTransactionHash(receipt.transactionHash);
             toast.success("Badge successfully awarded!", { id: toastId });
           } else if (isSelectedToken) {
@@ -136,12 +138,13 @@ export default function RewardsForm({ community }: { community: Community }) {
           setRewardSuccessDialog(true);
           revalidate();
         } catch (error) {
+          if (error instanceof BaseError) {
+            handleViemError(error);
+          }
           toast.error("Failed to process reward", { id: toastId });
-          throw error;
         }
       });
     } catch (e) {
-      console.error(e);
       toast.error("An unexpected error occurred");
     }
   }
@@ -229,7 +232,11 @@ export default function RewardsForm({ community }: { community: Community }) {
                   placeholder="welcome-to-the-community, first-post, bug-fix etc."
                   {...field}
                   onBlur={(e) => {
-                    field.onChange(sanitizeString(e.target.value, { replaceSpacesWith: "-" }));
+                    field.onChange(
+                      sanitizeString(e.target.value, {
+                        replaceSpacesWith: "-",
+                      })
+                    );
                   }}
                 />
               </FormControl>
