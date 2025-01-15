@@ -13,7 +13,7 @@ export default function Auth() {
   const router = useRouter();
 
   useLogin({
-    onComplete: async (user, isNewUser) => {
+    onComplete: async ({ user, isNewUser }) => {
       if (isNewUser && user.wallet?.address) {
         await fundAccount();
       }
