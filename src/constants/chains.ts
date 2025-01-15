@@ -1,5 +1,5 @@
 import type { Address } from "viem";
-import { type Chain as ViemChain, arbitrumSepolia, aurora } from "viem/chains";
+import { type Chain as ViemChain, arbitrumSepolia, aurora, base } from "viem/chains";
 
 export const turboChain: ViemChain = {
   id: 1313161567,
@@ -39,6 +39,7 @@ export enum ChainName {
   ARBITRUM_SEPOLIA = "arbitrumSepolia",
   AURORA = "aurora",
   TURBO = "turbo",
+  BASE = "base",
 }
 
 export const chains: Record<ChainName, Chain> = {
@@ -64,6 +65,13 @@ export const chains: Record<ChainName, Chain> = {
     BLOCK_EXPLORER_URL: "https://explorer.turbo.aurora.dev",
     apiChainName: "turbo",
     ...turboChain,
+  },
+  base: {
+    APP_FACTORY_ADDRESS: "0x2d6f1620b263Ce71862Fa95f6fEAbB6A366478cC",
+    SUBGRAPH_URL: "https://api.studio.thegraph.com/query/82634/open-format-base/version/latest",
+    BLOCK_EXPLORER_URL: "https://base.blockscout.com",
+    apiChainName: "base",
+    ...base,
   },
 };
 

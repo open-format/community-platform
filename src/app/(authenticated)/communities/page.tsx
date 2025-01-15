@@ -8,10 +8,23 @@ import { addressSplitter } from "@/lib/utils";
 import Link from "next/link";
 
 export default async function Communities() {
-  const communities = await fetchAllCommunities();
+  const { data: communities, error } = await fetchAllCommunities();
   const chain = await getChainFromCommunityOrCookie();
 
-  if (!communities || communities.length === 0) {
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center">
+        <Card>
+          <CardHeader>
+            <CardTitle>Error</CardTitle>
+            <CardDescription>{error}</CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+  if (communities.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center">
         <Card>

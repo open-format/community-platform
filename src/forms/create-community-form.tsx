@@ -147,9 +147,6 @@ export default function CreateCommunityForm() {
         triggerConfetti();
         revalidate();
       } catch (err) {
-        if (loadingToastId) {
-          toast.dismiss(loadingToastId);
-        }
         if (err instanceof BaseError) {
           return handleViemError(err);
         }
@@ -158,6 +155,10 @@ export default function CreateCommunityForm() {
         });
       } finally {
         setIsSubmitting(false);
+        if (loadingToastId) {
+          toast.dismiss(loadingToastId);
+        }
+
         if (communityId) {
           router.push(`/communities/${communityId}`);
         }

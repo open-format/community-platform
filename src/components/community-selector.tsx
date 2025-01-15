@@ -28,9 +28,9 @@ export default function CommunitySelector() {
 
   useEffect(() => {
     async function loadCommunities() {
-      const data = await fetchAllCommunities();
-      if (data) {
-        setCommunities(data);
+      const communities = await fetchAllCommunities();
+      if (communities?.data) {
+        setCommunities(communities.data);
       }
     }
     loadCommunities();

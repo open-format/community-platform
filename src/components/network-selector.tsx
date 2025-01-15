@@ -24,6 +24,7 @@ export default function NetworkSelector() {
   }, []);
 
   function handleChainChange(chainName: string) {
+    console.log("chainName", chains[chainName as ChainName].id);
     switchChain({ chainId: chains[chainName as ChainName].id });
     Cookies.set("chainName", chainName);
     router.push("/communities");
