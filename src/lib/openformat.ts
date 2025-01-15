@@ -49,48 +49,59 @@ export async function getChainFromCommunityOrCookie(
 }
 
 export async function fetchAllCommunities() {
-  const chain = await getChainFromCommunityOrCookie();
+  try {
+    const chain = await getChainFromCommunityOrCookie();
 
-  if (!chain) {
-    console.log("No chain found for chainName:", chain);
-    return null;
-  }
-
-  const user = await getCurrentUser();
-  const dbCommunities = await getCommunities();
-
-  if (!user) {
-    return null;
-  }
-
-  const query = `
-   query ($owner: String!) {
-  apps(
-    where: {owner_contains_nocase: $owner}
-    orderBy: createdAt
-    orderDirection: desc
-  ) {
-    id
-    name
-    owner {
-      id
+    if (!chain) {
+      console.log("No chain found for chainName:", chain);
+      return { data: [], error: "No chain found." };
     }
+
+    const user = await getCurrentUser();
+    const dbCommunities = await getCommunities();
+
+    if (!user) {
+      return { data: [], error: "User not found." };
+    }
+
+    const query = `
+    query ($owner: String!) {
+      apps(
+        where: {owner_contains_nocase: $owner}
+        orderBy: createdAt
+        orderDirection: desc
+      ) {
+        id
+        name
+        owner {
+          id
+        }
+      }
+    }
+    `;
+    try {
+      const data = await request<{
+        apps: { id: string; name: string; owner: { id: string } }[];
+      }>(chain.SUBGRAPH_URL, query, {
+        owner: user.wallet_address,
+      });
+
+      console.log("Fetched data from subgraph:", data);
+
+      const matchedCommunities = data.apps.map((app) => ({
+        ...app,
+        metadata: dbCommunities.find((dbComm) => dbComm.id === app.id || dbComm.slug === app.id),
+      }));
+
+      console.log("Matched communities:", matchedCommunities);
+
+      return { data: matchedCommunities || [], error: null };
+    } catch {
+      return { data: [], error: "Failed to fetch onchain communities. Please try again." };
+    }
+  } catch {
+    return { data: [], error: "Failed to fetch communities. Please try again later." };
   }
-}
-  `;
-  const data = await request<{
-    apps: { id: string; name: string; owner: { id: string } }[];
-  }>(chain.SUBGRAPH_URL, query, {
-    owner: user.wallet_address,
-  });
-
-  // Match subgraph communities with database communities
-  const matchedCommunities = data.apps.map((app) => ({
-    ...app,
-    metadata: dbCommunities.find((dbComm) => dbComm.id === app.id || dbComm.slug === app.id),
-  }));
-
-  return matchedCommunities;
 }
 
 export const fetchCommunity = cache(async (slugOrId: string) => {
@@ -313,6 +324,8 @@ export async function generateLeaderboard(slugOrId: string): Promise<Leaderboard
         ? "aurora"
         : chain.apiChainName === ChainName.TURBO
         ? "turbo"
+        : chain.apiChainName === ChainName.BASE
+        ? "base"
         : "arbitrum-sepolia"
     );
     const response = await apiClient.get(`/leaderboard?${params}`);
