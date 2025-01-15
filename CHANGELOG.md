@@ -1,3 +1,10 @@
+## [0.2.2](https://github.com/open-format/community-platform/compare/v0.2.1...v0.2.2) (2025-01-15)
+
+
+### Bug Fixes
+
+* enhance error handling and UI improvements across components ([83eb1c3](https://github.com/open-format/community-platform/commit/83eb1c30acd29afaf8598ac654f4db006e0945f0))
+
 ## [0.2.1](https://github.com/open-format/community-platform/compare/v0.2.0...v0.2.1) (2025-01-15)
 
 
