@@ -1,3 +1,10 @@
+## [0.2.3](https://github.com/open-format/community-platform/compare/v0.2.2...v0.2.3) (2025-01-15)
+
+
+### Bug Fixes
+
+* improve error handling and user feedback in rewards form ([e90c920](https://github.com/open-format/community-platform/commit/e90c920d7340e04b2cd5080d4a9194788bde0c58))
+
 ## [0.2.2](https://github.com/open-format/community-platform/compare/v0.2.1...v0.2.2) (2025-01-15)
 
 
