@@ -1,3 +1,10 @@
+## [0.2.1](https://github.com/open-format/community-platform/compare/v0.2.0...v0.2.1) (2025-01-15)
+
+
+### Bug Fixes
+
+* update login handling in Auth and CommunityProfile components ([f1b9220](https://github.com/open-format/community-platform/commit/f1b92204862c146a503dfaa523fa3445ea5da068))
+
 # [0.2.0](https://github.com/open-format/community-platform/compare/v0.1.6...v0.2.0) (2025-01-14)
 
 
