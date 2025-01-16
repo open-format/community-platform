@@ -22,7 +22,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useConfetti } from "@/contexts/confetti-context";
-import { revalidate } from "@/lib/openformat";
+import { useRevalidate } from "@/hooks/useRevalidate";
 import { uploadFileToIPFS, uploadMetadata } from "@/lib/thirdweb";
 import { getAddress } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
@@ -43,6 +43,9 @@ interface CreateBadgeFormProps {
 export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { triggerConfetti } = useConfetti();
+  const [shouldRevalidate, setShouldRevalidate] = useState(false);
+
+  useRevalidate(shouldRevalidate);
 
   const toggle = () => setIsOpen((t) => !t);
 
@@ -86,7 +89,7 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
       form.reset();
       toggle();
       triggerConfetti();
-      revalidate();
+      setShouldRevalidate(true);
     } catch (e: any) {
       console.log(e.message);
     }

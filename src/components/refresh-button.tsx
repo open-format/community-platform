@@ -30,7 +30,7 @@ export default function RefreshButton({ onClick }: RefreshButtonProps) {
       } finally {
         setIsLoading(false);
       }
-    }, 5000); // 5 seconds debounce
+    }, 2500); // 5 seconds debounce
 
     setDebounceTimeout(newTimeout as NodeJS.Timeout);
   };

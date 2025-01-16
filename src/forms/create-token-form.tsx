@@ -22,7 +22,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useConfetti } from "@/contexts/confetti-context";
-import { revalidate } from "@/lib/openformat";
+import { useRevalidate } from "@/hooks/useRevalidate";
 import { HelpCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { parseEther, stringToHex } from "viem";
@@ -42,6 +42,8 @@ interface CreateTokenFormProps {
 export function CreateTokenForm({ community }: CreateTokenFormProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { triggerConfetti } = useConfetti();
+  const [shouldRevalidate, setShouldRevalidate] = useState(false);
+  useRevalidate(shouldRevalidate);
 
   const toggle = () => setIsOpen((t) => !t);
 
@@ -79,7 +81,7 @@ export function CreateTokenForm({ community }: CreateTokenFormProps) {
       form.reset();
       toggle();
       triggerConfetti();
-      revalidate();
+      setShouldRevalidate(true);
     } catch (e: any) {
       console.log(e.message);
     }
