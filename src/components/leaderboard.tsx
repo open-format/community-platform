@@ -75,7 +75,7 @@ export default function Leaderboard({
   const { user } = usePrivy();
 
   if (isLoading) return <LeaderboardSkeleton />;
-  if (!data || data.length === 0) return <EmptyState metadata={metadata} />;
+  if (!data || data.length === 0 || data?.error) return <EmptyState metadata={metadata} />;
 
   return (
     <Card variant="borderless" className="h-full">
