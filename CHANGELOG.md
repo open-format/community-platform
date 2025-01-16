@@ -1,3 +1,10 @@
+# [0.3.0](https://github.com/open-format/community-platform/compare/v0.2.4...v0.3.0) (2025-01-15)
+
+
+### Features
+
+* add support for Base chain and enhance community fetching error handling ([f8f3be0](https://github.com/open-format/community-platform/commit/f8f3be04bc8f38fd79851389a2b3389d765b7af3))
+
 ## [0.2.4](https://github.com/open-format/community-platform/compare/v0.2.3...v0.2.4) (2025-01-15)
 
 
