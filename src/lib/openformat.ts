@@ -86,14 +86,10 @@ export async function fetchAllCommunities() {
         owner: user.wallet_address,
       });
 
-      console.log("Fetched data from subgraph:", data);
-
       const matchedCommunities = data.apps.map((app) => ({
         ...app,
         metadata: dbCommunities.find((dbComm) => dbComm.id === app.id || dbComm.slug === app.id),
       }));
-
-      console.log("Matched communities:", matchedCommunities);
 
       return { data: matchedCommunities || [], error: null };
     } catch {
@@ -348,7 +344,6 @@ export async function generateLeaderboard(slugOrId: string): Promise<Leaderboard
 
 export async function fundAccount() {
   const currentUser = await getCurrentUser();
-  console.log({ currentUser });
   // @TODO: Handle multiple chains, check wallet balance, etc.
   if (!config.ACCOUNT_BALANCE_SERVICE_URL || !config.ACCOUNT_BALANCE_SERVICE_AUTH_TOKEN) {
     return null;

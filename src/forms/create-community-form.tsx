@@ -122,14 +122,14 @@ export default function CreateCommunityForm() {
             description: "Deploying your community points token...",
           });
 
-          console.log({ communityId });
-
-          const pointsTransactionHash = await writeContract(config, {
+          const { request: pointsRequest } = await simulateContract(config, {
             address: communityId,
             abi: erc20FactoryAbi,
             functionName: "createERC20",
             args: [data.name, "Points", 18, parseEther("0"), stringToHex("Point", { size: 32 })],
           });
+
+          const pointsTransactionHash = await writeContract(config, pointsRequest);
 
           const pointsTransactionReceipt = await waitForTransactionReceipt(config, { hash: pointsTransactionHash });
           pointsCommunityId = await getEventLog(pointsTransactionReceipt, erc20FactoryAbi, "Created");
