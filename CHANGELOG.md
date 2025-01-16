@@ -1,3 +1,10 @@
+# [0.4.0](https://github.com/open-format/community-platform/compare/v0.3.0...v0.4.0) (2025-01-16)
+
+
+### Features
+
+* add support for Matchain in Providers and Chains configuration ([fdc3cd6](https://github.com/open-format/community-platform/commit/fdc3cd63535ebe15d179dba14d1b97688f0d149c))
+
 # [0.3.0](https://github.com/open-format/community-platform/compare/v0.2.4...v0.3.0) (2025-01-15)
 
 
