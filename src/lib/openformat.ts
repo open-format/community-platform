@@ -316,7 +316,9 @@ export async function generateLeaderboard(slugOrId: string): Promise<Leaderboard
     // @TODO: Make this dynamic
     params.set(
       "chain",
-      chain.apiChainName === ChainName.AURORA
+      chain.apiChainName === ChainName.MATCHAIN
+        ? "matchain"
+        : chain.apiChainName === ChainName.AURORA
         ? "aurora"
         : chain.apiChainName === ChainName.TURBO
         ? "turbo"

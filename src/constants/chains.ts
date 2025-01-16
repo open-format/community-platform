@@ -1,5 +1,5 @@
 import type { Address } from "viem";
-import { type Chain as ViemChain, arbitrumSepolia, aurora, base } from "viem/chains";
+import { type Chain as ViemChain, arbitrumSepolia, aurora, base, matchain } from "viem/chains";
 
 export const turboChain: ViemChain = {
   id: 1313161567,
@@ -40,6 +40,7 @@ export enum ChainName {
   AURORA = "aurora",
   TURBO = "turbo",
   BASE = "base",
+  MATCHAIN = "matchain",
 }
 
 export const chains: Record<ChainName, Chain> = {
@@ -72,6 +73,13 @@ export const chains: Record<ChainName, Chain> = {
     BLOCK_EXPLORER_URL: "https://base.blockscout.com",
     apiChainName: "base",
     ...base,
+  },
+  matchain: {
+    APP_FACTORY_ADDRESS: "0xf1811D1D6D9a718312c3c9466D8c4a2601f973e7",
+    SUBGRAPH_URL: "http://20.84.160.190:8000/subgraphs/name/open-format-matchain",
+    BLOCK_EXPLORER_URL: "https://matchscan.io/",
+    apiChainName: "matchain",
+    ...matchain,
   },
 };
 
