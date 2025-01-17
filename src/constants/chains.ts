@@ -55,7 +55,7 @@ export const chains: Record<ChainName, Chain> = {
   aurora: {
     APP_FACTORY_ADDRESS: "0x2eBF7f4572c218217ca01CE2883E3EfF93626a8E",
     SUBGRAPH_URL: "https://api.studio.thegraph.com/query/82634/open-format-aurora/version/latest",
-    BLOCK_EXPLORER_URL: "https://aurorascan.io",
+    BLOCK_EXPLORER_URL: "https://explorer.aurora.dev",
     apiChainName: "aurora",
     ...aurora,
   },
