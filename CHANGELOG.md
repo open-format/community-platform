@@ -1,3 +1,10 @@
+# [0.5.0](https://github.com/open-format/community-platform/compare/v0.4.1...v0.5.0) (2025-01-17)
+
+
+### Features
+
+* add ERC721Badge ABI and update badge metadata functionality ([96f1156](https://github.com/open-format/community-platform/commit/96f11568b7339b33eb5f9515176be08ce6bfe7cd))
+
 ## [0.4.1](https://github.com/open-format/community-platform/compare/v0.4.0...v0.4.1) (2025-01-16)
 
 
