@@ -1,3 +1,10 @@
+## [0.4.1](https://github.com/open-format/community-platform/compare/v0.4.0...v0.4.1) (2025-01-16)
+
+
+### Bug Fixes
+
+* enhance error handling in Leaderboard component and clean up logging ([bbe0144](https://github.com/open-format/community-platform/commit/bbe0144f45d261a94591aaf41ee5e1049f929ab9))
+
 # [0.4.0](https://github.com/open-format/community-platform/compare/v0.3.0...v0.4.0) (2025-01-16)
 
 
