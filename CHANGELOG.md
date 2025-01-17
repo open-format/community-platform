@@ -1,3 +1,10 @@
+# [0.6.0](https://github.com/open-format/community-platform/compare/v0.5.1...v0.6.0) (2025-01-17)
+
+
+### Features
+
+* enhance TokenSelector and RewardsForm components ([4bf185c](https://github.com/open-format/community-platform/commit/4bf185cd6402f1e49469961ba6d98c3068885036))
+
 ## [0.5.1](https://github.com/open-format/community-platform/compare/v0.5.0...v0.5.1) (2025-01-17)
 
 
