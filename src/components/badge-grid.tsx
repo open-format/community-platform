@@ -1,5 +1,6 @@
 "use client";
 
+import { UpdateBadgeForm } from "@/forms/update-badge-form";
 import { getMetadata } from "@/lib/thirdweb";
 import { generateGradient, getContrastSafeColor } from "@/lib/utils";
 import Image from "next/image";
@@ -70,9 +71,12 @@ function Item({ badge, metadataURI, communityId }: { badge: Badge; metadataURI: 
           <div className="flex flex-col justify-between w-full space-y-2">
             <CardTitle>{metadata.name}</CardTitle>
             <CardDescription>{metadata.description}</CardDescription>
-            <Link className={buttonVariants()} href={`/communities/${communityId}/rewards`}>
-              Reward Badge
-            </Link>
+            <div className="flex gap-2">
+              <Link className={buttonVariants()} href={`/communities/${communityId}/rewards`}>
+                Reward Badge
+              </Link>
+              <UpdateBadgeForm badge={badge} metadata={metadata} />
+            </div>
           </div>
         ) : badge.name ? (
           <CardTitle>{badge.name}</CardTitle>
