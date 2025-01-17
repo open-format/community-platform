@@ -1,6 +1,6 @@
 "use client";
 
-import { Award, Check, ChevronsUpDown, CircleDollarSign } from "lucide-react";
+import { AlertCircle, Award, Check, ChevronsUpDown, CircleDollarSign } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
@@ -32,10 +32,6 @@ export default function TokenSelector({
 }) {
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
-
-  if (tokens?.length === 0) {
-    return <div>No tokens found</div>;
-  }
 
   const handleSelect = (currentValue: string) => {
     const newValue = currentValue === value ? "" : currentValue;
@@ -86,7 +82,17 @@ export default function TokenSelector({
             }}
           />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>
+              <div className="flex flex-col items-center justify-center p-4 text-center">
+                <AlertCircle className="h-8 w-8 text-yellow-500 mb-2" />
+                <p className="text-sm font-medium mb-2">No tokens found</p>
+                <p className="text-xs text-muted-foreground mb-4">You can:</p>
+                <ul className="list-disc list-inside mt-1">
+                  <li>Enter a valid contract address</li>
+                  <li>Create a new token or badge in your community</li>
+                </ul>
+              </div>
+            </CommandEmpty>
             <CommandGroup heading="Tokens">
               {tokens.map((item) => (
                 <CommandItem key={item.token.id} value={item.token.name} onSelect={() => handleSelect(item.token.id)}>
