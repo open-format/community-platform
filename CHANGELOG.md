@@ -1,3 +1,10 @@
+## [0.5.1](https://github.com/open-format/community-platform/compare/v0.5.0...v0.5.1) (2025-01-17)
+
+
+### Bug Fixes
+
+* update Aurora block explorer URL ([02c0a7c](https://github.com/open-format/community-platform/commit/02c0a7c693e1032c33f348d1e4cd0c58bed48cd2))
+
 # [0.5.0](https://github.com/open-format/community-platform/compare/v0.4.1...v0.5.0) (2025-01-17)
 
 
