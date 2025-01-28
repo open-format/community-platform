@@ -13,8 +13,12 @@ import CreateCommunityForm from "@/forms/create-community-form";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function CreateCommunityDialog() {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+interface CreateCommunityDialogProps {
+  defaultOpen?: boolean;
+}
+
+export default function CreateCommunityDialog({ defaultOpen = false }: CreateCommunityDialogProps) {
+  const [isOpen, setIsOpen] = useState<boolean>(defaultOpen);
   const router = useRouter();
 
   function toggle() {
@@ -27,11 +31,11 @@ export default function CreateCommunityDialog() {
 
   return (
     <Dialog open={isOpen} onOpenChange={toggle}>
-      <DialogTrigger className={buttonVariants()}>Create Community</DialogTrigger>
+      {!defaultOpen ? <DialogTrigger className={buttonVariants()}>Create Community</DialogTrigger> : null}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create Community</DialogTitle>
-          <DialogDescription>Create a new community.</DialogDescription>
+          <DialogDescription>Create a new community to start rewarding your community members.</DialogDescription>
         </DialogHeader>
         <CreateCommunityForm onSuccess={handleSuccess} />
       </DialogContent>

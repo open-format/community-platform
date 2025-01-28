@@ -1,55 +1,121 @@
 "use client";
+import { revalidate } from "@/lib/openformat";
+import { usePrivy } from "@privy-io/react-auth";
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useSwitchChain } from "wagmi";
-import { ChainName, chains } from "../constants/chains";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { startTransition } from "react";
+import { useBalance, useChainId, useSwitchChain } from "wagmi";
+import type { GetBalanceData } from "wagmi/query";
+import { type ChainName, chains } from "../constants/chains";
+import { Badge } from "./ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import { Skeleton } from "./ui/skeleton";
 
-export default function NetworkSelector() {
-  const router = useRouter();
-  const [currentChainName, setCurrentChainName] = useState<ChainName | null>(null);
+interface NetworkSelectorProps {
+  onValueChange?: (chainName: string) => void;
+  callback?: () => void;
+  hideIfNotSet?: boolean;
+}
+
+export default function NetworkSelector({ onValueChange, callback, hideIfNotSet = false }: NetworkSelectorProps) {
+  const currentChainId = useChainId();
+  const { user } = usePrivy();
   const { switchChain } = useSwitchChain();
-
-  useEffect(() => {
-    const chainName = Cookies.get("chainName") as ChainName;
-
-    if (!chainName) {
-      Cookies.set("chainName", ChainName.ARBITRUM_SEPOLIA);
-      setCurrentChainName(ChainName.ARBITRUM_SEPOLIA);
-    } else {
-      setCurrentChainName(chainName);
-    }
-  }, []);
+  const { data: balance, isLoading } = useBalance({
+    address: user?.wallet?.address,
+  });
 
   function handleChainChange(chainName: string) {
-    console.log("chainName", chains[chainName as ChainName].id);
-    switchChain({ chainId: chains[chainName as ChainName].id });
-    Cookies.set("chainName", chainName);
-    router.push("/communities");
+    startTransition(async () => {
+      // Set the chain in cookies
+      Cookies.set("chainName", chainName);
+
+      // Switch chain
+      switchChain({ chainId: chains[chainName as ChainName].id });
+
+      // Optional revalidation
+      await revalidate();
+
+      // Call optional callback
+      onValueChange?.(chainName);
+      callback?.();
+    });
   }
 
-  const chainOptions = Object.keys(chains).map((chainName) => ({
-    value: chainName,
-    label: chains[chainName as ChainName].name,
-  }));
+  // Find the current chain name based on the chain ID
+  const currentChainName = (Object.keys(chains) as ChainName[]).find(
+    (chainName) => chains[chainName].id === currentChainId
+  );
+
+  // Separate chains into testnet and mainnet groups
+  const testnetChains = Object.entries(chains)
+    .filter(([_, chain]) => chain.testnet)
+    .map(([chainName, chain]) => ({
+      value: chainName,
+      label: chain.name,
+    }));
+
+  const mainnetChains = Object.entries(chains)
+    .filter(([_, chain]) => !chain.testnet)
+    .map(([chainName, chain]) => ({
+      value: chainName,
+      label: chain.name,
+    }));
 
   if (!currentChainName) {
     return <Skeleton className="h-10 w-40 " />;
   }
 
+  if (hideIfNotSet && !Cookies.get("chainName")) {
+    return null;
+  }
+
+  function BalanceBadge({ balance }: { balance: GetBalanceData }) {
+    return (
+      <Badge className="hidden md:block">
+        Balance: {Number(balance.formatted).toFixed(6)} {balance.symbol}
+      </Badge>
+    );
+  }
+
   return (
-    <Select onValueChange={handleChainChange} defaultValue={currentChainName}>
+    <Select onValueChange={handleChainChange} value={currentChainName}>
       <SelectTrigger>
         <SelectValue placeholder="Select Network" />
       </SelectTrigger>
       <SelectContent>
-        {chainOptions.map((option) => (
-          <SelectItem key={option.value} value={option.value}>
-            {option.label}
-          </SelectItem>
-        ))}
+        <SelectGroup>
+          <SelectLabel className="font-bold">Mainnets</SelectLabel>
+
+          {mainnetChains.map((option) => (
+            <SelectItem key={option.value} value={option.value} className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <p>{option.label}</p>
+                {option.value === currentChainName && balance && <BalanceBadge balance={balance} />}
+              </div>
+            </SelectItem>
+          ))}
+        </SelectGroup>
+        <SelectSeparator />
+        <SelectGroup>
+          <SelectLabel className="font-bold">Testnets</SelectLabel>
+          {testnetChains.map((option) => (
+            <SelectItem key={option.value} value={option.value} className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <p>{option.label}</p>
+                {option.value === currentChainName && balance && <BalanceBadge balance={balance} />}
+              </div>
+            </SelectItem>
+          ))}
+        </SelectGroup>
       </SelectContent>
     </Select>
   );

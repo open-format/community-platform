@@ -6,10 +6,12 @@ import { z } from "zod";
 
 import { appFactoryAbi } from "@/abis/AppFactory";
 import { erc20FactoryAbi } from "@/abis/ERC20FactoryFacet";
+import NetworkSelector from "@/components/network-selector";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import type { ChainName } from "@/constants/chains";
 import { useConfetti } from "@/contexts/confetti-context";
 import { createCommunity, updateCommunity } from "@/db/queries/communities";
 import { getEventLog } from "@/helpers/contract";
@@ -198,6 +200,25 @@ export default function CreateCommunityForm() {
             </FormItem>
           )}
         />
+
+        {/* Network Selector */}
+        <FormItem>
+          <FormLabel>Network</FormLabel>
+          <FormControl>
+            <NetworkSelector
+              onValueChange={(chainName) => {
+                form.setValue("chainName", chainName as ChainName);
+                form.trigger("chainName");
+
+                const currentName = form.getValues("name");
+                if (currentName) {
+                  simulateCreateCommunity(currentName);
+                }
+              }}
+            />
+          </FormControl>
+          <FormDescription>Select the network where you want to create your community.</FormDescription>
+        </FormItem>
 
         {/* Create Points */}
         <FormField

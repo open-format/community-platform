@@ -39,7 +39,12 @@ export default function CommunitiesLayout({ children }: { children: React.ReactN
           </Breadcrumb>
         </div>
         <div className="flex items-center space-x-2">
-          <NetworkSelector />
+          <NetworkSelector
+            callback={() => {
+              redirect("/communities");
+            }}
+            hideIfNotSet
+          />
           <Profile logoutAction={handleLogout} />
         </div>
       </nav>
