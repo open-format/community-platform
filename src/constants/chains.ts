@@ -33,6 +33,7 @@ export type Chain = {
     maxFeePerGas: bigint;
     maxPriorityFeePerGas: bigint;
   };
+  testnet: boolean;
 };
 
 export enum ChainName {
@@ -51,6 +52,7 @@ export const chains: Record<ChainName, Chain> = {
     BLOCK_EXPLORER_URL: "https://sepolia.arbiscan.io",
     ...arbitrumSepolia,
     apiChainName: "arbitrum-sepolia",
+    testnet: true,
   },
   aurora: {
     APP_FACTORY_ADDRESS: "0x2eBF7f4572c218217ca01CE2883E3EfF93626a8E",
@@ -58,6 +60,7 @@ export const chains: Record<ChainName, Chain> = {
     BLOCK_EXPLORER_URL: "https://explorer.aurora.dev",
     apiChainName: "aurora",
     ...aurora,
+    testnet: false,
   },
   turbo: {
     APP_FACTORY_ADDRESS: "0x7e405FbA4c29B8B05B5ecF97bA664729C34803B8",
@@ -66,6 +69,7 @@ export const chains: Record<ChainName, Chain> = {
     BLOCK_EXPLORER_URL: "https://explorer.turbo.aurora.dev",
     apiChainName: "turbo",
     ...turboChain,
+    testnet: false,
   },
   base: {
     APP_FACTORY_ADDRESS: "0x2d6f1620b263Ce71862Fa95f6fEAbB6A366478cC",
@@ -73,6 +77,7 @@ export const chains: Record<ChainName, Chain> = {
     BLOCK_EXPLORER_URL: "https://base.blockscout.com",
     apiChainName: "base",
     ...base,
+    testnet: false,
   },
   matchain: {
     APP_FACTORY_ADDRESS: "0xf1811D1D6D9a718312c3c9466D8c4a2601f973e7",
@@ -80,6 +85,7 @@ export const chains: Record<ChainName, Chain> = {
     BLOCK_EXPLORER_URL: "https://matchscan.io/",
     apiChainName: "matchain",
     ...matchain,
+    testnet: false,
   },
 };
 
