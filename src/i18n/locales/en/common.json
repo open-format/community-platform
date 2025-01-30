@@ -1,0 +1,62 @@
+{
+  "loading": "Loading...",
+  "error": "Error",
+  "success": "Success",
+  "copy": {
+    "success": "Copied to clipboard"
+  },
+  "actions": {
+    "create": "Create",
+    "configure": "Configure",
+    "refresh": "Refresh"
+  },
+  "navigation": {
+    "communities": "Communities",
+    "breadcrumbs": {
+      "home": "Home",
+      "communities": "Communities",
+      "overview": "Overview",
+      "settings": "Settings",
+      "rewards": "Rewards",
+      "tokens": "Tokens",
+      "badges": "Badges",
+      "agents": "Community Agents",
+      "logo": {
+        "alt": "Logo"
+      }
+    },
+    "menu": {
+      "overview": "Overview",
+      "settings": "Community Page",
+      "rewards": "Rewards",
+      "tokens": "Tokens",
+      "badges": "Badges",
+      "agents": "Community Agents"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "actions": {
+      "copyAddress": "Copy address",
+      "exportWallet": "Export Wallet",
+      "logout": "Logout"
+    },
+    "toast": {
+      "addressCopied": "Address copied to clipboard"
+    },
+    "connect": {
+      "discord": "Connect Discord",
+      "github": "Connect Github",
+      "button": "Connect {service}",
+      "connected": "Connected to {service}",
+      "ariaLabel": {
+        "connected": "Connected to {service} as {username}",
+        "connect": "Connect {service} account"
+      }
+    },
+    "connected": {
+      "discord": "Connected to Discord",
+      "github": "Connected to Github"
+    }
+  }
+} 

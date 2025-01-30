@@ -1,0 +1,120 @@
+{
+  "title": "Your Communities",
+  "createFirst": {
+    "title": "Create your first community",
+    "description": "Create your first community to start rewarding your community members."
+  },
+  "create": {
+    "title": "Create Community",
+    "description": "Create a new community to start rewarding your community members."
+  },
+  "dialog": {
+    "create": {
+      "button": "Create Community",
+      "title": "Create Community",
+      "description": "Create a new community to start rewarding your community members."
+    }
+  },
+  "form": {
+    "name": {
+      "label": "Name",
+      "placeholder": "Enter community name",
+      "description": "The name of your community"
+    },
+    "network": {
+      "label": "Network",
+      "description": "Select the network for your community"
+    },
+    "submit": "Create Community",
+    "creating": "Creating Community...",
+    "success": "Community created successfully!",
+    "points": {
+      "label": "Community Points",
+      "description": "Create a on-chain points token for your community"
+    },
+    "errors": {
+      "nameExists": "Community name already in use",
+      "failed": "Failed to create community. Please try again."
+    },
+    "toast": {
+      "creating": {
+        "title": "Creating Community",
+        "description": "Deploying your community on-chain..."
+      },
+      "creatingPoints": {
+        "title": "Creating Points Token",
+        "description": "Deploying your community points token..."
+      }
+    },
+    "createCommunity": {
+      "name": {
+        "label": "Name",
+        "placeholder": "Enter community name",
+        "description": "The name of your community. Please note, due to the immutable nature of the blockchain this value can not be changed."
+      },
+      "network": {
+        "label": "Network",
+        "description": "Select the network where you want to create your community"
+      },
+      "points": {
+        "label": "Community Points",
+        "description": "Create a on-chain points token for your community"
+      },
+      "errors": {
+        "nameExists": "Community name already in use",
+        "failed": "Failed to create community. Please try again."
+      },
+      "toast": {
+        "creating": {
+          "title": "Creating Community",
+          "description": "Deploying your community on-chain..."
+        },
+        "creatingPoints": {
+          "title": "Creating Points Token",
+          "description": "Deploying your community points token..."
+        }
+      }
+    }
+  },
+  "navigation": {
+    "overview": "Overview",
+    "settings": "Community Page",
+    "rewards": "Rewards",
+    "tokens": "Tokens",
+    "badges": "Badges",
+    "agents": "Community Agents"
+  },
+  "shortcuts": {
+    "badges": {
+      "title": "Create Badges & Tokens",
+      "description": "Create badges and tokens you can reward to your community",
+      "actions": {
+        "badges": "Create badges",
+        "tokens": "Create tokens"
+      }
+    },
+    "rewards": {
+      "title": "Reward your community",
+      "description": "Reward your community for their contributions",
+      "actions": {
+        "send": "Send reward"
+      }
+    }
+  },
+  "agents": {
+    "comingSoon": "coming soon",
+    "beta": {
+      "description": "If you're interested in joining our agents beta, come join us in",
+      "discord": "Discord"
+    },
+    "chat": {
+      "title": "What can I help you with?",
+      "placeholder": "Ask me a question...",
+      "examples": {
+        "github": "Reward the top GitHub contributors",
+        "discord": "Send 10 point tokens to tinypell3ts on Discord",
+        "members": "Who are the new members of the community this week?"
+      }
+    }
+  }
+} 
