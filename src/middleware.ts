@@ -1,8 +1,12 @@
 import { getCurrentUser } from "@/lib/privy";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { i18nMiddleware } from './translationMiddleware/i18n';
 
 export async function middleware(request: NextRequest) {
+  // First handle i18n
+  const i18nResponse = await i18nMiddleware(request);
+  
   const user = await getCurrentUser();
 
   // Redirect to /communities if user is logged in and on home page or auth page
@@ -23,9 +27,16 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  // If no redirects needed, return the i18n response
+  return i18nResponse;
 }
 
 export const config = {
-  matcher: ["/", "/(authenticated)/:path*", "/auth"],
+  // Add i18n paths to matcher while preserving existing ones
+  matcher: [
+    '/',
+    '/(en)/:path*',
+    '/auth',
+    '/(authenticated)/:path*',
+  ]
 };
