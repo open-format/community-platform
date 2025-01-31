@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
-import { useTranslations } from 'next-intl';
+import {NextIntlClientProvider} from 'next-intl';
+import {getLocale, getMessages} from 'next-intl/server';
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -15,22 +16,21 @@ export const metadata: Metadata = {
   description: "On-chain rewards for your community",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const t = useTranslations('Index');
+  const locale = await getLocale();
+  const messages = await getMessages();
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <title>{t('title')}</title>
-        <meta name="description" content={t('description')} />
-      </head>
+    <html lang={locale} suppressHydrationWarning>
       <body className={`${manrope.variable} antialiased`}>
         <Providers>
-          <main>{children}</main>
+          <NextIntlClientProvider messages={messages}>
+            <main>{children}</main>
+          </NextIntlClientProvider>
         </Providers>
         <Toaster position="top-center" />
       </body>
