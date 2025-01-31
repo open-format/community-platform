@@ -1,31 +1,48 @@
 {
-    "common": {
-      "loading": "Loading...",
-  "error": "Error",
-  "success": "Success",
-  "copy": {
-    "success": "Copied to clipboard"
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "comingSoon": "coming soon",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "close": "Close",
+    "confirm": "Confirm",
+    "optional": "Optional",
+    "required": "Required",
+    "submit": "Submit",
+    "refresh": "Refresh",
+    "noResults": "No results found",
+    "learnMore": "Learn More"
   },
-  "actions": {
-    "create": "Create",
-    "configure": "Configure",
-    "refresh": "Refresh"
+  "auth": {
+    "notice": "Notice: Aurora and Turbo chains don't currently support social logins. We're working on a fix.",
+    "login": "Login",
+    "logout": "Logout",
+    "connecting": "Connecting...",
+    "byeMessage": {
+      "title": "Bye Friend! 👋😢",
+      "description": "Hope to see you again soon!"
+    }
+  },
+  "validation": {
+    "required": "This field is required",
+    "minLength": "Must be at least {min} characters",
+    "maxLength": "Must be less than {max} characters",
+    "invalidUrl": "Please enter a valid URL",
+    "invalidImageUrl": "Please provide a valid image URL",
+    "invalidColor": "Invalid color hex code",
+    "invalidAddress": "Invalid address",
+    "numberRequired": "Please enter a number",
+    "positiveNumber": "Please enter a positive number",
+    "slugFormat": "Only lowercase letters, numbers, and hyphens are allowed"
   },
   "navigation": {
-    "communities": "Communities",
-    "breadcrumbs": {
-      "home": "Home",
-      "communities": "Communities",
-      "overview": "Overview",
-      "settings": "Settings",
-      "rewards": "Rewards",
-      "tokens": "Tokens",
-      "badges": "Badges",
-      "agents": "Community Agents",
-      "logo": {
-        "alt": "Logo"
-      }
-    },
     "menu": {
       "overview": "Overview",
       "settings": "Community Page",
@@ -33,158 +50,211 @@
       "tokens": "Tokens",
       "badges": "Badges",
       "agents": "Community Agents"
+    },
+    "breadcrumbs": {
+      "communities": "Communities",
+      "back": "Back"
     }
   },
-  "profile": {
-    "title": "Profile",
-    "actions": {
-      "copyAddress": "Copy address",
-      "exportWallet": "Export Wallet",
-      "logout": "Logout"
+  "communities": {
+    "title": "Your Communities",
+    "createFirst": "Create your first community",
+    "createDescription": "Create your first community to start rewarding your community members.",
+    "errorLoading": {
+      "title": "We're sorry 😭",
+      "description": "There was an error loading your community.",
+      "suggestion": "Please double check the URL and try refreshing the page."
     },
-    "toast": {
-      "addressCopied": "Address copied to clipboard"
-    },
-    "connect": {
-      "discord": "Connect Discord",
-      "github": "Connect Github",
-      "button": "Connect {service}",
-      "connected": "Connected to {service}",
-      "ariaLabel": {
-        "connected": "Connected to {service} as {username}",
-        "connect": "Connect {service} account"
-      }
-    },
-    "connected": {
-      "discord": "Connected to Discord",
-      "github": "Connected to Github"
-    }
-  }
-    },
-    "auth": {
-      "login": "Login",
-  "logout": "Logout",
-  "exportWallet": "Export Wallet",
-  "notice": "Notice: Aurora and Turbo chains don't currently support social logins. We're working on a fix."
-    },
-    "communities": {
-      "title": "Your Communities",
-  "createFirst": {
-    "title": "Create your first community",
-    "description": "Create your first community to start rewarding your community members."
-  },
-  "create": {
-    "title": "Create Community",
-    "description": "Create a new community to start rewarding your community members."
-  },
-  "dialog": {
-    "create": {
-      "button": "Create Community",
-      "title": "Create Community",
-      "description": "Create a new community to start rewarding your community members."
-    }
-  },
-  "form": {
-    "name": {
-      "label": "Name",
-      "placeholder": "Enter community name",
-      "description": "The name of your community"
-    },
-    "network": {
-      "label": "Network",
-      "description": "Select the network for your community"
-    },
-    "submit": "Create Community",
-    "creating": "Creating Community...",
-    "success": "Community created successfully!",
-    "points": {
-      "label": "Community Points",
-      "description": "Create a on-chain points token for your community"
-    },
-    "errors": {
-      "nameExists": "Community name already in use",
-      "failed": "Failed to create community. Please try again."
-    },
-    "toast": {
-      "creating": {
-        "title": "Creating Community",
-        "description": "Deploying your community on-chain..."
-      },
-      "creatingPoints": {
-        "title": "Creating Points Token",
-        "description": "Deploying your community points token..."
-      }
-    },
-    "createCommunity": {
+    "notFound": "Community not found",
+    "form": {
       "name": {
-        "label": "Name",
+        "label": "Community Name",
         "placeholder": "Enter community name",
-        "description": "The name of your community. Please note, due to the immutable nature of the blockchain this value can not be changed."
+        "description": "What's your community called?"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Enter community description",
+        "description": "Tell us about your community"
+      },
+      "slug": {
+        "label": "URL Slug",
+        "placeholder": "your-community-name",
+        "description": "This will be used in your community's URL"
       },
       "network": {
         "label": "Network",
-        "description": "Select the network where you want to create your community"
-      },
-      "points": {
-        "label": "Community Points",
-        "description": "Create a on-chain points token for your community"
-      },
-      "errors": {
-        "nameExists": "Community name already in use",
-        "failed": "Failed to create community. Please try again."
-      },
-      "toast": {
-        "creating": {
-          "title": "Creating Community",
-          "description": "Deploying your community on-chain..."
-        },
-        "creatingPoints": {
-          "title": "Creating Points Token",
-          "description": "Deploying your community points token..."
-        }
+        "description": "Select the blockchain network for your community"
       }
     }
   },
-  "navigation": {
-    "overview": "Overview",
-    "settings": "Community Page",
-    "rewards": "Rewards",
-    "tokens": "Tokens",
-    "badges": "Badges",
-    "agents": "Community Agents"
+  "communitySettings": {
+    "title": "Community Page",
+    "description": "Here you can configure your public community page.",
+    "viewPage": "View Community Page",
+    "form": {
+      "title": {
+        "label": "Title",
+        "description": "The name of your community (max 32 characters)"
+      },
+      "description": {
+        "label": "Description",
+        "description": "A brief description of your community"
+      },
+      "accentColor": {
+        "label": "Accent Color",
+        "description": "The main color for your community page"
+      },
+      "userLabel": {
+        "label": "User Label",
+        "description": "How to refer to members in your community"
+      },
+      "tokenLabel": {
+        "label": "Token Label",
+        "description": "What to call your community's points/tokens"
+      },
+      "darkMode": {
+        "label": "Dark Mode",
+        "description": "Enable dark mode for your community page"
+      },
+      "tokenToDisplay": {
+        "label": "Token to Display",
+        "description": "Select which token to show on your community page"
+      },
+      "bannerUrl": {
+        "label": "Banner Image URL",
+        "description": "URL for your community banner (must be an image)"
+      },
+      "socialHandles": {
+        "label": "Show Social Handles",
+        "description": "Display social handles in the leaderboard when available"
+      },
+      "tiers": {
+        "label": "Tiers",
+        "addTier": "Add Tier",
+        "removeTier": "Remove Tier",
+        "name": "Tier Name",
+        "pointsRequired": "Points Required",
+        "color": "Tier Color"
+      }
+    }
   },
-  "shortcuts": {
-    "badges": {
-      "title": "Create Badges & Tokens",
-      "description": "Create badges and tokens you can reward to your community",
-      "actions": {
-        "badges": "Create badges",
-        "tokens": "Create tokens"
+  "overview": {
+    "leaderboard": {
+      "title": "Leaderboard",
+      "description": "A list of members who have earned the most points in this community.",
+      "empty": "No members yet"
+    },
+    "activity": {
+      "title": "Activity",
+      "description": "A list of the most recent rewards in this community.",
+      "empty": "No activity yet",
+      "viewAll": "View All"
+    }
+  },
+  "rewards": {
+    "form": {
+      "user": {
+        "label": "User",
+        "placeholder": "Enter user address or ENS"
+      },
+      "token": {
+        "label": "Token",
+        "placeholder": "Select token"
+      },
+      "amount": {
+        "label": "Amount",
+        "placeholder": "Enter amount"
+      },
+      "metadata": {
+        "label": "Metadata",
+        "key": "Key",
+        "value": "Value",
+        "add": "Add Metadata"
       }
     },
-    "rewards": {
+    "success": {
+      "title": "Reward Sent Successfully! 🎉",
+      "description": "The reward has been successfully sent to the member",
+      "viewActivity": "View in Activity",
+      "viewTransaction": "View Transaction"
+    }
+  },
+  "shortcuts": {
+    "configureCommunity": {
+      "title": "Configure and share community page",
+      "description": "Configure your community page and share it with your members.",
+      "configure": "Configure",
+      "copyInvite": "Copy invite link"
+    },
+    "createBadgesTokens": {
+      "title": "Create Badges & Tokens",
+      "description": "Create badges and tokens you can reward to your community.",
+      "createBadges": "Create badges",
+      "createTokens": "Create tokens"
+    },
+    "rewardCommunity": {
       "title": "Reward your community",
-      "description": "Reward your community for their contributions",
-      "actions": {
-        "send": "Send reward"
-      }
+      "description": "Reward your community for their contributions.",
+      "sendReward": "Send reward"
+    }
+  },
+  "dialogs": {
+    "createCommunity": {
+      "title": "Create Community",
+      "description": "Create a new community to start rewarding your community members.",
+      "button": "Create Community"
+    },
+    "rewardSuccess": {
+      "title": "Reward Sent Successfully! 🎉",
+      "description": "The reward has been successfully sent to the member",
+      "viewActivity": "View in Activity",
+      "viewTransaction": "View Transaction"
+    },
+    "deleteConfirm": {
+      "title": "Are you sure?",
+      "description": "This action cannot be undone.",
+      "confirm": "Yes, delete",
+      "cancel": "No, keep it"
     }
   },
   "agents": {
-    "comingSoon": "coming soon",
-    "beta": {
-      "description": "If you're interested in joining our agents beta, come join us in",
-      "discord": "Discord"
-    },
-    "chat": {
-      "title": "What can I help you with?",
-      "placeholder": "Ask me a question...",
-      "examples": {
-        "github": "Reward the top GitHub contributors",
-        "discord": "Send 10 point tokens to tinypell3ts on Discord",
-        "members": "Who are the new members of the community this week?"
-      }
+    "title": "What can I help you with?",
+    "placeholder": "Ask me a question...",
+    "discordInvite": "If you're interested in joining our agents beta, come join us in Discord.",
+    "suggestions": {
+      "github": "Reward the top GitHub contributors",
+      "discord": "Send 10 point tokens to tinypell3ts on Discord",
+      "members": "Who are the new members of the community this week?"
     }
+  },
+  "networkSelector": {
+    "title": "Select Network",
+    "description": "Choose the blockchain network",
+    "search": "Search networks...",
+    "noResults": "No networks found",
+    "switchingNetwork": "Switching network..."
+  },
+  "profile": {
+    "copyAddress": "Copy Address",
+    "disconnect": "Disconnect",
+    "settings": "Settings"
+  },
+  "errors": {
+    "general": "Something went wrong",
+    "tryAgain": "Please try again",
+    "networkError": "Network error",
+    "connectionError": "Connection error",
+    "transactionFailed": "Transaction failed",
+    "insufficientFunds": "Insufficient funds",
+    "invalidAddress": "Invalid address",
+    "unauthorized": "Unauthorized",
+    "notFound": "Not found"
+  },
+  "transactions": {
+    "pending": "Transaction pending...",
+    "confirmed": "Transaction confirmed",
+    "failed": "Transaction failed",
+    "viewExplorer": "View in Explorer"
   }
-    }
-  }
+}
