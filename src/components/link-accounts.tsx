@@ -3,11 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePrivy } from "@privy-io/react-auth";
+import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import Discord from "../../public/icons/discord.svg";
 import Github from "../../public/icons/github.svg";
 
 export default function LinkAccounts() {
+  const t = useTranslations('accounts');
   const { user, linkDiscord, unlinkDiscord, ready, linkGithub, unlinkGithub, login, authenticated } = usePrivy();
 
   const services = [
@@ -52,8 +54,8 @@ export default function LinkAccounts() {
           aria-disabled={Boolean(service.linkedAccount)}
           aria-label={
             service.linkedAccount
-              ? `Connected to ${service.id} as ${service.linkedAccount}`
-              : `Connect ${service.id} account`
+              ? t('ariaLabels.connected', { service: service.id, username: service.linkedAccount })
+              : t('ariaLabels.connect', { service: service.id })
           }
         >
           {service.linkedAccount ? (
@@ -62,10 +64,10 @@ export default function LinkAccounts() {
                 {service.icon}
                 {service.linkedAccount}
               </div>
-              <span className="sr-only">Connected to {service.id}</span>
+              <span className="sr-only">{t('connected', { service: service.id })}</span>
             </>
           ) : (
-            <span className="capitalize">Connect {service.id}</span>
+            <span className="capitalize">{t('connect', { service: service.id })}</span>
           )}
         </Button>
       ))}
