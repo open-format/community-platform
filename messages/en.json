@@ -28,7 +28,8 @@
     "byeMessage": {
       "title": "Bye Friend! 👋😢",
       "description": "Hope to see you again soon!"
-    }
+    },
+    "loading": "Loading authentication"
   },
   "validation": {
     "required": "This field is required",
@@ -233,12 +234,20 @@
     "description": "Choose the blockchain network",
     "search": "Search networks...",
     "noResults": "No networks found",
-    "switchingNetwork": "Switching network..."
+    "switchingNetwork": "Switching network...",
+    "selectNetwork": "Select Network",
+    "mainnets": "Mainnets",
+    "testnets": "Testnets",
+    "balance": "Balance: {amount} {symbol}"
   },
   "profile": {
     "copyAddress": "Copy Address",
     "disconnect": "Disconnect",
-    "settings": "Settings"
+    "settings": "Settings",
+    "addressCopied": "Address copied to clipboard",
+    "exportWallet": "Export Wallet",
+    "logout": "Logout",
+    "login": "Login"
   },
   "errors": {
     "general": "Something went wrong",
@@ -256,5 +265,132 @@
     "confirmed": "Transaction confirmed",
     "failed": "Transaction failed",
     "viewExplorer": "View in Explorer"
+  },
+  "accounts": {
+    "title": "Accounts",
+    "connect": "Connect {service}",
+    "connected": "Connected to {service}",
+    "ariaLabels": {
+      "connect": "Connect {service} account",
+      "connected": "Connected to {service} as {username}",
+      "disconnect": "Disconnect {service} account"
+    }
+  },
+  "activity": {
+    "noActivity": "No activity yet",
+    "userAddress": "user: {address}",
+    "ariaLabels": {
+      "viewTransaction": "View transaction in block explorer"
+    }
+  },
+  "badges": {
+    "createFirst": "Create your first badge to get started",
+    "rewardBadge": "Reward Badge",
+    "errors": {
+      "fetchMetadata": "Error fetching metadata:"
+    },
+    "collected": {
+      "title": "Collected Badges",
+      "badgeImageAlt": "{name} badge image"
+    },
+    "community": {
+      "title": "Badges",
+      "description": "Badges available to collect in this community",
+      "noBadges": "This community has no badges yet",
+      "viewBadge": "View",
+      "notCollected": "Not Collected",
+      "imageAlt": "Badge image",
+      "errors": {
+        "fetchMetadata": "Error fetching metadata:"
+      },
+      "ariaLabels": {
+        "viewBadge": "View badge on block explorer"
+      }
+    }
+  },
+  "community": {
+    "banner": {
+      "bannerImageAlt": "Community banner image",
+      "gradientBannerAlt": "Community gradient banner"
+    },
+    "info": {
+      "ariaLabels": {
+        "title": "Community title",
+        "description": "Community description"
+      }
+    },
+    "preview": {
+      "tabs": {
+        "leaderboard": "Leaderboard",
+        "badges": "Badges",
+        "activity": "Activity"
+      }
+    },
+    "profile": {
+      "ariaLabels": {
+        "profileSection": "Community profile and account links"
+      }
+    }
+  },
+  "communitySelector": {
+    "loading": "Loading...",
+    "selectCommunity": "Select community...",
+    "searchPlaceholder": "Search communities...",
+    "noResults": "No communities found."
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "ariaLabels": {
+      "toggle": "Toggle theme"
+    }
+  },
+  "tiers": {
+    "title": "Tier Progress",
+    "currentTier": "Current Tier",
+    "nextTier": "Next Tier",
+    "earned": "earned",
+    "maxTierReached": "Max tier reached",
+    "maxTierReachedWithPoints": "Max tier reached ({points} {tokenLabel})",
+    "pointsToNextTier": "{points} {tokenLabel} to {tierName}",
+    "pointsToFirstTier": "{points} {tokenLabel} to {tierName}"
+  },
+  "tokens": {
+    "noTokens": "No tokens found",
+    "name": "Name",
+    "id": "ID",
+    "type": "Type",
+    "created": "Created",
+    "tooltips": {
+      "erc20": "ERC20: Standard fungible token",
+      "points": "Points: Non-transferable community points"
+    },
+    "ariaLabels": {
+      "viewToken": "View {name} token on block explorer"
+    }
+  },
+  "tokenSelector": {
+    "searchPlaceholder": "Search or enter token address...",
+    "noTokens": "No tokens found",
+    "youCan": "You can",
+    "enterAddress": "Enter a valid contract address",
+    "createNew": "Create a new token or badge in your community",
+    "tokens": "Tokens",
+    "badges": "Badges"
+  },
+  "userSelector": {
+    "icons": {
+      "discord": "Discord",
+      "telegram": "Telegram"
+    },
+    "inputPlaceholder": "Enter wallet address, discord handle, or telegram handle",
+    "finding": "Finding...",
+    "findUser": "Find User",
+    "ariaLabels": {
+      "userFound": "User found",
+      "userNotFound": "User not found"
+    }
   }
 }
