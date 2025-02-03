@@ -1,13 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useTranslations } from 'next-intl';
 
 export default function Loading() {
+  const t = useTranslations('tokens');
+  
   return (
     <Card variant="borderless">
       <CardHeader>
         <div className="flex justify-between items-center">
-          <CardTitle>Tokens</CardTitle>
+          <CardTitle>{t('title')}</CardTitle>
           <Skeleton className="h-10 w-[140px]" /> {/* Approximate button size */}
         </div>
       </CardHeader>
@@ -15,10 +18,10 @@ export default function Loading() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>ID</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Created</TableHead>
+              <TableHead>{t('table.name')}</TableHead>
+              <TableHead>{t('table.id')}</TableHead>
+              <TableHead>{t('table.type')}</TableHead>
+              <TableHead>{t('table.created')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
