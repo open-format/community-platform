@@ -1,11 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslations } from 'next-intl';
 
 export default function LoadingCommunitySettings() {
+  const t = useTranslations('settings');
+  
   return (
     <Card variant="borderless">
       <CardHeader>
-        <CardTitle>Community Page</CardTitle>
+        <CardTitle>{t('title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="w-full space-y-4">
