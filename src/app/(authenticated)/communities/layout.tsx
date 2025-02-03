@@ -12,12 +12,16 @@ import {
 } from "@/components/ui/breadcrumb";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { useTranslations } from 'next-intl';
 import OFLogo from "../../../../public/images/of-logo.png";
 
 export default function CommunitiesLayout({ children }: { children: React.ReactNode }) {
+  const t = useTranslations('layout');
+  
   function handleLogout() {
     redirect("/logout");
   }
+  
   return (
     <div>
       <nav className="p-5 flex justify-between">
@@ -25,11 +29,11 @@ export default function CommunitiesLayout({ children }: { children: React.ReactN
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <Image src={OFLogo} alt="Logo" width={48} height={48} className="rounded-md" />
+                <Image src={OFLogo} alt={t('logo')} width={48} height={48} className="rounded-md" />
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/communities">Communities</BreadcrumbLink>
+                <BreadcrumbLink href="/communities">{t('communities')}</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
