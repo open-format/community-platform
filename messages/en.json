@@ -144,7 +144,11 @@
     "leaderboard": {
       "title": "Leaderboard",
       "description": "A list of members who have earned the most points in this community.",
-      "empty": "No members yet"
+      "empty": "No members yet",
+      "rank": "Rank",
+      "user": "User",
+      "points": "Points",
+      "noData": "No leaderboard data available"
     },
     "activity": {
       "title": "Activity",
