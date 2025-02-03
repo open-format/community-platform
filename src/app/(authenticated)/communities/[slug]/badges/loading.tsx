@@ -1,13 +1,16 @@
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslations } from 'next-intl';
 
 export default function Loading() {
+  const t = useTranslations('badges');
+  
   return (
     <Card variant="borderless">
       <CardHeader>
         <div className="flex justify-between items-center">
-          <CardTitle>Badges</CardTitle>
+          <CardTitle>{t('title')}</CardTitle>
           <Skeleton className="h-10 w-32" />
         </div>
       </CardHeader>
