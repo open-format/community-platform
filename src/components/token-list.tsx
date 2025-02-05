@@ -3,7 +3,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { getChainFromCommunityOrCookie } from "@/lib/openformat";
 import { timeAgo } from "@/lib/utils";
 import { ExternalLinkIcon, HelpCircle } from "lucide-react";
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import Link from "next/link";
 
 interface TokenListProps {
@@ -12,7 +12,7 @@ interface TokenListProps {
 
 export default async function TokenList({ tokens }: TokenListProps) {
   const chain = await getChainFromCommunityOrCookie();
-  const t = useTranslations('tokens');
+  const t = await getTranslations('tokens');
   const tokenTypes = {
     Base: "ERC20",
     Point: "Points",
