@@ -484,7 +484,28 @@
     "maxTierReached": "Max tier reached",
     "maxTierReachedWithPoints": "Max tier reached ({points} {tokenLabel})",
     "pointsToNextTier": "{points} {tokenLabel} to {tierName}",
-    "pointsToFirstTier": "{points} {tokenLabel} to {tierName}"
+    "pointsToFirstTier": "{points} {tokenLabel} to {tierName}",
+    "loading": "Loading tiers...",
+    "validation": {
+      "nameRequired": "Name is required",
+      "pointsRequired": "Points are required",
+      "pointsMin": "Points must be at least 1",
+      "invalidColorHex": "Invalid color hex code",
+      "uniqueName": "Tier name must be unique"
+    },
+    "fields": {
+      "name": {
+        "placeholder": "Tier Name"
+      },
+      "points": {
+        "placeholder": "Points Required"
+      }
+    },
+    "buttons": {
+      "remove": "Remove",
+      "addTier": "Add Tier",
+      "saveTiers": "Save Tiers"
+    }
   },
   "tokens": {
     "noTokens": "No tokens found",

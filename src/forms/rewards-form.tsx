@@ -25,29 +25,10 @@ import { toast } from "sonner";
 import { type Address, BaseError, erc20Abi, formatEther, maxUint256, parseEther, stringToHex } from "viem";
 import { useConfig } from "wagmi";
 import * as z from "zod";
-
-const rewardsFormSchema = z.object({
-  user: z.string().min(1, "User handle is required"),
-  tokenAddress: z.string().min(1, "Token is required"),
-  amount: z.coerce.number().min(10 ** -18, "Amount must be at least 0.000000000000000001"),
-  rewardId: z.string().min(3, "Reward ID must be at least 3 characters"),
-  actionType: z.enum(["mint", "transfer"]).default("mint"),
-  metadata: z
-    .array(
-      z.object({
-        key: z.string().min(1, "Key is required"),
-        value: z.string().min(1, "Value is required"),
-      })
-    )
-    .optional()
-    .default([])
-    // @TODO fix types
-    .transform((arr) => arr.reduce((acc, { key, value }) => ({ ...acc, [key]: value }), {})),
-});
-
-type RewardsFormValues = z.infer<typeof rewardsFormSchema>;
+import { useTranslations } from "use-intl";
 
 export default function RewardsForm({ community }: { community: Community }) {
+  const t = useTranslations('rewards');
   const [isPending, startTransition] = useTransition();
   const { user } = usePrivy();
   const [showConfetti, setShowConfetti] = useState(false);
@@ -56,7 +37,25 @@ export default function RewardsForm({ community }: { community: Community }) {
   const [transactionHash, setTransactionHash] = useState<string | undefined>(undefined);
   const [tokenBalance, setTokenBalance] = useState<bigint | undefined>(undefined);
 
-  const form = useForm<RewardsFormValues>({
+  const rewardsFormSchema = z.object({
+    user: z.string().min(1, t('form.validation.userRequired')),
+    tokenAddress: z.string().min(1, t('form.validation.tokenRequired')),
+    amount: z.coerce.number().min(10 ** -18, t('form.validation.amountMin')),
+    rewardId: z.string().min(3, t('form.validation.rewardIdMin')),
+    actionType: z.enum(["mint", "transfer"]).default("mint"),
+    metadata: z
+      .array(
+        z.object({
+          key: z.string().min(1, t('form.validation.keyRequired')),
+          value: z.string().min(1, t('form.validation.valueRequired')),
+        })
+      )
+      .optional()
+      .default([])
+      .transform((arr) => arr.reduce((acc, { key, value }) => ({ ...acc, [key]: value }), {})),
+  });
+
+  const form = useForm<z.infer<typeof rewardsFormSchema>>({
     resolver: zodResolver(rewardsFormSchema),
     defaultValues: {
       user: "",
@@ -103,10 +102,10 @@ export default function RewardsForm({ community }: { community: Community }) {
     fetchTokenBalance();
   }, [user?.wallet?.address, form.watch("tokenAddress"), config]);
 
-  function onSubmit(data: RewardsFormValues) {
+  function onSubmit(data: z.infer<typeof rewardsFormSchema>) {
     try {
       startTransition(async () => {
-        const toastId = toast.loading("Processing reward...");
+        const toastId = toast.loading(t('form.toast.processing'));
 
         try {
           // Check if selected token is a badge or token
@@ -138,7 +137,7 @@ export default function RewardsForm({ community }: { community: Community }) {
               hash: badgeTransaction,
             });
             setTransactionHash(receipt.transactionHash);
-            toast.success("Badge successfully awarded!", { id: toastId });
+            toast.success(t('form.toast.badgeSuccess'), { id: toastId });
           } else if (data.actionType === "mint") {
             // Handle ERC20 token minting
             const hash = await writeContract(config, {
@@ -156,7 +155,7 @@ export default function RewardsForm({ community }: { community: Community }) {
             });
 
             const receipt = await waitForTransactionReceipt(config, { hash });
-            toast.success("Tokens successfully awarded!", { id: toastId });
+            toast.success(t('form.toast.tokensSuccess'), { id: toastId });
             setTransactionHash(receipt.transactionHash);
             form.reset();
           } else {
@@ -194,7 +193,7 @@ export default function RewardsForm({ community }: { community: Community }) {
             const receipt = await waitForTransactionReceipt(config, {
               hash: transferHash,
             });
-            toast.success("Tokens successfully transferred!", { id: toastId });
+            toast.success(t('form.toast.transferSuccess'), { id: toastId });
             setTransactionHash(receipt.transactionHash);
             form.reset();
           }
@@ -209,11 +208,11 @@ export default function RewardsForm({ community }: { community: Community }) {
           if (error instanceof BaseError) {
             handleViemError(error);
           }
-          toast.error("Failed to process reward", { id: toastId });
+          toast.error(t('form.toast.error.failed'), { id: toastId });
         }
       });
     } catch (e) {
-      toast.error("An unexpected error occurred");
+      toast.error(t('form.toast.error.generic'));
     }
   }
 
@@ -227,7 +226,7 @@ export default function RewardsForm({ community }: { community: Community }) {
           name="user"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>User Handle</FormLabel>
+              <FormLabel>{t('form.user.label')}</FormLabel>
               <FormControl>
                 <UserSelector field={field} />
               </FormControl>
@@ -243,7 +242,7 @@ export default function RewardsForm({ community }: { community: Community }) {
             name="tokenAddress"
             render={({ field }) => (
               <FormItem className="col-span-2 flex flex-col gap-2">
-                <FormLabel>Token or Badge</FormLabel>
+                <FormLabel>{t('form.token.label')}</FormLabel>
                 <FormControl>
                   <TokenSelector
                     tokens={community.tokens}
@@ -274,7 +273,7 @@ export default function RewardsForm({ community }: { community: Community }) {
                   <TooltipTrigger asChild>
                     <FormItem>
                       <FormLabel className="flex items-center gap-2">
-                        <p>Action Type</p>
+                        <p>{t('form.fields.actionType.label')}</p>
                         <HelpCircle className="h-4 w-4 text-muted-foreground" />
                       </FormLabel>
                       <FormControl>
@@ -295,10 +294,10 @@ export default function RewardsForm({ community }: { community: Community }) {
                           }
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Select action" />
+                            <SelectValue placeholder={t('form.fields.actionType.placeholder')} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="mint">Mint</SelectItem>
+                            <SelectItem value="mint">{t('form.fields.actionType.options.mint')}</SelectItem>
                             <SelectItem
                               value="transfer"
                               disabled={
@@ -307,7 +306,7 @@ export default function RewardsForm({ community }: { community: Community }) {
                                 (!tokenBalance || tokenBalance === 0n)
                               }
                             >
-                              Transfer
+                              {t('form.fields.actionType.options.transfer')}
                             </SelectItem>
                           </SelectContent>
                         </Select>
@@ -316,13 +315,9 @@ export default function RewardsForm({ community }: { community: Community }) {
                     </FormItem>
                   </TooltipTrigger>
                   <TooltipContent side="top" align="start" className="max-w-prose space-y-2">
-                    <p>Mint: Create new tokens for the user, no existing balance required.</p>
-                    <p>
-                      Transfer: Requires approval and sufficient balance. If your connected wallet does not have enough
-                      balance, the transfer option will be disabled.
-                    </p>
-
-                    <p>Action type is fixed to Mint for badges.</p>
+                    <p>{t('form.fields.actionType.tooltip.mint')}</p>
+                    <p>{t('form.fields.actionType.tooltip.transfer')}</p>
+                    <p>{t('form.fields.actionType.tooltip.badges')}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -336,11 +331,11 @@ export default function RewardsForm({ community }: { community: Community }) {
           name="amount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Amount</FormLabel>
+              <FormLabel>{t('form.amount.label')}</FormLabel>
               <FormControl>
                 <Input
                   type="number"
-                  placeholder="Enter amount"
+                  placeholder={t('form.amount.placeholder')}
                   value={isSelectedBadge(form.watch("tokenAddress")) ? 1 : field.value ?? ""}
                   onChange={(e) => {
                     if (!isSelectedBadge(form.watch("tokenAddress"))) {
@@ -356,7 +351,7 @@ export default function RewardsForm({ community }: { community: Community }) {
                       if (inputAmount > tokenBalanceInEther) {
                         form.setError("amount", {
                           type: "manual",
-                          message: `Insufficient balance. Max available: ${tokenBalanceInEther.toFixed(4)} tokens`,
+                          message: t('form.validation.insufficientBalance', { balance: tokenBalanceInEther.toFixed(4) }),
                         });
                       } else {
                         form.clearErrors("amount");
@@ -377,10 +372,10 @@ export default function RewardsForm({ community }: { community: Community }) {
           name="rewardId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Reward Identifier</FormLabel>
+              <FormLabel>{t('form.fields.rewardId.label')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="welcome-to-the-community, first-post, bug-fix etc."
+                  placeholder={t('form.fields.rewardId.placeholder')}
                   {...field}
                   onBlur={(e) => {
                     field.onChange(
@@ -403,7 +398,7 @@ export default function RewardsForm({ community }: { community: Community }) {
           render={() => (
             <FormItem>
               <div className="flex items-center justify-between">
-                <FormLabel>Metadata (Optional)</FormLabel>
+                <FormLabel>{t('form.metadata.label')}</FormLabel>
                 <Button
                   type="button"
                   variant="outline"
@@ -412,7 +407,7 @@ export default function RewardsForm({ community }: { community: Community }) {
                   className="h-8"
                 >
                   <Plus className="h-4 w-4 mr-1" />
-                  Add Field
+                  {t('form.metadata.add')}
                 </Button>
               </div>
               <FormControl>
@@ -421,13 +416,13 @@ export default function RewardsForm({ community }: { community: Community }) {
                     <div key={item.id} className="flex items-center gap-2">
                       <Input
                         type="text"
-                        placeholder="Key"
+                        placeholder={t('form.metadata.key')}
                         className="flex-1"
                         {...form.register(`metadata.${index}.key`)}
                       />
                       <Input
                         type="text"
-                        placeholder="Value"
+                        placeholder={t('form.metadata.value')}
                         className="flex-1"
                         {...form.register(`metadata.${index}.value`)}
                       />
@@ -450,7 +445,7 @@ export default function RewardsForm({ community }: { community: Community }) {
         />
 
         <Button type="submit" className="w-full" disabled={isPending || !form.formState.isValid}>
-          {isPending ? "Rewarding..." : "Reward"}
+          {isPending ? t('form.buttons.rewarding') : t('form.buttons.reward')}
         </Button>
       </form>
       <RewardSuccessDialog
