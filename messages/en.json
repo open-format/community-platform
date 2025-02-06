@@ -285,6 +285,7 @@
     "title": "What can I help you with?",
     "placeholder": "Ask me a question...",
     "discordInvite": "If you're interested in joining our agents beta, come join us in Discord.",
+    "comingSoon": "Coming Soon",
     "suggestions": {
       "github": "Reward the top GitHub contributors",
       "discord": "Send 10 point tokens to tinypell3ts on Discord",
