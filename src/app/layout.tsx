@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
+import { getMessages } from '@/i18n/request';
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -14,15 +15,17 @@ export const metadata: Metadata = {
   description: "On-chain rewards for your community",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { locale, messages } = await getMessages();
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body className={`${manrope.variable} antialiased`}>
-        <Providers>
+        <Providers messages={messages} locale={locale}>
           <main>{children}</main>
         </Providers>
         <Toaster position="top-center" />

@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useTranslations } from 'next-intl';
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -28,22 +29,25 @@ import { useState } from "react";
 import { parseEther, stringToHex } from "viem";
 import { useConfig } from "wagmi";
 
-const FormSchema = z.object({
-  name: z.string().min(3).max(32),
-  symbol: z.string().min(3),
-  type: z.enum(["Base", "Point"]),
-  initialSupply: z.string().min(0).optional(),
-});
-
 interface CreateTokenFormProps {
   community: Community;
 }
 
 export function CreateTokenForm({ community }: CreateTokenFormProps) {
+  const t = useTranslations('tokens.create');
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { triggerConfetti } = useConfetti();
   const [shouldRevalidate, setShouldRevalidate] = useState(false);
   useRevalidate(shouldRevalidate);
+
+  const FormSchema = z.object({
+    name: z.string()
+      .min(3, t('validation.nameRequired'))
+      .max(32, t('validation.nameMaxLength')),
+    symbol: z.string().min(3, t('validation.symbolRequired')),
+    type: z.enum(["Base", "Point"]),
+    initialSupply: z.string().min(0).optional(),
+  });
 
   const toggle = () => setIsOpen((t) => !t);
 
@@ -66,7 +70,6 @@ export function CreateTokenForm({ community }: CreateTokenFormProps) {
         address: community.id,
         abi: erc20FactoryAbi,
         functionName: "createERC20",
-
         args: [
           data.name,
           data.symbol,
@@ -89,11 +92,11 @@ export function CreateTokenForm({ community }: CreateTokenFormProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={toggle}>
-      <DialogTrigger className={buttonVariants()}>Create Token</DialogTrigger>
+      <DialogTrigger className={buttonVariants()}>{t('title')}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Token</DialogTitle>
-          <DialogDescription>Create a new token for your community.</DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form className="w-full space-y-4" onSubmit={form.handleSubmit(handleFormSubmission)}>
@@ -102,9 +105,9 @@ export function CreateTokenForm({ community }: CreateTokenFormProps) {
               name="name"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t('fields.name.label')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Name" {...field} />
+                    <Input placeholder={t('fields.name.placeholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -115,9 +118,9 @@ export function CreateTokenForm({ community }: CreateTokenFormProps) {
               name="symbol"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Symbol</FormLabel>
+                  <FormLabel>{t('fields.symbol.label')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. ETH, USDC, VIBES" {...field} />
+                    <Input placeholder={t('fields.symbol.placeholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -129,15 +132,15 @@ export function CreateTokenForm({ community }: CreateTokenFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-2">
-                    <FormLabel>Type</FormLabel>
+                    <FormLabel>{t('fields.type.label')}</FormLabel>
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <HelpCircle className="h-4 w-4 text-muted-foreground" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>ERC20: Standard fungible token</p>
-                          <p>Points: Non-transferable community points</p>
+                          <p>{t('fields.type.tooltip.erc20')}</p>
+                          <p>{t('fields.type.tooltip.points')}</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -145,11 +148,11 @@ export function CreateTokenForm({ community }: CreateTokenFormProps) {
                   <FormControl>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select token type" />
+                        <SelectValue placeholder={t('fields.type.placeholder')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Base">ERC20</SelectItem>
-                        <SelectItem value="Point">Points</SelectItem>
+                        <SelectItem value="Base">{t('fields.type.options.erc20')}</SelectItem>
+                        <SelectItem value="Point">{t('fields.type.options.points')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -164,35 +167,35 @@ export function CreateTokenForm({ community }: CreateTokenFormProps) {
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <div className="flex items-center gap-2">
-                      <FormLabel>Initial Supply</FormLabel>
+                      <FormLabel>{t('fields.initialSupply.label')}</FormLabel>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <HelpCircle className="h-4 w-4 text-muted-foreground" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>The initial supply of the token.</p>
-                            <p>This is the amount of tokens that will be minted to your wallet.</p>
+                            <p>{t('fields.initialSupply.tooltip.line1')}</p>
+                            <p>{t('fields.initialSupply.tooltip.line2')}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     </div>
                     <FormControl>
-                      <Input type="number" placeholder="0" {...field} />
+                      <Input type="number" placeholder={t('fields.initialSupply.placeholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             )}
-            <p className="text-destructive text-sm">Tokens are immutable and cannot be changed.</p>
+            <p className="text-destructive text-sm">{t('warnings.immutable')}</p>
             {form.formState.isSubmitting ? (
               <Button disabled>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating Token...
+                {t('buttons.creating')}
               </Button>
             ) : (
-              <Button type="submit">Create Token</Button>
+              <Button type="submit">{t('buttons.create')}</Button>
             )}
           </form>
         </Form>

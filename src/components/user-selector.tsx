@@ -2,6 +2,7 @@
 import { findUserByHandle } from "@/lib/privy";
 import { cn } from "@/lib/utils";
 import { CheckIcon, XIcon } from "lucide-react";
+import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import { useState } from "react";
 import type { ControllerRenderProps } from "react-hook-form";
@@ -19,13 +20,14 @@ export default function UserSelector({ field }: UserSelectorProps) {
     status: "idle" | "loading" | "exists" | "not_found";
     data: User | null;
   }>({ status: "idle", data: null });
+  const t = useTranslations('userSelector');
 
   // @TODO Add more icons when we support more platforms in getUserByHandle
   function renderIcon(type: "discord" | "telegram") {
     if (type === "discord") {
-      return <Image src="/icons/discord.svg" alt="Discord" width={20} height={20} />;
+      return <Image src="/icons/discord.svg" alt={t('icons.discord')} width={20} height={20} />;
     }
-    return <Image src="/icons/discord.svg" alt="Telegram" width={20} height={20} />;
+    return <Image src="/icons/discord.svg" alt={t('icons.telegram')} width={20} height={20} />;
   }
 
   return (
@@ -38,7 +40,7 @@ export default function UserSelector({ field }: UserSelectorProps) {
           {...field}
           value={displayValue}
           className={cn({ "pl-2xl": userState.data?.type })}
-          placeholder="Enter wallet address, discord handle, or telegram handle"
+          placeholder={t('inputPlaceholder')}
           onChange={(e) => {
             setDisplayValue(e.target.value);
             field.onChange(e.target.value);
@@ -57,8 +59,8 @@ export default function UserSelector({ field }: UserSelectorProps) {
           }}
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2">
-          {userState.status === "exists" && <CheckIcon className="text-green-600" />}
-          {userState.status === "not_found" && <XIcon className="text-red-600" />}
+          {userState.status === "exists" && <CheckIcon className="text-green-600" aria-label={t('ariaLabels.userFound')} />}
+          {userState.status === "not_found" && <XIcon className="text-red-600" aria-label={t('ariaLabels.userNotFound')} />}
         </div>
       </div>
       <Button
@@ -79,7 +81,7 @@ export default function UserSelector({ field }: UserSelectorProps) {
           }
         }}
       >
-        {userState.status === "loading" ? "Finding..." : "Find User"}
+        {userState.status === "loading" ? t('finding') : t('findUser')}
       </Button>
     </div>
   );

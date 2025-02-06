@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useTranslations } from 'next-intl';
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -30,17 +31,12 @@ import { useState } from "react";
 import { stringToHex } from "viem";
 import { useConfig } from "wagmi";
 
-const FormSchema = z.object({
-  name: z.string().min(3).max(32),
-  description: z.string().min(3),
-  image: z.any(),
-});
-
 interface CreateBadgeFormProps {
   community: Community;
 }
 
 export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
+  const t = useTranslations('badges.create');
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { triggerConfetti } = useConfetti();
   const [shouldRevalidate, setShouldRevalidate] = useState(false);
@@ -48,6 +44,14 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
   useRevalidate(shouldRevalidate);
 
   const toggle = () => setIsOpen((t) => !t);
+
+  const FormSchema = z.object({
+    name: z.string()
+      .min(3, t('validation.nameRequired'))
+      .max(32, t('validation.nameMaxLength')),
+    description: z.string().min(3, t('validation.descriptionRequired')),
+    image: z.any(),
+  });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -97,11 +101,11 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={toggle}>
-      <DialogTrigger className={buttonVariants()}>Create Badge</DialogTrigger>
+      <DialogTrigger className={buttonVariants()}>{t('title')}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Badge</DialogTitle>
-          <DialogDescription>Create a new badge for your community.</DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form className="w-full space-y-4" onSubmit={form.handleSubmit(handleFormSubmission)}>
@@ -110,12 +114,12 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
               name="name"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t('fields.name.label')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Name" {...field} />
+                    <Input placeholder={t('fields.name.placeholder')} {...field} />
                   </FormControl>
                   <FormMessage />
-                  <p className="text-destructive text-sm">Name is immutable and cannot be changed.</p>
+                  <p className="text-destructive text-sm">{t('fields.name.immutableWarning')}</p>
                 </FormItem>
               )}
             />
@@ -124,9 +128,9 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
               name="description"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t('fields.description.label')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="A trophy for completing your first activity..." {...field} />
+                    <Input placeholder={t('fields.description.placeholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -137,11 +141,11 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
               name="image"
               render={({ field: { value, onChange, ...fieldProps } }) => (
                 <FormItem>
-                  <FormLabel>Image</FormLabel>
+                  <FormLabel>{t('fields.image.label')}</FormLabel>
                   {image && (
                     <Image
                       src={URL.createObjectURL(image)}
-                      alt="Uploaded page image"
+                      alt={t('fields.image.altText')}
                       width={125}
                       height={125}
                       className="rounded-md object-cover"
@@ -162,10 +166,10 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
             {form.formState.isSubmitting ? (
               <Button disabled>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating Badge...
+                {t('buttons.creating')}
               </Button>
             ) : (
-              <Button type="submit">Create Badge</Button>
+              <Button type="submit">{t('buttons.create')}</Button>
             )}
           </form>
         </Form>

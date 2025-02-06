@@ -4,6 +4,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { addressSplitter, getAddress } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
 import { CopyIcon, ExternalLink, LogOut } from "lucide-react";
+import { useTranslations } from 'next-intl';
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import {
@@ -17,11 +18,12 @@ import { Skeleton } from "./ui/skeleton";
 
 export default function Profile({ logoutAction }: { logoutAction: () => void }) {
   const { user, ready, exportWallet, authenticated, login } = usePrivy();
+  const t = useTranslations('profile');
   const address = getAddress(user);
 
   function copyAddress() {
     navigator.clipboard.writeText(address || "");
-    toast.success("Address copied to clipboard");
+    toast.success(t('addressCopied'));
   }
 
   const exportEnabled = user?.wallet?.walletClientType === "privy";
@@ -43,18 +45,18 @@ export default function Profile({ logoutAction }: { logoutAction: () => void }) 
         <DropdownMenuSeparator />
         {exportEnabled && (
           <DropdownMenuItem onClick={exportWallet} className="font-bold">
-            <span>Export Wallet</span>
+            <span>{t('exportWallet')}</span>
             <ExternalLink className="ml-auto" />
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logoutAction} className="font-bold">
-          <span>Logout</span>
+          <span>{t('logout')}</span>
           <LogOut className="ml-auto" />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   ) : (
-    <Button onClick={login}>Login</Button>
+    <Button onClick={login}>{t('login')}</Button>
   );
 }

@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useTranslations } from 'next-intl';
 
 import { appFactoryAbi } from "@/abis/AppFactory";
 import { erc20FactoryAbi } from "@/abis/ERC20FactoryFacet";
@@ -28,12 +29,8 @@ import { toast } from "sonner";
 import { type Address, BaseError, parseEther, stringToHex } from "viem";
 import { useConfig } from "wagmi";
 
-const FormSchema = z.object({
-  name: z.string().min(3).max(32),
-  createPoints: z.boolean().optional(),
-});
-
 export default function CreateCommunityForm() {
+  const t = useTranslations('createCommunity.form');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { triggerConfetti } = useConfetti();
   const config = useConfig();
@@ -41,6 +38,13 @@ export default function CreateCommunityForm() {
   const address = getAddress(user);
   const router = useRouter();
   const chain = useCurrentChain();
+
+  const FormSchema = z.object({
+    name: z.string()
+      .min(3, t('validation.nameRequired'))
+      .max(32, t('validation.nameMaxLength')),
+    createPoints: z.boolean().optional(),
+  });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -53,7 +57,7 @@ export default function CreateCommunityForm() {
   function simulateCreateCommunity(name: string) {
     startTransition(async () => {
       if (!chain) {
-        throw new Error("No chain found");
+        throw new Error(t('validation.chainNotFound'));
       }
 
       await simulateContract(config, {
@@ -69,7 +73,7 @@ export default function CreateCommunityForm() {
           if (error.metaMessages?.[0]?.includes("nameAlreadyUsed")) {
             form.setError("name", {
               type: "manual",
-              message: "Community name already in use",
+              message: t('validation.nameInUse'),
             });
           } else {
             form.setError("name", {
@@ -87,13 +91,13 @@ export default function CreateCommunityForm() {
     let communityId: Address | null = null;
     startTransition(async () => {
       try {
-        loadingToastId = toast.loading("Creating Community", {
-          description: "Deploying your community on-chain...",
+        loadingToastId = toast.loading(t('toast.creating.title'), {
+          description: t('toast.creating.description'),
         });
 
         if (!chain) {
-          toast.error("Error", {
-            description: "Failed to get chain. Please try again.",
+          toast.error(t('toast.error.title'), {
+            description: t('toast.error.chainNotFound'),
           });
           return;
         }
@@ -113,15 +117,15 @@ export default function CreateCommunityForm() {
         communityId = await getEventLog(transactionReceipt, appFactoryAbi, "Created");
 
         if (!communityId) {
-          throw new Error("Failed to get community id");
+          throw new Error(t('toast.error.communityIdFailed'));
         }
 
         await createCommunity(communityId, data.name, chain.id);
 
         let pointsCommunityId = null;
         if (data.createPoints) {
-          toast.message("Creating Points Token", {
-            description: "Deploying your community points token...",
+          toast.message(t('toast.creatingPoints.title'), {
+            description: t('toast.creatingPoints.description'),
           });
 
           const { request: pointsRequest } = await simulateContract(config, {
@@ -141,8 +145,8 @@ export default function CreateCommunityForm() {
           token_to_display: pointsCommunityId,
         });
 
-        toast.success("Success!", {
-          description: "Your community has been created.",
+        toast.success(t('toast.success.title'), {
+          description: t('toast.success.description'),
         });
 
         form.reset();
@@ -152,8 +156,8 @@ export default function CreateCommunityForm() {
         if (err instanceof BaseError) {
           return handleViemError(err);
         }
-        toast.error("Error", {
-          description: "Failed to create community. Please try again.",
+        toast.error(t('toast.error.title'), {
+          description: t('toast.error.generic'),
         });
       } finally {
         setIsSubmitting(false);
@@ -177,10 +181,10 @@ export default function CreateCommunityForm() {
           name="name"
           render={({ field }) => (
             <FormItem className="flex-1">
-              <FormLabel>Name</FormLabel>
+              <FormLabel>{t('fields.name.label')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Name"
+                  placeholder={t('fields.name.placeholder')}
                   {...field}
                   onBlur={() => {
                     field.onChange(field.value.toLowerCase());
@@ -193,17 +197,14 @@ export default function CreateCommunityForm() {
                 />
               </FormControl>
               <FormMessage />
-              <FormDescription>
-                The name of your community. Please note, due to the immutable nature of the blockchain this value can
-                not be changed.
-              </FormDescription>
+              <FormDescription>{t('fields.name.description')}</FormDescription>
             </FormItem>
           )}
         />
 
         {/* Network Selector */}
         <FormItem>
-          <FormLabel>Network</FormLabel>
+          <FormLabel>{t('fields.network.label')}</FormLabel>
           <FormControl>
             <NetworkSelector
               onValueChange={(chainName) => {
@@ -217,7 +218,7 @@ export default function CreateCommunityForm() {
               }}
             />
           </FormControl>
-          <FormDescription>Select the network where you want to create your community.</FormDescription>
+          <FormDescription>{t('fields.network.description')}</FormDescription>
         </FormItem>
 
         {/* Create Points */}
@@ -227,8 +228,8 @@ export default function CreateCommunityForm() {
           render={({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
-                <FormLabel className="text-base">Community Points</FormLabel>
-                <FormDescription>Create a on-chain points token for your community.</FormDescription>
+                <FormLabel className="text-base">{t('fields.points.label')}</FormLabel>
+                <FormDescription>{t('fields.points.description')}</FormDescription>
               </div>
               <FormControl>
                 <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -239,10 +240,10 @@ export default function CreateCommunityForm() {
         {isSubmitting ? (
           <Button disabled>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Creating community...
+            {t('buttons.creating')}
           </Button>
         ) : (
-          <Button type="submit">Create Community</Button>
+          <Button type="submit">{t('buttons.create')}</Button>
         )}
       </form>
     </Form>

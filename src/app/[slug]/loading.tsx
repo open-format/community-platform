@@ -1,8 +1,11 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
+import { useTranslations } from 'next-intl';
 
 export default function Loading() {
+  const t = useTranslations('community.preview.tabs');
+  
   return (
     <div className="max-w-prose mx-auto space-y-4 p-5 rounded-xl bg-background sticky top-0">
       {/* Community Profile Skeleton */}
@@ -30,13 +33,13 @@ export default function Loading() {
       <Tabs defaultValue="leaderboard" className="w-full">
         <TabsList className="w-full">
           <TabsTrigger value="leaderboard" className="w-full">
-            Leaderboard
+            {t('leaderboard')}
           </TabsTrigger>
           <TabsTrigger value="badges" className="w-full">
-            Badges
+            {t('badges')}
           </TabsTrigger>
           <TabsTrigger value="activity" className="w-full">
-            Activity
+            {t('activity')}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="leaderboard" className="space-y-2">

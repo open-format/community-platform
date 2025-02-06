@@ -3,6 +3,7 @@
 import { UpdateBadgeForm } from "@/forms/update-badge-form";
 import { getMetadata } from "@/lib/thirdweb";
 import { generateGradient, getContrastSafeColor } from "@/lib/utils";
+import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -12,6 +13,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardTitle } from "./ui/
 import { Skeleton } from "./ui/skeleton";
 
 export default function BadgeGrid({ badges, communityId }: { badges: Badge[] | undefined; communityId: string }) {
+  const t = useTranslations('badges');
+
   if (!badges || !badges.length) {
     return (
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-4">
@@ -24,7 +27,7 @@ export default function BadgeGrid({ badges, communityId }: { badges: Badge[] | u
             >
               <div className="text-4xl mb-2">🏅</div>
               <p className="text-center text-muted-foreground px-4" style={{ color: getContrastSafeColor("#FFFFFF") }}>
-                Create your first badge to get started
+                {t('createFirst')}
               </p>
             </AspectRatio>
           </CardContent>
@@ -32,6 +35,7 @@ export default function BadgeGrid({ badges, communityId }: { badges: Badge[] | u
       </div>
     );
   }
+
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-4">
       {badges.map((badge) => (
@@ -44,6 +48,7 @@ export default function BadgeGrid({ badges, communityId }: { badges: Badge[] | u
 function Item({ badge, metadataURI, communityId }: { badge: Badge; metadataURI: string; communityId: string }) {
   const [metadata, setMetadata] = useState<{ [key: string]: string } | null>(null);
   const [image, setImage] = useState<string | null>(null);
+  const t = useTranslations('badges');
 
   useEffect(() => {
     async function fetchMetadata() {
@@ -52,12 +57,12 @@ function Item({ badge, metadataURI, communityId }: { badge: Badge; metadataURI: 
         setMetadata(response);
         setImage(response.image);
       } catch (error) {
-        console.error("Error fetching metadata:", error);
+        console.error(t('errors.fetchMetadata'), error);
       }
     }
 
     fetchMetadata();
-  }, [metadataURI]);
+  }, [metadataURI, t]);
 
   return (
     <Card>
@@ -73,7 +78,7 @@ function Item({ badge, metadataURI, communityId }: { badge: Badge; metadataURI: 
             <CardDescription>{metadata.description}</CardDescription>
             <div className="flex gap-2">
               <Link className={buttonVariants()} href={`/communities/${communityId}/rewards`}>
-                Reward Badge
+                {t('rewardBadge')}
               </Link>
               <UpdateBadgeForm badge={badge} metadata={metadata} />
             </div>

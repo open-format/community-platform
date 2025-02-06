@@ -2,12 +2,14 @@
 
 import { usePrivy } from "@privy-io/react-auth";
 import { MailIcon, TrashIcon } from "lucide-react";
+import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import Discord from "../../public/icons/discord.svg";
 import Google from "../../public/icons/google.svg";
 import { Button } from "./ui/button";
 
 export default function Accounts() {
+  const t = useTranslations('accounts');
   const { user, linkDiscord, unlinkDiscord, linkGoogle, unlinkGoogle, linkEmail, unlinkEmail } = usePrivy();
 
   const platforms = [
@@ -36,7 +38,7 @@ export default function Accounts() {
 
   return (
     <ul className="flex flex-col space-y-2">
-      <h3>Accounts</h3>
+      <h3>{t('title')}</h3>
       {platforms.map((platform) => (
         <li key={platform.id} className="flex items-center justify-between">
           <div className="space-x-2 items-center flex">
@@ -44,13 +46,26 @@ export default function Accounts() {
             {platform.username ? (
               <span className="text-sm">{platform.username}</span>
             ) : (
-              <Button variant="ghost" size="sm" onClick={platform.link} className="p-0 hover:bg-transparent">
-                <span className="capitalize font-semibold hover:underline">Connect {platform.id}</span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={platform.link} 
+                className="p-0 hover:bg-transparent"
+                aria-label={t('ariaLabels.connect', { service: platform.id })}
+              >
+                <span className="capitalize font-semibold hover:underline">
+                  {t('connect', { service: platform.id })}
+                </span>
               </Button>
             )}
           </div>
           {platform.username && (
-            <Button variant="ghost" size="sm" onClick={platform.unlink}>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={platform.unlink}
+              aria-label={t('ariaLabels.disconnect', { service: platform.id })}
+            >
               <TrashIcon className="w-4 h-4 text-red-600" />
             </Button>
           )}

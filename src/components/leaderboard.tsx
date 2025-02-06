@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
+import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import Discord from "../../public/icons/discord.svg";
 import Telegram from "../../public/icons/telegram.svg";
@@ -20,15 +21,18 @@ interface LeaderboardProps {
   };
 }
 
-const LeaderboardHeader = ({ metadata }: Pick<LeaderboardProps, "metadata">) => (
-  <TableHeader>
-    <TableRow>
-      <TableHead>Rank</TableHead>
-      <TableHead>{metadata?.user_label ?? "User"}</TableHead>
-      <TableHead className="text-right">{metadata?.token_label ?? "Points"}</TableHead>
-    </TableRow>
-  </TableHeader>
-);
+const LeaderboardHeader = ({ metadata }: Pick<LeaderboardProps, "metadata">) => {
+  const t = useTranslations('overview.leaderboard');
+  return (
+    <TableHeader>
+      <TableRow>
+        <TableHead>{t('rank')}</TableHead>
+        <TableHead>{metadata?.user_label ?? t('user')}</TableHead>
+        <TableHead className="text-right">{metadata?.token_label ?? t('points')}</TableHead>
+      </TableRow>
+    </TableHeader>
+  );
+}
 
 const LeaderboardSkeleton = () => (
   <Card className="h-full">
@@ -49,22 +53,25 @@ const LeaderboardSkeleton = () => (
   </Card>
 );
 
-const EmptyState = ({ metadata }: Pick<LeaderboardProps, "metadata">) => (
-  <Card variant="borderless" className="h-full">
-    <CardContent>
-      <Table>
-        <LeaderboardHeader metadata={metadata} />
-        <TableBody>
-          <TableRow>
-            <TableCell colSpan={3} className="text-center text-muted-foreground py-4">
-              No leaderboard data yet
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </CardContent>
-  </Card>
-);
+const EmptyState = ({ metadata }: Pick<LeaderboardProps, "metadata">) => {
+  const t = useTranslations('overview.leaderboard');
+  return (
+    <Card variant="borderless" className="h-full">
+      <CardContent>
+        <Table>
+          <LeaderboardHeader metadata={metadata} />
+          <TableBody>
+            <TableRow>
+              <TableCell colSpan={3} className="text-center text-muted-foreground py-4">
+                {t('noData')}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function Leaderboard({
   data,

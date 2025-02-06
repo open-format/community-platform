@@ -88,3 +88,18 @@ Instantly deploy your own copy of the template using Vercel or Netlify:
    ```
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+
+### Adding New Languages
+
+To add support for a new language:
+
+1. Create a new translation file in `messages/[locale].json` (e.g. `messages/fr.json`)
+2. Copy the structure from `messages/en.json` and translate all values
+3. Update the language configuration in `i18n/request.ts`:
+   ```typescript
+   const defaultLocale = 'en'
+   const locales = ['en', 'fr'] // Add your new locale here
+   ```
+4. The new translations will be automatically loaded based on the locale
+
+Note: Ensure all translation keys match exactly with `en.json` to avoid missing translations. If a translation is missing, it will fallback to English.

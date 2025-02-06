@@ -9,35 +9,34 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import * as z from "zod";
-
-// Schema for form validation
-const tierSchema = z.object({
-  tiers: z.array(
-    z.object({
-      name: z.string().min(1, "Name is required"),
-      points_required: z.coerce
-        .number({
-          required_error: "Points are required",
-          invalid_type_error: "Points are required",
-        })
-        .min(1, "Points must be at least 1"),
-      color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Invalid color hex code"),
-      tier_id: z.string().optional(),
-      community_id: z.string().optional(),
-    })
-  ),
-});
-
-type TierFormValues = z.infer<typeof tierSchema>;
+import { useTranslations } from 'next-intl';
 
 export default function TiersForm({ communityId, tiers }: { communityId: string; tiers: Tier[] }) {
+  const t = useTranslations('tiers');
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isLoading, setIsLoading] = useState(true);
   const [deletedTierIds, setDeletedTierIds] = useState<string[]>([]);
   const [currentTiers, setCurrentTiers] = useState(tiers);
 
-  const form = useForm<TierFormValues>({
+  const tierSchema = z.object({
+    tiers: z.array(
+      z.object({
+        name: z.string().min(1, t('validation.nameRequired')),
+        points_required: z.coerce
+          .number({
+            required_error: t('validation.pointsRequired'),
+            invalid_type_error: t('validation.pointsRequired'),
+          })
+          .min(1, t('validation.pointsMin')),
+        color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, t('validation.invalidColorHex')),
+        tier_id: z.string().optional(),
+        community_id: z.string().optional(),
+      })
+    ),
+  });
+
+  const form = useForm<z.infer<typeof tierSchema>>({
     resolver: zodResolver(tierSchema),
     defaultValues: {
       tiers: currentTiers.map((tier) => ({
@@ -63,7 +62,7 @@ export default function TiersForm({ communityId, tiers }: { communityId: string;
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle>Loading tiers...</CardTitle>
+          <CardTitle>{t('loading')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4 animate-pulse">
@@ -76,7 +75,7 @@ export default function TiersForm({ communityId, tiers }: { communityId: string;
     );
   }
 
-  function onSubmit(data: TierFormValues) {
+  function onSubmit(data: z.infer<typeof tierSchema>) {
     startTransition(async () => {
       try {
         const freshTiers = await upsertTiers(
@@ -136,14 +135,14 @@ export default function TiersForm({ communityId, tiers }: { communityId: string;
                       if (duplicateExists) {
                         form.setError(`tiers.${index}.name`, {
                           type: "manual",
-                          message: "Tier name must be unique",
+                          message: t('validation.uniqueName'),
                         });
                       } else {
                         form.clearErrors(`tiers.${index}.name`);
                       }
                     },
                   })}
-                  placeholder="Tier Name"
+                  placeholder={t('fields.name.placeholder')}
                 />
                 {form.formState.errors.tiers?.[index]?.name?.message && (
                   <span className="text-sm text-destructive mt-1">
@@ -158,7 +157,7 @@ export default function TiersForm({ communityId, tiers }: { communityId: string;
                     valueAsNumber: true,
                   })}
                   type="number"
-                  placeholder="Points Required"
+                  placeholder={t('fields.points.placeholder')}
                 />
                 {form.formState.errors.tiers?.[index]?.points_required?.message && (
                   <span className="text-sm text-destructive mt-1">
@@ -183,7 +182,7 @@ export default function TiersForm({ communityId, tiers }: { communityId: string;
                 onClick={() => handleDelete(index, field.tier_id)}
                 disabled={isPending}
               >
-                Remove
+                {t('buttons.remove')}
               </Button>
             </div>
           </div>
@@ -194,10 +193,10 @@ export default function TiersForm({ communityId, tiers }: { communityId: string;
             variant="outline"
             onClick={() => append({ name: "", points_required: 0, color: "#000000" })}
           >
-            Add Tier
+            {t('buttons.addTier')}
           </Button>
           <Button type="submit" disabled={isPending}>
-            Save Tiers
+            {t('buttons.saveTiers')}
           </Button>
         </div>
       </div>
