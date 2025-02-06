@@ -6,7 +6,8 @@ import { ConfettiProvider } from "@/contexts/confetti-context";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { WagmiProvider, createConfig } from "@privy-io/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { arbitrumSepolia, aurora, base, matchain } from "viem/chains";
+import { arbitrumSepolia, aurora, base } from "viem/chains";
+import { matchain } from "@/constants/chains";
 import { http } from "wagmi";
 
 const chainConfig = createConfig({
