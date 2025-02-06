@@ -1,17 +1,16 @@
-import {getRequestConfig} from 'next-intl/server';
+import { getRequestConfig } from 'next-intl/server';
 
-const defaultLocale = 'en'
-const locales = ['en'] // Add supported locales here
+export const defaultLocale = 'en';
+export const locales = ['en']; // Add supported locales here
 
 export async function getMessages(locale: string = defaultLocale) {
-  // place language choice here eg locale = locale[0]
+  // input locale choice here eg locale = locale[0] or pass locale as a prop
   try {
     return {
       locale,
       messages: (await import(`../../messages/${locale}.json`)).default
     };
   } catch (error) {
-    // Fallback to default locale if requested locale file doesn't exist
     return {
       locale: defaultLocale,
       messages: (await import(`../../messages/${defaultLocale}.json`)).default
@@ -19,6 +18,12 @@ export async function getMessages(locale: string = defaultLocale) {
   }
 }
 
+// Keep the default export for Next.js
 export default getRequestConfig(async () => {
-  return await getMessages();
+  const { locale, messages } = await getMessages();
+  return {
+    locale,
+    messages,
+    timeZone: 'UTC'
+  };
 });

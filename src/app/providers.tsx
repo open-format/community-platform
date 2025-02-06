@@ -22,9 +22,17 @@ const chainConfig = createConfig({
 });
 const queryClient = new QueryClient();
 
-export default function Providers({ children, messages }: { children: React.ReactNode, messages: any }) {
+export default function Providers({ 
+  children, 
+  messages,
+  locale 
+}: { 
+  children: React.ReactNode;
+  messages: any;
+  locale: string;
+}) {
   return (
-    <NextIntlClientProvider messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={messages}>
       <PrivyProvider
         appId={config.NEXT_PUBLIC_PRIVY_APP_ID as string}
         config={{

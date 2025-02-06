@@ -3,8 +3,7 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
-import {NextIntlClientProvider} from 'next-intl';
-import {getLocale, getMessages} from 'next-intl/server';
+import { getMessages } from '@/i18n/request';
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -21,16 +20,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = await getLocale();
-  const messages = await getMessages();
+  const { locale, messages } = await getMessages();
 
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={`${manrope.variable} antialiased`}>
-        <Providers>
-          <NextIntlClientProvider messages={messages}>
-            <main>{children}</main>
-          </NextIntlClientProvider>
+        <Providers messages={messages} locale={locale}>
+          <main>{children}</main>
         </Providers>
         <Toaster position="top-center" />
       </body>
