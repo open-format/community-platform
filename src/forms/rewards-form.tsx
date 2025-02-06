@@ -25,7 +25,7 @@ import { toast } from "sonner";
 import { type Address, BaseError, erc20Abi, formatEther, maxUint256, parseEther, stringToHex } from "viem";
 import { useConfig } from "wagmi";
 import * as z from "zod";
-import { useTranslations } from "use-intl";
+import { useTranslations } from "next-intl";
 
 export default function RewardsForm({ community }: { community: Community }) {
   const t = useTranslations('rewards');
