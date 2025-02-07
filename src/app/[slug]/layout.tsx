@@ -1,8 +1,10 @@
 import { fetchCommunity } from "@/lib/openformat";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
+import { getTranslations } from 'next-intl/server';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const t = await getTranslations('community');
   const slug = (await params).slug;
   const community = await fetchCommunity(slug);
 
@@ -15,28 +17,28 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const ogImageUrl =
     community?.metadata?.banner_url ||
     `${baseUrl}/api/og?title=${encodeURIComponent(
-      community?.metadata?.title || "Community"
+      community?.metadata?.title || t('defaultTitle')
     )}&accent=${encodeURIComponent(community?.metadata?.accent_color || "#6366F1")}`;
 
   return {
-    title: community?.metadata?.title ?? "Community",
-    description: community?.metadata?.description ?? "Welcome to our community",
+    title: community?.metadata?.title ?? t('defaultTitle'),
+    description: community?.metadata?.description ?? t('defaultDescription'),
     openGraph: {
-      title: community?.metadata?.title ?? "Community",
-      description: community?.metadata?.description ?? "Welcome to our community",
+      title: community?.metadata?.title ?? t('defaultTitle'),
+      description: community?.metadata?.description ?? t('defaultDescription'),
       images: [
         {
           url: ogImageUrl,
           width: 1200,
           height: 630,
-          alt: community?.metadata?.title ?? "Community",
+          alt: community?.metadata?.title ?? t('defaultTitle'),
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: community?.metadata?.title ?? "Community",
-      description: community?.metadata?.description ?? "Welcome to our community",
+      title: community?.metadata?.title ?? t('defaultTitle'),
+      description: community?.metadata?.description ?? t('defaultDescription'),
       images: [ogImageUrl],
     },
   };

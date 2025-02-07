@@ -2,6 +2,7 @@
 
 import { ChevronsUpDown } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
+import { useTranslations } from 'next-intl';
 
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
@@ -17,6 +18,7 @@ export default function CommunitySelector() {
   const chain = useCurrentChain();
   const router = useRouter();
   const currentSlug = params?.slug as string;
+  const t = useTranslations('communitySelector');
 
   const getCurrentPath = () => {
     if (typeof window === "undefined") return "overview";
@@ -46,16 +48,16 @@ export default function CommunitySelector() {
           className="w-[200px] justify-between font-bold capitalize"
         >
           {currentSlug
-            ? communities.find((community) => community.id === currentSlug)?.name ?? "Loading..."
-            : "Select community..."}
+            ? communities.find((community) => community.id === currentSlug)?.name ?? t('loading')
+            : t('selectCommunity')}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search communities..." />
+          <CommandInput placeholder={t('searchPlaceholder')} />
           <CommandList>
-            <CommandEmpty>No communities found.</CommandEmpty>
+            <CommandEmpty>{t('noResults')}</CommandEmpty>
             <CommandGroup>
               {communities.map((community) => (
                 <CommandItem

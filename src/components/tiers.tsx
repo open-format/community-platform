@@ -4,6 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { useTranslations } from 'next-intl';
+
+interface Tier {
+  name: string;
+  points_required: number;
+  color: string;
+}
 
 export default function Tiers({
   tiers,
@@ -14,6 +21,7 @@ export default function Tiers({
   currentPoints: number;
   tokenLabel?: string | null;
 }) {
+  const t = useTranslations('tiers');
   const getCurrentTier = (points: number) => {
     // Return null if user hasn't reached first tier
     if (points < tiers[0].points_required) return null;
@@ -57,7 +65,7 @@ export default function Tiers({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">Tier Progress</CardTitle>
+        <CardTitle className="text-2xl font-bold">{t('title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col space-y-4 text-center">
@@ -65,7 +73,7 @@ export default function Tiers({
             <div className="flex items-center gap-2">
               {currentTier ? (
                 <>
-                  <span className="text-sm">Current Tier:</span>
+                  <span className="text-sm">{t('currentTier')}:</span>
                   <Badge style={{ backgroundColor: currentTier.color }} className="text-white">
                     {currentTier.name}
                   </Badge>
@@ -75,12 +83,12 @@ export default function Tiers({
                 </>
               ) : (
                 <span className="text-sm">
-                  {currentPoints.toLocaleString()} {tokenLabel} earned
+                  {currentPoints.toLocaleString()} {tokenLabel} {t('earned')}
                 </span>
               )}
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm">Next Tier:</span>
+              <span className="text-sm">{t('nextTier')}:</span>
               <Badge style={{ backgroundColor: nextTier.color }} className="text-white">
                 {nextTier.name}
               </Badge>
@@ -93,10 +101,14 @@ export default function Tiers({
                 {currentTier
                   ? pointsRemaining === 0
                     ? currentPoints >= tiers[tiers.length - 1].points_required
-                      ? `Max tier reached (${currentPoints} ${tokenLabel})`
-                      : "Max tier reached"
-                    : `${pointsRemaining} ${tokenLabel} to ${nextTier.name}`
-                  : `${tiers[0].points_required - currentPoints} ${tokenLabel} to ${tiers[0].name}`}
+                      ? t('maxTierReachedWithPoints', { points: currentPoints, tokenLabel })
+                      : t('maxTierReached')
+                    : t('pointsToNextTier', { points: pointsRemaining, tokenLabel, tierName: nextTier.name })
+                  : t('pointsToFirstTier', { 
+                      points: tiers[0].points_required - currentPoints, 
+                      tokenLabel, 
+                      tierName: tiers[0].name 
+                    })}
               </span>
             </div>
           </div>

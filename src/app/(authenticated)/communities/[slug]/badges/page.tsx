@@ -3,13 +3,15 @@ import RefreshButton from "@/components/refresh-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateBadgeForm } from "@/forms/create-badge";
 import { fetchCommunity } from "@/lib/openformat";
+import { getTranslations } from 'next-intl/server';
 
 export default async function Badges({ params }: { params: Promise<{ slug: string }> }) {
+  const t = await getTranslations('badges');
   const slug = (await params).slug;
   const community = await fetchCommunity(slug);
 
   if (!community) {
-    return <div>Community not found</div>;
+    return <div>{t('notFound')}</div>;
   }
 
   return (
@@ -17,7 +19,7 @@ export default async function Badges({ params }: { params: Promise<{ slug: strin
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="flex items-center gap-2">
-            <h1>Badges</h1>
+            <h1>{t('title')}</h1>
             <RefreshButton />
           </CardTitle>
           <CreateBadgeForm community={community} />

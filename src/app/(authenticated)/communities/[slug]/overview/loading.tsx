@@ -1,7 +1,10 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslations } from 'next-intl';
 
 export default function Loading() {
+  const t = useTranslations('overview');
+  
   return (
     <div>
       {/* Shortcuts/Onboarding skeleton */}
@@ -30,7 +33,7 @@ export default function Loading() {
         {/* Leaderboard skeleton */}
         <Card variant="borderless" className="h-full">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-2xl font-bold tracking-tight">Leaderboard</CardTitle>
+            <CardTitle className="text-2xl font-bold tracking-tight">{t('leaderboard.title')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -53,7 +56,7 @@ export default function Loading() {
         {/* Activity skeleton */}
         <Card variant="borderless">
           <CardHeader>
-            <CardTitle>Activity</CardTitle>
+            <CardTitle>{t('activity.title')}</CardTitle>
           </CardHeader>
           <CardContent>
             {Array.from({ length: 3 }).map((_, i) => (

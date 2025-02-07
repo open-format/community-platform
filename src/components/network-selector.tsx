@@ -6,6 +6,7 @@ import { startTransition } from "react";
 import { useBalance, useChainId, useSwitchChain } from "wagmi";
 import type { GetBalanceData } from "wagmi/query";
 import { type ChainName, chains } from "../constants/chains";
+import { useTranslations } from 'next-intl';
 import { Badge } from "./ui/badge";
 import {
   Select,
@@ -32,6 +33,7 @@ export default function NetworkSelector({ onValueChange, callback, hideIfNotSet 
   const { data: balance, isLoading } = useBalance({
     address: user?.wallet?.address,
   });
+  const t = useTranslations('networkSelector');
 
   function handleChainChange(chainName: string) {
     startTransition(async () => {
@@ -81,7 +83,7 @@ export default function NetworkSelector({ onValueChange, callback, hideIfNotSet 
   function BalanceBadge({ balance }: { balance: GetBalanceData }) {
     return (
       <Badge className="hidden md:block">
-        Balance: {Number(balance.formatted).toFixed(6)} {balance.symbol}
+        {t('balance', { amount: Number(balance.formatted).toFixed(6), symbol: balance.symbol })}
       </Badge>
     );
   }
@@ -89,12 +91,11 @@ export default function NetworkSelector({ onValueChange, callback, hideIfNotSet 
   return (
     <Select onValueChange={handleChainChange} value={currentChainName}>
       <SelectTrigger>
-        <SelectValue placeholder="Select Network" />
+        <SelectValue placeholder={t('selectNetwork')} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectLabel className="font-bold">Mainnets</SelectLabel>
-
+          <SelectLabel className="font-bold">{t('mainnets')}</SelectLabel>
           {mainnetChains.map((option) => (
             <SelectItem key={option.value} value={option.value} className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -106,7 +107,7 @@ export default function NetworkSelector({ onValueChange, callback, hideIfNotSet 
         </SelectGroup>
         <SelectSeparator />
         <SelectGroup>
-          <SelectLabel className="font-bold">Testnets</SelectLabel>
+          <SelectLabel className="font-bold">{t('testnets')}</SelectLabel>
           {testnetChains.map((option) => (
             <SelectItem key={option.value} value={option.value} className="flex items-center justify-between">
               <div className="flex items-center space-x-2">

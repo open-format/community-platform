@@ -5,15 +5,17 @@ import { fetchCommunity, fetchUserProfile, generateLeaderboard } from "@/lib/ope
 import { cn } from "@/lib/utils";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { getTranslations } from 'next-intl/server';
 
 export default async function CommunitySettings({ params }: { params: Promise<{ slug: string }> }) {
+  const t = await getTranslations('settings');
   const slug = (await params).slug;
   const community = await fetchCommunity(slug);
   const leaderboard = await generateLeaderboard(slug);
   const profile = await fetchUserProfile(slug);
 
   if (!community) {
-    return <div>Community not found</div>;
+    return <div>{t('notFound')}</div>;
   }
 
   return (
@@ -21,8 +23,8 @@ export default async function CommunitySettings({ params }: { params: Promise<{ 
       <CardHeader>
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle>Community Page</CardTitle>
-            <CardDescription>Here you can configure your public community page.</CardDescription>
+            <CardTitle>{t('title')}</CardTitle>
+            <CardDescription>{t('description')}</CardDescription>
           </div>
           <Link
             className={cn(buttonVariants(), "mx-24")}
@@ -30,7 +32,7 @@ export default async function CommunitySettings({ params }: { params: Promise<{ 
             target="_blank"
             rel="noopener noreferrer"
           >
-            View Community Page
+            {t('viewPage')}
             <ExternalLink className="w-4 h-4 ml-2" />
           </Link>
         </div>

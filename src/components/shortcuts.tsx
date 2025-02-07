@@ -3,6 +3,7 @@
 import { CopyIcon } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useTranslations } from 'next-intl';
 import { Button, buttonVariants } from "./ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
 
@@ -11,11 +12,13 @@ interface OnboardingProps {
 }
 
 export default function Onboarding({ community }: OnboardingProps) {
+  const t = useTranslations('shortcuts');
+
   function copyInviteLink() {
     const baseUrl = window.location.origin;
     const inviteLink = `${baseUrl}/${community?.metadata?.slug}`;
     navigator.clipboard.writeText(inviteLink);
-    toast.success("Invite link copied to clipboard");
+    toast.success(t('configureCommunity.inviteCopied'));
   }
   return (
     <div className="space-y-4 py-lg">
@@ -23,18 +26,18 @@ export default function Onboarding({ community }: OnboardingProps) {
         {/* Configure and share community page */}
         <Card className="flex flex-col justify-between">
           <CardHeader>
-            <CardTitle>Configure and share community page</CardTitle>
+            <CardTitle>{t('configureCommunity.title')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>Configure your community page and share it with your members.</p>
+            <p>{t('configureCommunity.description')}</p>
           </CardContent>
           <CardFooter className="flex space-x-2">
             <Link className={buttonVariants()} href={`/communities/${community?.metadata?.slug}/settings`}>
-              Configure
+              {t('configureCommunity.configure')}
             </Link>
             {community?.metadata?.slug && (
               <Button variant="outline" onClick={copyInviteLink}>
-                Copy invite link
+                {t('configureCommunity.copyInvite')}
                 <CopyIcon className="w-4 h-4" />
               </Button>
             )}
@@ -44,31 +47,32 @@ export default function Onboarding({ community }: OnboardingProps) {
         {/* 2. Create Badges & Tokens */}
         <Card className="flex flex-col justify-between">
           <CardHeader>
-            <CardTitle>Create Badges & Tokens</CardTitle>
+            <CardTitle>{t('createBadgesTokens.title')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>Create badges and tokens you can reward to your community.</p>
+            <p>{t('createBadgesTokens.description')}</p>
           </CardContent>
           <CardFooter className="flex space-x-2">
             <Link className={buttonVariants()} href={`/communities/${community?.metadata?.slug}/badges`}>
-              Create badges
+              {t('createBadgesTokens.createBadges')}
             </Link>
             <Link className={buttonVariants()} href={`/communities/${community?.metadata?.slug}/tokens`}>
-              Create tokens
+              {t('createBadgesTokens.createTokens')}
             </Link>
           </CardFooter>
         </Card>
+
         {/* 3. Send your first reward */}
         <Card className="flex flex-col justify-between">
           <CardHeader>
-            <CardTitle>Reward your community</CardTitle>
+            <CardTitle>{t('rewardCommunity.title')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>Reward your community for their contributions.</p>
+            <p>{t('rewardCommunity.description')}</p>
           </CardContent>
           <CardFooter className="flex space-x-2">
             <Link className={buttonVariants()} href={`/communities/${community?.metadata?.slug}/rewards`}>
-              Send reward
+              {t('rewardCommunity.sendReward')}
             </Link>
           </CardFooter>
         </Card>

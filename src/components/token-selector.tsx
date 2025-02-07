@@ -2,6 +2,7 @@
 
 import { AlertCircle, Award, Check, ChevronsUpDown, CircleDollarSign } from "lucide-react";
 import * as React from "react";
+import { useTranslations } from 'next-intl';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +33,7 @@ export default function TokenSelector({
 }) {
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
+  const t = useTranslations('tokenSelector');
 
   const handleSelect = (currentValue: string) => {
     const newValue = currentValue === value ? "" : currentValue;
@@ -60,7 +62,7 @@ export default function TokenSelector({
     if (isAddress(value)) {
       return value;
     }
-    return "Search or enter token address...";
+    return t('searchPlaceholder');
   };
 
   return (
@@ -74,7 +76,7 @@ export default function TokenSelector({
       <PopoverContent>
         <Command>
           <CommandInput
-            placeholder="Search or enter token address..."
+            placeholder={t('searchPlaceholder')}
             value={inputValue}
             onValueChange={(value) => {
               setInputValue(value);
@@ -85,15 +87,15 @@ export default function TokenSelector({
             <CommandEmpty>
               <div className="flex flex-col items-center justify-center p-4 text-center">
                 <AlertCircle className="h-8 w-8 text-yellow-500 mb-2" />
-                <p className="text-sm font-medium mb-2">No tokens found</p>
-                <p className="text-xs text-muted-foreground mb-4">You can:</p>
+                <p className="text-sm font-medium mb-2">{t('noTokens')}</p>
+                <p className="text-xs text-muted-foreground mb-4">{t('youCan')}:</p>
                 <ul className="list-disc list-inside mt-1">
-                  <li>Enter a valid contract address</li>
-                  <li>Create a new token or badge in your community</li>
+                  <li>{t('enterAddress')}</li>
+                  <li>{t('createNew')}</li>
                 </ul>
               </div>
             </CommandEmpty>
-            <CommandGroup heading="Tokens">
+            <CommandGroup heading={t('tokens')}>
               {tokens.map((item) => (
                 <CommandItem key={item.token.id} value={item.token.name} onSelect={() => handleSelect(item.token.id)}>
                   <CircleDollarSign className={cn("mr-2 h-4 w-4", value === item.id ? "opacity-100" : "opacity-40")} />
@@ -104,7 +106,7 @@ export default function TokenSelector({
             </CommandGroup>
             <CommandSeparator />
             {badges.length > 0 && (
-              <CommandGroup heading="Badges">
+              <CommandGroup heading={t('badges')}>
                 {badges.map((item) => (
                   <CommandItem key={item.id} value={item.name} onSelect={() => handleSelect(item.id)}>
                     <Award className={cn("mr-2 h-4 w-4", value === item.id ? "opacity-100" : "opacity-40")} />

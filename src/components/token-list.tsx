@@ -3,6 +3,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { getChainFromCommunityOrCookie } from "@/lib/openformat";
 import { timeAgo } from "@/lib/utils";
 import { ExternalLinkIcon, HelpCircle } from "lucide-react";
+import { getTranslations } from 'next-intl/server';
 import Link from "next/link";
 
 interface TokenListProps {
@@ -11,13 +12,14 @@ interface TokenListProps {
 
 export default async function TokenList({ tokens }: TokenListProps) {
   const chain = await getChainFromCommunityOrCookie();
+  const t = await getTranslations('tokens');
   const tokenTypes = {
     Base: "ERC20",
     Point: "Points",
   };
 
   if (tokens?.length === 0) {
-    return <div>No tokens found</div>;
+    return <div>{t('noTokens')}</div>;
   }
 
   // @TODO: Ask dev team why subgraph can't sort tokens by createdAt
@@ -29,23 +31,23 @@ export default async function TokenList({ tokens }: TokenListProps) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>ID</TableHead>
+          <TableHead>{t('name')}</TableHead>
+          <TableHead>{t('id')}</TableHead>
           <TableHead className="flex items-center gap-xs">
-            Type
+            {t('type')}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <HelpCircle className="h-4 w-4 text-muted-foreground" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>ERC20: Standard fungible token</p>
-                  <p>Points: Non-transferable community points</p>
+                  <p>{t('tooltips.erc20')}</p>
+                  <p>{t('tooltips.points')}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </TableHead>
-          <TableHead>Created</TableHead>
+          <TableHead>{t('created')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -59,6 +61,7 @@ export default async function TokenList({ tokens }: TokenListProps) {
                   href={`${chain.BLOCK_EXPLORER_URL}/token/${token.token.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label={t('ariaLabels.viewToken', { name: token.token.name })}
                 >
                   <ExternalLinkIcon className="w-4 h-4" />
                 </Link>
