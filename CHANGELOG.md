@@ -1,3 +1,10 @@
+## [0.6.1](https://github.com/open-format/community-platform/compare/v0.6.0...v0.6.1) (2025-02-07)
+
+
+### Bug Fixes
+
+* change use-intl to next-intl import in rewards form ([4888c04](https://github.com/open-format/community-platform/commit/4888c04aa0d689390b6168022410646634701187))
+
 # [0.6.0](https://github.com/open-format/community-platform/compare/v0.5.1...v0.6.0) (2025-01-17)
 
 
