@@ -40,7 +40,13 @@ export default function RewardsForm({ community }: { community: Community }) {
   const rewardsFormSchema = z.object({
     user: z.string().min(1, t('form.validation.userRequired')),
     tokenAddress: z.string().min(1, t('form.validation.tokenRequired')),
-    amount: z.coerce.number().min(10 ** -18, t('form.validation.amountMin')),
+    amount: z.preprocess(
+      (val) => (val === "" ? NaN : Number(val)),
+      z.number({
+        invalid_type_error: t('form.validation.amountRequired')
+      })
+      .min(10 ** -18, t('form.validation.amountMin'))
+    ),
     rewardId: z.string().min(3, t('form.validation.rewardIdMin')),
     actionType: z.enum(["mint", "transfer"]).default("mint"),
     metadata: z
@@ -57,6 +63,7 @@ export default function RewardsForm({ community }: { community: Community }) {
 
   const form = useForm<z.infer<typeof rewardsFormSchema>>({
     resolver: zodResolver(rewardsFormSchema),
+    mode: "onBlur",
     defaultValues: {
       user: "",
       tokenAddress: "",
@@ -336,14 +343,16 @@ export default function RewardsForm({ community }: { community: Community }) {
                 <Input
                   type="number"
                   placeholder={t('form.amount.placeholder')}
+                  {...field}
                   value={isSelectedBadge(form.watch("tokenAddress")) ? 1 : field.value ?? ""}
                   onChange={(e) => {
                     if (!isSelectedBadge(form.watch("tokenAddress"))) {
-                      field.onChange(e.target.value === "" ? undefined : e.target.value);
+                      field.onChange(e.target.value === "" ? undefined : parseFloat(e.target.value));
                     }
                   }}
                   onBlur={(e) => {
                     // Only perform balance check for non-badge tokens and when action type is transfer
+                    field.onBlur();
                     if (!isSelectedBadge(form.watch("tokenAddress")) && form.watch("actionType") === "transfer") {
                       const inputAmount = Number.parseFloat(e.target.value);
                       const tokenBalanceInEther = tokenBalance ? Number(formatEther(tokenBalance)) : 0;
@@ -353,8 +362,6 @@ export default function RewardsForm({ community }: { community: Community }) {
                           type: "manual",
                           message: t('form.validation.insufficientBalance', { balance: tokenBalanceInEther.toFixed(4) }),
                         });
-                      } else {
-                        form.clearErrors("amount");
                       }
                     }
                   }}
@@ -378,11 +385,11 @@ export default function RewardsForm({ community }: { community: Community }) {
                   placeholder={t('form.fields.rewardId.placeholder')}
                   {...field}
                   onBlur={(e) => {
-                    field.onChange(
-                      sanitizeString(e.target.value, {
-                        replaceSpacesWith: "-",
-                      })
-                    );
+                    const sanitized = sanitizeString(e.target.value, {
+                      replaceSpacesWith: "-",
+                    });
+                    field.onChange(sanitized);
+                    field.onBlur();
                   }}
                 />
               </FormControl>
@@ -395,7 +402,7 @@ export default function RewardsForm({ community }: { community: Community }) {
         <FormField
           control={form.control}
           name="metadata"
-          render={() => (
+          render={({ field }) => (
             <FormItem>
               <div className="flex items-center justify-between">
                 <FormLabel>{t('form.metadata.label')}</FormLabel>
@@ -414,17 +421,43 @@ export default function RewardsForm({ community }: { community: Community }) {
                 <div className="space-y-2 mt-2">
                   {fields.map((item, index) => (
                     <div key={item.id} className="flex items-center gap-2">
-                      <Input
-                        type="text"
-                        placeholder={t('form.metadata.key')}
-                        className="flex-1"
-                        {...form.register(`metadata.${index}.key`)}
+                      <FormField
+                        control={form.control}
+                        name={`metadata.${index}.key`}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl>
+                              <Input
+                                type="text"
+                                placeholder={t('form.metadata.key')}
+                                {...field}
+                                onBlur={(e) => {
+                                  field.onBlur();
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
-                      <Input
-                        type="text"
-                        placeholder={t('form.metadata.value')}
-                        className="flex-1"
-                        {...form.register(`metadata.${index}.value`)}
+                      <FormField
+                        control={form.control}
+                        name={`metadata.${index}.value`}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl>
+                              <Input
+                                type="text"
+                                placeholder={t('form.metadata.value')}
+                                {...field}
+                                onBlur={(e) => {
+                                  field.onBlur();
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
                       <Button
                         type="button"
@@ -439,7 +472,6 @@ export default function RewardsForm({ community }: { community: Community }) {
                   ))}
                 </div>
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
