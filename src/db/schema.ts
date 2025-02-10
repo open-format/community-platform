@@ -4,7 +4,7 @@ import { boolean, integer, pgTable, timestamp, uuid, varchar } from "drizzle-orm
 export const communities = pgTable("communities", {
   id: varchar("id", { length: 42 }).primaryKey(),
   title: varchar("title", { length: 255 }),
-  description: varchar("description", { length: 255 }),
+  description: varchar("description", { length: 2048 }),
   slug: varchar("slug", { length: 255 }).notNull().unique(),
   accent_color: varchar("accent_color", { length: 7 }).notNull().default("#6366F1"),
   token_label: varchar("token_label", { length: 255 }).notNull().default("Points"),
