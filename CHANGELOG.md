@@ -1,3 +1,10 @@
+# [0.7.0](https://github.com/open-format/community-platform/compare/v0.6.1...v0.7.0) (2025-02-10)
+
+
+### Features
+
+* Increase character count and handle paragraphs in community description ([e8583df](https://github.com/open-format/community-platform/commit/e8583df02c83bde686b1103780e1c4c0651b900c))
+
 ## [0.6.1](https://github.com/open-format/community-platform/compare/v0.6.0...v0.6.1) (2025-02-07)
 
 
