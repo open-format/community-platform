@@ -92,6 +92,20 @@
       "when": 1736527778968,
       "tag": "0012_perpetual_boomer",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1739187385791,
+      "tag": "0013_round_black_tarantula",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1739187656874,
+      "tag": "0014_lethal_logan",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,1 @@
+ALTER TABLE "communities" ALTER COLUMN "description" SET DATA TYPE varchar(1024);
