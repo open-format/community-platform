@@ -44,7 +44,11 @@
     "invalidAddress": "Invalid address",
     "numberRequired": "Please enter a number",
     "positiveNumber": "Please enter a positive number",
-    "slugFormat": "Only lowercase letters, numbers, and hyphens are allowed"
+    "slugFormat": "Only lowercase letters, numbers, and hyphens are allowed",
+    "titleRequired": "Title is required",
+    "titleMax": "Title cannot be longer than 32 characters",
+    "descriptionMin": "Description must be at least 3 characters",
+    "slugRequired": "Slug is required"
   },
   "navigation": {
     "menu": {
@@ -195,10 +199,11 @@
         "userRequired": "User handle is required",
         "tokenRequired": "Token is required",
         "amountMin": "Amount must be at least 0.000000000000000001",
+        "amountRequired": "Amount is required",
         "rewardIdMin": "Reward ID must be at least 3 characters",
         "keyRequired": "Key is required",
         "valueRequired": "Value is required",
-        "insufficientBalance": "Insufficient balance. Max available: {balance} tokens"
+        "insufficientBalance": "Insufficient balance. You have {balance} tokens available"
       },
       "fields": {
         "rewardId": {
@@ -714,6 +719,8 @@
         }
       },
       "validation": {
+        "titleRequired": "Title is required",
+        "titleMax": "Title cannot be longer than 32 characters",
         "descriptionMin": "Description must be at least 3 characters",
         "slugRequired": "Slug is required",
         "invalidImageUrl": "Please provide a valid image URL",
