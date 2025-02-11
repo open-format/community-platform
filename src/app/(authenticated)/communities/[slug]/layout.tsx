@@ -3,6 +3,7 @@ import { fetchCommunity, getChainFromCommunityOrCookie } from "@/lib/openformat"
 import { getTranslations } from 'next-intl/server';
 import Link from "next/link";
 import type React from "react";
+import ActiveLink from "@/components/active-link";
 
 async function handleCommunityCreation(slug: `0x${string}`) {
   const chain = await getChainFromCommunityOrCookie(slug);
@@ -30,24 +31,12 @@ export default async function Layout({
     <div>
       <nav className="border-b border-gray-200 flex flex-col px-4 -m-lg">
         <div className="flex">
-          <Link href="overview" className="pr-3 py-4 text-sm text-gray-500 hover:text-gray-700">
-            {t('overview')}
-          </Link>
-          <Link href="settings" className="px-3 py-4 text-sm text-gray-500 hover:text-gray-700">
-            {t('settings')}
-          </Link>
-          <Link href="rewards" className="px-3 py-4 text-sm text-gray-500 hover:text-gray-700">
-            {t('rewards')}
-          </Link>
-          <Link href="tokens" className="px-3 py-4 text-sm text-gray-500 hover:text-gray-700">
-            {t('tokens')}
-          </Link>
-          <Link href="badges" className="px-3 py-4 text-sm text-gray-500 hover:text-gray-700">
-            {t('badges')}
-          </Link>
-          <Link href="agents" className="px-3 py-4 text-sm text-gray-500 hover:text-gray-700">
-            {t('agents')}
-          </Link>
+          <ActiveLink href="overview">{t('overview')}</ActiveLink>
+          <ActiveLink href="settings">{t('settings')}</ActiveLink>
+          <ActiveLink href="rewards">{t('rewards')}</ActiveLink>
+          <ActiveLink href="tokens">{t('tokens')}</ActiveLink>
+          <ActiveLink href="badges">{t('badges')}</ActiveLink>
+          <ActiveLink href="agents">{t('agents')}</ActiveLink>
         </div>
       </nav>
       <main className="m-lg">{children}</main>
