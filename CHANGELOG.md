@@ -1,3 +1,10 @@
+# [0.8.0](https://github.com/open-format/community-platform/compare/v0.7.0...v0.8.0) (2025-02-11)
+
+
+### Features
+
+* add ActiveLink component for navigation highlighting ([adfb2a1](https://github.com/open-format/community-platform/commit/adfb2a109360f6d649cb8b6f75845775f4a52d80))
+
 # [0.7.0](https://github.com/open-format/community-platform/compare/v0.6.1...v0.7.0) (2025-02-10)
 
 
