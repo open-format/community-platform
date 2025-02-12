@@ -727,7 +727,8 @@
         "nameRequired": "Name is required",
         "pointsRequired": "Points are required",
         "pointsMin": "Points must be at least 1",
-        "invalidColorHex": "Invalid color hex code"
+        "invalidColorHex": "Invalid color hex code",
+        "descriptionMax": "Description cannot be longer than 2000 characters"
       }
     }
   },

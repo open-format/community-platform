@@ -37,7 +37,8 @@ export default function CommunitySettingsForm({
       .min(1, t('validation.titleRequired'))
       .max(32, t('validation.titleMax')),
     description: z.string()
-      .min(3, t('validation.descriptionMin'))
+      .min(3, t("validation.descriptionMin"))
+      .max(2000, t("validation.descriptionMax"))
       .optional()
       .or(z.literal("")),
     accent_color: z.string().min(3),
