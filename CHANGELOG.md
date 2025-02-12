@@ -1,3 +1,12 @@
+## [0.8.1](https://github.com/open-format/community-platform/compare/v0.8.0...v0.8.1) (2025-02-12)
+
+
+### Bug Fixes
+
+* added max description length of 2000 characters and added translation for error message ([8d9fe51](https://github.com/open-format/community-platform/commit/8d9fe5153c182443b0d4cdaa5476c42aba79abab))
+* improve community settings form validation and error handling ([a7e356a](https://github.com/open-format/community-platform/commit/a7e356afba9bff3761ff8bff2dc7a4d5d4867b02))
+* resolved validation not showing by implementing field operator and blur handling ([d9ce4de](https://github.com/open-format/community-platform/commit/d9ce4de331d68507749f1b25c69619077b3ace5e))
+
 # [0.8.0](https://github.com/open-format/community-platform/compare/v0.7.0...v0.8.0) (2025-02-11)
 
 
