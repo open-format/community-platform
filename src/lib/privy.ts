@@ -33,7 +33,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
 }
 
 export async function findUserByHandle(handle: string): Promise<{
-  type: "discord" | "telegram";
+  type: "discord" | "github";
   username: string | null;
   wallet: string | null;
 } | null> {
@@ -42,7 +42,10 @@ export async function findUserByHandle(handle: string): Promise<{
   }
 
   try {
-    const [discordUser] = await Promise.all([privyClient.getUserByDiscordUsername(handle).catch(() => null)]);
+    const [discordUser, githubUser] = await Promise.all([
+      privyClient.getUserByDiscordUsername(handle).catch(() => null),
+      privyClient.getUserByGithubUsername(handle).catch(() => null),
+    ]);
 
     // Return the first non-null user found
     if (discordUser) {
@@ -50,6 +53,14 @@ export async function findUserByHandle(handle: string): Promise<{
         type: "discord",
         username: discordUser.discord?.username ?? null,
         wallet: discordUser.wallet?.address ?? null,
+      };
+    }
+
+    if (githubUser) {
+      return {
+        type: "github",
+        username: githubUser.github?.username ?? null,
+        wallet: githubUser.wallet?.address ?? null,
       };
     }
 
@@ -64,10 +75,14 @@ export async function findUserByHandle(handle: string): Promise<{
 }
 
 export async function getUserHandle(wallet: Address): Promise<{
-  type: "discord" | "telegram";
+  type: "discord" | "telegram" | "github";
   username: string | null;
 } | null> {
   const user = await privyClient.getUserByWalletAddress(wallet);
+
+  if (user?.github?.username) {
+    return { type: "github", username: user.github.username };
+  }
 
   if (user?.discord?.username) {
     return { type: "discord", username: user.discord.username };

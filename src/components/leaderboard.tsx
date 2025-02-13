@@ -4,9 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Discord from "../../public/icons/discord.svg";
+import Github from "../../public/icons/github.svg";
 import Telegram from "../../public/icons/telegram.svg";
 import { Badge } from "./ui/badge";
 import { Skeleton } from "./ui/skeleton";
@@ -22,17 +23,17 @@ interface LeaderboardProps {
 }
 
 const LeaderboardHeader = ({ metadata }: Pick<LeaderboardProps, "metadata">) => {
-  const t = useTranslations('overview.leaderboard');
+  const t = useTranslations("overview.leaderboard");
   return (
     <TableHeader>
       <TableRow>
-        <TableHead>{t('rank')}</TableHead>
-        <TableHead>{metadata?.user_label ?? t('user')}</TableHead>
-        <TableHead className="text-right">{metadata?.token_label ?? t('points')}</TableHead>
+        <TableHead>{t("rank")}</TableHead>
+        <TableHead>{metadata?.user_label ?? t("user")}</TableHead>
+        <TableHead className="text-right">{metadata?.token_label ?? t("points")}</TableHead>
       </TableRow>
     </TableHeader>
   );
-}
+};
 
 const LeaderboardSkeleton = () => (
   <Card className="h-full">
@@ -54,7 +55,7 @@ const LeaderboardSkeleton = () => (
 );
 
 const EmptyState = ({ metadata }: Pick<LeaderboardProps, "metadata">) => {
-  const t = useTranslations('overview.leaderboard');
+  const t = useTranslations("overview.leaderboard");
   return (
     <Card variant="borderless" className="h-full">
       <CardContent>
@@ -63,7 +64,7 @@ const EmptyState = ({ metadata }: Pick<LeaderboardProps, "metadata">) => {
           <TableBody>
             <TableRow>
               <TableCell colSpan={3} className="text-center text-muted-foreground py-4">
-                {t('noData')}
+                {t("noData")}
               </TableCell>
             </TableRow>
           </TableBody>
@@ -71,7 +72,7 @@ const EmptyState = ({ metadata }: Pick<LeaderboardProps, "metadata">) => {
       </CardContent>
     </Card>
   );
-}
+};
 
 export default function Leaderboard({
   data,
@@ -95,7 +96,14 @@ export default function Leaderboard({
               const isCurrentUser =
                 user?.wallet?.address && entry.user.toLowerCase() === user?.wallet?.address.toLowerCase();
               const SocialIcon =
-                showSocialHandles && (entry.type === "discord" ? Discord : entry.type === "telegram" ? Telegram : null);
+                showSocialHandles &&
+                (entry.type === "discord"
+                  ? Discord
+                  : entry.type === "telegram"
+                  ? Telegram
+                  : entry.type === "github"
+                  ? Github
+                  : null);
 
               return (
                 <TableRow key={entry.user}>
