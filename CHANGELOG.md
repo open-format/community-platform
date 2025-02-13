@@ -1,3 +1,10 @@
+# [0.9.0](https://github.com/open-format/community-platform/compare/v0.8.1...v0.9.0) (2025-02-13)
+
+
+### Features
+
+* Add GitHub support for leaderboard and user handles ([bda525f](https://github.com/open-format/community-platform/commit/bda525f83eb394a772307a41a6c40f016ffd21a4))
+
 ## [0.8.1](https://github.com/open-format/community-platform/compare/v0.8.0...v0.8.1) (2025-02-12)
 
 
