@@ -1,3 +1,10 @@
+## [0.9.2](https://github.com/open-format/community-platform/compare/v0.9.1...v0.9.2) (2025-02-13)
+
+
+### Bug Fixes
+
+* image size validation for badge creation form ([730af9d](https://github.com/open-format/community-platform/commit/730af9dc5e2a0822bca2247e03837611279c350b))
+
 ## [0.9.1](https://github.com/open-format/community-platform/compare/v0.9.0...v0.9.1) (2025-02-13)
 
 
