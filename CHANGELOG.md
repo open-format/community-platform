@@ -1,3 +1,10 @@
+## [0.9.1](https://github.com/open-format/community-platform/compare/v0.9.0...v0.9.1) (2025-02-13)
+
+
+### Bug Fixes
+
+* Add optional chaining to prevent potential null/undefined errors in badge collection ([37b6cb3](https://github.com/open-format/community-platform/commit/37b6cb37e0d1789568bcbb715b4366cd9e7f2c48))
+
 # [0.9.0](https://github.com/open-format/community-platform/compare/v0.8.1...v0.9.0) (2025-02-13)
 
 
