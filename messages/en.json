@@ -162,7 +162,8 @@
       "rank": "Rank",
       "user": "User",
       "points": "Points",
-      "noData": "No leaderboard data available"
+      "noData": "No leaderboard data available",
+      "selectToken": "Select token"
     },
     "activity": {
       "title": "Activity",

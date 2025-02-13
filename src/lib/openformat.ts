@@ -294,7 +294,7 @@ query ($user: ID!, $community: String!) {
   };
 }
 
-export async function generateLeaderboard(slugOrId: string): Promise<LeaderboardEntry[] | null> {
+export async function generateLeaderboard(slugOrId: string, tokenId?: string): Promise<LeaderboardEntry[] | null> {
   const chain = await getChainFromCommunityOrCookie(slugOrId);
 
   if (!chain) {
@@ -304,13 +304,15 @@ export async function generateLeaderboard(slugOrId: string): Promise<Leaderboard
   try {
     const communityFromDb = await getCommunity(slugOrId);
 
-    if (!communityFromDb || !communityFromDb.token_to_display) {
+    if (!communityFromDb) {
       return null;
     }
 
+    const selectedTokenId = tokenId || communityFromDb.token_to_display;
+
     const params = new URLSearchParams();
     params.set("app_id", communityFromDb.id);
-    params.set("token_id", communityFromDb.token_to_display);
+    params.set("token_id", selectedTokenId);
     params.set("start", "0");
     params.set("end", "99999999999999999999999999");
     // @TODO: Make this dynamic

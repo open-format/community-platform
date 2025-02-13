@@ -74,6 +74,8 @@ export default function CommunityPreview({ community, previewValues, leaderboard
               token_label: previewValues.token_label,
             }}
             showSocialHandles={Boolean(previewValues?.show_social_handles)}
+            tokens={community.tokens}
+            slug={community.metadata.slug}
           />
         </TabsContent>
         <TabsContent value="badges">

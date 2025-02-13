@@ -83,8 +83,13 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
         <TabsContent value="leaderboard">
           <Leaderboard
             data={leaderboard || []}
-            metadata={{ user_label: community?.metadata?.user_label, token_label: community?.metadata?.token_label }}
+            metadata={{ 
+              user_label: community?.metadata?.user_label, 
+              token_label: community?.metadata?.token_label 
+            }}
             showSocialHandles={community?.metadata?.show_social_handles}
+            tokens={community.tokens}
+            slug={slug}
           />
         </TabsContent>
         <TabsContent value="badges">

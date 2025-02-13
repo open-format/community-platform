@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
@@ -10,6 +10,9 @@ import Discord from "../../public/icons/discord.svg";
 import Telegram from "../../public/icons/telegram.svg";
 import { Badge } from "./ui/badge";
 import { Skeleton } from "./ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
+import { generateLeaderboard } from "@/lib/openformat";
 
 interface LeaderboardProps {
   data: LeaderboardEntry[] | null;
@@ -19,6 +22,15 @@ interface LeaderboardProps {
     user_label: string;
     token_label: string;
   };
+  tokens: {
+    token: {
+      id: string;
+      name: string;
+      symbol: string;
+    };
+  }[];
+  onTokenSelect?: (tokenId: string) => void;
+  slug: string;
 }
 
 const LeaderboardHeader = ({ metadata }: Pick<LeaderboardProps, "metadata">) => {
@@ -76,21 +88,38 @@ const EmptyState = ({ metadata }: Pick<LeaderboardProps, "metadata">) => {
 export default function Leaderboard({
   data,
   metadata,
-  isLoading = false,
+  isLoading: initialLoading = false,
   showSocialHandles = false,
+  tokens,
+  onTokenSelect,
+  slug,
 }: LeaderboardProps) {
   const { user } = usePrivy();
+  const t = useTranslations('overview.leaderboard');
+  const [localData, setLocalData] = useState<LeaderboardEntry[] | null>(data);
+  const [isLoading, setIsLoading] = useState(initialLoading);
 
-  if (isLoading) return <LeaderboardSkeleton />;
-  if (!data || data.length === 0 || data?.error) return <EmptyState metadata={metadata} />;
+  const handleTokenSelect = async (tokenId: string) => {
+    setIsLoading(true);
+    try {
+      const newData = await generateLeaderboard(slug, tokenId);
+      setLocalData(newData);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  return (
+  const content = isLoading ? (
+    <LeaderboardSkeleton />
+  ) : !localData || localData.length === 0 || localData?.error ? (
+    <EmptyState metadata={metadata} />
+  ) : (
     <Card variant="borderless" className="h-full">
       <CardContent>
         <Table>
           <LeaderboardHeader metadata={metadata} />
           <TableBody>
-            {data?.map((entry, index) => {
+            {localData?.map((entry, index) => {
               const position = index + 1;
               const isCurrentUser =
                 user?.wallet?.address && entry.user.toLowerCase() === user?.wallet?.address.toLowerCase();
@@ -132,6 +161,28 @@ export default function Leaderboard({
             })}
           </TableBody>
         </Table>
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <Card variant="borderless" className="h-full">
+      <CardContent>
+        <div className="flex items-center justify-between mb-4">
+          <Select onValueChange={handleTokenSelect}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder={t('selectToken')} />
+            </SelectTrigger>
+            <SelectContent>
+              {tokens?.map((i) => (
+                <SelectItem key={i.token.id} value={i.token.id}>
+                  {i.token.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        {content}
       </CardContent>
     </Card>
   );
