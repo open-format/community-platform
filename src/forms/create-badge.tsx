@@ -1,9 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useTranslations } from 'next-intl';
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -36,7 +36,7 @@ interface CreateBadgeFormProps {
 }
 
 export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
-  const t = useTranslations('badges.create');
+  const t = useTranslations("badges.create");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { triggerConfetti } = useConfetti();
   const [shouldRevalidate, setShouldRevalidate] = useState(false);
@@ -46,11 +46,11 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
   const toggle = () => setIsOpen((t) => !t);
 
   const FormSchema = z.object({
-    name: z.string()
-      .min(3, t('validation.nameRequired'))
-      .max(32, t('validation.nameMaxLength')),
-    description: z.string().min(3, t('validation.descriptionRequired')),
-    image: z.any(),
+    name: z.string().min(3, t("validation.nameRequired")).max(32, t("validation.nameMaxLength")),
+    description: z.string().min(3, t("validation.descriptionRequired")),
+    image: z.instanceof(File).refine((file) => file.size <= 1 * 1024 * 1024, {
+      message: t("validation.imageSizeExceeded"),
+    }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -88,7 +88,7 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
         args: [data.name, "BADGE", metadataURI, address as `0x${string}`, 1000, stringToHex("Badge", { size: 32 })],
       });
 
-      const receipt = await waitForTransactionReceipt(config, { hash: transactionHash });
+      await waitForTransactionReceipt(config, { hash: transactionHash });
 
       form.reset();
       toggle();
@@ -101,11 +101,11 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={toggle}>
-      <DialogTrigger className={buttonVariants()}>{t('title')}</DialogTrigger>
+      <DialogTrigger className={buttonVariants()}>{t("title")}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t('title')}</DialogTitle>
-          <DialogDescription>{t('description')}</DialogDescription>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form className="w-full space-y-4" onSubmit={form.handleSubmit(handleFormSubmission)}>
@@ -114,12 +114,12 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
               name="name"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>{t('fields.name.label')}</FormLabel>
+                  <FormLabel>{t("fields.name.label")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('fields.name.placeholder')} {...field} />
+                    <Input placeholder={t("fields.name.placeholder")} {...field} />
                   </FormControl>
                   <FormMessage />
-                  <p className="text-destructive text-sm">{t('fields.name.immutableWarning')}</p>
+                  <p className="text-destructive text-sm">{t("fields.name.immutableWarning")}</p>
                 </FormItem>
               )}
             />
@@ -128,9 +128,9 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
               name="description"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>{t('fields.description.label')}</FormLabel>
+                  <FormLabel>{t("fields.description.label")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('fields.description.placeholder')} {...field} />
+                    <Input placeholder={t("fields.description.placeholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -141,11 +141,11 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
               name="image"
               render={({ field: { value, onChange, ...fieldProps } }) => (
                 <FormItem>
-                  <FormLabel>{t('fields.image.label')}</FormLabel>
+                  <FormLabel>{t("fields.image.label")}</FormLabel>
                   {image && (
                     <Image
                       src={URL.createObjectURL(image)}
-                      alt={t('fields.image.altText')}
+                      alt={t("fields.image.altText")}
                       width={125}
                       height={125}
                       className="rounded-md object-cover"
@@ -166,10 +166,10 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
             {form.formState.isSubmitting ? (
               <Button disabled>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t('buttons.creating')}
+                {t("buttons.creating")}
               </Button>
             ) : (
-              <Button type="submit">{t('buttons.create')}</Button>
+              <Button type="submit">{t("buttons.create")}</Button>
             )}
           </form>
         </Form>

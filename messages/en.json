@@ -383,7 +383,8 @@
       "validation": {
         "nameRequired": "Name must be at least 3 characters",
         "nameMaxLength": "Name must be less than 32 characters",
-        "descriptionRequired": "Description must be at least 3 characters"
+        "descriptionRequired": "Description must be at least 3 characters",
+        "imageSizeExceeded": "Image size must be less than 1MB"
       },
       "fields": {
         "name": {
