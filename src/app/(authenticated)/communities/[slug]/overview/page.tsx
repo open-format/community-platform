@@ -44,6 +44,8 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
                 user_label: community.metadata.user_label,
                 token_label: community.metadata.token_label,
               }}
+              tokens={community.tokens}
+              slug={slug}
             />
           </CardContent>
         </Card>
