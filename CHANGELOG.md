@@ -1,3 +1,10 @@
+# [0.10.0](https://github.com/open-format/community-platform/compare/v0.9.3...v0.10.0) (2025-02-14)
+
+
+### Features
+
+* Improve CommunityInfo component accessibility and structure ([fdcd030](https://github.com/open-format/community-platform/commit/fdcd03074ce44b05b21a6c4b8efb6652f3ba6e45))
+
 ## [0.9.3](https://github.com/open-format/community-platform/compare/v0.9.2...v0.9.3) (2025-02-14)
 
 
