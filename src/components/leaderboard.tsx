@@ -11,7 +11,7 @@ import Telegram from "../../public/icons/telegram.svg";
 import { Badge } from "./ui/badge";
 import { Skeleton } from "./ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { generateLeaderboard } from "@/lib/openformat";
 
 interface LeaderboardProps {
@@ -91,19 +91,27 @@ export default function Leaderboard({
   isLoading: initialLoading = false,
   showSocialHandles = false,
   tokens,
-  onTokenSelect,
   slug,
 }: LeaderboardProps) {
   const { user } = usePrivy();
   const t = useTranslations('overview.leaderboard');
   const [localData, setLocalData] = useState<LeaderboardEntry[] | null>(data);
   const [isLoading, setIsLoading] = useState(initialLoading);
+  const [selectedTokenId, setSelectedTokenId] = useState<string>(tokens?.[0]?.token.id || '');
+
+  useEffect(() => {
+    if (tokens?.length > 0) {
+      handleTokenSelect(tokens[0].token.id);
+      setSelectedTokenId(tokens[0].token.id);
+    }
+  }, [tokens]);
 
   const handleTokenSelect = async (tokenId: string) => {
     setIsLoading(true);
     try {
       const newData = await generateLeaderboard(slug, tokenId);
       setLocalData(newData);
+      setSelectedTokenId(tokenId);
     } finally {
       setIsLoading(false);
     }
@@ -169,7 +177,7 @@ export default function Leaderboard({
     <Card variant="borderless" className="h-full">
       <CardContent>
         <div className="flex items-center justify-between mb-4">
-          <Select onValueChange={handleTokenSelect}>
+          <Select value={selectedTokenId} onValueChange={handleTokenSelect}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder={t('selectToken')} />
             </SelectTrigger>
