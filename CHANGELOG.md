@@ -1,3 +1,10 @@
+## [0.9.3](https://github.com/open-format/community-platform/compare/v0.9.2...v0.9.3) (2025-02-14)
+
+
+### Bug Fixes
+
+* Add optional chaining to token balances to prevent null reference errors ([7d9f509](https://github.com/open-format/community-platform/commit/7d9f5092a617f536acec1290873a056aaeae7f34))
+
 ## [0.9.2](https://github.com/open-format/community-platform/compare/v0.9.1...v0.9.2) (2025-02-13)
 
 
