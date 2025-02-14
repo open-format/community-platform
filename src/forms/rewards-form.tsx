@@ -476,7 +476,7 @@ export default function RewardsForm({ community }: { community: Community }) {
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isPending || !form.formState.isValid}>
+        <Button type="submit" className="w-full" disabled={isPending}>
           {isPending ? t('form.buttons.rewarding') : t('form.buttons.reward')}
         </Button>
       </form>
