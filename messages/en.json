@@ -167,7 +167,8 @@
       "user": "User",
       "points": "Points",
       "noData": "No leaderboard data available",
-      "selectToken": "Select token"
+      "selectToken": "Select token",
+      "token": "Token"
     },
     "activity": {
       "title": "Activity",

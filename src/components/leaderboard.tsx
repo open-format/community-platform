@@ -14,6 +14,7 @@ import { Skeleton } from "./ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { generateLeaderboard } from "@/lib/openformat";
+import { Label } from "@/components/ui/label";
 
 interface LeaderboardProps {
   data: LeaderboardEntry[] | null;
@@ -185,18 +186,21 @@ export default function Leaderboard({
     <Card variant="borderless" className="h-full">
       <CardContent>
         <div className="flex items-center justify-between mb-4">
-          <Select value={selectedTokenId} onValueChange={handleTokenSelect}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder={t('selectToken')} />
-            </SelectTrigger>
-            <SelectContent>
-              {tokens?.map((i) => (
-                <SelectItem key={i.token.id} value={i.token.id}>
-                  {i.token.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="space-y-2">
+            <Label>{t('token')}</Label>
+            <Select value={selectedTokenId} onValueChange={handleTokenSelect}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder={t('selectToken')} />
+              </SelectTrigger>
+              <SelectContent>
+                {tokens?.map((i) => (
+                  <SelectItem key={i.token.id} value={i.token.id}>
+                    {i.token.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         {content}
       </CardContent>
