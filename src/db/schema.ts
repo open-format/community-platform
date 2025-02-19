@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { boolean, integer, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const communities = pgTable("communities", {
@@ -17,6 +17,7 @@ export const communities = pgTable("communities", {
   updated_at: timestamp("updated_at").defaultNow().notNull(),
   show_social_handles: boolean("show_social_handles").notNull().default(false),
   chain_id: integer("chain_id"),
+  hidden_tokens: varchar("hidden_tokens", { length: 42 }).array().default([]),
 });
 
 export const communitiesRelations = relations(communities, ({ many }) => ({
