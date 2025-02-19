@@ -282,15 +282,24 @@
     }
   },
   "agents": {
-    "title": "What can I help you with?",
-    "placeholder": "Ask me a question...",
-    "discordInvite": "If you're interested in joining our agents beta, come join us in Discord.",
-    "comingSoon": "Coming Soon",
-    "suggestions": {
-      "github": "Reward the top GitHub contributors",
-      "discord": "Send 10 point tokens to tinypell3ts on Discord",
-      "members": "Who are the new members of the community this week?"
-    }
+    "form": {
+      "validation": {
+        "documentsRequired": "Please upload at least one document"
+      }
+    },
+    "title": "Community Agent",
+    "fileUpload": "Upload Documents",
+    "uploadPrompt": "Drag and drop files or click to upload",
+    "chatSection": "Ask About Your Community",
+    "chatPlaceholder": "Ask a question about your uploaded documents...",
+    "send": "Send",
+    "uploadSuccess": "Documents uploaded successfully",
+    "upload": "Upload",
+    "uploading": "Uploading...",
+    "uploadError": "Failed to upload documents",
+    "messageError": "Failed to send message",
+    "noDocumentsUploaded": "No documents uploaded yet",
+    "documentUploadHint": "Upload PDFs, text files, or Word documents to provide context for your community agent"
   },
   "networkSelector": {
     "title": "Select Network",
@@ -720,7 +729,8 @@
         "nameRequired": "Name is required",
         "pointsRequired": "Points are required",
         "pointsMin": "Points must be at least 1",
-        "invalidColorHex": "Invalid color hex code"
+        "invalidColorHex": "Invalid color hex code",
+        "documentsRequired": "Please upload at least one document"
       }
     }
   },

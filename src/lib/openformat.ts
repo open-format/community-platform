@@ -4,6 +4,7 @@ import { type Chain, ChainName, getChain, getChainById } from "@/constants/chain
 import config from "@/constants/config";
 import { getCommunities, getCommunity } from "@/db/queries/communities";
 import axios from "axios";
+import FormData from "form-data";
 import { request } from "graphql-request";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
@@ -16,6 +17,10 @@ const apiClient = axios.create({
   headers: {
     "x-api-key": config.OPENFORMAT_API_KEY,
   },
+});
+
+const agentApiClient = axios.create({
+  baseURL: "http://localhost:8080",
 });
 
 export async function revalidate() {
@@ -93,10 +98,16 @@ export async function fetchAllCommunities() {
 
       return { data: matchedCommunities || [], error: null };
     } catch {
-      return { data: [], error: "Failed to fetch onchain communities. Please try again." };
+      return {
+        data: [],
+        error: "Failed to fetch onchain communities. Please try again.",
+      };
     }
   } catch {
-    return { data: [], error: "Failed to fetch communities. Please try again later." };
+    return {
+      data: [],
+      error: "Failed to fetch communities. Please try again later.",
+    };
   }
 }
 
@@ -339,7 +350,9 @@ export async function generateLeaderboard(slugOrId: string): Promise<Leaderboard
 
     return leaderboardWithHandles;
   } catch (error) {
-    return { error: "Failed to fetch leaderboard data. Please try again later." };
+    return {
+      error: "Failed to fetch leaderboard data. Please try again later.",
+    };
   }
 }
 
@@ -367,4 +380,56 @@ export async function fundAccount() {
     console.error(error);
     return null;
   }
+}
+
+export async function uploadDocuments(files: File[], communitySlug: string) {
+  try {
+    // Create FormData
+    const formData = new FormData();
+
+    // Append files
+    for (const file of files) {
+      // Convert File to Buffer
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      formData.append("documents", buffer, {
+        filename: file.name,
+        contentType: file.type,
+      });
+    }
+
+    // Append additional metadata
+    formData.append("communityId", communitySlug);
+
+    // Make axios request
+    const response = await agentApiClient.post("/docs/upload", formData, {
+      headers: {
+        ...formData.getHeaders(),
+      },
+      maxBodyLength: Number.POSITIVE_INFINITY,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Document upload error:", error);
+    throw error;
+  }
+}
+
+export async function sendMessage(message: string, communitySlug: string) {
+  const response = await agentApiClient.post(
+    "/message",
+    { text: message },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "x-Community-Id": communitySlug,
+      },
+    }
+  );
+  return {
+    text: response.data.response,
+    error: null,
+  };
 }
