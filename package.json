@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
+    "db:migrate": "drizzle-kit push:pg",
     "db:studio": "drizzle-kit studio",
     "db:setup": "npm run db:generate && npm run db:migrate",
     "db:seed": "bun run src/db/seed.ts",
