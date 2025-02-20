@@ -485,7 +485,7 @@ export default function CommunitySettingsForm({
                   {t('buttons.updating')}
                 </Button>
               ) : (
-                <Button disabled={!form.formState.isValid} type="submit">
+                <Button type="submit">
                   {t('buttons.update')}
                 </Button>
               )}
