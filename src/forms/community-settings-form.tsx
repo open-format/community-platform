@@ -37,7 +37,6 @@ export default function CommunitySettingsForm({
     description: z.string().min(3, t('validation.descriptionMin')).optional().or(z.literal("")),
     accent_color: z.string().min(3),
     user_label: z.string().min(3),
-    token_label: z.string().min(3),
     dark_mode: z.boolean().default(false),
     token_to_display: z.string().min(3),
     slug: z
@@ -82,7 +81,6 @@ export default function CommunitySettingsForm({
       description: community.metadata?.description ?? "",
       accent_color: community.metadata?.accent_color ?? "#6366F1",
       user_label: community.metadata?.user_label ?? t('sections.language.fields.userLabel.defaultValue'),
-      token_label: community.metadata?.token_label ?? t('sections.language.fields.tokenLabel.defaultValue'),
       slug: community.metadata?.slug ?? "",
       dark_mode: community.metadata?.dark_mode ?? false,
       banner_url: community.metadata?.banner_url ?? "",
@@ -328,21 +326,6 @@ export default function CommunitySettingsForm({
                         </FormControl>
                         <FormMessage />
                         <FormDescription>{t('sections.language.fields.userLabel.description')}</FormDescription>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="token_label"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('sections.language.fields.tokenLabel.label')}</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        <FormDescription>{t('sections.language.fields.tokenLabel.description')}</FormDescription>
                       </FormItem>
                     )}
                   />
