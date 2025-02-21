@@ -35,16 +35,17 @@ interface LeaderboardProps {
   slug: string;
 }
 
-const LeaderboardHeader = ({ metadata }: Pick<LeaderboardProps, "metadata">) => {
-  const t = useTranslations("overview.leaderboard");
+function LeaderboardHeader({ metadata, selectedToken }: { metadata: any, selectedToken: any }) {
+  const t = useTranslations('overview.leaderboard');
+  
   return (
-    <TableHeader>
-      <TableRow>
-        <TableHead>{t("rank")}</TableHead>
-        <TableHead>{metadata?.user_label ?? t("user")}</TableHead>
-        <TableHead className="text-right">{metadata?.token_label ?? t("points")}</TableHead>
-      </TableRow>
-    </TableHeader>
+    <TableRow>
+      <TableHead>{t('rank')}</TableHead>
+      <TableHead>{metadata?.user_label ?? t('user')}</TableHead>
+      <TableHead className="text-right capitalize whitespace-nowrap">
+        {`${selectedToken?.token.name} (${selectedToken?.token.symbol})`}
+      </TableHead>
+    </TableRow>
   );
 };
 
@@ -119,6 +120,8 @@ export default function Leaderboard({
     }
   };
 
+  const selectedToken = tokens?.find(t => t.token.id === selectedTokenId);
+
   const content = isLoading ? (
     <LeaderboardSkeleton />
   ) : !localData || localData.length === 0 || localData?.error ? (
@@ -127,7 +130,9 @@ export default function Leaderboard({
     <Card variant="borderless" className="h-full">
       <CardContent>
         <Table>
-          <LeaderboardHeader metadata={metadata} />
+          <TableHeader>
+            <LeaderboardHeader metadata={metadata} selectedToken={selectedToken} />
+          </TableHeader>
           <TableBody>
             {localData?.map((entry, index) => {
               const position = index + 1;
