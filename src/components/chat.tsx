@@ -3,7 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { sendMessage } from "@/lib/openformat";
-import { ChevronRight, Settings } from "lucide-react";
+import { getAddress } from "@/lib/utils";
+import { usePrivy } from "@privy-io/react-auth";
+import { ChevronRight } from "lucide-react";
 import type { default as React } from "react";
 import { startTransition, useEffect, useRef, useState } from "react";
 import { LoadingSpinner } from "./loading-spinner";
@@ -23,6 +25,8 @@ interface Message {
 
 export default function ChatInterface({ communitySlug }: { communitySlug: string }) {
   const [inputValue, setInputValue] = useState("");
+  const { user } = usePrivy();
+  const address = getAddress(user);
   const [chatMessages, setChatMessages] = useState<Message[]>([
     {
       id: 0,
@@ -138,16 +142,14 @@ export default function ChatInterface({ communitySlug }: { communitySlug: string
         <form onSubmit={handleSubmit} className="relative mt-auto">
           <input
             type="text"
+            disabled={!address || isLoading}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder={"Type your message..."}
-            className="w-full bg-[#222222] text-white rounded-xl py-4 px-12 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            placeholder={address ? "Type your message..." : "Please Login to continue..."}
+            className="w-full bg-[#222222] text-white rounded-xl py-4 px-12 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
           />
           <Button type="submit" size="icon" variant="ghost" className="absolute right-2 top-1/2 -translate-y-1/2">
             <ChevronRight className="w-5 h-5 text-gray-400" />
-          </Button>
-          <Button size="icon" variant="ghost" className="absolute left-2 top-1/2 -translate-y-1/2">
-            <Settings className="w-5 h-5 text-gray-400" />
           </Button>
         </form>
       </Card>
