@@ -10,8 +10,8 @@ import { getTranslations } from 'next-intl/server';
 export default async function Overview({ params }: { params: Promise<{ slug: string }> }) {
   const t = await getTranslations('overview');
   const slug = (await params).slug as `0x${string}`;
-  const leaderboard = await generateLeaderboard(slug);
   const community = await fetchCommunity(slug);
+  const leaderboard = await generateLeaderboard(slug, community.metadata.token_to_display);
 
   if (!community) {
     return (
@@ -41,8 +41,10 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
               data={leaderboard || []}
               showSocialHandles={community.metadata.show_social_handles}
               metadata={{
+                ...community.metadata,
                 user_label: community.metadata.user_label,
                 token_label: community.metadata.token_label,
+                token_to_display: community.metadata.token_to_display
               }}
               tokens={community.tokens}
               slug={slug}

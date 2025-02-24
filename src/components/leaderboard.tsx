@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState, useEffect } from "react";
 import { generateLeaderboard } from "@/lib/openformat";
 import { Label } from "@/components/ui/label";
+import { TURBOPACK_CLIENT_MIDDLEWARE_MANIFEST } from "next/dist/shared/lib/constants";
 
 interface LeaderboardProps {
   data: LeaderboardEntry[] | null;
@@ -22,6 +23,7 @@ interface LeaderboardProps {
   metadata?: {
     user_label: string;
     token_label: string;
+    token_to_display?: string;
   };
   tokens: {
     token: {
@@ -34,15 +36,31 @@ interface LeaderboardProps {
   slug: string;
 }
 
-function LeaderboardHeader({ metadata, selectedToken }: { metadata: any, selectedToken: any }) {
+function LeaderboardHeader({ 
+  metadata, 
+  selectedTokenId,
+  tokens 
+}: { 
+  metadata: any;
+  selectedTokenId: string;
+  tokens: {
+    token: {
+      id: string;
+      name: string;
+    };
+  }[];
+}) {
   const t = useTranslations('overview.leaderboard');
+  
+  const selectedToken = tokens?.find(t => t.token.id === selectedTokenId) || tokens?.[0];
+  console.log('Selected token:', selectedToken);
   
   return (
     <TableRow>
       <TableHead>{t('rank')}</TableHead>
       <TableHead>{metadata?.user_label ?? t('user')}</TableHead>
       <TableHead className="text-right capitalize whitespace-nowrap">
-        {`${selectedToken?.token.name} (${selectedToken?.token.symbol})`}
+        {selectedToken?.token.name || t('points')}
       </TableHead>
     </TableRow>
   );
@@ -99,12 +117,16 @@ export default function Leaderboard({
   const t = useTranslations('overview.leaderboard');
   const [localData, setLocalData] = useState<LeaderboardEntry[] | null>(data);
   const [isLoading, setIsLoading] = useState(initialLoading);
-  const [selectedTokenId, setSelectedTokenId] = useState<string>(tokens?.[0]?.token.id || '');
+
+  const [selectedTokenId, setSelectedTokenId] = useState<string>(
+    metadata?.token_to_display || tokens?.[0]?.token.id || ''
+  );
 
   useEffect(() => {
     if (tokens?.length > 0) {
-      handleTokenSelect(tokens[0].token.id);
-      setSelectedTokenId(tokens[0].token.id);
+      const defaultTokenId = metadata?.token_to_display || tokens[0].token.id;
+      handleTokenSelect(defaultTokenId);
+      setSelectedTokenId(defaultTokenId);
     }
   }, [tokens]);
 
@@ -130,7 +152,11 @@ export default function Leaderboard({
       <CardContent>
         <Table>
           <TableHeader>
-            <LeaderboardHeader metadata={metadata} selectedToken={selectedToken} />
+            <LeaderboardHeader 
+              metadata={metadata} 
+              selectedTokenId={selectedTokenId}
+              tokens={tokens}
+            />
           </TableHeader>
           <TableBody>
             {localData?.map((entry, index) => {
