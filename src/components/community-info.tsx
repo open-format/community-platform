@@ -16,7 +16,7 @@ export default function CommunityInfo({ title, description }: CommunityInfoProps
     const paragraphs = description.split("\n\n").filter((p) => p.trim() !== "");
 
     return (
-      <div>
+      <div aria-label={t("ariaLabels.description")}>
         {paragraphs.map((paragraph, index) => (
           <p key={index} className="mb-2">
             {paragraph}
@@ -32,9 +32,7 @@ export default function CommunityInfo({ title, description }: CommunityInfoProps
         <h1 className="text-2xl font-bold" aria-label={t("ariaLabels.title")}>
           {title}
         </h1>
-        <p className="text-sm" aria-label={t("ariaLabels.description")}>
-          <FormattedDescription description={description} />
-        </p>
+        <FormattedDescription description={description} />
       </CardHeader>
     </Card>
   );

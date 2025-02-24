@@ -33,14 +33,19 @@ export default function CommunitySettingsForm({
   const t = useTranslations('settings.form');
 
   const FormSchema = z.object({
-    title: z.string().min(0).max(32),
-    description: z.string().min(3, t('validation.descriptionMin')).optional().or(z.literal("")),
+    title: z.string()
+      .min(1, t('validation.titleRequired'))
+      .max(32, t('validation.titleMax')),
+    description: z.string()
+      .min(3, t("validation.descriptionMin"))
+      .max(2000, t("validation.descriptionMax"))
+      .optional()
+      .or(z.literal("")),
     accent_color: z.string().min(3),
     user_label: z.string().min(3),
     dark_mode: z.boolean().default(false),
     token_to_display: z.string().min(3),
-    slug: z
-      .string()
+    slug: z.string()
       .min(1, t('validation.slugRequired'))
       .transform((str) =>
         str
@@ -76,6 +81,7 @@ export default function CommunitySettingsForm({
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
+    mode: "onBlur",
     defaultValues: {
       title: community.metadata?.title ?? "",
       description: community.metadata?.description ?? "",
@@ -149,7 +155,13 @@ export default function CommunitySettingsForm({
                       <FormItem>
                         <FormLabel>{t('sections.general.fields.name.label')}</FormLabel>
                         <FormControl>
-                          <Input placeholder={t('sections.general.fields.name.placeholder')} {...field} />
+                          <Input 
+                            placeholder={t('sections.general.fields.name.placeholder')} 
+                            {...field}
+                            onBlur={(e) => {
+                              field.onBlur();
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                         <FormDescription>{t('sections.general.fields.name.description')}</FormDescription>
@@ -164,7 +176,13 @@ export default function CommunitySettingsForm({
                       <FormItem>
                         <FormLabel>{t('sections.general.fields.description.label')}</FormLabel>
                         <FormControl>
-                          <Textarea placeholder={t('sections.general.fields.description.placeholder')} {...field} />
+                          <Textarea 
+                            placeholder={t('sections.general.fields.description.placeholder')} 
+                            {...field}
+                            onBlur={(e) => {
+                              field.onBlur();
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                         <FormDescription>{t('sections.general.fields.description.description')}</FormDescription>
@@ -183,6 +201,7 @@ export default function CommunitySettingsForm({
                             placeholder={t('sections.general.fields.slug.placeholder')}
                             {...field}
                             onBlur={async (e) => {
+                              field.onBlur();
                               const transformed = e.target.value
                                 .toLowerCase()
                                 .trim()
@@ -190,15 +209,18 @@ export default function CommunitySettingsForm({
                                 .replace(/^-+|-+$/g, "");
                               field.onChange(transformed);
 
-                              if (transformed === community.metadata.slug) return;
-
-                              const isAvailable = await isSlugAvailable(transformed, community.id);
-                              if (!isAvailable) {
-                                form.setError("slug", {
-                                  message: t('messages.slugTaken'),
-                                });
-                              } else {
-                                form.clearErrors("slug");
+                              // Only check availability if there's a value and it's different from current
+                              if (transformed && transformed !== community.metadata.slug) {
+                                const isAvailable = await isSlugAvailable(transformed, community.id);
+                                if (!isAvailable) {
+                                  form.setError("slug", {
+                                    message: t('messages.slugTaken'),
+                                  });
+                                }
+                                // Only clear errors if we're checking availability
+                                else if (form.getFieldState('slug').error?.message === t('messages.slugTaken')) {
+                                  form.clearErrors("slug");
+                                }
                               }
                             }}
                           />
@@ -446,7 +468,7 @@ export default function CommunitySettingsForm({
                   {t('buttons.updating')}
                 </Button>
               ) : (
-                <Button disabled={!form.formState.isValid} type="submit">
+                <Button type="submit">
                   {t('buttons.update')}
                 </Button>
               )}

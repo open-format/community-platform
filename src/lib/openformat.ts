@@ -276,7 +276,7 @@ query ($user: ID!, $community: String!) {
     community: community.id.toLowerCase(),
   });
 
-  const userCollectedBadges = data.user.collectedBadges.reduce((acc, collected) => {
+  const userCollectedBadges = data?.user?.collectedBadges.reduce((acc, collected) => {
     acc.set(collected.badge.id, collected.tokenId);
     return acc;
   }, new Map<string, string>());
