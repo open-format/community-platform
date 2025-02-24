@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { sendMessage } from "@/lib/openformat";
 import { ChevronRight, Settings } from "lucide-react";
-import { type FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import type { default as React } from "react";
+import { startTransition, useEffect, useRef, useState } from "react";
 import { LoadingSpinner } from "./loading-spinner";
 
 interface Message {
@@ -15,158 +16,141 @@ interface Message {
   message: {
     type: string;
     content: string;
+    componentName?: string;
+    props?: any;
   };
 }
 
-export default function Chat({ communitySlug }: { communitySlug: string }) {
-  const [chatMessages, setChatMessages] = useState<Message[]>([]);
-  const [inputMessage, setInputMessage] = useState("");
+export default function ChatInterface({ communitySlug }: { communitySlug: string }) {
+  const [inputValue, setInputValue] = useState("");
+  const [chatMessages, setChatMessages] = useState<Message[]>([
+    {
+      id: 0,
+      type: "assistant",
+      text: "Hello, I'm the Open Format assistant. How are you?",
+      displayedText: "Hello, I'm the Open Format assistant. How are you?",
+      message: { type: "text", content: "Hello, I'm the OpenFormat assistant. How are you?" },
+    },
+  ]);
   const [isLoading, setIsLoading] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = useCallback(() => {
-    try {
-      if (messagesContainerRef.current) {
-        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-      }
-
-      if (messagesEndRef.current) {
-        messagesEndRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "end",
-        });
-      }
-    } catch (error) {
-      console.error("Scrolling error:", error);
-    }
-  }, [chatMessages]);
-
   useEffect(() => {
-    const scrollAttempts = [
-      () => scrollToBottom(),
-      () => setTimeout(scrollToBottom, 100),
-      () => setTimeout(scrollToBottom, 300),
-    ];
-
-    for (const attempt of scrollAttempts) {
-      attempt();
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
+  }, [chatMessages, isLoading]);
 
-    return () => {
-      for (const attempt of scrollAttempts) {
-        if (typeof attempt === "function") {
-          clearTimeout(attempt as any);
-        }
-      }
+  function handleSubmit(e: React.FormEvent) {
+    // 1. Add User message to chat
+    const newUserMessage: Message = {
+      id: chatMessages.length,
+      type: "user",
+      text: inputValue,
+      displayedText: inputValue,
+      message: {
+        type: "text",
+        content: inputValue,
+      },
     };
-  }, [chatMessages, scrollToBottom]);
-
-  const handleSendMessage = useCallback(
-    async (e: FormEvent) => {
+    setChatMessages((prevMessages) => [...prevMessages, newUserMessage]);
+    setInputValue("");
+    setIsLoading(true);
+    startTransition(async () => {
       e.preventDefault();
-      if (!inputMessage.trim()) return;
+      if (inputValue.trim() === "") return;
 
-      // Add User message to chat
-      const newUserMessage: Message = {
-        id: chatMessages.length,
-        type: "user",
-        text: inputMessage,
-        displayedText: inputMessage,
-        message: {
-          type: "text",
-          content: inputMessage,
-        },
-      };
-      setChatMessages((prevMessages) => [...prevMessages, newUserMessage]);
-      setInputMessage("");
-
-      // Show loading spinner
-      setIsLoading(true);
-
+      // 2. Send message to OpenFormat
       try {
-        // Wait for response from sendMessage
-        const response = await sendMessage(inputMessage, communitySlug);
+        setIsLoading(true);
+        const response = await sendMessage(inputValue, communitySlug);
 
-        // Create Assistant message
-        const assistantMessage: Message = {
-          id: chatMessages.length + 1,
-          type: "assistant",
-          text: response.text || "No response received.",
-          displayedText: response.text || "No response received.",
-          message: {
-            type: "text",
-            content: response.text || "No response received.",
-          },
-        };
-
-        // Add assistant message to chat
-        setChatMessages((prevMessages) => [...prevMessages, assistantMessage]);
+        // 3. Add Assistant message to chat
+        if (response.text) {
+          const assistantMessage: Message = {
+            id: chatMessages.length + 1,
+            type: "assistant",
+            text: response.text,
+            displayedText: response.text,
+            message: {
+              type: "text",
+              content: response.text,
+            },
+          };
+          setChatMessages((prevMessages) => [...prevMessages, assistantMessage]);
+        }
       } catch (error) {
-        console.error("Error sending message:", error);
-
-        const errorMessage: Message = {
-          id: chatMessages.length + 1,
-          type: "assistant",
-          text: "Failed to send message. Please try again.",
-          displayedText: "Failed to send message. Please try again.",
-          message: {
-            type: "text",
-            content: "Failed to send message. Please try again.",
+        setChatMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            id: chatMessages.length + 1,
+            type: "assistant",
+            text: "Sorry, something went wrong. Please try again.",
+            displayedText: "Sorry, something went wrong. Please try again.",
+            message: {
+              type: "text",
+              content: "Sorry, something went wrong. Please try again.",
+            },
           },
-        };
-
-        setChatMessages((prevMessages) => [...prevMessages, errorMessage]);
+        ]);
       } finally {
         setIsLoading(false);
       }
-    },
-    [inputMessage, communitySlug, chatMessages]
-  );
+    });
+  }
 
   return (
-    <Card className="w-full h-[90%] flex flex-col p-6 bg-[#111111] shadow-xl rounded-xl border-0">
-      <div ref={messagesContainerRef} className="flex-grow overflow-y-auto space-y-4 mb-4">
-        {chatMessages.map((message) => (
-          <div key={message.id} className="space-y-4">
-            <div className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
-              <div
-                className={`max-w-[85%] rounded-2xl ${
-                  message.type === "user" ? "bg-[#222222] text-white px-6 py-3" : "text-white"
-                }`}
-              >
-                <div className="whitespace-pre-wrap font-sans animate-fade-in">{message.message.content}</div>
-              </div>
+    <div className="flex flex-col items-center justify-center text-white">
+      <Card className="w-full max-w-2xl h-[90%] flex flex-col p-6 bg-[#111111] shadow-xl rounded-xl border-0">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-[#222222] flex items-center justify-center">
+              <div className="w-4 h-4 rounded-full bg-gradient-to-r from-purple-500 to-blue-500" />
             </div>
           </div>
-        ))}
-        {isLoading && <LoadingSpinner />}
-        <div ref={messagesEndRef} />
-      </div>
-
-      <form onSubmit={handleSendMessage} className="relative mt-auto">
-        <input
-          type="text"
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          placeholder="Type your message..."
-          className="w-full bg-[#222222] text-white rounded-xl py-4 px-12 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          disabled={isLoading}
-        />
-        <Button
-          type="submit"
-          size="icon"
-          variant="ghost"
-          className="absolute right-2 top-1/2 -translate-y-1/2"
-          disabled={isLoading || !inputMessage.trim()}
+        </div>
+        <div
+          ref={messagesContainerRef}
+          className="flex-grow overflow-y-auto space-y-4 mb-4 min-h-[200px] max-h-[500px]"
         >
-          <ChevronRight className="w-5 h-5 text-gray-400" />
-        </Button>
-        <Button size="icon" variant="ghost" className="absolute left-2 top-1/2 -translate-y-1/2">
-          <Settings className="w-5 h-5 text-gray-400" />
-        </Button>
-      </form>
-    </Card>
+          {chatMessages.map((message) => {
+            return (
+              <div key={message.id} className="space-y-4">
+                <div className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
+                  <div
+                    className={`max-w-[85%] rounded-2xl ${
+                      message.type === "user" ? "bg-[#222222] text-white px-6 py-3" : "text-white"
+                    }  ${message.message.type === "component" ? "w-full max-w-full" : ""}`}
+                  >
+                    {message.message.type === "text" && (
+                      <div className="whitespace-pre-wrap font-sans animate-fade-in">{message.message.content}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          {isLoading && <LoadingSpinner />}
+          <div ref={messagesEndRef} />
+        </div>
+        <form onSubmit={handleSubmit} className="relative mt-auto">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder={"Type your message..."}
+            className="w-full bg-[#222222] text-white rounded-xl py-4 px-12 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+          <Button type="submit" size="icon" variant="ghost" className="absolute right-2 top-1/2 -translate-y-1/2">
+            <ChevronRight className="w-5 h-5 text-gray-400" />
+          </Button>
+          <Button size="icon" variant="ghost" className="absolute left-2 top-1/2 -translate-y-1/2">
+            <Settings className="w-5 h-5 text-gray-400" />
+          </Button>
+        </form>
+      </Card>
+    </div>
   );
 }

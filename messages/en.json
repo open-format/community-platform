@@ -454,7 +454,8 @@
       "tabs": {
         "leaderboard": "Leaderboard",
         "badges": "Badges",
-        "activity": "Activity"
+        "activity": "Activity",
+        "agent": "Agent"
       }
     },
     "profile": {

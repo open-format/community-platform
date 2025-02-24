@@ -20,7 +20,10 @@ const apiClient = axios.create({
 });
 
 const agentApiClient = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: process.env.AGENT_API_URL,
+  headers: {
+    Authorization: process.env.AGENT_API_KEY,
+  },
 });
 
 export async function revalidate() {
@@ -418,18 +421,41 @@ export async function uploadDocuments(files: File[], communitySlug: string) {
 }
 
 export async function sendMessage(message: string, communitySlug: string) {
-  const response = await agentApiClient.post(
-    "/message",
-    { text: message },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "x-Community-Id": communitySlug,
-      },
-    }
-  );
-  return {
-    text: response.data.response,
-    error: null,
-  };
+  const currentUser = await getCurrentUser();
+  const community = await getCommunity(communitySlug);
+
+  if (!community?.chain_id) {
+    return {
+      text: "Sorry, something went wrong. Please try again.",
+      error: "No chain found.",
+    };
+  }
+
+  const response = await agentApiClient
+    .post(
+      "/agent/message",
+      { text: message },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Community-Id": community?.id,
+          "X-User-Id": currentUser?.wallet_address,
+          "X-Chain-Id": getChainById(community?.chain_id)?.apiChainName,
+        },
+      }
+    )
+    .then((response) => {
+      return {
+        text: response.data.response,
+        error: null,
+      };
+    })
+    .catch((error) => {
+      console.error("Message send failed:", error);
+      return {
+        text: "Sorry, something went wrong. Please try again.",
+        error: error,
+      };
+    });
+  return response;
 }

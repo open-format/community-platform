@@ -1,4 +1,5 @@
 import Activity from "@/components/activity";
+import Chat from "@/components/chat";
 import CommunityBadges from "@/components/community-badges";
 import { CommunityBanner } from "@/components/community-banner";
 import CommunityInfo from "@/components/community-info";
@@ -8,12 +9,12 @@ import Tiers from "@/components/tiers";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchCommunity, fetchUserProfile, generateLeaderboard } from "@/lib/openformat";
 import { cn } from "@/lib/utils";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { formatEther } from "viem";
-import { getTranslations } from 'next-intl/server';
 
 export default async function CommunityPage({ params }: { params: Promise<{ slug: string }> }) {
-  const t = await getTranslations('community');
+  const t = await getTranslations("community");
   const slug = (await params).slug;
   const community = await fetchCommunity(slug);
   const leaderboard = await generateLeaderboard(slug);
@@ -28,16 +29,14 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
     return (
       <div className="text-center min-h-[100vh] flex flex-col items-center justify-center p-12 rounded-lg bg-background text-foreground space-y-8">
         <h2 className="text-4xl md:text-5xl font-bold">
-          {t('notFound.title')} <span className="inline-block animate-look-around">👀</span>
+          {t("notFound.title")} <span className="inline-block animate-look-around">👀</span>
         </h2>
-        <p className="text-xl max-w-2xl">
-          {t('notFound.description')}
-        </p>
+        <p className="text-xl max-w-2xl">{t("notFound.description")}</p>
         <Link
           href="/auth"
           className="inline-block px-8 py-4 text-lg rounded-lg border hover:bg-foreground/10 transition-colors"
         >
-          {t('notFound.createCommunity')}
+          {t("notFound.createCommunity")}
         </Link>
       </div>
     );
@@ -68,18 +67,24 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
         />
       )}
 
-      <Tabs defaultValue="leaderboard" className="w-full">
+      <Tabs defaultValue="agent" className="w-full">
         <TabsList className="w-full">
+          <TabsTrigger value="agent" className="w-full">
+            {t("preview.tabs.agent")}
+          </TabsTrigger>
           <TabsTrigger value="leaderboard" className="w-full">
-            {t('preview.tabs.leaderboard')}
+            {t("preview.tabs.leaderboard")}
           </TabsTrigger>
           <TabsTrigger value="badges" className="w-full">
-            {t('preview.tabs.badges')}
+            {t("preview.tabs.badges")}
           </TabsTrigger>
           <TabsTrigger value="activity" className="w-full">
-            {t('preview.tabs.activity')}
+            {t("preview.tabs.activity")}
           </TabsTrigger>
         </TabsList>
+        <TabsContent value="agent">
+          <Chat communitySlug={slug} />
+        </TabsContent>
         <TabsContent value="leaderboard">
           <Leaderboard
             data={leaderboard || []}
