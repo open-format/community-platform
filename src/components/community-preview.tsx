@@ -72,6 +72,7 @@ export default function CommunityPreview({ community, previewValues, leaderboard
             metadata={{
               user_label: previewValues.user_label,
               token_label: previewValues.token_label,
+              token_to_display: previewValues.token_to_display
             }}
             showSocialHandles={Boolean(previewValues?.show_social_handles)}
             tokens={community.tokens}
