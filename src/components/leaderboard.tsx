@@ -67,24 +67,53 @@ function LeaderboardHeader({
   );
 };
 
-const LeaderboardSkeleton = () => (
-  <Card className="h-full">
-    <CardContent className="pt-6">
-      <Table>
-        <LeaderboardHeader />
-        <TableBody>
-          {[...Array(7)].map((_, i) => (
-            <TableRow key={i}>
-              <TableCell colSpan={3}>
-                <Skeleton className="h-16 w-full" />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </CardContent>
-  </Card>
-);
+const LeaderboardSkeleton = () => {
+  const t = useTranslations('overview.leaderboard');
+  
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>{t('rank')}</TableHead>
+          <TableHead><Skeleton className="h-4 w-20" /></TableHead>
+          <TableHead className="text-right">
+            <Skeleton className="h-4 w-16 ml-auto" />
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {Array(5).fill(null).map((_, index) => (
+          <TableRow key={index}>
+            <TableCell>
+              <div
+                className={cn(
+                  "w-8 h-8 flex items-center justify-center rounded-full text-sm font-semibold",
+                  index === 0
+                    ? "bg-yellow-500 text-white"
+                    : index === 1
+                    ? "bg-gray-300 text-gray-800"
+                    : index === 2
+                    ? "bg-amber-600 text-white"
+                    : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400"
+                )}
+              >
+                {index + 1}
+              </div>
+            </TableCell>
+            <TableCell>
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-4 w-40" />
+              </div>
+            </TableCell>
+            <TableCell className="text-right">
+              <Skeleton className="h-4 w-20 ml-auto" />
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+};
 
 const EmptyState = ({ metadata }: Pick<LeaderboardProps, "metadata">) => {
   const t = useTranslations("overview.leaderboard");
