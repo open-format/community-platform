@@ -71,7 +71,7 @@ const LeaderboardSkeleton = () => {
       <TableHeader>
         <TableRow>
           <TableHead>{t('rank')}</TableHead>
-          <TableHead>{t('user')}</TableHead>
+          <TableHead><Skeleton className="h-4 w-20" /></TableHead>
           <TableHead className="text-right">
             <Skeleton className="h-4 w-16 ml-auto" />
           </TableHead>
