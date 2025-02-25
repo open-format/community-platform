@@ -1,21 +1,20 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { generateLeaderboard } from "@/lib/openformat";
 import { cn } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import Discord from "../../public/icons/discord.svg";
 import Github from "../../public/icons/github.svg";
 import Telegram from "../../public/icons/telegram.svg";
 import { Badge } from "./ui/badge";
 import { Skeleton } from "./ui/skeleton";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState, useEffect } from "react";
-import { generateLeaderboard } from "@/lib/openformat";
-import { Label } from "@/components/ui/label";
-import { TURBOPACK_CLIENT_MIDDLEWARE_MANIFEST } from "next/dist/shared/lib/constants";
 
 interface LeaderboardProps {
   data: LeaderboardEntry[] | null;
@@ -37,10 +36,10 @@ interface LeaderboardProps {
   slug: string;
 }
 
-function LeaderboardHeader({ 
-  metadata, 
-  selectedToken 
-}: { 
+function LeaderboardHeader({
+  metadata,
+  selectedToken,
+}: {
   metadata: any;
   selectedToken?: {
     token: {
@@ -50,62 +49,66 @@ function LeaderboardHeader({
     };
   };
 }) {
-  const t = useTranslations('overview.leaderboard');
-  
+  const t = useTranslations("overview.leaderboard");
+
   return (
     <TableRow>
-      <TableHead>{t('rank')}</TableHead>
-      <TableHead>{metadata?.user_label ?? t('user')}</TableHead>
+      <TableHead>{t("rank")}</TableHead>
+      <TableHead>{metadata?.user_label ?? t("user")}</TableHead>
       <TableHead className="text-right capitalize whitespace-nowrap">
-        {selectedToken?.token ? `${selectedToken.token.name} (${selectedToken.token.symbol})` : t('points')}
+        {selectedToken?.token ? `${selectedToken.token.name} (${selectedToken.token.symbol})` : t("points")}
       </TableHead>
     </TableRow>
   );
 }
 
 const LeaderboardSkeleton = () => {
-  const t = useTranslations('overview.leaderboard');
-  
+  const t = useTranslations("overview.leaderboard");
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>{t('rank')}</TableHead>
-          <TableHead><Skeleton className="h-4 w-20" /></TableHead>
+          <TableHead>{t("rank")}</TableHead>
+          <TableHead>
+            <Skeleton className="h-4 w-20" />
+          </TableHead>
           <TableHead className="text-right">
             <Skeleton className="h-4 w-16 ml-auto" />
           </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {Array(5).fill(null).map((_, index) => (
-          <TableRow key={index}>
-            <TableCell>
-              <div
-                className={cn(
-                  "w-8 h-8 flex items-center justify-center rounded-full text-sm font-semibold",
-                  index === 0
-                    ? "bg-yellow-500 text-white"
-                    : index === 1
-                    ? "bg-gray-300 text-gray-800"
-                    : index === 2
-                    ? "bg-amber-600 text-white"
-                    : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400"
-                )}
-              >
-                {index + 1}
-              </div>
-            </TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <Skeleton className="h-4 w-40" />
-              </div>
-            </TableCell>
-            <TableCell className="text-right">
-              <Skeleton className="h-4 w-20 ml-auto" />
-            </TableCell>
-          </TableRow>
-        ))}
+        {Array(5)
+          .fill(null)
+          .map((_, index) => (
+            <TableRow key={index}>
+              <TableCell>
+                <div
+                  className={cn(
+                    "w-8 h-8 flex items-center justify-center rounded-full text-sm font-semibold",
+                    index === 0
+                      ? "bg-yellow-500 text-white"
+                      : index === 1
+                      ? "bg-gray-300 text-gray-800"
+                      : index === 2
+                      ? "bg-amber-600 text-white"
+                      : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400"
+                  )}
+                >
+                  {index + 1}
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-4 w-40" />
+                </div>
+              </TableCell>
+              <TableCell className="text-right">
+                <Skeleton className="h-4 w-20 ml-auto" />
+              </TableCell>
+            </TableRow>
+          ))}
       </TableBody>
     </Table>
   );
@@ -140,12 +143,12 @@ export default function Leaderboard({
   slug,
 }: LeaderboardProps) {
   const { user } = usePrivy();
-  const t = useTranslations('overview.leaderboard');
+  const t = useTranslations("overview.leaderboard");
   const [localData, setLocalData] = useState<LeaderboardEntry[] | null>(data);
   const [isLoading, setIsLoading] = useState(initialLoading);
 
   const [selectedTokenId, setSelectedTokenId] = useState<string>(
-    metadata?.token_to_display || tokens?.[0]?.token.id || ''
+    metadata?.token_to_display || tokens?.[0]?.token.id || ""
   );
 
   useEffect(() => {
@@ -167,82 +170,78 @@ export default function Leaderboard({
     }
   };
 
-  const selectedToken = tokens?.find(t => t.token.id === selectedTokenId);
+  const selectedToken = tokens?.find((t) => t.token.id === selectedTokenId);
 
   const content = isLoading ? (
     <LeaderboardSkeleton />
   ) : !localData || localData.length === 0 || localData?.error ? (
     <EmptyState metadata={metadata} />
   ) : (
-    <Card variant="borderless" className="h-full">
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <LeaderboardHeader metadata={metadata} selectedToken={selectedToken} />
-          </TableHeader>
-          <TableBody>
-            {localData?.map((entry, index) => {
-              const position = index + 1;
-              const isCurrentUser =
-                user?.wallet?.address && entry.user.toLowerCase() === user?.wallet?.address.toLowerCase();
-              const SocialIcon =
-                showSocialHandles &&
-                (entry.type === "discord"
-                  ? Discord
-                  : entry.type === "telegram"
-                  ? Telegram
-                  : entry.type === "github"
-                  ? Github
-                  : null);
+    <Table className="w-full">
+      <TableHeader>
+        <LeaderboardHeader metadata={metadata} selectedToken={selectedToken} />
+      </TableHeader>
+      <TableBody>
+        {localData?.map((entry, index) => {
+          const position = index + 1;
+          const isCurrentUser =
+            user?.wallet?.address && entry.user.toLowerCase() === user?.wallet?.address.toLowerCase();
+          const SocialIcon =
+            showSocialHandles &&
+            (entry.type === "discord"
+              ? Discord
+              : entry.type === "telegram"
+              ? Telegram
+              : entry.type === "github"
+              ? Github
+              : null);
 
-              return (
-                <TableRow key={entry.user}>
-                  <TableCell>
-                    <div
-                      className={cn(
-                        "w-8 h-8 flex items-center justify-center rounded-full text-sm font-semibold",
-                        position === 1
-                          ? "bg-yellow-500 text-white"
-                          : position === 2
-                          ? "bg-gray-300 text-gray-800"
-                          : position === 3
-                          ? "bg-amber-600 text-white"
-                          : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400"
-                      )}
-                    >
-                      {position}
+          return (
+            <TableRow key={entry.user}>
+              <TableCell>
+                <div
+                  className={cn(
+                    "w-8 h-8 flex items-center justify-center rounded-full text-sm font-semibold",
+                    position === 1
+                      ? "bg-yellow-500 text-white"
+                      : position === 2
+                      ? "bg-gray-300 text-gray-800"
+                      : position === 3
+                      ? "bg-amber-600 text-white"
+                      : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400"
+                  )}
+                >
+                  {position}
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs">{showSocialHandles ? entry.handle : entry.user}</span>
+                  {SocialIcon && (
+                    <div className="bg-white rounded-full p-1">
+                      <Image src={SocialIcon} alt={entry.type} width={16} height={16} />
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <span>{showSocialHandles ? entry.handle : entry.user}</span>
-                      {SocialIcon && (
-                        <div className="bg-white rounded-full p-1">
-                          <Image src={SocialIcon} alt={entry.type} width={16} height={16} />
-                        </div>
-                      )}
-                      {isCurrentUser && <Badge>You</Badge>}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right font-semibold">{entry.xp_rewarded}</TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+                  )}
+                  {isCurrentUser && <Badge>You</Badge>}
+                </div>
+              </TableCell>
+              <TableCell className="text-right font-semibold">{entry.xp_rewarded}</TableCell>
+            </TableRow>
+          );
+        })}
+      </TableBody>
+    </Table>
   );
 
   return (
     <Card variant="borderless" className="h-full">
-      <CardContent>
+      <CardHeader>
         <div className="flex items-center justify-between mb-4">
           <div className="space-y-2">
-            <Label>{t('token')}</Label>
+            <Label>{t("token")}</Label>
             <Select value={selectedTokenId} onValueChange={handleTokenSelect}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder={t('selectToken')} />
+                <SelectValue placeholder={t("selectToken")} />
               </SelectTrigger>
               <SelectContent>
                 {tokens?.map((i) => (
@@ -254,8 +253,8 @@ export default function Leaderboard({
             </Select>
           </div>
         </div>
-        {content}
-      </CardContent>
+      </CardHeader>
+      <CardContent>{content}</CardContent>
     </Card>
   );
 }
