@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
 import { timeAgo } from "@/lib/utils";
-import { getChainFromCommunityOrCookie } from "@/lib/openformat";
+import { useCurrentChain } from "@/hooks/useCurrentChain";
 
 interface TokenVisibilityManagerProps {
   tokens: any[];
@@ -40,36 +40,49 @@ export function TokenVisibilityManager({ tokens, communityId, hiddenTokens }: To
     }
   };
 
-  const TokenRow = ({ token, isHidden }: { token: any; isHidden: boolean }) => (
-    <div key={token.token.id} className="flex items-center justify-between p-4 border rounded-lg">
-      <div className="flex items-center gap-12">
-        <div className="min-w-[200px]">
-          <h3 className="font-medium">{token.token.name}</h3>
-          <p className="text-sm text-muted-foreground">{token.token.symbol}</p>
+  const TokenRow = ({ token, isHidden }: { token: any; isHidden: boolean }) => {
+    const chain = useCurrentChain();
+    return (
+      <div key={token.token.id} className="flex items-center justify-between p-4 border rounded-lg">
+        <div className="flex items-center gap-12">
+          <div className="min-w-[200px]">
+            <h3 className="font-medium">{token.token.name}</h3>
+            <p className="text-sm text-muted-foreground">{token.token.symbol}</p>
+          </div>
+          <div className="min-w-[200px]">
+            <span className="text-sm text-muted-foreground">{t('table.id')}:</span>
+            <div className="flex items-center gap-2">
+              <Link
+                href={`${chain.BLOCK_EXPLORER_URL}/token/${token.token.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-sm hover:underline"
+              >
+                {token.token.id}
+              </Link>
+              <ExternalLinkIcon className="h-4 w-4 text-muted-foreground" />
+            </div>
+          </div>
+          <div className="min-w-[120px]">
+            <span className="text-sm text-muted-foreground">{t('table.type')}:</span>
+            <div>{tokenTypes[token.token.tokenType as keyof typeof tokenTypes]}</div>
+          </div>
+          <div className="min-w-[150px]">
+            <span className="text-sm text-muted-foreground">{t('table.created')}:</span>
+            <div>{timeAgo(Number(token.token.createdAt))}</div>
+          </div>
         </div>
-        <div className="min-w-[200px]">
-          <span className="text-sm text-muted-foreground">Token ID:</span>
-          <div className="font-mono text-sm">{token.token.id}</div>
-        </div>
-        <div className="min-w-[120px]">
-          <span className="text-sm text-muted-foreground">Type:</span>
-          <div>{tokenTypes[token.token.tokenType as keyof typeof tokenTypes]}</div>
-        </div>
-        <div className="min-w-[150px]">
-          <span className="text-sm text-muted-foreground">Created:</span>
-          <div>{timeAgo(Number(token.token.createdAt))}</div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => handleToggleVisibility(token.token.id, !isHidden)}
+          >
+            {isHidden ? t("unhideToken") : t("hideToken")}
+          </Button>
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          onClick={() => handleToggleVisibility(token.token.id, !isHidden)}
-        >
-          {isHidden ? t("unhideToken") : t("hideToken")}
-        </Button>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="space-y-8">

@@ -253,7 +253,8 @@
       "title": "Configure and share community page",
       "description": "Configure your community page and share it with your members.",
       "configure": "Configure",
-      "copyInvite": "Copy invite link"
+      "copyInvite": "Copy invite link",
+      "inviteCopied": "Invite link copied to clipboard!"
     },
     "createBadgesTokens": {
       "title": "Create Badges & Tokens",
@@ -529,10 +530,11 @@
     },
     "title": "Tokens",
     "table": {
-      "name": "Name",
-      "id": "ID",
+      "id": "Token ID",
       "type": "Type",
-      "created": "Created"
+      "created": "Created",
+      "name": "Name",
+      "symbol": "Symbol"
     },
     "notFound": "Community not found",
     "create": {
@@ -591,7 +593,14 @@
     "tokenVisibility": "Token Visibility",
     "tokenHidden": "Token hidden successfully",
     "tokenUnhidden": "Token unhidden successfully",
-    "errorUpdatingVisibility": "Error updating token visibility"
+    "errorUpdatingVisibility": "Error updating token visibility",
+    "table": {
+      "tokenId": "Token ID",
+      "type": "Type",
+      "created": "Created",
+      "name": "Name",
+      "symbol": "Symbol"
+    }
   },
   "tokenSelector": {
     "searchPlaceholder": "Search or enter token address...",
