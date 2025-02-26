@@ -182,53 +182,55 @@ export default function Leaderboard({
         <LeaderboardHeader metadata={metadata} selectedToken={selectedToken} />
       </TableHeader>
       <TableBody>
-        {localData?.map((entry, index) => {
-          const position = index + 1;
-          const isCurrentUser =
-            user?.wallet?.address && entry.user.toLowerCase() === user?.wallet?.address.toLowerCase();
-          const SocialIcon =
-            showSocialHandles &&
-            (entry.type === "discord"
-              ? Discord
-              : entry.type === "telegram"
-              ? Telegram
-              : entry.type === "github"
-              ? Github
-              : null);
+        {localData
+          ?.filter((e) => e.xp_rewarded > "1")
+          ?.map((entry, index) => {
+            const position = index + 1;
+            const isCurrentUser =
+              user?.wallet?.address && entry.user.toLowerCase() === user?.wallet?.address.toLowerCase();
+            const SocialIcon =
+              showSocialHandles &&
+              (entry.type === "discord"
+                ? Discord
+                : entry.type === "telegram"
+                ? Telegram
+                : entry.type === "github"
+                ? Github
+                : null);
 
-          return (
-            <TableRow key={entry.user}>
-              <TableCell>
-                <div
-                  className={cn(
-                    "w-8 h-8 flex items-center justify-center rounded-full text-sm font-semibold",
-                    position === 1
-                      ? "bg-yellow-500 text-white"
-                      : position === 2
-                      ? "bg-gray-300 text-gray-800"
-                      : position === 3
-                      ? "bg-amber-600 text-white"
-                      : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400"
-                  )}
-                >
-                  {position}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs">{showSocialHandles ? entry.handle : entry.user}</span>
-                  {SocialIcon && (
-                    <div className="bg-white rounded-full p-1">
-                      <Image src={SocialIcon} alt={entry.type} width={16} height={16} />
-                    </div>
-                  )}
-                  {isCurrentUser && <Badge>You</Badge>}
-                </div>
-              </TableCell>
-              <TableCell className="text-right font-semibold">{entry.xp_rewarded}</TableCell>
-            </TableRow>
-          );
-        })}
+            return (
+              <TableRow key={entry.user}>
+                <TableCell>
+                  <div
+                    className={cn(
+                      "w-8 h-8 flex items-center justify-center rounded-full text-sm font-semibold",
+                      position === 1
+                        ? "bg-yellow-500 text-white"
+                        : position === 2
+                        ? "bg-gray-300 text-gray-800"
+                        : position === 3
+                        ? "bg-amber-600 text-white"
+                        : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400"
+                    )}
+                  >
+                    {position}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs">{showSocialHandles ? entry.handle : entry.user}</span>
+                    {SocialIcon && (
+                      <div className="bg-white rounded-full p-1">
+                        <Image src={SocialIcon} alt={entry.type} width={16} height={16} />
+                      </div>
+                    )}
+                    {isCurrentUser && <Badge>You</Badge>}
+                  </div>
+                </TableCell>
+                <TableCell className="text-right font-semibold">{entry.xp_rewarded}</TableCell>
+              </TableRow>
+            );
+          })}
       </TableBody>
     </Table>
   );
