@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
@@ -11,6 +11,11 @@ import Github from "../../public/icons/github.svg";
 import Telegram from "../../public/icons/telegram.svg";
 import { Badge } from "./ui/badge";
 import { Skeleton } from "./ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState, useEffect } from "react";
+import { generateLeaderboard } from "@/lib/openformat";
+import { Label } from "@/components/ui/label";
+import { TURBOPACK_CLIENT_MIDDLEWARE_MANIFEST } from "next/dist/shared/lib/constants";
 
 interface LeaderboardProps {
   data: LeaderboardEntry[] | null;
@@ -19,19 +24,46 @@ interface LeaderboardProps {
   metadata?: {
     user_label: string;
     token_label: string;
+    token_to_display?: string;
   };
+  tokens: {
+    token: {
+      id: string;
+      name: string;
+      symbol: string;
+    };
+  }[];
+  onTokenSelect?: (tokenId: string) => void;
+  slug: string;
 }
 
-const LeaderboardHeader = ({ metadata }: Pick<LeaderboardProps, "metadata">) => {
-  const t = useTranslations("overview.leaderboard");
+function LeaderboardHeader({ 
+  metadata, 
+  selectedTokenId,
+  tokens 
+}: { 
+  metadata: any;
+  selectedTokenId: string;
+  tokens: {
+    token: {
+      id: string;
+      name: string;
+    };
+  }[];
+}) {
+  const t = useTranslations('overview.leaderboard');
+  
+  const selectedToken = tokens?.find(t => t.token.id === selectedTokenId) || tokens?.[0];
+  console.log('Selected token:', selectedToken);
+  
   return (
-    <TableHeader>
-      <TableRow>
-        <TableHead>{t("rank")}</TableHead>
-        <TableHead>{metadata?.user_label ?? t("user")}</TableHead>
-        <TableHead className="text-right">{metadata?.token_label ?? t("points")}</TableHead>
-      </TableRow>
-    </TableHeader>
+    <TableRow>
+      <TableHead>{t('rank')}</TableHead>
+      <TableHead>{metadata?.user_label ?? t('user')}</TableHead>
+      <TableHead className="text-right capitalize whitespace-nowrap">
+        {selectedToken?.token.name || t('points')}
+      </TableHead>
+    </TableRow>
   );
 };
 
@@ -77,21 +109,58 @@ const EmptyState = ({ metadata }: Pick<LeaderboardProps, "metadata">) => {
 export default function Leaderboard({
   data,
   metadata,
-  isLoading = false,
+  isLoading: initialLoading = false,
   showSocialHandles = false,
+  tokens,
+  slug,
 }: LeaderboardProps) {
   const { user } = usePrivy();
+  const t = useTranslations('overview.leaderboard');
+  const [localData, setLocalData] = useState<LeaderboardEntry[] | null>(data);
+  const [isLoading, setIsLoading] = useState(initialLoading);
 
-  if (isLoading) return <LeaderboardSkeleton />;
-  if (!data || data.length === 0 || data?.error) return <EmptyState metadata={metadata} />;
+  const [selectedTokenId, setSelectedTokenId] = useState<string>(
+    metadata?.token_to_display || tokens?.[0]?.token.id || ''
+  );
 
-  return (
+  useEffect(() => {
+    if (tokens?.length > 0) {
+      const defaultTokenId = metadata?.token_to_display || tokens[0].token.id;
+      handleTokenSelect(defaultTokenId);
+      setSelectedTokenId(defaultTokenId);
+    }
+  }, [tokens]);
+
+  const handleTokenSelect = async (tokenId: string) => {
+    setIsLoading(true);
+    try {
+      const newData = await generateLeaderboard(slug, tokenId);
+      setLocalData(newData);
+      setSelectedTokenId(tokenId);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const selectedToken = tokens?.find(t => t.token.id === selectedTokenId);
+
+  const content = isLoading ? (
+    <LeaderboardSkeleton />
+  ) : !localData || localData.length === 0 || localData?.error ? (
+    <EmptyState metadata={metadata} />
+  ) : (
     <Card variant="borderless" className="h-full">
       <CardContent>
         <Table>
-          <LeaderboardHeader metadata={metadata} />
+          <TableHeader>
+            <LeaderboardHeader 
+              metadata={metadata} 
+              selectedTokenId={selectedTokenId}
+              tokens={tokens}
+            />
+          </TableHeader>
           <TableBody>
-            {data?.map((entry, index) => {
+            {localData?.map((entry, index) => {
               const position = index + 1;
               const isCurrentUser =
                 user?.wallet?.address && entry.user.toLowerCase() === user?.wallet?.address.toLowerCase();
@@ -140,6 +209,31 @@ export default function Leaderboard({
             })}
           </TableBody>
         </Table>
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <Card variant="borderless" className="h-full">
+      <CardContent>
+        <div className="flex items-center justify-between mb-4">
+          <div className="space-y-2">
+            <Label>{t('token')}</Label>
+            <Select value={selectedTokenId} onValueChange={handleTokenSelect}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder={t('selectToken')} />
+              </SelectTrigger>
+              <SelectContent>
+                {tokens?.map((i) => (
+                  <SelectItem key={i.token.id} value={i.token.id}>
+                    {i.token.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        {content}
       </CardContent>
     </Card>
   );

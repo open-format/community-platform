@@ -16,7 +16,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
   const t = await getTranslations("community");
   const slug = (await params).slug;
   const community = await fetchCommunity(slug);
-  const leaderboard = await generateLeaderboard(slug);
+  const leaderboard = await generateLeaderboard(slug, community.metadata.token_to_display);
   const profile = await fetchUserProfile(slug);
 
   // community?.metadata.token_to_display
@@ -81,8 +81,14 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
         <TabsContent value="leaderboard">
           <Leaderboard
             data={leaderboard || []}
-            metadata={{ user_label: community?.metadata?.user_label, token_label: community?.metadata?.token_label }}
+            metadata={{ 
+              user_label: community?.metadata?.user_label, 
+              token_label: community?.metadata?.token_label,
+              token_to_display: community?.metadata?.token_to_display
+            }}
             showSocialHandles={community?.metadata?.show_social_handles}
+            tokens={community.tokens}
+            slug={slug}
           />
         </TabsContent>
         <TabsContent value="badges">
