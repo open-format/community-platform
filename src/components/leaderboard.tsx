@@ -16,6 +16,7 @@ import { useState, useEffect } from "react";
 import { generateLeaderboard } from "@/lib/openformat";
 import { Label } from "@/components/ui/label";
 import { TURBOPACK_CLIENT_MIDDLEWARE_MANIFEST } from "next/dist/shared/lib/constants";
+import { filterVisibleTokens } from "@/lib/utils";
 
 interface LeaderboardProps {
   data: LeaderboardEntry[] | null;
@@ -25,6 +26,7 @@ interface LeaderboardProps {
     user_label: string;
     token_label: string;
     token_to_display?: string;
+    hidden_tokens?: string[];
   };
   tokens: {
     token: {
@@ -148,17 +150,20 @@ export default function Leaderboard({
   const [localData, setLocalData] = useState<LeaderboardEntry[] | null>(data);
   const [isLoading, setIsLoading] = useState(initialLoading);
 
+  // Filter tokens before using them
+  const visibleTokens = filterVisibleTokens(tokens, metadata?.hidden_tokens);
+
   const [selectedTokenId, setSelectedTokenId] = useState<string>(
-    metadata?.token_to_display || tokens?.[0]?.token.id || ''
+    metadata?.token_to_display || visibleTokens?.[0]?.token.id || ''
   );
 
   useEffect(() => {
-    if (tokens?.length > 0) {
-      const defaultTokenId = metadata?.token_to_display || tokens[0].token.id;
+    if (visibleTokens?.length > 0) {
+      const defaultTokenId = metadata?.token_to_display || visibleTokens[0].token.id;
       handleTokenSelect(defaultTokenId);
       setSelectedTokenId(defaultTokenId);
     }
-  }, [tokens]);
+  }, [visibleTokens]);
 
   const handleTokenSelect = async (tokenId: string) => {
     setIsLoading(true);
@@ -171,7 +176,7 @@ export default function Leaderboard({
     }
   };
 
-  const selectedToken = tokens?.find(t => t.token.id === selectedTokenId);
+  const selectedToken = visibleTokens?.find(t => t.token.id === selectedTokenId);
 
   const content = isLoading ? (
     <LeaderboardSkeleton />
@@ -185,7 +190,7 @@ export default function Leaderboard({
             <LeaderboardHeader 
               metadata={metadata} 
               selectedTokenId={selectedTokenId}
-              tokens={tokens}
+              tokens={visibleTokens}
             />
           </TableHeader>
           <TableBody>
@@ -253,7 +258,7 @@ export default function Leaderboard({
                 <SelectValue placeholder={t('selectToken')} />
               </SelectTrigger>
               <SelectContent>
-                {tokens?.map((i) => (
+                {visibleTokens?.map((i) => (
                   <SelectItem key={i.token.id} value={i.token.id}>
                     {i.token.name}
                   </SelectItem>

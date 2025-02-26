@@ -15,7 +15,7 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { addressSplitter, cn } from "@/lib/utils";
+import { addressSplitter, cn, filterVisibleTokens } from "@/lib/utils";
 import { isAddress } from "viem";
 
 export default function TokenSelector({
@@ -34,6 +34,12 @@ export default function TokenSelector({
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
   const t = useTranslations('tokenSelector');
+
+  React.useEffect(() => {
+    if (value && !tokens.some(token => token.token.id === value)) {
+      onChange("");
+    }
+  }, [tokens, value, onChange]);
 
   const handleSelect = (currentValue: string) => {
     const newValue = currentValue === value ? "" : currentValue;

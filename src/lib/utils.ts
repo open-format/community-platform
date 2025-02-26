@@ -185,3 +185,7 @@ export function getAddress(user: User | null): Address {
 
   return address;
 }
+
+export function filterVisibleTokens(tokens: Token[], hiddenTokens: string[] = []) {
+  return tokens.filter(token => !hiddenTokens.includes(token.token.id));
+}
