@@ -265,7 +265,7 @@
         "actionType": "Action type has to be 'Mint', 'Transfer' or 'Badge'",
         "rewardIdMin": "Reward ID must be at least 3 characters",
         "parseError": "Row: {row}: {message}",
-        "rewardError": "Reward #{row}: {message}",
+        "rewardError": "Reward #{row}: {message}"
       },
       "fields": {
         "csvFile": {
@@ -359,7 +359,7 @@
       "tooltips": {
         "copyErrors": "Copy all errors.",
         "copyResults": "Copy all results."
-      }  
+      }
     }
   },
   "shortcuts": {

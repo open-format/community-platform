@@ -183,7 +183,7 @@ export default function Leaderboard({
       </TableHeader>
       <TableBody>
         {localData
-          ?.filter((e) => e.xp_rewarded > "1")
+          ?.filter((e) => e.xp_rewarded > "0.001")
           ?.map((entry, index) => {
             const position = index + 1;
             const isCurrentUser =
