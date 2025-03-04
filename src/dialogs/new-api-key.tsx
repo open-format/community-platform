@@ -27,11 +27,13 @@ export default function NewApiKeyDialog({
     apiKey,
     generateNewApiKey,
     processing,
+    resetState,
     error,
     copyApiKeyToClipboard,
   } = useApiKey();
 
   function closeDialog() {
+    resetState();
     onOpenChange(true);
   }
 

@@ -74,6 +74,7 @@ export function useApiKey() {
     copyApiKeyToClipboard,
     apiKey,
     generateNewApiKey,
+    resetState,
     processing: creatingNewApiKey,
     error: isError,
   };
