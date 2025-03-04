@@ -27,8 +27,7 @@ export function useApiKey() {
   const copyApiKeyToClipboard = useCallback(() => {
     navigator.clipboard.writeText(apiKey || "");
     toast.success(t("apiKey.apiKeyCopied"));
-    resetState();
-  }, [apiKey, t, resetState]);
+  }, [apiKey, t]);
 
   async function generateNewApiKey() {
     setApiKey("");
