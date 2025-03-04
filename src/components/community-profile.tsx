@@ -25,7 +25,6 @@ export default function CommunityProfile() {
       <Profile
         logoutAction={logout}
         showNewApiKeyDialogAction={toggleNewApiKeyDialog}
-
       />
       <NewApiKeyDialog
         open={openNewApiKeyDialog}

@@ -328,7 +328,7 @@ export async function generateLeaderboard(slugOrId: string, tokenId?: string): P
               ? "base"
               : "arbitrum-sepolia"
     );
-    const response = await apiClient.get(`/leaderboard?${params}`);
+    const response = await apiClient.get(`/v1/leaderboard?${params}`);
 
     // Fetch social handles for each user in the leaderboard
     const leaderboardWithHandles = await Promise.all(
