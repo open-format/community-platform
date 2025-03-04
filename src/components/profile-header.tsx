@@ -5,7 +5,6 @@ import {addressSplitter, getAddress} from "@/lib/utils";
 import {usePrivy} from "@privy-io/react-auth";
 import {CopyIcon, ExternalLink, KeySquare, LogOut} from "lucide-react";
 import {useTranslations} from "next-intl";
-import {useState} from "react";
 import {toast} from "sonner";
 import {Button} from "./ui/button";
 import {
