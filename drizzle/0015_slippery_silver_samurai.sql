@@ -1,0 +1,1 @@
+ALTER TABLE "communities" ADD COLUMN "hidden_tokens" varchar(42)[] DEFAULT '{}';
