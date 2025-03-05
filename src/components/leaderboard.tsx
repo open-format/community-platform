@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -60,7 +60,7 @@ function LeaderboardHeader({
       <TableHead>{t("rank")}</TableHead>
       <TableHead>{metadata?.user_label ?? t("user")}</TableHead>
       <TableHead className="text-right capitalize whitespace-nowrap">
-        {selectedToken?.token.name || t("points")}
+        {selectedToken?.token ? `${selectedToken.token.name} (${selectedToken.token.symbol})` : t("points")}
       </TableHead>
     </TableRow>
   );
@@ -177,70 +177,74 @@ export default function Leaderboard({
     }
   };
 
+  const selectedToken = tokens?.find((t) => t.token.id === selectedTokenId);
+
   const content = isLoading ? (
     <LeaderboardSkeleton />
   ) : !localData || localData.length === 0 || localData?.error ? (
     <EmptyState metadata={metadata} />
   ) : (
-    <Table>
+    <Table className="w-full">
       <TableHeader>
-        <LeaderboardHeader metadata={metadata} selectedTokenId={selectedTokenId} tokens={visibleTokens} />
+        <LeaderboardHeader metadata={metadata} selectedToken={selectedToken} />
       </TableHeader>
       <TableBody>
-        {localData?.map((entry, index) => {
-          const position = index + 1;
-          const isCurrentUser =
-            user?.wallet?.address && entry.user.toLowerCase() === user?.wallet?.address.toLowerCase();
-          const SocialIcon =
-            showSocialHandles &&
-            (entry.type === "discord"
-              ? Discord
-              : entry.type === "telegram"
-              ? Telegram
-              : entry.type === "github"
-              ? Github
-              : null);
+        {localData
+          ?.filter((e) => e.xp_rewarded > "1")
+          ?.map((entry, index) => {
+            const position = index + 1;
+            const isCurrentUser =
+              user?.wallet?.address && entry.user.toLowerCase() === user?.wallet?.address.toLowerCase();
+            const SocialIcon =
+              showSocialHandles &&
+              (entry.type === "discord"
+                ? Discord
+                : entry.type === "telegram"
+                ? Telegram
+                : entry.type === "github"
+                ? Github
+                : null);
 
-          return (
-            <TableRow key={entry.user}>
-              <TableCell>
-                <div
-                  className={cn(
-                    "w-8 h-8 flex items-center justify-center rounded-full text-sm font-semibold",
-                    position === 1
-                      ? "bg-yellow-500 text-white"
-                      : position === 2
-                      ? "bg-gray-300 text-gray-800"
-                      : position === 3
-                      ? "bg-amber-600 text-white"
-                      : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400"
-                  )}
-                >
-                  {position}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <span>{showSocialHandles ? entry.handle : entry.user}</span>
-                  {SocialIcon && (
-                    <div className="bg-white rounded-full p-1">
-                      <Image src={SocialIcon} alt={entry.type} width={16} height={16} />
-                    </div>
-                  )}
-                  {isCurrentUser && <Badge>You</Badge>}
-                </div>
-              </TableCell>
-              <TableCell className="text-right font-semibold">{entry.xp_rewarded}</TableCell>
-            </TableRow>
-          );
-        })}
+            return (
+              <TableRow key={entry.user}>
+                <TableCell>
+                  <div
+                    className={cn(
+                      "w-8 h-8 flex items-center justify-center rounded-full text-sm font-semibold",
+                      position === 1
+                        ? "bg-yellow-500 text-white"
+                        : position === 2
+                        ? "bg-gray-300 text-gray-800"
+                        : position === 3
+                        ? "bg-amber-600 text-white"
+                        : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400"
+                    )}
+                  >
+                    {position}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs">{showSocialHandles ? entry.handle : entry.user}</span>
+                    {SocialIcon && (
+                      <div className="bg-white rounded-full p-1">
+                        <Image src={SocialIcon} alt={entry.type} width={16} height={16} />
+                      </div>
+                    )}
+                    {isCurrentUser && <Badge>You</Badge>}
+                  </div>
+                </TableCell>
+                <TableCell className="text-right font-semibold">{entry.xp_rewarded}</TableCell>
+              </TableRow>
+            );
+          })}
       </TableBody>
     </Table>
   );
 
   return (
     <Card variant="borderless" className="h-full">
-      <CardContent>
+      <CardHeader>
         <div className="flex items-center justify-between mb-4">
           <div className="space-y-2">
             <Label>{t("token")}</Label>
@@ -258,8 +262,8 @@ export default function Leaderboard({
             </Select>
           </div>
         </div>
-        {content}
-      </CardContent>
+      </CardHeader>
+      <CardContent>{content}</CardContent>
     </Card>
   );
 }
