@@ -19,13 +19,9 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
   const leaderboard = await generateLeaderboard(slug, community.metadata.token_to_display);
   const profile = await fetchUserProfile(slug);
 
-  const visibleTokens = community?.tokens.filter(
-    token => !community.metadata.hidden_tokens?.includes(token.token.id)
-  );
-
   const currentPoints = profile?.tokenBalances?.find(
-    (token) => 
-      token.token.id === community?.metadata.token_to_display && 
+    (token) =>
+      token.token.id === community?.metadata.token_to_display &&
       !community?.metadata.hidden_tokens?.includes(token.token.id)
   )?.balance;
 
@@ -86,10 +82,11 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
         <TabsContent value="leaderboard">
           <Leaderboard
             data={leaderboard || []}
-            metadata={{ 
-              user_label: community?.metadata?.user_label, 
+            metadata={{
+              ...community.metadata,
+              user_label: community?.metadata?.user_label,
               token_label: community?.metadata?.token_label,
-              token_to_display: community?.metadata?.token_to_display
+              token_to_display: community?.metadata?.token_to_display,
             }}
             showSocialHandles={community?.metadata?.show_social_handles}
             tokens={community.tokens}

@@ -596,13 +596,7 @@
     "tokenHidden": "Token hidden successfully",
     "tokenUnhidden": "Token unhidden successfully",
     "errorUpdatingVisibility": "Error updating token visibility",
-    "table": {
-      "tokenId": "Token ID",
-      "type": "Type",
-      "created": "Created",
-      "name": "Name",
-      "symbol": "Symbol"
-    }
+    "atLeastOneVisibleToken": "At least one visible token is required"
   },
   "tokenSelector": {
     "searchPlaceholder": "Search or enter token address...",
@@ -738,7 +732,7 @@
         },
         "tokens": {
           "title": "Token",
-          "description": "The token that is displayed in the leaderboard and tiers."
+          "description": "The default token that is displayed in the leaderboard and tiers."
         }
       },
       "validation": {

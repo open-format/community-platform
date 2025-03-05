@@ -3,7 +3,7 @@
 import Tiers from "./tiers";
 
 import { cn } from "@/lib/utils";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import Activity from "./activity";
 import CommunityBadges from "./community-badges";
 import { CommunityBanner } from "./community-banner";
@@ -37,7 +37,7 @@ interface CommunityPreviewProps {
 }
 
 export default function CommunityPreview({ community, previewValues, leaderboard, badges }: CommunityPreviewProps) {
-  const t = useTranslations('community.preview');
+  const t = useTranslations("community.preview");
 
   return (
     <div
@@ -62,17 +62,18 @@ export default function CommunityPreview({ community, previewValues, leaderboard
 
       <Tabs defaultValue="leaderboard" className="w-full">
         <TabsList>
-          <TabsTrigger value="leaderboard">{t('tabs.leaderboard')}</TabsTrigger>
-          <TabsTrigger value="badges">{t('tabs.badges')}</TabsTrigger>
-          <TabsTrigger value="activity">{t('tabs.activity')}</TabsTrigger>
+          <TabsTrigger value="leaderboard">{t("tabs.leaderboard")}</TabsTrigger>
+          <TabsTrigger value="badges">{t("tabs.badges")}</TabsTrigger>
+          <TabsTrigger value="activity">{t("tabs.activity")}</TabsTrigger>
         </TabsList>
         <TabsContent value="leaderboard">
           <Leaderboard
             data={leaderboard}
             metadata={{
+              ...community.metadata,
               user_label: previewValues.user_label,
               token_label: previewValues.token_label,
-              token_to_display: previewValues.token_to_display
+              token_to_display: previewValues.token_to_display,
             }}
             showSocialHandles={Boolean(previewValues?.show_social_handles)}
             tokens={community.tokens}
