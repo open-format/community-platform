@@ -14,8 +14,6 @@ import Image from "next/image";
 import {redirect} from "next/navigation";
 import {useTranslations} from "next-intl";
 import OFLogo from "../../../../public/images/of-logo.png";
-import {useCallback, useState} from "react";
-import NewApiKeyDialog from "@/dialogs/new-api-key";
 
 export default function CommunitiesLayout({
                                             children,
@@ -23,15 +21,10 @@ export default function CommunitiesLayout({
   children: React.ReactNode;
 }) {
   const t = useTranslations("layout");
-  const [openNewApiKeyDialog, setOpenNewApiKeyDialog] = useState(false);
 
   function handleLogout() {
     redirect("/logout");
   }
-
-  const toggleNewApiKeyDialog = useCallback(() => {
-    setOpenNewApiKeyDialog((open) => !open);
-  }, []);
 
   return (
     <div>
@@ -70,16 +63,10 @@ export default function CommunitiesLayout({
           />
           <Profile
             logoutAction={handleLogout}
-            showNewApiKeyDialogAction={toggleNewApiKeyDialog}
           />
         </div>
       </nav>
       <div className="m-lg">{children}</div>
-
-      <NewApiKeyDialog
-        open={openNewApiKeyDialog}
-        onOpenChange={toggleNewApiKeyDialog}
-      />
     </div>
   );
 }

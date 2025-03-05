@@ -15,22 +15,36 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import {Skeleton} from "./ui/skeleton";
+import {useApiKey} from "@/hooks/useApikey";
+import {useEffect} from "react";
 
 export default function Profile({
                                   logoutAction,
-                                  showNewApiKeyDialogAction,
                                 }: {
   logoutAction: () => void;
-  showNewApiKeyDialogAction: () => void;
 }) {
   const {user, ready, exportWallet, authenticated, login} = usePrivy();
   const t = useTranslations("profile");
   const address = getAddress(user);
+  const {generateNewApiKey, apiKey, copyApiKeyToClipboard} = useApiKey();
 
   function copyAddress() {
     navigator.clipboard.writeText(address || "");
     toast.success(t("addressCopied"));
   }
+
+  useEffect(() => {
+    if (apiKey) {
+      toast.success(t("apiKey.yourNewApiKey", {apiKey}), {
+        duration: Number.POSITIVE_INFINITY,
+        dismissible: true,
+        action: {
+          label: <CopyIcon className="h-4 w-4"/>,
+          onClick: () => copyApiKeyToClipboard(),
+        },
+      });
+    }
+  }, [apiKey, copyApiKeyToClipboard, t]);
 
   const exportEnabled = user?.wallet?.walletClientType === "privy";
 
@@ -60,8 +74,8 @@ export default function Profile({
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator/>
-        <DropdownMenuItem onClick={showNewApiKeyDialogAction} className="font-bold">
-          <span>{t("apiKey.apiKey")}</span>
+        <DropdownMenuItem className="font-bold" onClick={generateNewApiKey}>
+          <span>{t("apiKey.createApiKey")}</span>
           <KeySquare className="ml-auto"/>
         </DropdownMenuItem>
         <DropdownMenuSeparator/>

@@ -4,17 +4,10 @@ import { usePrivy } from "@privy-io/react-auth";
 import LinkAccounts from "./link-accounts";
 import Profile from "./profile-header";
 import { useTranslations } from "next-intl";
-import { useCallback, useState } from "react";
-import NewApiKeyDialog from "@/dialogs/new-api-key";
 
 export default function CommunityProfile() {
   const { logout } = usePrivy();
   const t = useTranslations("community.profile");
-  const [openNewApiKeyDialog, setOpenNewApiKeyDialog] = useState(true);
-
-  const toggleNewApiKeyDialog = useCallback(() => {
-    setOpenNewApiKeyDialog((open) => !open);
-  }, []);
 
   return (
     <div
@@ -24,11 +17,6 @@ export default function CommunityProfile() {
       <LinkAccounts />
       <Profile
         logoutAction={logout}
-        showNewApiKeyDialogAction={toggleNewApiKeyDialog}
-      />
-      <NewApiKeyDialog
-        open={openNewApiKeyDialog}
-        onOpenChange={toggleNewApiKeyDialog}
       />
     </div>
   );

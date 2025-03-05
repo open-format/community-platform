@@ -18,12 +18,6 @@ export function useApiKey() {
   const [isError, setError] = useState<boolean>(false);
   const [creatingNewApiKey, setCreatingNewApiKey] = useState<boolean>(false);
 
-  const resetState = useCallback(() => {
-    setApiKey("");
-    setError(false);
-    setCreatingNewApiKey(false);
-  }, []);
-
   const copyApiKeyToClipboard = useCallback(() => {
     navigator.clipboard.writeText(apiKey || "");
     toast.success(t("apiKey.apiKeyCopied"));
@@ -73,7 +67,6 @@ export function useApiKey() {
     copyApiKeyToClipboard,
     apiKey,
     generateNewApiKey,
-    resetState,
     processing: creatingNewApiKey,
     error: isError,
   };
