@@ -24,6 +24,7 @@ import { useConfig } from "wagmi";
 import { usePrivy } from "@privy-io/react-auth";
 import { getViemErrorMessage } from "@/helpers/errors";
 import ResultList from "@/components/result-list";
+import { EXAMPLE_CSV_DATA } from "@/constants/examples";
 
 export enum BatchRewardState {
   INITIAL = "initial",
@@ -339,6 +340,20 @@ export default function BatchRewardsForm({ community }: { community: Community }
     });
   }
 
+  const downloadCSV = () => {
+    const csvContent = EXAMPLE_CSV_DATA.map(e => e.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'rewards.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <>
       <CardContent>
@@ -400,6 +415,7 @@ export default function BatchRewardsForm({ community }: { community: Community }
         {errorList.length > 0 && (<ResultList errors={errorList} />)}
         {resultList.length > 0 && (<ResultList rewardsResults={resultList} />)}
         {rewardState === BatchRewardState.INITIAL && errorList.length == 0 && resultList.length == 0 && (
+          <>
             <div className="text-left text-sm text-gray-500 bg-muted p-4 font-semibold">
               {t.rich("info", { br: () => <br /> })}
               <div className="p-4">
@@ -410,6 +426,12 @@ export default function BatchRewardsForm({ community }: { community: Community }
                 {/* {t('info')} */}
               </div>
             </div>
+            <div className=" text-gray-500 bg-muted">
+              <Button variant={'link'} onClick={downloadCSV}>
+                Download Sample File
+              </Button>
+            </div>
+          </>
           )}
          {rewardState !== BatchRewardState.INITIAL && errorList.length == 0 && <BatchRewardList rewards={rewardList} />}
 
