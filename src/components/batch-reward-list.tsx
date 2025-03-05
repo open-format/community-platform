@@ -8,7 +8,7 @@ interface BatchRewardListProps {
 
 export default function BatchRewardList({ rewards }: BatchRewardListProps) {
   const t = useTranslations('batchRewards');
-  const FIRST_ERRORS_COUNT = 50;
+  const PREVIEW_LIMIT = 50;
 
   if (rewards?.length === 0) {
     return <div>{t('noRewards')}</div>;
@@ -19,8 +19,8 @@ export default function BatchRewardList({ rewards }: BatchRewardListProps) {
       <div className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
         <h2 className="text-lg font-semibold mb-2">{t('table.title')}</h2>
       </div>
-      {FIRST_ERRORS_COUNT < rewards.length ? 
-        (<div className="text-m">{t('table.uploadedMessageFirst', { count: rewards.length, firstCount: FIRST_ERRORS_COUNT })}</div>)
+      {PREVIEW_LIMIT < rewards.length ? 
+        (<div className="text-m">{t('table.uploadedMessageFirst', { count: rewards.length, firstCount: PREVIEW_LIMIT })}</div>)
         : (<div className="text-m">{t('table.uploadedMessageFull', { count: rewards.length })}</div>)
       }
       <Table>
@@ -34,7 +34,7 @@ export default function BatchRewardList({ rewards }: BatchRewardListProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rewards.filter((v, i) => i < Math.min(FIRST_ERRORS_COUNT, rewards.length)).map((reward, idx) => (
+          {rewards.filter((v, i) => i < Math.min(PREVIEW_LIMIT, rewards.length)).map((reward, idx) => (
             <TableRow key={`reward-${idx}`}>
               <TableCell>{desanitizeString(reward.userAddress)}</TableCell>
               <TableCell>{desanitizeString(reward.tokenAddress)}</TableCell>
