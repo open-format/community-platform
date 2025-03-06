@@ -364,6 +364,8 @@
     }
   },
   "badges": {
+    "address": "Address:",
+    "addressCopied": "Badge address copied to clipboard",
     "createFirst": "Create your first badge to get started",
     "rewardBadge": "Reward Badge",
     "errors": {
