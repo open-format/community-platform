@@ -1,15 +1,15 @@
 "use server";
 
-import { type Chain, ChainName, getChain, getChainById } from "@/constants/chains";
+import {type Chain, ChainName, getChain, getChainById} from "@/constants/chains";
 import config from "@/constants/config";
-import { getCommunities, getCommunity } from "@/db/queries/communities";
+import {getCommunities, getCommunity} from "@/db/queries/communities";
 import axios from "axios";
-import { request } from "graphql-request";
-import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
-import { cache } from "react";
-import type { Address } from "viem";
-import { getCurrentUser, getUserHandle } from "./privy";
+import {request} from "graphql-request";
+import {revalidatePath} from "next/cache";
+import {cookies} from "next/headers";
+import {cache} from "react";
+import type {Address} from "viem";
+import {getCurrentUser, getUserHandle} from "./privy";
 
 const apiClient = axios.create({
   baseURL: config.OPENFORMAT_API_URL,
@@ -54,14 +54,14 @@ export async function fetchAllCommunities() {
 
     if (!chain) {
       console.log("No chain found for chainName:", chain);
-      return { data: [], error: "No chain found." };
+      return {data: [], error: "No chain found."};
     }
 
     const user = await getCurrentUser();
     const dbCommunities = await getCommunities();
 
     if (!user) {
-      return { data: [], error: "User not found." };
+      return {data: [], error: "User not found."};
     }
 
     const query = `
@@ -91,12 +91,12 @@ export async function fetchAllCommunities() {
         metadata: dbCommunities.find((dbComm) => dbComm.id === app.id || dbComm.slug === app.id),
       }));
 
-      return { data: matchedCommunities || [], error: null };
+      return {data: matchedCommunities || [], error: null};
     } catch {
-      return { data: [], error: "Failed to fetch onchain communities. Please try again." };
+      return {data: [], error: "Failed to fetch onchain communities. Please try again."};
     }
   } catch {
-    return { data: [], error: "Failed to fetch communities. Please try again later." };
+    return {data: [], error: "Failed to fetch communities. Please try again later."};
   }
 }
 
@@ -145,7 +145,7 @@ query ($app: ID!) {
         badges: { id: string }[];
         tokens: Token[];
       };
-    }>(chain.SUBGRAPH_URL, query, { app: communityFromDb.id });
+    }>(chain.SUBGRAPH_URL, query, {app: communityFromDb.id});
 
     const rewards = await fetchAllRewardsByCommunity(communityFromDb.id);
 
@@ -199,7 +199,7 @@ async function fetchAllRewardsByCommunity(communityId: string): Promise<Reward[]
 
   const data = await request<{
     rewards: Reward[];
-  }>(chain.SUBGRAPH_URL, query, { app: communityId });
+  }>(chain.SUBGRAPH_URL, query, {app: communityId});
 
   return data.rewards;
 }
@@ -321,14 +321,14 @@ export async function generateLeaderboard(slugOrId: string, tokenId?: string): P
       chain.apiChainName === ChainName.MATCHAIN
         ? "matchain"
         : chain.apiChainName === ChainName.AURORA
-        ? "aurora"
-        : chain.apiChainName === ChainName.TURBO
-        ? "turbo"
-        : chain.apiChainName === ChainName.BASE
-        ? "base"
-        : "arbitrum-sepolia"
+          ? "aurora"
+          : chain.apiChainName === ChainName.TURBO
+            ? "turbo"
+            : chain.apiChainName === ChainName.BASE
+              ? "base"
+              : "arbitrum-sepolia"
     );
-    const response = await apiClient.get(`/leaderboard?${params}`);
+    const response = await apiClient.get(`/v1/leaderboard?${params}`);
 
     // Fetch social handles for each user in the leaderboard
     const leaderboardWithHandles = await Promise.all(
@@ -341,7 +341,7 @@ export async function generateLeaderboard(slugOrId: string, tokenId?: string): P
 
     return leaderboardWithHandles;
   } catch (error) {
-    return { error: "Failed to fetch leaderboard data. Please try again later." };
+    return {error: "Failed to fetch leaderboard data. Please try again later."};
   }
 }
 
@@ -367,6 +367,36 @@ export async function fundAccount() {
     return response.data;
   } catch (error) {
     console.error(error);
+    return null;
+  }
+}
+
+export async function generateChallenge(address: string) {
+  try {
+    const data = {public_address: address};
+    const response = await apiClient.post('/key/challenge', data);
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function verifyChallenge(address: string, signature: string) {
+  try {
+    const data = {public_address: address, signature: signature};
+    const response = await apiClient.post('/key/verify', data);
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      return null;
+    }
+  } catch (error) {
     return null;
   }
 }
