@@ -7,10 +7,22 @@ import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import Discord from "../../public/icons/discord.svg";
 import Github from "../../public/icons/github.svg";
+import Telegram from "../../public/icons/telegram.svg";
 
 export default function LinkAccounts() {
   const t = useTranslations('accounts');
-  const { user, linkDiscord, unlinkDiscord, ready, linkGithub, unlinkGithub, login, authenticated } = usePrivy();
+  const { 
+    user, 
+    linkDiscord, 
+    unlinkDiscord, 
+    linkGithub, 
+    unlinkGithub,
+    linkTelegram,
+    unlinkTelegram,
+    ready, 
+    login, 
+    authenticated 
+  } = usePrivy();
 
   const services = [
     {
@@ -30,6 +42,15 @@ export default function LinkAccounts() {
       },
       icon: <Image src={Github} alt="Github" width={20} height={20} />,
       linkedAccount: user?.github?.username,
+    },
+    {
+      id: "telegram",
+      actions: {
+        link: linkTelegram,
+        unlink: unlinkTelegram,
+      },
+      icon: <Image src={Telegram} alt="Telegram" width={20} height={20} />,
+      linkedAccount: user?.telegram?.username,
     },
   ];
 

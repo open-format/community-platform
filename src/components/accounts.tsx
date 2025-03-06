@@ -6,11 +6,23 @@ import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import Discord from "../../public/icons/discord.svg";
 import Google from "../../public/icons/google.svg";
+import Telegram from "../../public/icons/telegram.svg";
 import { Button } from "./ui/button";
+import { toast } from "sonner";
 
 export default function Accounts() {
   const t = useTranslations('accounts');
-  const { user, linkDiscord, unlinkDiscord, linkGoogle, unlinkGoogle, linkEmail, unlinkEmail } = usePrivy();
+  const { 
+    user, 
+    linkDiscord, 
+    unlinkDiscord, 
+    linkGoogle, 
+    unlinkGoogle, 
+    linkEmail, 
+    unlinkEmail,
+    linkTelegram,
+    unlinkTelegram 
+  } = usePrivy();
 
   const platforms = [
     {
@@ -19,6 +31,14 @@ export default function Accounts() {
       unlink: () => unlinkDiscord(user?.discord?.subject ?? "").catch((error) => alert(error.message)),
       username: user?.discord?.username,
       icon: <Image src={Discord} alt="Discord" width={20} height={20} className="fill-[#5865F2]" />,
+    },
+    {
+      id: "telegram",
+      link: linkTelegram,
+      unlink: () => unlinkTelegram(user?.telegram?.subject ?? "")
+        .catch((error) => toast.error(t('telegram.errors.unlinkFailed'))),
+      username: user?.telegram?.username,
+      icon: <Image src={Telegram} alt={t('telegram.connect')} width={20} height={20} className="fill-[#2CA5E0]" />,
     },
     {
       id: "google",
@@ -51,10 +71,10 @@ export default function Accounts() {
                 size="sm" 
                 onClick={platform.link} 
                 className="p-0 hover:bg-transparent"
-                aria-label={t('ariaLabels.connect', { service: platform.id })}
+                aria-label={t(`${platform.id}.ariaLabels.connect`)}
               >
                 <span className="capitalize font-semibold hover:underline">
-                  {t('connect', { service: platform.id })}
+                  {t(`${platform.id}.connect`)}
                 </span>
               </Button>
             )}

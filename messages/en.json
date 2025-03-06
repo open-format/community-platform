@@ -344,6 +344,26 @@
       "connect": "Connect {service} account",
       "connected": "Connected to {service} as {username}",
       "disconnect": "Disconnect {service} account"
+    },
+    "discord": {
+      "connect": "Connect Discord",
+      "connected": "Connected to Discord"
+    },
+    "github": {
+      "connect": "Connect Github",
+      "connected": "Connected to Github"
+    },
+    "telegram": {
+      "connect": "Connect Telegram",
+      "connected": "Connected to Telegram",
+      "errors": {
+        "linkFailed": "Failed to connect Telegram",
+        "unlinkFailed": "Failed to disconnect Telegram"
+      },
+      "ariaLabels": {
+        "connect": "Connect Telegram account",
+        "disconnect": "Disconnect Telegram account"
+      }
     }
   },
   "activity": {
