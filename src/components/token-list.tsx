@@ -8,9 +8,10 @@ import Link from "next/link";
 
 interface TokenListProps {
   tokens: Token[];
+  hiddenTokens?: string[];
 }
 
-export default async function TokenList({ tokens }: TokenListProps) {
+export default async function TokenList({ tokens, hiddenTokens = [] }: TokenListProps) {
   const chain = await getChainFromCommunityOrCookie();
   const t = await getTranslations('tokens');
   const tokenTypes = {
@@ -18,12 +19,13 @@ export default async function TokenList({ tokens }: TokenListProps) {
     Point: "Points",
   };
 
-  if (tokens?.length === 0) {
-    return <div>{t('noTokens')}</div>;
+  const visibleTokens = tokens.filter(token => !hiddenTokens.includes(token.token.id));
+
+  if (visibleTokens.length === 0) {
+    return <div className="text-center py-4 text-muted-foreground">{t('noTokens')}</div>;
   }
 
-  // @TODO: Ask dev team why subgraph can't sort tokens by createdAt
-  const sortedTokens = [...tokens].sort(
+  const sortedTokens = [...visibleTokens].sort(
     (a, b) => Number.parseInt(b.token.createdAt) - Number.parseInt(a.token.createdAt)
   );
 
@@ -52,23 +54,27 @@ export default async function TokenList({ tokens }: TokenListProps) {
       </TableHeader>
       <TableBody>
         {sortedTokens.map((token) => (
-          <TableRow key={token.id}>
-            <TableCell>{token.token.name}</TableCell>
-            <TableCell className="flex items-center gap-2">
-              {token.token.id}
-              {chain?.BLOCK_EXPLORER_URL && (
+          <TableRow key={token.token.id}>
+            <TableCell>
+              <div className="font-medium">{token.token.name}</div>
+              <div className="text-sm text-muted-foreground">{token.token.symbol}</div>
+            </TableCell>
+            <TableCell>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-sm">{token.token.id}</span>
                 <Link
                   href={`${chain.BLOCK_EXPLORER_URL}/token/${token.token.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-foreground"
                   aria-label={t('ariaLabels.viewToken', { name: token.token.name })}
                 >
-                  <ExternalLinkIcon className="w-4 h-4" />
+                  <ExternalLinkIcon className="h-4 w-4" />
                 </Link>
-              )}
+              </div>
             </TableCell>
             <TableCell>{tokenTypes[token.token.tokenType as keyof typeof tokenTypes]}</TableCell>
-            <TableCell>{timeAgo(Number.parseInt(token.token.createdAt))}</TableCell>
+            <TableCell>{timeAgo(Number(token.token.createdAt))}</TableCell>
           </TableRow>
         ))}
       </TableBody>

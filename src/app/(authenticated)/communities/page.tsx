@@ -1,15 +1,15 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { fetchAllCommunities, getChainFromCommunityOrCookie } from "@/lib/openformat";
-import { getTranslations } from 'next-intl/server';
-import Link from "next/link";
+import RefreshButton from "@/components/refresh-button";
 import { Badge } from "@/components/ui/badge";
-import { addressSplitter } from "@/lib/utils";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import CreateCommunityDialog from "@/dialogs/create-community-dialog";
 import CreateCommunityForm from "@/forms/create-community-form";
-import RefreshButton from "@/components/refresh-button";
+import { fetchAllCommunities, getChainFromCommunityOrCookie } from "@/lib/openformat";
+import { addressSplitter } from "@/lib/utils";
+import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 
 export default async function Communities() {
-  const t = await getTranslations('communities');
+  const t = await getTranslations("communities");
   const { data: communities, error } = await fetchAllCommunities();
   const chain = await getChainFromCommunityOrCookie();
 
@@ -18,8 +18,8 @@ export default async function Communities() {
       <div className="flex flex-col items-center justify-center">
         <Card>
           <CardHeader>
-            <CardTitle>{t('errorLoading.title')}</CardTitle>
-            <CardDescription>{t('errorLoading.description')}</CardDescription>
+            <CardTitle>{t("errorLoading.title")}</CardTitle>
+            <CardDescription>{t("errorLoading.description")}</CardDescription>
           </CardHeader>
         </Card>
       </div>
@@ -31,8 +31,8 @@ export default async function Communities() {
       <div className="flex flex-col items-center justify-center">
         <Card>
           <CardHeader>
-            <CardTitle>{t('createFirst')}</CardTitle>
-            <CardDescription>{t('createDescription')}</CardDescription>
+            <CardTitle>{t("createFirst")}</CardTitle>
+            <CardDescription>{t("createDescription")}</CardDescription>
           </CardHeader>
           <CardContent>
             <CreateCommunityForm />
@@ -46,7 +46,7 @@ export default async function Communities() {
     <div className="space-y-lg">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <h1>{t('title')}</h1>
+          <h1>{t("title")}</h1>
           <RefreshButton />
         </div>
         <CreateCommunityDialog />

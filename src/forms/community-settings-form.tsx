@@ -1,10 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { startTransition } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
-import { useTranslations } from 'next-intl';
 
 import CommunityPreview from "@/components/community-preview";
 import TokenSelector from "@/components/token-selector";
@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Chain } from "@/constants/chains";
 import { isSlugAvailable, updateCommunity } from "@/db/queries/communities";
 import { revalidate } from "@/lib/openformat";
+import { filterVisibleTokens } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -30,13 +31,12 @@ export default function CommunitySettingsForm({
   badges: BadgeWithCollectedStatus[];
   chain: Chain;
 }) {
-  const t = useTranslations('settings.form');
+  const t = useTranslations("settings.form");
 
   const FormSchema = z.object({
-    title: z.string()
-      .min(1, t('validation.titleRequired'))
-      .max(32, t('validation.titleMax')),
-    description: z.string()
+    title: z.string().min(1, t("validation.titleRequired")).max(32, t("validation.titleMax")),
+    description: z
+      .string()
       .min(3, t("validation.descriptionMin"))
       .max(2000, t("validation.descriptionMax"))
       .optional()
@@ -45,8 +45,9 @@ export default function CommunitySettingsForm({
     user_label: z.string().min(3),
     dark_mode: z.boolean().default(false),
     token_to_display: z.string().min(3),
-    slug: z.string()
-      .min(1, t('validation.slugRequired'))
+    slug: z
+      .string()
+      .min(1, t("validation.slugRequired"))
       .transform((str) =>
         str
           .toLowerCase()
@@ -59,18 +60,18 @@ export default function CommunitySettingsForm({
       .optional()
       .refine((val) => {
         return !val || (val.startsWith("http") && val.match(/\.(jpg|jpeg|png|gif|webp)$/i));
-      }, t('validation.invalidImageUrl')),
+      }, t("validation.invalidImageUrl")),
     show_social_handles: z.boolean().default(false),
     tiers: z.array(
       z.object({
-        name: z.string().min(1, t('validation.nameRequired')),
+        name: z.string().min(1, t("validation.nameRequired")),
         points_required: z.coerce
           .number({
-            required_error: t('validation.pointsRequired'),
-            invalid_type_error: t('validation.pointsRequired'),
+            required_error: t("validation.pointsRequired"),
+            invalid_type_error: t("validation.pointsRequired"),
           })
-          .min(0, t('validation.pointsMin')),
-        color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, t('validation.invalidColorHex')),
+          .min(0, t("validation.pointsMin")),
+        color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, t("validation.invalidColorHex")),
         tier_id: z.string().optional(),
         community_id: z.string().optional(),
       })
@@ -86,7 +87,7 @@ export default function CommunitySettingsForm({
       title: community.metadata?.title ?? "",
       description: community.metadata?.description ?? "",
       accent_color: community.metadata?.accent_color ?? "#6366F1",
-      user_label: community.metadata?.user_label ?? t('sections.language.fields.userLabel.defaultValue'),
+      user_label: community.metadata?.user_label ?? t("sections.language.fields.userLabel.defaultValue"),
       slug: community.metadata?.slug ?? "",
       dark_mode: community.metadata?.dark_mode ?? false,
       banner_url: community.metadata?.banner_url ?? "",
@@ -128,11 +129,11 @@ export default function CommunitySettingsForm({
           deletedTierIds,
         });
 
-        toast.success(t('messages.updateSuccess'));
+        toast.success(t("messages.updateSuccess"));
         await revalidate();
       } catch (err) {
         console.error(err);
-        toast.error(t('messages.updateError'));
+        toast.error(t("messages.updateError"));
       }
     });
   }
@@ -146,17 +147,17 @@ export default function CommunitySettingsForm({
           <form onSubmit={form.handleSubmit(handleFormSubmission)}>
             <Accordion type="multiple" defaultValue={["general"]}>
               <AccordionItem value="general">
-                <AccordionTrigger>{t('sections.general.title')}</AccordionTrigger>
+                <AccordionTrigger>{t("sections.general.title")}</AccordionTrigger>
                 <AccordionContent className="space-y-4">
                   <FormField
                     control={form.control}
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('sections.general.fields.name.label')}</FormLabel>
+                        <FormLabel>{t("sections.general.fields.name.label")}</FormLabel>
                         <FormControl>
-                          <Input 
-                            placeholder={t('sections.general.fields.name.placeholder')} 
+                          <Input
+                            placeholder={t("sections.general.fields.name.placeholder")}
                             {...field}
                             onBlur={(e) => {
                               field.onBlur();
@@ -164,7 +165,7 @@ export default function CommunitySettingsForm({
                           />
                         </FormControl>
                         <FormMessage />
-                        <FormDescription>{t('sections.general.fields.name.description')}</FormDescription>
+                        <FormDescription>{t("sections.general.fields.name.description")}</FormDescription>
                       </FormItem>
                     )}
                   />
@@ -174,10 +175,10 @@ export default function CommunitySettingsForm({
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('sections.general.fields.description.label')}</FormLabel>
+                        <FormLabel>{t("sections.general.fields.description.label")}</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder={t('sections.general.fields.description.placeholder')} 
+                          <Textarea
+                            placeholder={t("sections.general.fields.description.placeholder")}
                             {...field}
                             onBlur={(e) => {
                               field.onBlur();
@@ -185,7 +186,7 @@ export default function CommunitySettingsForm({
                           />
                         </FormControl>
                         <FormMessage />
-                        <FormDescription>{t('sections.general.fields.description.description')}</FormDescription>
+                        <FormDescription>{t("sections.general.fields.description.description")}</FormDescription>
                       </FormItem>
                     )}
                   />
@@ -195,10 +196,10 @@ export default function CommunitySettingsForm({
                     name="slug"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('sections.general.fields.slug.label')}</FormLabel>
+                        <FormLabel>{t("sections.general.fields.slug.label")}</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder={t('sections.general.fields.slug.placeholder')}
+                            placeholder={t("sections.general.fields.slug.placeholder")}
                             {...field}
                             onBlur={async (e) => {
                               field.onBlur();
@@ -214,11 +215,11 @@ export default function CommunitySettingsForm({
                                 const isAvailable = await isSlugAvailable(transformed, community.id);
                                 if (!isAvailable) {
                                   form.setError("slug", {
-                                    message: t('messages.slugTaken'),
+                                    message: t("messages.slugTaken"),
                                   });
                                 }
                                 // Only clear errors if we're checking availability
-                                else if (form.getFieldState('slug').error?.message === t('messages.slugTaken')) {
+                                else if (form.getFieldState("slug").error?.message === t("messages.slugTaken")) {
                                   form.clearErrors("slug");
                                 }
                               }
@@ -226,7 +227,7 @@ export default function CommunitySettingsForm({
                           />
                         </FormControl>
                         <FormMessage />
-                        <FormDescription>{t('sections.general.fields.slug.description')}</FormDescription>
+                        <FormDescription>{t("sections.general.fields.slug.description")}</FormDescription>
                       </FormItem>
                     )}
                   />
@@ -234,19 +235,19 @@ export default function CommunitySettingsForm({
               </AccordionItem>
 
               <AccordionItem value="appearance">
-                <AccordionTrigger>{t('sections.appearance.title')}</AccordionTrigger>
+                <AccordionTrigger>{t("sections.appearance.title")}</AccordionTrigger>
                 <AccordionContent className="space-y-4">
                   <FormField
                     control={form.control}
                     name="dark_mode"
                     render={({ field }) => (
                       <FormItem className="flex flex-col space-y-4">
-                        <FormLabel>{t('sections.appearance.fields.darkMode.label')}</FormLabel>
+                        <FormLabel>{t("sections.appearance.fields.darkMode.label")}</FormLabel>
                         <FormControl>
                           <Switch checked={field.value} onCheckedChange={field.onChange} />
                         </FormControl>
                         <FormMessage />
-                        <FormDescription>{t('sections.appearance.fields.darkMode.description')}</FormDescription>
+                        <FormDescription>{t("sections.appearance.fields.darkMode.description")}</FormDescription>
                       </FormItem>
                     )}
                   />
@@ -256,7 +257,7 @@ export default function CommunitySettingsForm({
                     name="accent_color"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('sections.appearance.fields.accentColor.label')}</FormLabel>
+                        <FormLabel>{t("sections.appearance.fields.accentColor.label")}</FormLabel>
                         <FormControl>
                           <Input
                             type="color"
@@ -270,7 +271,7 @@ export default function CommunitySettingsForm({
                           />
                         </FormControl>
                         <FormMessage />
-                        <FormDescription>{t('sections.appearance.fields.accentColor.description')}</FormDescription>
+                        <FormDescription>{t("sections.appearance.fields.accentColor.description")}</FormDescription>
                       </FormItem>
                     )}
                   />
@@ -280,17 +281,17 @@ export default function CommunitySettingsForm({
                     name="banner_url"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('sections.appearance.fields.bannerImage.label')}</FormLabel>
+                        <FormLabel>{t("sections.appearance.fields.bannerImage.label")}</FormLabel>
                         {field.value && (
                           <div className="mb-2">
                             <img
                               src={field.value}
-                              alt={t('sections.appearance.fields.bannerImage.altText')}
+                              alt={t("sections.appearance.fields.bannerImage.altText")}
                               className="h-20 w-20 object-contain"
                               onError={(e) => {
                                 e.currentTarget.style.display = "none";
                                 form.setError("banner_url", {
-                                  message: t('messages.imageLoadError'),
+                                  message: t("messages.imageLoadError"),
                                 });
                               }}
                             />
@@ -298,7 +299,7 @@ export default function CommunitySettingsForm({
                         )}
                         <FormControl>
                           <Input
-                            placeholder={t('sections.appearance.fields.bannerImage.placeholder')}
+                            placeholder={t("sections.appearance.fields.bannerImage.placeholder")}
                             {...field}
                             onChange={(e) => {
                               field.onChange(e);
@@ -307,9 +308,7 @@ export default function CommunitySettingsForm({
                           />
                         </FormControl>
                         <FormMessage />
-                        <FormDescription>
-                          {t('sections.appearance.fields.bannerImage.description')}
-                        </FormDescription>
+                        <FormDescription>{t("sections.appearance.fields.bannerImage.description")}</FormDescription>
                       </FormItem>
                     )}
                   />
@@ -320,10 +319,10 @@ export default function CommunitySettingsForm({
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
-                          <FormLabel className="text-base">{t('sections.appearance.fields.socialHandles.label')}</FormLabel>
-                          <FormDescription>
-                            {t('sections.appearance.fields.socialHandles.description')}
-                          </FormDescription>
+                          <FormLabel className="text-base">
+                            {t("sections.appearance.fields.socialHandles.label")}
+                          </FormLabel>
+                          <FormDescription>{t("sections.appearance.fields.socialHandles.description")}</FormDescription>
                         </div>
                         <FormControl>
                           <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -335,19 +334,19 @@ export default function CommunitySettingsForm({
               </AccordionItem>
 
               <AccordionItem value="language">
-                <AccordionTrigger>{t('sections.language.title')}</AccordionTrigger>
+                <AccordionTrigger>{t("sections.language.title")}</AccordionTrigger>
                 <AccordionContent className="space-y-4">
                   <FormField
                     control={form.control}
                     name="user_label"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('sections.language.fields.userLabel.label')}</FormLabel>
+                        <FormLabel>{t("sections.language.fields.userLabel.label")}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
                         <FormMessage />
-                        <FormDescription>{t('sections.language.fields.userLabel.description')}</FormDescription>
+                        <FormDescription>{t("sections.language.fields.userLabel.description")}</FormDescription>
                       </FormItem>
                     )}
                   />
@@ -355,7 +354,7 @@ export default function CommunitySettingsForm({
               </AccordionItem>
 
               <AccordionItem value="tiers">
-                <AccordionTrigger>{t('sections.tiers.title')}</AccordionTrigger>
+                <AccordionTrigger>{t("sections.tiers.title")}</AccordionTrigger>
                 <AccordionContent className="space-y-4">
                   {fields.map((field, index) => (
                     <div key={field.id} className="flex gap-4">
@@ -372,14 +371,14 @@ export default function CommunitySettingsForm({
                               if (duplicateExists) {
                                 form.setError(`tiers.${index}.name`, {
                                   type: "manual",
-                                  message: t('messages.tierNameUnique'),
+                                  message: t("messages.tierNameUnique"),
                                 });
                               } else {
                                 form.clearErrors(`tiers.${index}.name`);
                               }
                             },
                           })}
-                          placeholder={t('sections.tiers.fields.name.placeholder')}
+                          placeholder={t("sections.tiers.fields.name.placeholder")}
                         />
                         {form.formState.errors.tiers?.[index]?.name?.message && (
                           <span className="text-sm text-destructive mt-1">
@@ -394,7 +393,7 @@ export default function CommunitySettingsForm({
                             valueAsNumber: true,
                           })}
                           type="number"
-                          placeholder={t('sections.tiers.fields.points.placeholder')}
+                          placeholder={t("sections.tiers.fields.points.placeholder")}
                         />
                         {form.formState.errors.tiers?.[index]?.points_required?.message && (
                           <span className="text-sm text-destructive mt-1">
@@ -419,7 +418,7 @@ export default function CommunitySettingsForm({
                         onClick={() => remove(index)}
                         disabled={isSubmitting}
                       >
-                        {t('buttons.remove')}
+                        {t("buttons.remove")}
                       </Button>
                     </div>
                   ))}
@@ -428,13 +427,13 @@ export default function CommunitySettingsForm({
                     variant="outline"
                     onClick={() => append({ name: "", points_required: 0, color: "#000000" })}
                   >
-                    {t('buttons.addTier')}
+                    {t("buttons.addTier")}
                   </Button>
                 </AccordionContent>
               </AccordionItem>
 
               <AccordionItem value="tokens">
-                <AccordionTrigger>{t('sections.tokens.title')}</AccordionTrigger>
+                <AccordionTrigger>{t("sections.tokens.title")}</AccordionTrigger>
                 <AccordionContent className="space-y-4">
                   {/* Tiers Token */}
                   {/* Token */}
@@ -443,10 +442,10 @@ export default function CommunitySettingsForm({
                     name="token_to_display"
                     render={({ field }) => (
                       <FormItem className="flex flex-col gap-2">
-                        <FormDescription>{t('sections.tokens.description')}</FormDescription>
+                        <FormDescription>{t("sections.tokens.description")}</FormDescription>
                         <FormControl>
                           <TokenSelector
-                            tokens={community.tokens}
+                            tokens={filterVisibleTokens(community.tokens, community.metadata.hidden_tokens)}
                             badges={[]}
                             value={field.value}
                             onChange={field.onChange}
@@ -465,12 +464,10 @@ export default function CommunitySettingsForm({
               {isSubmitting ? (
                 <Button disabled>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {t('buttons.updating')}
+                  {t("buttons.updating")}
                 </Button>
               ) : (
-                <Button type="submit">
-                  {t('buttons.update')}
-                </Button>
+                <Button type="submit">{t("buttons.update")}</Button>
               )}
             </div>
           </form>

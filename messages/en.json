@@ -255,7 +255,8 @@
       "title": "Configure and share community page",
       "description": "Configure your community page and share it with your members.",
       "configure": "Configure",
-      "copyInvite": "Copy invite link"
+      "copyInvite": "Copy invite link",
+      "inviteCopied": "Invite link copied to clipboard!"
     },
     "createBadgesTokens": {
       "title": "Create Badges & Tokens",
@@ -541,10 +542,11 @@
     },
     "title": "Tokens",
     "table": {
-      "name": "Name",
-      "id": "ID",
+      "id": "Token ID",
       "type": "Type",
-      "created": "Created"
+      "created": "Created",
+      "name": "Name",
+      "symbol": "Symbol"
     },
     "notFound": "Community not found",
     "create": {
@@ -592,7 +594,19 @@
         "create": "Create Token",
         "creating": "Creating Token..."
       }
-    }
+    },
+    "visibleTokens": "Visible Tokens",
+    "hiddenTokens": "Hidden Tokens",
+    "hideToken": "Hide",
+    "unhideToken": "Unhide",
+    "noVisibleTokens": "No visible tokens",
+    "noHiddenTokens": "No hidden tokens",
+    "tokenList": "Token List",
+    "tokenVisibility": "Token Visibility",
+    "tokenHidden": "Token hidden successfully",
+    "tokenUnhidden": "Token unhidden successfully",
+    "errorUpdatingVisibility": "Error updating token visibility",
+    "atLeastOneVisibleToken": "At least one visible token is required"
   },
   "tokenSelector": {
     "searchPlaceholder": "Search or enter token address...",
@@ -728,7 +742,7 @@
         },
         "tokens": {
           "title": "Token",
-          "description": "The token that is displayed in the leaderboard and tiers."
+          "description": "The default token that is displayed in the leaderboard and tiers."
         }
       },
       "validation": {
