@@ -1,5 +1,5 @@
 import RefreshButton from "@/components/refresh-button";
-import TokenList from "@/components/token-list";
+import { TokenVisibilityManager } from "@/components/token-visibility-manager";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateTokenForm } from "@/forms/create-token-form";
 import { fetchCommunity } from "@/lib/openformat";
@@ -26,7 +26,11 @@ export default async function Tokens({ params }: { params: Promise<{ slug: strin
         </div>
       </CardHeader>
       <CardContent>
-        <TokenList tokens={community.tokens} />
+        <TokenVisibilityManager 
+          tokens={community.tokens} 
+          communityId={community.id} 
+          hiddenTokens={community.metadata.hidden_tokens || []} 
+        />
       </CardContent>
     </Card>
   );
