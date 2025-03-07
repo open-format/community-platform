@@ -264,6 +264,7 @@
         "amountBadgeInt": "Amount for badges needs to be an integer",
         "actionType": "Action type has to be 'Mint', 'Transfer' or 'Badge'",
         "rewardIdMin": "Reward ID must be at least 3 characters",
+        "rewardIdMax": "Reward ID can not be longer than 32 characters",
         "parseError": "Row: {row}: {message}",
         "rewardError": "Reward #{row}: {message}"
       },
@@ -314,7 +315,8 @@
             "comma": "Comma",
             "semicolon": "Semicolon",
             "other": "Other"
-          }
+          },
+          "tooltip": "Character that separates one field from the next in the same row. 'Auto' option lets the application autodetect this."
         }
       }
     },

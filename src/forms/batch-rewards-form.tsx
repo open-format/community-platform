@@ -86,7 +86,7 @@ export default function BatchRewardsForm({ community }: { community: Community }
         .min(10 ** -18, t('form.validation.amountMin'))
     ),
     actionType: z.string().refine(t => t.toLowerCase() === "mint" || t.toLowerCase() === "transfer" || t.toLowerCase() === "badge", t('form.validation.actionType')),
-    rewardId: z.string().min(3, t('form.validation.rewardIdMin')),
+    rewardId: z.string().min(3, t('form.validation.rewardIdMin')).max(32, t('form.validation.rewardIdMax')),
   });
 
   const FormSchema = z.object({
