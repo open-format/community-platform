@@ -16,15 +16,14 @@ import { parse, ParseResult } from "papaparse";
 import BatchRewardList from "@/components/batch-reward-list";
 import { CardContent } from "@/components/ui/card";
 import { BatchRewardsSettingsForm } from "./batch-rewards-settings-form";
-import { Address, BaseError, erc20Abi, isAddress, maxUint256, parseEther, stringToHex } from "viem";
+import { BaseError, isAddress } from "viem";
 import { RewardsProgressDialog } from "@/components/rewards-progress-dialog";
-import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
-import { rewardFacetAbi } from "@/abis/RewardFacet";
 import { useConfig } from "wagmi";
 import { usePrivy } from "@privy-io/react-auth";
 import { getViemErrorMessage } from "@/helpers/errors";
 import ResultList from "@/components/result-list";
 import { EXAMPLE_CSV_DATA } from "@/constants/examples";
+import { executeRewardFromParams, rewardBadge, rewardMulticall, rewardTokenMint, rewardTokenTransfer } from "@/lib/chain";
 
 export enum BatchRewardState {
   INITIAL = "initial",
@@ -36,6 +35,7 @@ export enum BatchRewardState {
 const defaultSettings: BatchRewardSettings = {
   header: true,
   delimiter: "",
+  multicall: true,
 };
 
 const defaultProgressInfo: BatchRewardProgressInfo = {
@@ -60,8 +60,11 @@ const CsvColumns = [
   'rewardId',
 ];
 
+// TODO: Move this to config var?
+const MULTICALL_BATCH_SIZE = 2;
+
 export default function BatchRewardsForm({ community }: { community: Community }) {
-  const t = useTranslations('batchRewards');
+  const t                                                 = useTranslations('batchRewards');
   const [showConfetti, setShowConfetti]                   = useState(false);
   const [rewardProgressDialog, setRewardProgressDialog]   = useState(false);
   const [rewardSettingsDialog, setRewardSettingsDialog]   = useState(false);
@@ -124,9 +127,10 @@ export default function BatchRewardsForm({ community }: { community: Community }
     setProgressInfo({total: 0, failed: 0, success: 0});
   
     parse(csvFile, {
-      header: batchSettings.header,
-      delimiter: batchSettings.delimiter,
-      skipEmptyLines: true,
+      header:                 batchSettings.header,
+      delimiter:              batchSettings.delimiter,
+      skipEmptyLines:         true,
+
       complete: (results: ParseResult<string[] | BatchRewardEntry>, file: File) => {
         if (results.errors && results.errors.length > 0) {
           const strErrors = results.errors.map(e => e.row ? t('form.validation.parseError', { row: e.row, message: e.message }) : e.message);
@@ -219,112 +223,113 @@ export default function BatchRewardsForm({ community }: { community: Community }
     startTransition(async () => {
       let errors = 0;
       let success = 0;
-      const results:BatchRewardEntryResult[] = [];
+      const results: BatchRewardEntryResult[] = [];
+      let multicallChunkParams: {
+        reward: BatchRewardEntry;
+        rewardParams: RewardBadgeParams|RewardTokenMintParams|RewardTokenTransferParams;
+      }[] = [];
 
       for (let i = 0; i < rewardList.length; i++) {
         const reward = rewardList[i];
-        let errorMessage = null;
-        let receipt = null;
-        try {
-          if (reward.actionType.toLowerCase() === "badge") {
-            let transactionHash: `0x${string}` = "0x0";
-            if (reward.amount === 1) {
-              transactionHash = await writeContract(config, {
-                address: community.id,
-                abi: rewardFacetAbi,
-                functionName: "mintBadge",
-                args: [
-                  reward.tokenAddress as Address,
-                  reward.userAddress as Address,
-                  stringToHex(reward.rewardId, { size: 32 }),
-                  stringToHex("MISSION", { size: 32 }),
-                  "",
-                ],
-              });
-            } else {
-              transactionHash = await writeContract(config, {
-                address: community.id,
-                abi: rewardFacetAbi,
-                functionName: "batchMintBadge",
-                args: [
-                  reward.tokenAddress as Address,
-                  reward.userAddress as Address,
-                  BigInt(reward.amount),
-                  stringToHex(reward.rewardId, { size: 32 }),
-                  stringToHex("MISSION", { size: 32 }),
-                  "",
-                ],
-              });
-            }
-            receipt = await waitForTransactionReceipt(config, { hash: transactionHash });
-
-          } else if (reward.actionType.toLowerCase() === "mint") {
-            // Handle ERC20 token minting
-            const hash = await writeContract(config, {
-              address: community.id,
-              abi: rewardFacetAbi,
-              functionName: "mintERC20",
-              args: [
-                reward.tokenAddress as Address,
-                reward.userAddress as Address,
-                parseEther(reward.amount.toString()),
-                stringToHex(reward.rewardId, { size: 32 }),
-                stringToHex("MISSION", { size: 32 }),
-                "",
-              ],
-            });
-
-            receipt = await waitForTransactionReceipt(config, { hash });
-
-          } else {
-            const allowance = await readContract(config, {
-              address: reward.tokenAddress as Address,
-              abi: erc20Abi,
-              functionName: "allowance",
-              args: [user?.wallet?.address as Address, community.id as Address],
-            });
-
-            if (allowance < parseEther(reward.amount.toString())) {
-              // Call ERC20 contract to approve the DAPP_ID
-              await writeContract(config, {
-                address: reward.tokenAddress as Address,
-                abi: erc20Abi,
-                functionName: "approve",
-                args: [community.id as Address, maxUint256],
-              });
-            }
-
-            const transferHash = await writeContract(config, {
-              address: community.id,
-              abi: rewardFacetAbi,
-              functionName: "transferERC20",
-              args: [
-                reward.tokenAddress as Address,
-                reward.userAddress as Address,
-                parseEther(reward.amount.toString()),
-                stringToHex(reward.rewardId, { size: 32 }),
-                stringToHex("MISSION", { size: 32 }),
-                "",
-              ],
-            });
-            receipt = await waitForTransactionReceipt(config, { hash: transferHash });
-          }
-        } catch (error: any) {
-          errorMessage = (error instanceof BaseError) ? getViemErrorMessage(error) : error.message ?? "Unknown error";
+        let errorMessage: string|null = null;
+        let receipt: any = null;
+        let rewardParams: RewardBadgeParams|RewardTokenMintParams|RewardTokenTransferParams;
+        const actionType = reward.actionType.toLowerCase();
+        switch (actionType) {
+          case "badge":
+            rewardParams = {
+              actionType:           "badge",
+              communityAddress:     community.id, 
+              badgeAddress:         reward.tokenAddress, 
+              receiverAddress:      reward.userAddress, 
+              rewardId:             reward.rewardId, 
+              amount:               reward.amount,
+              activityType:         "MISSION",
+              metadata:             "",
+            };
+            break;
+          case "mint":
+            rewardParams =  {
+              actionType:           "mint",
+              communityAddress:     community.id, 
+              tokenAddress:         reward.tokenAddress, 
+              receiverAddress:      reward.userAddress, 
+              rewardId:             reward.rewardId, 
+              amount:               reward.amount,
+              activityType:         "MISSION",
+              metadata:             "",
+            };
+            break;
+          case "transfer":
+            rewardParams = {
+              actionType:           "transfer",
+              communityAddress:     community.id, 
+              tokenAddress:         reward.tokenAddress, 
+              ownerAddress:         user?.wallet?.address ?? "", 
+              receiverAddress:      reward.userAddress, 
+              rewardId:             reward.rewardId, 
+              amount:               reward.amount,
+              activityType:         "MISSION",
+              metadata:             "",
+            };
+            break;              
+          default:
+            throw new Error(`Unknown action type: ${actionType}`);
         }
 
-        results.push({
-          index: i,
-          success: !errorMessage,
-          errorMessage: errorMessage,
-          transactionHash: !errorMessage && receipt ? receipt.transactionHash : null,
-          entry: reward,
-        });
+        // Execute proper transaction: multicall or regular
+        if (batchSettings.multicall) {
+          multicallChunkParams.push({ reward, rewardParams });
 
-        errors += errorMessage ? 1 : 0;
-        success += !errorMessage ? 1 : 0;
+          // If we have completed a multicall batch or this is the last element
+          const shouldExecuteMulticall = multicallChunkParams.length >= MULTICALL_BATCH_SIZE || i === rewardList.length-1;
+          if (!shouldExecuteMulticall) {
+            continue;
+          }
+          
+          // Execute Multicall reward.
+          try {
+            receipt = await rewardMulticall(config, community.id, multicallChunkParams.map(c => c.rewardParams));
+          } catch (error: any) {
+            errorMessage = (error instanceof BaseError) ? getViemErrorMessage(error) : error.message ?? "Unknown error";
+          }
 
-        setProgressInfo({ total: rewardList.length, success: success, failed: errors });
+          // Set results for all rewards in batch
+          multicallChunkParams.forEach( call => {
+            results.push({
+              entry:            call.reward,
+              success:          !errorMessage,
+              errorMessage:     errorMessage,
+              transactionHash:  !errorMessage && receipt ? receipt.transactionHash : null,
+            });    
+          } );
+          // Update progress infor for all rewards
+          errors += errorMessage ? multicallChunkParams.length : 0;
+          success += !errorMessage ? multicallChunkParams.length : 0;
+          multicallChunkParams = [];
+
+          setProgressInfo({ total: rewardList.length, success: success, failed: errors });
+
+        } else {
+          // Regular transaction
+          try {
+            receipt = await executeRewardFromParams(config, rewardParams);
+          } catch (error: any) {
+            errorMessage = (error instanceof BaseError) ? getViemErrorMessage(error) : error.message ?? "Unknown error";
+          }
+          // Set result
+          results.push({
+            entry:            reward,
+            success:          !errorMessage,
+            errorMessage:     errorMessage,
+            transactionHash:  !errorMessage && receipt ? receipt.transactionHash : null,
+          });
+          // Update progress info
+          errors += errorMessage ? 1 : 0;
+          success += !errorMessage ? 1 : 0;
+          
+          setProgressInfo({ total: rewardList.length, success: success, failed: errors });
+        }
       }
 
       setResultList(results);

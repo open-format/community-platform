@@ -304,6 +304,9 @@
         "header": {
           "label": "Use First Row as Headers"
         },
+        "multicall": {
+          "label": "Use Multicall"
+        },
         "delimiter": {
           "label": "Rows delimiter",
           "placeholder": "Auto",

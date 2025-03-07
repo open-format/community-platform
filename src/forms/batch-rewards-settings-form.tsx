@@ -36,17 +36,19 @@ export function BatchRewardsSettingsForm({ settings, open, close, setSettings }:
   useRevalidate(shouldRevalidate);
 
   const FormSchema = z.object({
-    header:         z.boolean(),
-    delimiter:      z.enum(["Auto", "Comma", "Semicolon", "Other"]),
-    delimiterOther: z.string().optional(),
+    header:             z.boolean(),
+    multicall:          z.boolean(),
+    delimiter:          z.enum(["Auto", "Comma", "Semicolon", "Other"]),
+    delimiterOther:     z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      header: settings.header,
-      delimiter: getDelimiterType(settings.delimiter),
-      delimiterOther: settings.delimiter ?? "",
+      header:           settings.header,
+      multicall:        settings.multicall,
+      delimiter:        getDelimiterType(settings.delimiter),
+      delimiterOther:   settings.delimiter ?? "",
     },
   });
 
@@ -70,13 +72,15 @@ export function BatchRewardsSettingsForm({ settings, open, close, setSettings }:
           break;
       }
       setSettings({
-        header: data.header,
-        delimiter: settingsDelimiter,
+        header:     data.header,
+        multicall:  data.multicall,
+        delimiter:  settingsDelimiter,
       });
 
       console.log('OldSettings', settings);
       console.log('NewSettings', {
         header: data.header,
+        multicall: data.multicall,
         delimiter: settingsDelimiter,
         delimiterForm: data.delimiter,
       });
@@ -162,6 +166,20 @@ export function BatchRewardsSettingsForm({ settings, open, close, setSettings }:
                 )}
               />
             )}
+            <FormField
+              control={form.control}
+              name="multicall"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between">
+                <div className="space-y-0.5">
+                    <FormLabel className="text-base">{t('settings.fields.multicall.label')}</FormLabel>
+                  </div>
+                  <FormControl>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
             <Button type="submit">{t('settings.saveLabel')}</Button>
           </form>
         </Form>
