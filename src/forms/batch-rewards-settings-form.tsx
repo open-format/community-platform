@@ -21,6 +21,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useRevalidate } from "@/hooks/useRevalidate";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { HelpCircle } from "lucide-react";
 
 interface BatchRewardsSettingsFormProps {
   settings:  BatchRewardSettings;
@@ -129,9 +131,20 @@ export function BatchRewardsSettingsForm({ settings, open, close, setSettings }:
               name="delimiter"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex items-center gap-2">
-                    <FormLabel>{t('settings.fields.delimiter.label')}</FormLabel>
-                  </div>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center gap-2">
+                          <FormLabel>{t('settings.fields.delimiter.label')}</FormLabel>
+                          <HelpCircle className="h-4 w-4 text-muted-foreground"/>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" align="start" className="max-w-prose space-y-2">
+                        <p>{t('settings.fields.delimiter.tooltip')}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
                   <FormControl>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <SelectTrigger>
