@@ -153,6 +153,7 @@ type BatchRewardEntry = {
 type BatchRewardSettings = {
   header: boolean; 
   delimiter: string | null | undefined;
+  multicall: boolean;
 };
 
 type BatchRewardProgressInfo = {
@@ -162,9 +163,42 @@ type BatchRewardProgressInfo = {
 };
 
 type BatchRewardEntryResult = {
-  index: number;
   success: boolean;
   transactionHash: string|null|undefined;
   errorMessage: string|null|undefined;
   entry: BatchRewardEntry;
 };
+
+type RewardBadgeParams = {
+  actionType: "badge";
+  communityAddress: string;
+  badgeAddress: string;
+  receiverAddress: string;
+  rewardId: string;
+  amount: number;
+  metadata: string;
+  activityType: string;
+}
+
+type RewardTokenMintParams = {
+  actionType: "mint";
+  communityAddress: string;
+  tokenAddress: string;
+  receiverAddress: string;
+  rewardId: string;
+  amount: number;
+  metadata: string;
+  activityType: string;
+}
+
+type RewardTokenTransferParams = {
+  actionType: "transfer";
+  communityAddress: string;
+  tokenAddress: string;
+  ownerAddress: string;
+  receiverAddress: string;
+  rewardId: string;
+  amount: number;
+  metadata: string;
+  activityType: string;
+}
