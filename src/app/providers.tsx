@@ -45,7 +45,6 @@ export default function Providers({
           defaultChain: arbitrumSepolia,
 
           appearance: {
-            showWalletLoginFirst: true,
             walletChainType: "ethereum-only",
             walletList: ["metamask", "wallet_connect", "rainbow", "rabby_wallet"],
           },
