@@ -19,7 +19,7 @@ import {
   UserRejectedRequestError,
 } from "viem";
 
-export function handleViemError(error: BaseError) {
+export function getViemErrorMessage(error: BaseError) {
   let message = "An unexpected error occurred.";
 
   const errorMappings = [
@@ -53,6 +53,10 @@ export function handleViemError(error: BaseError) {
     return false; // Continue walking if no match is found
   });
 
+  return message;
+}
+
+export function handleViemError(error: BaseError) {
   // Display the error message using the Toaster
-  toast.error(message);
+  toast.error(getViemErrorMessage(error));
 }

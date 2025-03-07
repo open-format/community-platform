@@ -141,3 +141,30 @@ type CurrentUser = {
   wallet_address: Address;
   apps: string[];
 };
+
+type BatchRewardEntry = {
+  userAddress: string;
+  tokenAddress: string;
+  amount: number;
+  actionType: string;
+  rewardId: string;
+};
+
+type BatchRewardSettings = {
+  header: boolean; 
+  delimiter: string | null | undefined;
+};
+
+type BatchRewardProgressInfo = {
+  total: number; 
+  failed: number;
+  success: number;
+};
+
+type BatchRewardEntryResult = {
+  index: number;
+  success: boolean;
+  transactionHash: string|null|undefined;
+  errorMessage: string|null|undefined;
+  entry: BatchRewardEntry;
+};

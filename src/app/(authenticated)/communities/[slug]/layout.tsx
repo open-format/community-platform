@@ -34,6 +34,7 @@ export default async function Layout({
           <ActiveLink href="overview">{t('overview')}</ActiveLink>
           <ActiveLink href="settings">{t('settings')}</ActiveLink>
           <ActiveLink href="rewards">{t('rewards')}</ActiveLink>
+          <ActiveLink href="batch-rewards">{t('batchRewards')}</ActiveLink>
           <ActiveLink href="tokens">{t('tokens')}</ActiveLink>
           <ActiveLink href="badges">{t('badges')}</ActiveLink>
           <ActiveLink href="agents">{t('agents')}</ActiveLink>
