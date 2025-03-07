@@ -61,7 +61,7 @@ const CsvColumns = [
 ];
 
 // TODO: Move this to config var?
-const MULTICALL_BATCH_SIZE = 2;
+const MULTICALL_BATCH_SIZE = 100;
 
 export default function BatchRewardsForm({ community }: { community: Community }) {
   const t                                                 = useTranslations('batchRewards');

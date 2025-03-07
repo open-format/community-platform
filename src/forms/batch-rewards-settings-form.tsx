@@ -184,9 +184,21 @@ export function BatchRewardsSettingsForm({ settings, open, close, setSettings }:
               name="multicall"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between">
-                <div className="space-y-0.5">
-                    <FormLabel className="text-base">{t('settings.fields.multicall.label')}</FormLabel>
-                  </div>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center gap-2">
+                          <FormLabel className="text-base">{t('settings.fields.multicall.label')}</FormLabel>
+                          <HelpCircle className="h-4 w-4 text-muted-foreground"/>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" align="start" className="max-w-prose space-y-2">
+                        <p>{t('settings.fields.multicall.tooltip1')}</p>
+                        <p>{t('settings.fields.multicall.tooltip2')}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
