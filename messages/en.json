@@ -347,15 +347,24 @@
     },
     "discord": {
       "connect": "Connect Discord",
-      "connected": "Connected to Discord"
+      "connected": "Connected to Discord",
+      "unlinked": "Discord account disconnected",
+      "errors": {
+        "unlinkFailed": "Failed to disconnect Discord"
+      }
     },
     "github": {
       "connect": "Connect Github",
-      "connected": "Connected to Github"
+      "connected": "Connected to Github",
+      "unlinked": "GitHub account disconnected",
+      "errors": {
+        "unlinkFailed": "Failed to disconnect GitHub"
+      }
     },
     "telegram": {
       "connect": "Connect Telegram",
       "connected": "Connected to Telegram",
+      "unlinked": "Telegram account disconnected",
       "errors": {
         "linkFailed": "Failed to connect Telegram",
         "unlinkFailed": "Failed to disconnect Telegram"
@@ -363,6 +372,20 @@
       "ariaLabels": {
         "connect": "Connect Telegram account",
         "disconnect": "Disconnect Telegram account"
+      }
+    },
+    "google": {
+      "connect": "Connect Google",
+      "connected": "Connected to Google",
+      "errors": {
+        "unlinkFailed": "Failed to disconnect Google"
+      }
+    },
+    "email": {
+      "connect": "Connect Email",
+      "connected": "Connected to Email",
+      "errors": {
+        "unlinkFailed": "Failed to disconnect Email"
       }
     }
   },

@@ -28,7 +28,8 @@ export default function Accounts() {
     {
       id: "discord",
       link: linkDiscord,
-      unlink: () => unlinkDiscord(user?.discord?.subject ?? "").catch((error) => alert(error.message)),
+      unlink: () => unlinkDiscord(user?.discord?.subject ?? "")
+        .catch((error) => toast.error(t('discord.errors.unlinkFailed'))),
       username: user?.discord?.username,
       icon: <Image src={Discord} alt="Discord" width={20} height={20} className="fill-[#5865F2]" />,
     },
@@ -43,14 +44,16 @@ export default function Accounts() {
     {
       id: "google",
       link: linkGoogle,
-      unlink: () => unlinkGoogle(user?.google?.subject ?? "").catch((error) => alert(error.message)),
+      unlink: () => unlinkGoogle(user?.google?.subject ?? "")
+        .catch((error) => toast.error(t('google.errors.unlinkFailed'))),
       username: user?.google?.name,
       icon: <Image src={Google} alt="Google" width={20} height={20} />,
     },
     {
       id: "email",
       link: linkEmail,
-      unlink: () => unlinkEmail(user?.email?.address ?? "").catch((error) => alert(error.message)),
+      unlink: () => unlinkEmail(user?.email?.address ?? "")
+        .catch((error) => toast.error(t('email.errors.unlinkFailed'))),
       username: user?.email?.address,
       icon: <MailIcon className="w-5 h-5" />,
     },
