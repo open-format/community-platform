@@ -6,7 +6,10 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "check": "biome check --apply .",
+    "check:ci": "biome ci .",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
@@ -64,6 +67,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^11.0.1",
