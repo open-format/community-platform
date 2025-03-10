@@ -103,3 +103,42 @@ To add support for a new language:
 4. The new translations will be automatically loaded based on the locale
 
 Note: Ensure all translation keys match exactly with `en.json` to avoid missing translations. If a translation is missing, it will fallback to English.
+
+## Code Quality
+
+This project uses [Biome.js](https://biomejs.dev/) for code formatting and linting.
+
+### Available Commands
+
+Format code
+```bash
+   npm run format
+   # or
+   yarn format
+   # or
+   pnpm format
+   ```
+Lint code
+```bash
+   npm run lint
+   # or
+   yarn lint
+   # or
+   pnpm lint
+   ```
+Format and lint code
+```bash
+   npm run check
+   # or
+   yarn check
+   # or
+   pnpm check
+   ```
+Run checks without fixes (used in CI)
+```bash
+   npm run check:ci
+   # or
+   yarn check:ci
+   # or
+   pnpm check:ci
+   ```
