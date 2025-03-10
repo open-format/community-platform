@@ -88,10 +88,12 @@ export default function RewardsForm({ community }: { community: Community }) {
 
   useEffect(() => {
     async function fetchTokenBalance() {
-      if (user?.wallet?.address && form.watch("tokenAddress")) {
+      const tokenAddress = form.watch("tokenAddress");
+      // Only fetch balance if it's a token, not a badge
+      if (user?.wallet?.address && tokenAddress && !isSelectedBadge(tokenAddress)) {
         try {
           const balance = await readContract(config, {
-            address: form.watch("tokenAddress") as Address,
+            address: tokenAddress as Address,
             abi: erc20Abi,
             functionName: "balanceOf",
             args: [user.wallet.address as Address],
@@ -107,7 +109,7 @@ export default function RewardsForm({ community }: { community: Community }) {
     }
 
     fetchTokenBalance();
-  }, [user?.wallet?.address, form.watch("tokenAddress"), config]);
+  }, [user?.wallet?.address, form.watch("tokenAddress"), config, isSelectedBadge]);
 
   function onSubmit(data: z.infer<typeof rewardsFormSchema>) {
     try {
