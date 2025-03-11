@@ -17,6 +17,7 @@ Before you begin, you'll need to set up accounts and configure a few services:
      - Discord
      - Telegram
      - Email
+   - In the App Settings section of your Privy app, enable option `Return user data in an identity token`.
 
 3. **Database**
    - Set up a [Supabase](https://supabase.com) project, or use any PostgreSQL database
