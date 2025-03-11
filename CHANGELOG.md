@@ -1,3 +1,41 @@
+# [0.11.0](https://github.com/open-format/community-platform/compare/v0.10.0...v0.11.0) (2025-03-11)
+
+
+### Bug Fixes
+
+* ensure leaderboard displays community's default token ([9078873](https://github.com/open-format/community-platform/commit/90788732df20e266983032f6e35d0c0263bc8586))
+* ensure leaderboard displays community's default token ([b300a76](https://github.com/open-format/community-platform/commit/b300a76ab6cd36db02c7f8c46df4a10206f82fb0))
+* reintroduced block explorer link functionality and added missing translations ([3bb4bfa](https://github.com/open-format/community-platform/commit/3bb4bfa0c6af1c4c4d774abdd0d45e34e87ebae0))
+* unify leaderboard loading states and fix token switching visual jump ([19247dc](https://github.com/open-format/community-platform/commit/19247dc70ad33719aa7ba08dbe259b4d83096cc5))
+* unify leaderboard loading states and fix token switching visual jump ([7d88e68](https://github.com/open-format/community-platform/commit/7d88e6872ab65bb12b211d751d3368d5d209be63))
+* update drizzle-kit migration command ([bf3fb88](https://github.com/open-format/community-platform/commit/bf3fb883c6f4ad88082e679584bfaf8a36b47db7))
+* update OpenFormat API URL and leaderboard endpoint ([51919b6](https://github.com/open-format/community-platform/commit/51919b6478f1f23cbc9e12699284ce65b2d36e2c))
+* user label made skeleton in leaderboard ([725812e](https://github.com/open-format/community-platform/commit/725812e58f7bb784d2b327ff7effcf4f698f37ca))
+
+
+### Features
+
+* Add API Key Generation to Community Platform ([07c49b8](https://github.com/open-format/community-platform/commit/07c49b82f160e96fa64ca611f6643fa6d310a353))
+* Add API Key Generation to Community Platform ([489bb94](https://github.com/open-format/community-platform/commit/489bb9429aae1ccb0510fc59034fe3bc1c975a5e))
+* Add API Key Generation to Community Platform ([40d6976](https://github.com/open-format/community-platform/commit/40d69767bb7a773eb97862ce56d1c77fa2662606))
+* Add API Key Generation to Community Platform ([9751cf4](https://github.com/open-format/community-platform/commit/9751cf439b3d317859b47a4a88e8b8f7b8ee8b22))
+* Add API Key Generation to Community Platform ([d46fd39](https://github.com/open-format/community-platform/commit/d46fd391582d49ab453a6126bd51a3bf8accb97c))
+* Add API Key Generation to Community Platform ([3d6dc8c](https://github.com/open-format/community-platform/commit/3d6dc8cca37471bd8662d3f7c99d9514d866f85d))
+* Add API Key Generation to Community Platform ([070cacb](https://github.com/open-format/community-platform/commit/070cacbd742943b8ae5dad8961548f7cdff7f9ff))
+* Add API Key Generation to Community Platform ([c072a26](https://github.com/open-format/community-platform/commit/c072a2694b1d43002fb4433b903ffa06b58f480c))
+* Add default token selection to Leaderboard..." ([76961af](https://github.com/open-format/community-platform/commit/76961afa11c8ae571c6c952ba2f0087f8464303a))
+* Add default token selection to Leaderboard..." ([f89eabf](https://github.com/open-format/community-platform/commit/f89eabf46a9c30f81e2460ce7653a6fa74c49ed1))
+* Add hidden_tokens column to communities table ([4559c97](https://github.com/open-format/community-platform/commit/4559c9749a6eaf07e3bad5cd02458c21677d75ec))
+* Add token selection to Leaderboard component ([3b9e439](https://github.com/open-format/community-platform/commit/3b9e439e9868954cc2b505df9b9b564bcdfeed94))
+* Add token selection to Leaderboard component ([aa5acce](https://github.com/open-format/community-platform/commit/aa5accee4c12554d22aa6c308bafdb166620adb8))
+* added draft token list with token details ([62af948](https://github.com/open-format/community-platform/commit/62af9488d2d33119aa01ff5a81de92226a8455f7))
+* Filter leaderboard entries to show only users with value over > 1 ([1977e4e](https://github.com/open-format/community-platform/commit/1977e4eafcae09f44b3e29b4a72add99e0c0bcf2))
+* implement token visibility filtering ([161987c](https://github.com/open-format/community-platform/commit/161987c0810c11a572f42b6a51c595b32aa5ef1b))
+* implement token visibility management ([c7bda99](https://github.com/open-format/community-platform/commit/c7bda99fbf76b0b5924d2222f65e3a974b0cc8d8))
+* Implement token visibility management with validation ([fd28275](https://github.com/open-format/community-platform/commit/fd28275d0050fef8482981f0bfe32e82b9cea4e5))
+* use token name as leaderboard column header ([cbfeaf5](https://github.com/open-format/community-platform/commit/cbfeaf5a9468af86c78781ed8413d2c485f574f1))
+* use token name as leaderboard column header ([4964869](https://github.com/open-format/community-platform/commit/496486937ef10a5bb3284a2387a4f904c6e88a44))
+
 # [0.10.0](https://github.com/open-format/community-platform/compare/v0.9.3...v0.10.0) (2025-02-14)
 
 
