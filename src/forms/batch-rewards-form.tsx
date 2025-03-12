@@ -23,7 +23,8 @@ import { usePrivy } from "@privy-io/react-auth";
 import { getViemErrorMessage } from "@/helpers/errors";
 import ResultList from "@/components/result-list";
 import { EXAMPLE_CSV_DATA } from "@/constants/examples";
-import { executeRewardFromParams, rewardBadge, rewardMulticall, rewardTokenMint, rewardTokenTransfer } from "@/lib/chain";
+import { executeRewardFromParams, rewardMulticall } from "@/lib/chain";
+import { findAllUsersByHandle } from "@/lib/privy";
 
 export enum BatchRewardState {
   INITIAL = "initial",
@@ -45,16 +46,16 @@ const defaultProgressInfo: BatchRewardProgressInfo = {
 };
 
 type CsvEntry = {
-  userAddress: string,
-  tokenAddress: string,
+  user: string,
+  token: string,
   amount: string,
   actionType: string,
   rewardId: string,
 }
 
 const CsvColumns = [
-  'userAddress',
-  'tokenAddress',
+  'user',
+  'token',
   'amount',
   'actionType',
   'rewardId',
@@ -79,8 +80,8 @@ export default function BatchRewardsForm({ community }: { community: Community }
   const [isPending, startTransition]                      = useTransition();
 
   const rewardSchema = z.object({
-    userAddress: z.string().refine(addr => isAddress(addr, { strict: true }), t('form.validation.userAddress')),
-    tokenAddress: z.string().refine(addr => isAddress(addr, { strict: true }), t('form.validation.tokenAddress')),
+    user: z.string().min(1, t('form.validation.user')).max(256, t('form.validation.userMax')),
+    token: z.string().min(1, t('form.validation.tokenRequired')),
     amount: z.preprocess(
       (val) => (val === "" ? NaN : Number(val)),
       z.number({
@@ -102,7 +103,6 @@ export default function BatchRewardsForm({ community }: { community: Community }
     resolver: zodResolver(FormSchema),
     defaultValues: { csvFile: undefined },
   });
-
 
   function processCSV(csvFile: File | null) {
     const toastId = toast.loading(t('form.toast.processing'));
@@ -135,67 +135,182 @@ export default function BatchRewardsForm({ community }: { community: Community }
         if (results.errors && results.errors.length > 0) {
           const strErrors = results.errors.map(e => e.row ? t('form.validation.parseError', { row: e.row, message: e.message }) : e.message);
           errorFn(strErrors);
-        } else {
-          if (batchSettings.header) {
-            if (results.meta.fields?.length !== CsvColumns.length) {
-              errorFn([t('form.validation.wrongColumns', {
-                columnsExpected: `[${CsvColumns.toString()}]`,
-                columnsFound: `[${results.meta.fields?.toString()}]`,
-              })]);
-              return;
-            }
-            const errors: string[] = [];
+          return;
+        }
+        const errors: string[] = [];
+        const rewards: BatchRewardEntry[] = [];
+
+        // Check parsed columns
+        if (batchSettings.header) {
+          // Meta object has parsed columns
+          // Check number of columns
+          if (results.meta.fields?.length !== CsvColumns.length) {
+            errors.push(t('form.validation.wrongColumns', {
+              columnsExpected: `[${CsvColumns.toString()}]`,
+              columnsFound: `[${results.meta.fields?.toString()}]`,
+            }));
+          } else {
+            // Check column names
             CsvColumns.forEach(c => {
               if (results.meta.fields?.indexOf(c) == -1) {
                 errors.push(t('form.validation.columnNotFound', { columnName: c, columnsFound: `[${results.meta.fields?.toString()}]` }));
               }
             });
+          }
+        } else {
+          // We do not have headers so there are no column names
+          // Check numbers of columns and assume they are in correct order
+          if (results.data.length > 0 && (results.data.at(0) as string[]).length !== CsvColumns.length) {
+            errorFn([t('form.validation.wrongColumns', {
+              columnsExpected: CsvColumns.length.toString(),
+              columnsFound: (results.data.at(0) as string[]).length,
+            })]);
+            return;
+          }
+        }
+        
+        // CSV with wrong column structure, no need to continue
+        if (errors.length > 0) {
+          errorFn(errors);
+          return;
+        }
 
+        results.data.forEach((entry, i) => {
+          const entryObj = (batchSettings.header) ? (entry as unknown as CsvEntry) : {
+            user:           (entry as string[])[0],
+            token:          (entry as string[])[1],
+            amount:         (entry as string[])[2],
+            actionType:     (entry as string[])[3],
+            rewardId:       (entry as string[])[4],
+          }
+          // Validate CSV entry.
+          const parseResult = rewardSchema.safeParse(entryObj);
+          
+          if (!parseResult.success) {
+            const err = Object.entries(parseResult.error.flatten().fieldErrors).flatMap(([field, messages]) => messages).join('. ');
+            errors.push(t('form.validation.rewardError', { row: i + 1, message: err }));
+          } else if (entryObj.actionType.toLowerCase() === "badge" && !z.number().int().safeParse(Number(entryObj.amount)).success) {
+            errors.push(t('form.validation.rewardError', { row: i + 1, message: t('form.validation.amountBadgeInt') }));
+          } else {
+            // Good entry add to rewards
+            rewards.push(parseResult.data);
+          }
+        });
+
+        // Validation errors, abort processing
+        if (errors.length > 0) {
+          errorFn(errors);
+          return;
+        }
+
+        // usernames to search
+        const userNames:string[] = [];
+
+        // Validate tokens and set the tokenAddress, userAddress
+        rewards.forEach( reward => {
+          if (isAddress(reward.user, { strict: true })) {
+            reward.userAddress = reward.user;
+          } else {
+            // user is a username to search
+            userNames.push(reward.user);
+          }
+
+          if (isAddress(reward.token, { strict: true })) {
+            reward.tokenAddress = reward.token;
+          } else {
+            // Search token in community badges and tokens
+            const token = reward.actionType === "badge" ?
+              community.badges.find(b => b.name === reward.token) : community.tokens.find(t => t.token?.name === reward.token);
+            if (token) {
+              reward.tokenAddress = reward.actionType === "badge" ? (token as Badge).id : (token as Token).token.id;
+            } else {
+              errors.push(t('form.validation.tokenNotFound', { tokenName: reward.token, communityName: community.name }));
+            }
+          }
+        } );
+
+        // Username search is expensive, abort before doing it if there are errors
+        if (errors.length > 0) {
+          errorFn(errors);
+          return;
+        }
+  
+
+        // If no usernames to search then finish and change state
+        if (userNames.length === 0) {
+          setRewardState(BatchRewardState.PREVIEW);
+          setRewardList(rewards);
+          successFn();
+          return;
+        }
+        
+        validateUsernames(userNames)
+          .then( ({walletsMap, errors}) => {
             if (errors.length > 0) {
               errorFn(errors);
               return;
             }
-          } else {
-            if (results.data.length > 0 && (results.data.at(0) as string[]).length !== CsvColumns.length) {
-              errorFn([t('form.validation.wrongColumns', {
-                columnsExpected: CsvColumns.length.toString(),
-                columnsFound: (results.data.at(0) as string[]).length,
-              })]);
+            rewards.filter(r => !(r.userAddress)).forEach( reward => {
+              const wallet = walletsMap.get(reward.user);
+              if (!wallet) {
+                // User has no wallet
+                errors.push(t('noWallets', { handle: reward.user }));
+                return
+              };
+              reward.userAddress = wallet;
+            } );
+            // No wallet errors
+            if (errors.length > 0) {
+              errorFn(errors);
               return;
             }
-          }
-
-          const errors: string[] = [];
-          const rewards: BatchRewardEntry[] = [];
-          results.data.map((entry, i) => {
-            const entryObj = (batchSettings.header) ? (entry as unknown as CsvEntry) : {
-              userAddress:    (entry as string[])[0],
-              tokenAddress:   (entry as string[])[1],
-              amount:         (entry as string[])[2],
-              actionType:     (entry as string[])[3],
-              rewardId:       (entry as string[])[4],
-            }
-            const parseResult = rewardSchema.safeParse(entryObj);
-            if (!parseResult.success) {
-              const err = Object.entries(parseResult.error.flatten().fieldErrors).flatMap(([field, messages]) => messages).join('. ');
-              errors.push(t('form.validation.rewardError', { row: i + 1, message: err }));
-            } else if (entryObj.actionType.toLowerCase() === "badge" && !z.number().int().safeParse(Number(entryObj.amount)).success) {
-              errors.push(t('form.validation.rewardError', { row: i + 1, message: t('form.validation.amountBadgeInt') }));
-            } else {
-              rewards.push(parseResult.data);
-            }
-          });
-
-          if (errors.length > 0) {
-            errorFn(errors);
-          } else {
-            setRewardList(rewards);
+                
+            // Success, update state and rewardList
             setRewardState(BatchRewardState.PREVIEW);
+            setRewardList(rewards);
             successFn();
-          }
-        }
+          } )
+          .catch( error => {
+            console.log('Error while searching for usernames', error);
+            errorFn([t('usernameSearchFailed')]);
+          } );
       }
     });
+  }
+
+  async function validateUsernames(userNames: string[]) {
+    let userWallets = [];
+    const errors: string[] = [];
+    const walletsMap = new Map<string, string|null>();
+    try {
+      userWallets = await findAllUsersByHandle(userNames);
+    } catch (error) {
+      console.log('Error searching for users', error);
+      errors.push(t('usernameSearchFailed'));
+      return { walletsMap, errors };
+    }
+
+    userWallets.forEach( wallets => {
+      if (!wallets.discordWalletAddress && !wallets.githubWalletAddress) {
+        errors.push(t('noWallets', { handle: wallets.handle }));
+        return;
+      }
+      if (
+        wallets.discordWalletAddress 
+        && wallets.githubWalletAddress 
+        && wallets.discordWalletAddress.toLowerCase() !== wallets.githubWalletAddress.toLowerCase()) 
+      {
+        const walletError = {
+          handle: wallets.handle, 
+          wallets: `Discord: ${wallets.discordWalletAddress}, Github: ${wallets.githubWalletAddress}`
+        };
+        errors.push(t('differentWalletsError', walletError));
+        return;
+      }
+
+      walletsMap.set(wallets.handle, wallets.discordWalletAddress ?? wallets.githubWalletAddress)
+    } );
+    return { walletsMap, errors };
   }
 
   function sucessParseCSV(toastId: string | number) {
@@ -240,8 +355,8 @@ export default function BatchRewardsForm({ community }: { community: Community }
             rewardParams = {
               actionType:           "badge",
               communityAddress:     community.id, 
-              badgeAddress:         reward.tokenAddress, 
-              receiverAddress:      reward.userAddress, 
+              badgeAddress:         reward.tokenAddress!, 
+              receiverAddress:      reward.userAddress!, 
               rewardId:             reward.rewardId, 
               amount:               reward.amount,
               activityType:         "MISSION",
@@ -252,8 +367,8 @@ export default function BatchRewardsForm({ community }: { community: Community }
             rewardParams =  {
               actionType:           "mint",
               communityAddress:     community.id, 
-              tokenAddress:         reward.tokenAddress, 
-              receiverAddress:      reward.userAddress, 
+              tokenAddress:         reward.tokenAddress!, 
+              receiverAddress:      reward.userAddress!, 
               rewardId:             reward.rewardId, 
               amount:               reward.amount,
               activityType:         "MISSION",
@@ -264,9 +379,9 @@ export default function BatchRewardsForm({ community }: { community: Community }
             rewardParams = {
               actionType:           "transfer",
               communityAddress:     community.id, 
-              tokenAddress:         reward.tokenAddress, 
+              tokenAddress:         reward.tokenAddress!, 
               ownerAddress:         user?.wallet?.address ?? "", 
-              receiverAddress:      reward.userAddress, 
+              receiverAddress:      reward.userAddress!, 
               rewardId:             reward.rewardId, 
               amount:               reward.amount,
               activityType:         "MISSION",
@@ -419,6 +534,8 @@ export default function BatchRewardsForm({ community }: { community: Community }
       <CardContent>
         {errorList.length > 0 && (<ResultList errors={errorList} />)}
         {resultList.length > 0 && (<ResultList rewardsResults={resultList} />)}
+        {rewardState !== BatchRewardState.INITIAL && rewardState !== BatchRewardState.PARSING && errorList.length == 0 && <BatchRewardList rewards={rewardList} />}
+        {rewardState === BatchRewardState.PARSING && <Loader2 className="h-6 w-6 animate-spin" />}
         {rewardState === BatchRewardState.INITIAL && errorList.length == 0 && resultList.length == 0 && (
           <>
             <div className="text-left text-sm text-gray-500 bg-muted p-4 font-semibold">
@@ -438,8 +555,6 @@ export default function BatchRewardsForm({ community }: { community: Community }
             </div>
           </>
           )}
-         {rewardState !== BatchRewardState.INITIAL && errorList.length == 0 && <BatchRewardList rewards={rewardList} />}
-
       </CardContent>
     </>
   );

@@ -143,8 +143,10 @@ type CurrentUser = {
 };
 
 type BatchRewardEntry = {
-  userAddress: string;
-  tokenAddress: string;
+  user: string;
+  token: string;
+  userAddress?: string|null|undefined;
+  tokenAddress?: string|null|undefined;
   amount: number;
   actionType: string;
   rewardId: string;
