@@ -2,11 +2,11 @@
 import { revalidate } from "@/lib/openformat";
 import { usePrivy } from "@privy-io/react-auth";
 import Cookies from "js-cookie";
+import { useTranslations } from "next-intl";
 import { startTransition } from "react";
 import { useBalance, useChainId, useSwitchChain } from "wagmi";
 import type { GetBalanceData } from "wagmi/query";
 import { type ChainName, chains } from "../constants/chains";
-import { useTranslations } from 'next-intl';
 import { Badge } from "./ui/badge";
 import {
   Select,
@@ -26,14 +26,18 @@ interface NetworkSelectorProps {
   hideIfNotSet?: boolean;
 }
 
-export default function NetworkSelector({ onValueChange, callback, hideIfNotSet = false }: NetworkSelectorProps) {
+export default function NetworkSelector({
+  onValueChange,
+  callback,
+  hideIfNotSet = false,
+}: NetworkSelectorProps) {
   const currentChainId = useChainId();
   const { user } = usePrivy();
   const { switchChain } = useSwitchChain();
   const { data: balance, isLoading } = useBalance({
     address: user?.wallet?.address,
   });
-  const t = useTranslations('networkSelector');
+  const t = useTranslations("networkSelector");
 
   function handleChainChange(chainName: string) {
     startTransition(async () => {
@@ -54,7 +58,7 @@ export default function NetworkSelector({ onValueChange, callback, hideIfNotSet 
 
   // Find the current chain name based on the chain ID
   const currentChainName = (Object.keys(chains) as ChainName[]).find(
-    (chainName) => chains[chainName].id === currentChainId
+    (chainName) => chains[chainName].id === currentChainId,
   );
 
   // Separate chains into testnet and mainnet groups
@@ -83,7 +87,7 @@ export default function NetworkSelector({ onValueChange, callback, hideIfNotSet 
   function BalanceBadge({ balance }: { balance: GetBalanceData }) {
     return (
       <Badge className="hidden md:block">
-        {t('balance', { amount: Number(balance.formatted).toFixed(6), symbol: balance.symbol })}
+        {t("balance", { amount: Number(balance.formatted).toFixed(6), symbol: balance.symbol })}
       </Badge>
     );
   }
@@ -91,13 +95,17 @@ export default function NetworkSelector({ onValueChange, callback, hideIfNotSet 
   return (
     <Select onValueChange={handleChainChange} value={currentChainName}>
       <SelectTrigger>
-        <SelectValue placeholder={t('selectNetwork')} />
+        <SelectValue placeholder={t("selectNetwork")} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectLabel className="font-bold">{t('mainnets')}</SelectLabel>
+          <SelectLabel className="font-bold">{t("mainnets")}</SelectLabel>
           {mainnetChains.map((option) => (
-            <SelectItem key={option.value} value={option.value} className="flex items-center justify-between">
+            <SelectItem
+              key={option.value}
+              value={option.value}
+              className="flex items-center justify-between"
+            >
               <div className="flex items-center space-x-2">
                 <p>{option.label}</p>
                 {option.value === currentChainName && balance && <BalanceBadge balance={balance} />}
@@ -107,9 +115,13 @@ export default function NetworkSelector({ onValueChange, callback, hideIfNotSet 
         </SelectGroup>
         <SelectSeparator />
         <SelectGroup>
-          <SelectLabel className="font-bold">{t('testnets')}</SelectLabel>
+          <SelectLabel className="font-bold">{t("testnets")}</SelectLabel>
           {testnetChains.map((option) => (
-            <SelectItem key={option.value} value={option.value} className="flex items-center justify-between">
+            <SelectItem
+              key={option.value}
+              value={option.value}
+              className="flex items-center justify-between"
+            >
               <div className="flex items-center space-x-2">
                 <p>{option.label}</p>
                 {option.value === currentChainName && balance && <BalanceBadge balance={balance} />}

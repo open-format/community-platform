@@ -1,15 +1,23 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useTranslations } from 'next-intl';
 
 import { appFactoryAbi } from "@/abis/AppFactory";
 import { erc20FactoryAbi } from "@/abis/ERC20FactoryFacet";
 import NetworkSelector from "@/components/network-selector";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import type { ChainName } from "@/constants/chains";
@@ -30,7 +38,7 @@ import { type Address, BaseError, parseEther, stringToHex } from "viem";
 import { useConfig } from "wagmi";
 
 export default function CreateCommunityForm() {
-  const t = useTranslations('createCommunity.form');
+  const t = useTranslations("createCommunity.form");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { triggerConfetti } = useConfetti();
   const config = useConfig();
@@ -40,9 +48,7 @@ export default function CreateCommunityForm() {
   const chain = useCurrentChain();
 
   const FormSchema = z.object({
-    name: z.string()
-      .min(3, t('validation.nameRequired'))
-      .max(32, t('validation.nameMaxLength')),
+    name: z.string().min(3, t("validation.nameRequired")).max(32, t("validation.nameMaxLength")),
     createPoints: z.boolean().optional(),
   });
 
@@ -57,7 +63,7 @@ export default function CreateCommunityForm() {
   function simulateCreateCommunity(name: string) {
     startTransition(async () => {
       if (!chain) {
-        throw new Error(t('validation.chainNotFound'));
+        throw new Error(t("validation.chainNotFound"));
       }
 
       await simulateContract(config, {
@@ -73,7 +79,7 @@ export default function CreateCommunityForm() {
           if (error.metaMessages?.[0]?.includes("nameAlreadyUsed")) {
             form.setError("name", {
               type: "manual",
-              message: t('validation.nameInUse'),
+              message: t("validation.nameInUse"),
             });
           } else {
             form.setError("name", {
@@ -91,13 +97,13 @@ export default function CreateCommunityForm() {
     let communityId: Address | null = null;
     startTransition(async () => {
       try {
-        loadingToastId = toast.loading(t('toast.creating.title'), {
-          description: t('toast.creating.description'),
+        loadingToastId = toast.loading(t("toast.creating.title"), {
+          description: t("toast.creating.description"),
         });
 
         if (!chain) {
-          toast.error(t('toast.error.title'), {
-            description: t('toast.error.chainNotFound'),
+          toast.error(t("toast.error.title"), {
+            description: t("toast.error.chainNotFound"),
           });
           return;
         }
@@ -117,15 +123,15 @@ export default function CreateCommunityForm() {
         communityId = await getEventLog(transactionReceipt, appFactoryAbi, "Created");
 
         if (!communityId) {
-          throw new Error(t('toast.error.communityIdFailed'));
+          throw new Error(t("toast.error.communityIdFailed"));
         }
 
         await createCommunity(communityId, data.name, chain.id);
 
         let pointsCommunityId = null;
         if (data.createPoints) {
-          toast.message(t('toast.creatingPoints.title'), {
-            description: t('toast.creatingPoints.description'),
+          toast.message(t("toast.creatingPoints.title"), {
+            description: t("toast.creatingPoints.description"),
           });
 
           const { request: pointsRequest } = await simulateContract(config, {
@@ -137,16 +143,22 @@ export default function CreateCommunityForm() {
 
           const pointsTransactionHash = await writeContract(config, pointsRequest);
 
-          const pointsTransactionReceipt = await waitForTransactionReceipt(config, { hash: pointsTransactionHash });
-          pointsCommunityId = await getEventLog(pointsTransactionReceipt, erc20FactoryAbi, "Created");
+          const pointsTransactionReceipt = await waitForTransactionReceipt(config, {
+            hash: pointsTransactionHash,
+          });
+          pointsCommunityId = await getEventLog(
+            pointsTransactionReceipt,
+            erc20FactoryAbi,
+            "Created",
+          );
         }
 
         await updateCommunity(communityId, {
           token_to_display: pointsCommunityId,
         });
 
-        toast.success(t('toast.success.title'), {
-          description: t('toast.success.description'),
+        toast.success(t("toast.success.title"), {
+          description: t("toast.success.description"),
         });
 
         form.reset();
@@ -156,8 +168,8 @@ export default function CreateCommunityForm() {
         if (err instanceof BaseError) {
           return handleViemError(err);
         }
-        toast.error(t('toast.error.title'), {
-          description: t('toast.error.generic'),
+        toast.error(t("toast.error.title"), {
+          description: t("toast.error.generic"),
         });
       } finally {
         setIsSubmitting(false);
@@ -181,10 +193,10 @@ export default function CreateCommunityForm() {
           name="name"
           render={({ field }) => (
             <FormItem className="flex-1">
-              <FormLabel>{t('fields.name.label')}</FormLabel>
+              <FormLabel>{t("fields.name.label")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t('fields.name.placeholder')}
+                  placeholder={t("fields.name.placeholder")}
                   {...field}
                   onBlur={() => {
                     field.onChange(field.value.toLowerCase());
@@ -197,14 +209,14 @@ export default function CreateCommunityForm() {
                 />
               </FormControl>
               <FormMessage />
-              <FormDescription>{t('fields.name.description')}</FormDescription>
+              <FormDescription>{t("fields.name.description")}</FormDescription>
             </FormItem>
           )}
         />
 
         {/* Network Selector */}
         <FormItem>
-          <FormLabel>{t('fields.network.label')}</FormLabel>
+          <FormLabel>{t("fields.network.label")}</FormLabel>
           <FormControl>
             <NetworkSelector
               onValueChange={(chainName) => {
@@ -218,7 +230,7 @@ export default function CreateCommunityForm() {
               }}
             />
           </FormControl>
-          <FormDescription>{t('fields.network.description')}</FormDescription>
+          <FormDescription>{t("fields.network.description")}</FormDescription>
         </FormItem>
 
         {/* Create Points */}
@@ -228,8 +240,8 @@ export default function CreateCommunityForm() {
           render={({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
-                <FormLabel className="text-base">{t('fields.points.label')}</FormLabel>
-                <FormDescription>{t('fields.points.description')}</FormDescription>
+                <FormLabel className="text-base">{t("fields.points.label")}</FormLabel>
+                <FormDescription>{t("fields.points.description")}</FormDescription>
               </div>
               <FormControl>
                 <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -240,10 +252,10 @@ export default function CreateCommunityForm() {
         {isSubmitting ? (
           <Button disabled>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {t('buttons.creating')}
+            {t("buttons.creating")}
           </Button>
         ) : (
-          <Button type="submit">{t('buttons.create')}</Button>
+          <Button type="submit">{t("buttons.create")}</Button>
         )}
       </form>
     </Form>

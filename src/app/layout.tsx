@@ -2,8 +2,8 @@ import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
+import { getMessages } from "@/i18n/request";
 import Providers from "./providers";
-import { getMessages } from '@/i18n/request';
 
 const manrope = Manrope({
   subsets: ["latin"],

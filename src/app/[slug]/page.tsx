@@ -22,7 +22,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
   const currentPoints = profile?.tokenBalances?.find(
     (token) =>
       token.token.id === community?.metadata.token_to_display &&
-      !community?.metadata.hidden_tokens?.includes(token.token.id)
+      !community?.metadata.hidden_tokens?.includes(token.token.id),
   )?.balance;
 
   if (!community) {
@@ -46,17 +46,23 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
     <div
       className={cn(
         "max-w-prose mx-auto space-y-4 p-5 rounded-xl bg-background sticky top-0 ",
-        community?.metadata?.dark_mode ? "dark" : "light"
+        community?.metadata?.dark_mode ? "dark" : "light",
       )}
     >
       {/* Community Profile */}
       <CommunityProfile />
 
       {/* Community Banner */}
-      <CommunityBanner banner_url={community.metadata.banner_url} accent_color={community.metadata.accent_color} />
+      <CommunityBanner
+        banner_url={community.metadata.banner_url}
+        accent_color={community.metadata.accent_color}
+      />
 
       {/* Community Info */}
-      <CommunityInfo title={community?.metadata?.title} description={community?.metadata?.description} />
+      <CommunityInfo
+        title={community?.metadata?.title}
+        description={community?.metadata?.description}
+      />
 
       {/* Tiers */}
       {community.metadata.tiers && community.metadata.tiers.length > 0 && currentPoints && (

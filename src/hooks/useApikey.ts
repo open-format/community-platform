@@ -1,11 +1,11 @@
 import { generateChallenge, verifyChallenge } from "@/lib/openformat";
+import { getAddress } from "@/lib/utils";
+import { usePrivy } from "@privy-io/react-auth";
+import { signMessage as signMessageWallet } from "@wagmi/core";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import { signMessage as signMessageWallet } from "@wagmi/core";
-import { usePrivy } from "@privy-io/react-auth";
 import { useConfig } from "wagmi";
-import { getAddress } from "@/lib/utils";
 
 export function useApiKey() {
   const t = useTranslations("profile");

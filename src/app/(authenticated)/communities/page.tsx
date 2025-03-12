@@ -1,6 +1,13 @@
 import RefreshButton from "@/components/refresh-button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import CreateCommunityDialog from "@/dialogs/create-community-dialog";
 import CreateCommunityForm from "@/forms/create-community-form";
 import { fetchAllCommunities, getChainFromCommunityOrCookie } from "@/lib/openformat";

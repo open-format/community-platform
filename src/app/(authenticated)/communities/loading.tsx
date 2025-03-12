@@ -2,12 +2,12 @@
 
 import { Card, CardFooter, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
-import { useTranslations } from 'next-intl';
 
 export default function Loading() {
   const pathname = usePathname();
-  const t = useTranslations('communities');
+  const t = useTranslations("communities");
 
   // Only show loading state if we're exactly on /communities
   if (pathname !== "/communities") {
@@ -17,7 +17,7 @@ export default function Loading() {
   return (
     <div className="space-y-lg">
       <div className="flex justify-between items-center mb-6">
-        <h1>{t('yourCommunities')}</h1>
+        <h1>{t("yourCommunities")}</h1>
         <Skeleton className="h-10 w-40" />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-xl">

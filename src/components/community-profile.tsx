@@ -1,9 +1,9 @@
 "use client";
 
 import { usePrivy } from "@privy-io/react-auth";
+import { useTranslations } from "next-intl";
 import LinkAccounts from "./link-accounts";
 import Profile from "./profile-header";
-import { useTranslations } from "next-intl";
 
 export default function CommunityProfile() {
   const { logout } = usePrivy();
@@ -15,9 +15,7 @@ export default function CommunityProfile() {
       aria-label={t("ariaLabels.profileSection")}
     >
       <LinkAccounts />
-      <Profile
-        logoutAction={logout}
-      />
+      <Profile logoutAction={logout} />
     </div>
   );
 }

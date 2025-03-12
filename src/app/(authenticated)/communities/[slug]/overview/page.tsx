@@ -31,7 +31,9 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
         <Card variant="borderless" className="h-full">
           <CardHeader className="space-y-1 pb-4">
             <div className="flex items-center gap-2">
-              <CardTitle className="text-2xl font-bold tracking-tight">{t("leaderboard.title")}</CardTitle>
+              <CardTitle className="text-2xl font-bold tracking-tight">
+                {t("leaderboard.title")}
+              </CardTitle>
               <RefreshButton />
             </div>
             <CardDescription>{t("leaderboard.description")}</CardDescription>

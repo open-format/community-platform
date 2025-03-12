@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { getContrastSafeColor } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
 import { LogOutIcon } from "lucide-react";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 
 export default function Connect({ theme }: { theme?: Theme }) {
   const { login, logout, authenticated, ready } = usePrivy();
-  const t = useTranslations('auth');
+  const t = useTranslations("auth");
 
   const buttonStyle = {
     backgroundColor: theme?.buttonColor,
@@ -23,7 +23,7 @@ export default function Connect({ theme }: { theme?: Theme }) {
     </Button>
   ) : (
     <Button onClick={login} style={buttonStyle}>
-      {t('login')}
+      {t("login")}
     </Button>
   );
 }

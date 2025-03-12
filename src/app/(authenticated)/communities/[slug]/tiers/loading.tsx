@@ -1,13 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 
 export default function LoadingTiersPage() {
-  const t = useTranslations('tiers');
-  
+  const t = useTranslations("tiers");
+
   return (
     <Card variant="borderless">
       <CardHeader>
-        <CardTitle>{t('teirs')}</CardTitle>
+        <CardTitle>{t("teirs")}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

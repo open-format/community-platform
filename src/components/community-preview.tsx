@@ -36,28 +36,40 @@ interface CommunityPreviewProps {
   badges: BadgeWithCollectedStatus[];
 }
 
-export default function CommunityPreview({ community, previewValues, leaderboard, badges }: CommunityPreviewProps) {
+export default function CommunityPreview({
+  community,
+  previewValues,
+  leaderboard,
+  badges,
+}: CommunityPreviewProps) {
   const t = useTranslations("community.preview");
 
   return (
     <div
       className={cn(
         "max-w-prose mx-auto space-y-4 p-5 rounded-xl bg-background sticky top-0",
-        previewValues.dark_mode ? "dark" : "light"
+        previewValues.dark_mode ? "dark" : "light",
       )}
     >
       {/* Community Profile */}
       <CommunityProfile />
 
       {/* Community Banner */}
-      <CommunityBanner banner_url={previewValues.banner_url} accent_color={previewValues.accent_color} />
+      <CommunityBanner
+        banner_url={previewValues.banner_url}
+        accent_color={previewValues.accent_color}
+      />
 
       {/* Community Info */}
       <CommunityInfo title={previewValues.title} description={previewValues.description} />
 
       {/* Tiers */}
       {previewValues.tiers && previewValues.tiers.length > 0 && (
-        <Tiers tiers={previewValues.tiers} currentPoints={25} tokenLabel={previewValues.token_label} />
+        <Tiers
+          tiers={previewValues.tiers}
+          currentPoints={25}
+          tokenLabel={previewValues.token_label}
+        />
       )}
 
       <Tabs defaultValue="leaderboard" className="w-full">

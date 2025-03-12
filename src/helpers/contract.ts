@@ -5,7 +5,7 @@ import { BaseError, type TransactionReceipt, parseEventLogs } from "viem";
 export async function getEventLog(
   receipt: TransactionReceipt,
   abi: typeof appFactoryAbi | typeof erc20FactoryAbi,
-  eventName: "Created"
+  eventName: "Created",
 ) {
   try {
     const logs = parseEventLogs({

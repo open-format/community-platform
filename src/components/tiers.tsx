@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 
 interface Tier {
   name: string;
@@ -21,7 +21,7 @@ export default function Tiers({
   currentPoints: number;
   tokenLabel?: string | null;
 }) {
-  const t = useTranslations('tiers');
+  const t = useTranslations("tiers");
   const getCurrentTier = (points: number) => {
     // Return null if user hasn't reached first tier
     if (points < tiers[0].points_required) return null;
@@ -35,7 +35,11 @@ export default function Tiers({
     return null;
   };
 
-  const getProgress = (points: number, currentTier: (typeof tiers)[0] | null, nextTier: (typeof tiers)[0]) => {
+  const getProgress = (
+    points: number,
+    currentTier: (typeof tiers)[0] | null,
+    nextTier: (typeof tiers)[0],
+  ) => {
     // If no current tier, calculate progress to first tier
     if (!currentTier) {
       return (points / tiers[0].points_required) * 100;
@@ -65,7 +69,7 @@ export default function Tiers({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">{t('title')}</CardTitle>
+        <CardTitle className="text-2xl font-bold">{t("title")}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col space-y-4 text-center">
@@ -73,7 +77,7 @@ export default function Tiers({
             <div className="flex items-center gap-2">
               {currentTier ? (
                 <>
-                  <span className="text-sm">{t('currentTier')}:</span>
+                  <span className="text-sm">{t("currentTier")}:</span>
                   <Badge style={{ backgroundColor: currentTier.color }} className="text-white">
                     {currentTier.name}
                   </Badge>
@@ -83,38 +87,49 @@ export default function Tiers({
                 </>
               ) : (
                 <span className="text-sm">
-                  {currentPoints.toLocaleString()} {tokenLabel} {t('earned')}
+                  {currentPoints.toLocaleString()} {tokenLabel} {t("earned")}
                 </span>
               )}
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm">{t('nextTier')}:</span>
+              <span className="text-sm">{t("nextTier")}:</span>
               <Badge style={{ backgroundColor: nextTier.color }} className="text-white">
                 {nextTier.name}
               </Badge>
             </div>
           </div>
           <div className="space-y-1">
-            <Progress value={progress} className="w-full h-3" indicatorColor={currentTier?.color || nextTier.color} />
+            <Progress
+              value={progress}
+              className="w-full h-3"
+              indicatorColor={currentTier?.color || nextTier.color}
+            />
             <div className="flex justify-end">
               <span className="text-sm">
                 {currentTier
                   ? pointsRemaining === 0
                     ? currentPoints >= tiers[tiers.length - 1].points_required
-                      ? t('maxTierReachedWithPoints', { points: currentPoints, tokenLabel })
-                      : t('maxTierReached')
-                    : t('pointsToNextTier', { points: pointsRemaining, tokenLabel, tierName: nextTier.name })
-                  : t('pointsToFirstTier', { 
-                      points: tiers[0].points_required - currentPoints, 
-                      tokenLabel, 
-                      tierName: tiers[0].name 
+                      ? t("maxTierReachedWithPoints", { points: currentPoints, tokenLabel })
+                      : t("maxTierReached")
+                    : t("pointsToNextTier", {
+                        points: pointsRemaining,
+                        tokenLabel,
+                        tierName: nextTier.name,
+                      })
+                  : t("pointsToFirstTier", {
+                      points: tiers[0].points_required - currentPoints,
+                      tokenLabel,
+                      tierName: tiers[0].name,
                     })}
               </span>
             </div>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-[repeat(auto-fit,minmax(0,1fr))] gap-2 text-sm pt-4">
             {tiers.map((tier) => (
-              <div key={tier.name} className={cn("flex flex-col items-center p-3 rounded-lg border-2")}>
+              <div
+                key={tier.name}
+                className={cn("flex flex-col items-center p-3 rounded-lg border-2")}
+              >
                 <div
                   style={{ backgroundColor: tier.color }}
                   className="w-6 h-6 rounded-full mb-2 transition-colors duration-200"

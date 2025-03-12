@@ -23,10 +23,16 @@ export function handleViemError(error: BaseError) {
   let message = "An unexpected error occurred.";
 
   const errorMappings = [
-    { type: EstimateGasExecutionError, message: "You have insufficient funds to cover gas for this transaction." },
+    {
+      type: EstimateGasExecutionError,
+      message: "You have insufficient funds to cover gas for this transaction.",
+    },
     { type: UserRejectedRequestError, message: "User rejected the request." },
     { type: ChainDisconnectedError, message: "The blockchain network is disconnected." },
-    { type: HttpRequestError, message: "Network request failed. Please check your internet connection." },
+    {
+      type: HttpRequestError,
+      message: "Network request failed. Please check your internet connection.",
+    },
     { type: InternalRpcError, message: "Internal RPC error occurred." },
     { type: InvalidInputRpcError, message: "Invalid input provided." },
     { type: InvalidParamsRpcError, message: "Invalid parameters provided." },

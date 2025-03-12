@@ -11,7 +11,10 @@ type UserContextType = {
 
 const UserContext = createContext<UserContextType | null>(null);
 
-export function UserProvider({ value, children }: { value: UserContextType; children: React.ReactNode }) {
+export function UserProvider({
+  value,
+  children,
+}: { value: UserContextType; children: React.ReactNode }) {
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }
 

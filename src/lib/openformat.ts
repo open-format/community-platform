@@ -1,15 +1,15 @@
 "use server";
 
-import {type Chain, ChainName, getChain, getChainById} from "@/constants/chains";
+import { type Chain, ChainName, getChain, getChainById } from "@/constants/chains";
 import config from "@/constants/config";
-import {getCommunities, getCommunity} from "@/db/queries/communities";
+import { getCommunities, getCommunity } from "@/db/queries/communities";
 import axios from "axios";
-import {request} from "graphql-request";
-import {revalidatePath} from "next/cache";
-import {cookies} from "next/headers";
-import {cache} from "react";
-import type {Address} from "viem";
-import {getCurrentUser, getUserHandle} from "./privy";
+import { request } from "graphql-request";
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { cache } from "react";
+import type { Address } from "viem";
+import { getCurrentUser, getUserHandle } from "./privy";
 
 const apiClient = axios.create({
   baseURL: config.OPENFORMAT_API_URL,
@@ -24,7 +24,7 @@ export async function revalidate() {
 
 export async function getChainFromCommunityOrCookie(
   communityIdOrSlug?: string,
-  chain_id?: number
+  chain_id?: number,
 ): Promise<Chain | null> {
   let chain: Chain | null = null;
 
@@ -42,7 +42,9 @@ export async function getChainFromCommunityOrCookie(
   if (!chain) {
     const cookieStore = await cookies();
     const chainName = cookieStore.get("chainName");
-    chain = chainName ? getChain(chainName.value as ChainName) : getChain(ChainName.ARBITRUM_SEPOLIA);
+    chain = chainName
+      ? getChain(chainName.value as ChainName)
+      : getChain(ChainName.ARBITRUM_SEPOLIA);
   }
 
   return chain;
@@ -54,14 +56,14 @@ export async function fetchAllCommunities() {
 
     if (!chain) {
       console.log("No chain found for chainName:", chain);
-      return {data: [], error: "No chain found."};
+      return { data: [], error: "No chain found." };
     }
 
     const user = await getCurrentUser();
     const dbCommunities = await getCommunities();
 
     if (!user) {
-      return {data: [], error: "User not found."};
+      return { data: [], error: "User not found." };
     }
 
     const query = `
@@ -91,12 +93,12 @@ export async function fetchAllCommunities() {
         metadata: dbCommunities.find((dbComm) => dbComm.id === app.id || dbComm.slug === app.id),
       }));
 
-      return {data: matchedCommunities || [], error: null};
+      return { data: matchedCommunities || [], error: null };
     } catch {
-      return {data: [], error: "Failed to fetch onchain communities. Please try again."};
+      return { data: [], error: "Failed to fetch onchain communities. Please try again." };
     }
   } catch {
-    return {data: [], error: "Failed to fetch communities. Please try again later."};
+    return { data: [], error: "Failed to fetch communities. Please try again later." };
   }
 }
 
@@ -145,7 +147,7 @@ query ($app: ID!) {
         badges: { id: string }[];
         tokens: Token[];
       };
-    }>(chain.SUBGRAPH_URL, query, {app: communityFromDb.id});
+    }>(chain.SUBGRAPH_URL, query, { app: communityFromDb.id });
 
     const rewards = await fetchAllRewardsByCommunity(communityFromDb.id);
 
@@ -199,7 +201,7 @@ async function fetchAllRewardsByCommunity(communityId: string): Promise<Reward[]
 
   const data = await request<{
     rewards: Reward[];
-  }>(chain.SUBGRAPH_URL, query, {app: communityId});
+  }>(chain.SUBGRAPH_URL, query, { app: communityId });
 
   return data.rewards;
 }
@@ -294,7 +296,10 @@ query ($user: ID!, $community: String!) {
   };
 }
 
-export async function generateLeaderboard(slugOrId: string, tokenId?: string): Promise<LeaderboardEntry[] | null> {
+export async function generateLeaderboard(
+  slugOrId: string,
+  tokenId?: string,
+): Promise<LeaderboardEntry[] | null> {
   const chain = await getChainFromCommunityOrCookie(slugOrId);
 
   if (!chain) {
@@ -326,7 +331,7 @@ export async function generateLeaderboard(slugOrId: string, tokenId?: string): P
             ? "turbo"
             : chain.apiChainName === ChainName.BASE
               ? "base"
-              : "arbitrum-sepolia"
+              : "arbitrum-sepolia",
     );
     const response = await apiClient.get(`/v1/leaderboard?${params}`);
 
@@ -336,12 +341,12 @@ export async function generateLeaderboard(slugOrId: string, tokenId?: string): P
         ...entry,
         handle: (await getUserHandle(entry.user as Address))?.username ?? "Anonymous",
         type: (await getUserHandle(entry.user as Address))?.type ?? "unknown",
-      }))
+      })),
     );
 
     return leaderboardWithHandles;
   } catch (error) {
-    return {error: "Failed to fetch leaderboard data. Please try again later."};
+    return { error: "Failed to fetch leaderboard data. Please try again later." };
   }
 }
 
@@ -373,8 +378,8 @@ export async function fundAccount() {
 
 export async function generateChallenge(address: string) {
   try {
-    const data = {public_address: address};
-    const response = await apiClient.post('/key/challenge', data);
+    const data = { public_address: address };
+    const response = await apiClient.post("/key/challenge", data);
 
     if (response.status === 200) {
       return response.data;
@@ -388,8 +393,8 @@ export async function generateChallenge(address: string) {
 
 export async function verifyChallenge(address: string, signature: string) {
   try {
-    const data = {public_address: address, signature: signature};
-    const response = await apiClient.post('/key/verify', data);
+    const data = { public_address: address, signature: signature };
+    const response = await apiClient.post("/key/verify", data);
 
     if (response.status === 200) {
       return response.data;

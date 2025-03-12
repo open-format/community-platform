@@ -1,7 +1,21 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
@@ -43,7 +57,9 @@ export default function Loading() {
           <CardHeader className="space-y-1 pb-4">
             <div className="flex items-center justify-between">
               <div className="space-y-2">
-                <CardTitle className="text-2xl font-bold tracking-tight">{t("leaderboard.title")}</CardTitle>
+                <CardTitle className="text-2xl font-bold tracking-tight">
+                  {t("leaderboard.title")}
+                </CardTitle>
                 <CardDescription>{t("leaderboard.description")}</CardDescription>
               </div>
             </div>
@@ -79,10 +95,10 @@ export default function Loading() {
                             index === 0
                               ? "bg-yellow-500 text-white"
                               : index === 1
-                              ? "bg-gray-300 text-gray-800"
-                              : index === 2
-                              ? "bg-amber-600 text-white"
-                              : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400"
+                                ? "bg-gray-300 text-gray-800"
+                                : index === 2
+                                  ? "bg-amber-600 text-white"
+                                  : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400",
                           )}
                         >
                           {index + 1}
@@ -107,7 +123,9 @@ export default function Loading() {
         <Card variant="borderless">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <CardTitle className="text-2xl font-bold tracking-tight">{t("activity.title")}</CardTitle>
+              <CardTitle className="text-2xl font-bold tracking-tight">
+                {t("activity.title")}
+              </CardTitle>
             </div>
             <CardDescription>{t("activity.description")}</CardDescription>
           </CardHeader>

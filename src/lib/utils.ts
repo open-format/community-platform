@@ -55,7 +55,7 @@ export function sanitizeString(
   options: {
     allowedChars?: string;
     replaceSpacesWith?: string;
-  } = {}
+  } = {},
 ): string {
   if (!str) return "";
 
@@ -78,7 +78,7 @@ export function desanitizeString(
   str: string,
   options: {
     replaceSpacesWith?: string;
-  } = {}
+  } = {},
 ): string {
   if (!str) return "";
 
@@ -155,7 +155,9 @@ export function generateGradient(seed: string) {
   // Original string-based seed logic
   const safeSeed = seed || "defaultSeed";
   const hash1 = safeSeed.split("").reduce((acc, char, i) => acc + char.charCodeAt(0) * (i + 1), 0);
-  const hash2 = safeSeed.split("").reduce((acc, char, i) => acc + char.charCodeAt(0) * (i * 2 + 1), 0);
+  const hash2 = safeSeed
+    .split("")
+    .reduce((acc, char, i) => acc + char.charCodeAt(0) * (i * 2 + 1), 0);
 
   const hue1 = hash1 % 360;
   const hue2 = (hash1 * hash2) % 360;
@@ -176,7 +178,7 @@ export function getAddress(user: User | null): Address {
   if (!user) return null;
 
   const address = user?.linkedAccounts.find(
-    (account) => account.type === "wallet" && account.connectorType === "injected"
+    (account) => account.type === "wallet" && account.connectorType === "injected",
   )?.address as Address;
 
   if (!address) {
@@ -187,5 +189,5 @@ export function getAddress(user: User | null): Address {
 }
 
 export function filterVisibleTokens(tokens: Token[], hiddenTokens: string[] = []) {
-  return tokens.filter(token => !hiddenTokens.includes(token.token.id));
+  return tokens.filter((token) => !hiddenTokens.includes(token.token.id));
 }

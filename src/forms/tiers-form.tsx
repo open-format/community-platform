@@ -5,14 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { upsertTiers } from "@/db/queries/tiers";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import * as z from "zod";
-import { useTranslations } from 'next-intl';
 
 export default function TiersForm({ communityId, tiers }: { communityId: string; tiers: Tier[] }) {
-  const t = useTranslations('tiers');
+  const t = useTranslations("tiers");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isLoading, setIsLoading] = useState(true);
@@ -22,17 +22,19 @@ export default function TiersForm({ communityId, tiers }: { communityId: string;
   const tierSchema = z.object({
     tiers: z.array(
       z.object({
-        name: z.string().min(1, t('validation.nameRequired')),
+        name: z.string().min(1, t("validation.nameRequired")),
         points_required: z.coerce
           .number({
-            required_error: t('validation.pointsRequired'),
-            invalid_type_error: t('validation.pointsRequired'),
+            required_error: t("validation.pointsRequired"),
+            invalid_type_error: t("validation.pointsRequired"),
           })
-          .min(1, t('validation.pointsMin')),
-        color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, t('validation.invalidColorHex')),
+          .min(1, t("validation.pointsMin")),
+        color: z
+          .string()
+          .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, t("validation.invalidColorHex")),
         tier_id: z.string().optional(),
         community_id: z.string().optional(),
-      })
+      }),
     ),
   });
 
@@ -62,7 +64,7 @@ export default function TiersForm({ communityId, tiers }: { communityId: string;
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle>{t('loading')}</CardTitle>
+          <CardTitle>{t("loading")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4 animate-pulse">
@@ -84,7 +86,7 @@ export default function TiersForm({ communityId, tiers }: { communityId: string;
             community_id: communityId,
             ...(tier.tier_id ? { id: tier.tier_id } : {}),
           })),
-          deletedTierIds
+          deletedTierIds,
         );
 
         setDeletedTierIds([]);
@@ -129,20 +131,20 @@ export default function TiersForm({ communityId, tiers }: { communityId: string;
                       const values = form.getValues("tiers");
                       const currentName = values[index].name.toLowerCase();
                       const duplicateExists = values.some(
-                        (tier, i) => i !== index && tier.name.toLowerCase() === currentName
+                        (tier, i) => i !== index && tier.name.toLowerCase() === currentName,
                       );
 
                       if (duplicateExists) {
                         form.setError(`tiers.${index}.name`, {
                           type: "manual",
-                          message: t('validation.uniqueName'),
+                          message: t("validation.uniqueName"),
                         });
                       } else {
                         form.clearErrors(`tiers.${index}.name`);
                       }
                     },
                   })}
-                  placeholder={t('fields.name.placeholder')}
+                  placeholder={t("fields.name.placeholder")}
                 />
                 {form.formState.errors.tiers?.[index]?.name?.message && (
                   <span className="text-sm text-destructive mt-1">
@@ -157,7 +159,7 @@ export default function TiersForm({ communityId, tiers }: { communityId: string;
                     valueAsNumber: true,
                   })}
                   type="number"
-                  placeholder={t('fields.points.placeholder')}
+                  placeholder={t("fields.points.placeholder")}
                 />
                 {form.formState.errors.tiers?.[index]?.points_required?.message && (
                   <span className="text-sm text-destructive mt-1">
@@ -182,7 +184,7 @@ export default function TiersForm({ communityId, tiers }: { communityId: string;
                 onClick={() => handleDelete(index, field.tier_id)}
                 disabled={isPending}
               >
-                {t('buttons.remove')}
+                {t("buttons.remove")}
               </Button>
             </div>
           </div>
@@ -193,10 +195,10 @@ export default function TiersForm({ communityId, tiers }: { communityId: string;
             variant="outline"
             onClick={() => append({ name: "", points_required: 0, color: "#000000" })}
           >
-            {t('buttons.addTier')}
+            {t("buttons.addTier")}
           </Button>
           <Button type="submit" disabled={isPending}>
-            {t('buttons.saveTiers')}
+            {t("buttons.saveTiers")}
           </Button>
         </div>
       </div>

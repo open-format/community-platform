@@ -1,8 +1,8 @@
 "use client";
 
 import { AlertCircle, Award, Check, ChevronsUpDown, CircleDollarSign } from "lucide-react";
+import { useTranslations } from "next-intl";
 import * as React from "react";
-import { useTranslations } from 'next-intl';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,10 +33,10 @@ export default function TokenSelector({
 }) {
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
-  const t = useTranslations('tokenSelector');
+  const t = useTranslations("tokenSelector");
 
   React.useEffect(() => {
-    if (value && !tokens.some(token => token.token.id === value)) {
+    if (value && !tokens.some((token) => token.token.id === value)) {
       onChange("");
     }
   }, [tokens, value, onChange]);
@@ -68,13 +68,18 @@ export default function TokenSelector({
     if (isAddress(value)) {
       return value;
     }
-    return t('searchPlaceholder');
+    return t("searchPlaceholder");
   };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" aria-expanded={open} className="justify-between flex-1">
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="justify-between flex-1"
+        >
           {getDisplayValue()}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -82,7 +87,7 @@ export default function TokenSelector({
       <PopoverContent>
         <Command>
           <CommandInput
-            placeholder={t('searchPlaceholder')}
+            placeholder={t("searchPlaceholder")}
             value={inputValue}
             onValueChange={(value) => {
               setInputValue(value);
@@ -93,31 +98,56 @@ export default function TokenSelector({
             <CommandEmpty>
               <div className="flex flex-col items-center justify-center p-4 text-center">
                 <AlertCircle className="h-8 w-8 text-yellow-500 mb-2" />
-                <p className="text-sm font-medium mb-2">{t('noTokens')}</p>
-                <p className="text-xs text-muted-foreground mb-4">{t('youCan')}:</p>
+                <p className="text-sm font-medium mb-2">{t("noTokens")}</p>
+                <p className="text-xs text-muted-foreground mb-4">{t("youCan")}:</p>
                 <ul className="list-disc list-inside mt-1">
-                  <li>{t('enterAddress')}</li>
-                  <li>{t('createNew')}</li>
+                  <li>{t("enterAddress")}</li>
+                  <li>{t("createNew")}</li>
                 </ul>
               </div>
             </CommandEmpty>
-            <CommandGroup heading={t('tokens')}>
+            <CommandGroup heading={t("tokens")}>
               {tokens.map((item) => (
-                <CommandItem key={item.token.id} value={item.token.name} onSelect={() => handleSelect(item.token.id)}>
-                  <CircleDollarSign className={cn("mr-2 h-4 w-4", value === item.id ? "opacity-100" : "opacity-40")} />
+                <CommandItem
+                  key={item.token.id}
+                  value={item.token.name}
+                  onSelect={() => handleSelect(item.token.id)}
+                >
+                  <CircleDollarSign
+                    className={cn("mr-2 h-4 w-4", value === item.id ? "opacity-100" : "opacity-40")}
+                  />
                   {`${item.token.name} (${addressSplitter(item.token.id, 4)})`}
-                  <Check className={cn("ml-auto h-4 w-4", value === item.id ? "opacity-100" : "opacity-0")} />
+                  <Check
+                    className={cn(
+                      "ml-auto h-4 w-4",
+                      value === item.id ? "opacity-100" : "opacity-0",
+                    )}
+                  />
                 </CommandItem>
               ))}
             </CommandGroup>
             <CommandSeparator />
             {badges.length > 0 && (
-              <CommandGroup heading={t('badges')}>
+              <CommandGroup heading={t("badges")}>
                 {badges.map((item) => (
-                  <CommandItem key={item.id} value={item.name} onSelect={() => handleSelect(item.id)}>
-                    <Award className={cn("mr-2 h-4 w-4", value === item.id ? "opacity-100" : "opacity-40")} />
+                  <CommandItem
+                    key={item.id}
+                    value={item.name}
+                    onSelect={() => handleSelect(item.id)}
+                  >
+                    <Award
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        value === item.id ? "opacity-100" : "opacity-40",
+                      )}
+                    />
                     {item.name}
-                    <Check className={cn("ml-auto h-4 w-4", value === item.id ? "opacity-100" : "opacity-0")} />
+                    <Check
+                      className={cn(
+                        "ml-auto h-4 w-4",
+                        value === item.id ? "opacity-100" : "opacity-0",
+                      )}
+                    />
                   </CommandItem>
                 ))}
               </CommandGroup>

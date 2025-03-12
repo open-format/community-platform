@@ -23,7 +23,10 @@ type UpdateCommunityData = Partial<Community> & {
 export async function createCommunity(communityId: Address, name: string, chainId: number) {
   // Check if the community already exists
   const existingCommunity = await db.query.communities.findFirst({
-    where: or(eq(communities.id, communityId.toLowerCase()), eq(communities.slug, communityId.toLowerCase())),
+    where: or(
+      eq(communities.id, communityId.toLowerCase()),
+      eq(communities.slug, communityId.toLowerCase()),
+    ),
   });
 
   if (existingCommunity) {
@@ -73,7 +76,10 @@ export async function getCommunities() {
 
 export async function getCommunity(slugOrId: string) {
   const community = await db.query.communities.findFirst({
-    where: or(eq(sql`LOWER(${communities.slug})`, slugOrId.toLowerCase()), eq(communities.id, slugOrId)),
+    where: or(
+      eq(sql`LOWER(${communities.slug})`, slugOrId.toLowerCase()),
+      eq(communities.id, slugOrId),
+    ),
     with: {
       tiers: {
         orderBy: (tiers, { asc }) => [asc(tiers.points_required)],
@@ -118,7 +124,7 @@ export async function isSlugAvailable(slug: string, excludeCommunityId?: string)
     where: and(
       eq(communities.slug, slug),
       // Exclude current community when checking (for updates)
-      excludeCommunityId ? not(eq(communities.id, excludeCommunityId)) : undefined
+      excludeCommunityId ? not(eq(communities.id, excludeCommunityId)) : undefined,
     ),
   });
   return !existing;

@@ -20,7 +20,10 @@ export async function updateTokenVisibility(communityId: string, tokenId: string
       ? [...new Set([...currentHiddenTokens, tokenId])] // Add token and remove duplicates
       : currentHiddenTokens.filter((id) => id !== tokenId);
 
-    await db.update(communities).set({ hidden_tokens: newHiddenTokens }).where(eq(communities.id, communityId));
+    await db
+      .update(communities)
+      .set({ hidden_tokens: newHiddenTokens })
+      .where(eq(communities.id, communityId));
 
     // Force a hard revalidate
     revalidatePath(`/communities/${community.slug}/tokens`, "page");

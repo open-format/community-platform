@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
 import { addressSplitter, desanitizeString, timeAgo } from "@/lib/utils";
 import { CoinsIcon, ExternalLinkIcon, TrophyIcon } from "lucide-react";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 export default function Activity({
@@ -16,7 +16,7 @@ export default function Activity({
   title?: string;
   showUserAddress?: boolean;
 }) {
-  const t = useTranslations('activity');
+  const t = useTranslations("activity");
   const chain = useCurrentChain();
 
   function getIcon(reward: Reward) {
@@ -29,7 +29,7 @@ export default function Activity({
   if (!rewards || rewards.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-8 text-center">
-        <p className="text-muted-foreground">{t('noActivity')}</p>
+        <p className="text-muted-foreground">{t("noActivity")}</p>
       </div>
     );
   }
@@ -39,7 +39,7 @@ export default function Activity({
       <CardContent>
         {!rewards.length ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <p className="text-muted-foreground">{t('noActivity')}</p>
+            <p className="text-muted-foreground">{t("noActivity")}</p>
           </div>
         ) : (
           rewards.map((reward, index) => (
@@ -59,10 +59,9 @@ export default function Activity({
                     )}
                   </p>
                   <p className="text-sm">
-                    {showUserAddress ? 
-                      t('userAddress', { address: addressSplitter(reward.user?.id) }) : 
-                      timeAgo(Number(reward.createdAt))
-                    }
+                    {showUserAddress
+                      ? t("userAddress", { address: addressSplitter(reward.user?.id) })
+                      : timeAgo(Number(reward.createdAt))}
                   </p>
                 </div>
                 {chain?.BLOCK_EXPLORER_URL && reward.transactionHash && (
@@ -70,7 +69,7 @@ export default function Activity({
                     href={`${chain.BLOCK_EXPLORER_URL}/tx/${reward.transactionHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={t('ariaLabels.viewTransaction')}
+                    aria-label={t("ariaLabels.viewTransaction")}
                   >
                     <ExternalLinkIcon className="h-4 w-4" />
                   </Link>

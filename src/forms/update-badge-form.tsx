@@ -1,12 +1,19 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useTranslations } from 'next-intl';
 
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 
@@ -41,17 +48,14 @@ interface UpdateBadgeFormProps {
 }
 
 export function UpdateBadgeForm({ badge, metadata }: UpdateBadgeFormProps) {
-  const t = useTranslations('badges.update');
+  const t = useTranslations("badges.update");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { triggerConfetti } = useConfetti();
   const [shouldRevalidate, setShouldRevalidate] = useState(false);
 
   const FormSchema = z.object({
-    name: z.string()
-      .min(3, t('validation.nameRequired'))
-      .max(32, t('validation.nameMaxLength')),
-    description: z.string()
-      .min(3, t('validation.descriptionRequired')),
+    name: z.string().min(3, t("validation.nameRequired")).max(32, t("validation.nameMaxLength")),
+    description: z.string().min(3, t("validation.descriptionRequired")),
     image: z.any(),
   });
 
@@ -110,12 +114,12 @@ export function UpdateBadgeForm({ badge, metadata }: UpdateBadgeFormProps) {
   return (
     <Dialog open={isOpen} onOpenChange={toggle}>
       <DialogTrigger className={buttonVariants({ variant: "outline" })}>
-        {t('buttons.trigger')}
+        {t("buttons.trigger")}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t('title')}</DialogTitle>
-          <DialogDescription>{t('description')}</DialogDescription>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form className="w-full space-y-4" onSubmit={form.handleSubmit(handleFormSubmission)}>
@@ -124,9 +128,9 @@ export function UpdateBadgeForm({ badge, metadata }: UpdateBadgeFormProps) {
               name="name"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>{t('fields.name.label')}</FormLabel>
+                  <FormLabel>{t("fields.name.label")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('fields.name.placeholder')} {...field} />
+                    <Input placeholder={t("fields.name.placeholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -137,9 +141,9 @@ export function UpdateBadgeForm({ badge, metadata }: UpdateBadgeFormProps) {
               name="description"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>{t('fields.description.label')}</FormLabel>
+                  <FormLabel>{t("fields.description.label")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('fields.description.placeholder')} {...field} />
+                    <Input placeholder={t("fields.description.placeholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -150,11 +154,11 @@ export function UpdateBadgeForm({ badge, metadata }: UpdateBadgeFormProps) {
               name="image"
               render={({ field: { value, onChange, ...fieldProps } }) => (
                 <FormItem>
-                  <FormLabel>{t('fields.image.label')}</FormLabel>
+                  <FormLabel>{t("fields.image.label")}</FormLabel>
                   {image && (
                     <Image
                       src={URL.createObjectURL(image)}
-                      alt={t('fields.image.alt')}
+                      alt={t("fields.image.alt")}
                       width={125}
                       height={125}
                       className="rounded-md object-cover"
@@ -175,10 +179,10 @@ export function UpdateBadgeForm({ badge, metadata }: UpdateBadgeFormProps) {
             {form.formState.isSubmitting ? (
               <Button disabled>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t('buttons.updating')}
+                {t("buttons.updating")}
               </Button>
             ) : (
-              <Button type="submit">{t('buttons.submit')}</Button>
+              <Button type="submit">{t("buttons.submit")}</Button>
             )}
           </form>
         </Form>

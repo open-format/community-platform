@@ -10,14 +10,14 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
-import {redirect} from "next/navigation";
-import {useTranslations} from "next-intl";
+import { redirect } from "next/navigation";
 import OFLogo from "../../../../public/images/of-logo.png";
 
 export default function CommunitiesLayout({
-                                            children,
-                                          }: {
+  children,
+}: {
   children: React.ReactNode;
 }) {
   const t = useTranslations("layout");
@@ -33,23 +33,15 @@ export default function CommunitiesLayout({
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <Image
-                  src={OFLogo}
-                  alt={t("logo")}
-                  width={48}
-                  height={48}
-                  className="rounded-md"
-                />
+                <Image src={OFLogo} alt={t("logo")} width={48} height={48} className="rounded-md" />
               </BreadcrumbItem>
-              <BreadcrumbSeparator/>
+              <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/communities">
-                  {t("communities")}
-                </BreadcrumbLink>
+                <BreadcrumbLink href="/communities">{t("communities")}</BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator/>
+              <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <CommunitySelector/>
+                <CommunitySelector />
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -61,9 +53,7 @@ export default function CommunitiesLayout({
             }}
             hideIfNotSet
           />
-          <Profile
-            logoutAction={handleLogout}
-          />
+          <Profile logoutAction={handleLogout} />
         </div>
       </nav>
       <div className="m-lg">{children}</div>

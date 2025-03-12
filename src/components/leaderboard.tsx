@@ -2,8 +2,21 @@
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { generateLeaderboard } from "@/lib/openformat";
 import { cn, filterVisibleTokens } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
@@ -60,7 +73,9 @@ function LeaderboardHeader({
       <TableHead>{t("rank")}</TableHead>
       <TableHead>{metadata?.user_label ?? t("user")}</TableHead>
       <TableHead className="text-right capitalize whitespace-nowrap">
-        {selectedToken?.token ? `${selectedToken.token.name} (${selectedToken.token.symbol})` : t("points")}
+        {selectedToken?.token
+          ? `${selectedToken.token.name} (${selectedToken.token.symbol})`
+          : t("points")}
       </TableHead>
     </TableRow>
   );
@@ -94,10 +109,10 @@ const LeaderboardSkeleton = () => {
                     index === 0
                       ? "bg-yellow-500 text-white"
                       : index === 1
-                      ? "bg-gray-300 text-gray-800"
-                      : index === 2
-                      ? "bg-amber-600 text-white"
-                      : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400"
+                        ? "bg-gray-300 text-gray-800"
+                        : index === 2
+                          ? "bg-amber-600 text-white"
+                          : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400",
                   )}
                 >
                   {index + 1}
@@ -155,7 +170,7 @@ export default function Leaderboard({
   const visibleTokens = filterVisibleTokens(tokens, metadata?.hidden_tokens);
 
   const [selectedTokenId, setSelectedTokenId] = useState<string>(
-    metadata?.token_to_display || visibleTokens?.[0]?.token.id || ""
+    metadata?.token_to_display || visibleTokens?.[0]?.token.id || "",
   );
 
   useEffect(() => {
@@ -194,16 +209,17 @@ export default function Leaderboard({
           ?.map((entry, index) => {
             const position = index + 1;
             const isCurrentUser =
-              user?.wallet?.address && entry.user.toLowerCase() === user?.wallet?.address.toLowerCase();
+              user?.wallet?.address &&
+              entry.user.toLowerCase() === user?.wallet?.address.toLowerCase();
             const SocialIcon =
               showSocialHandles &&
               (entry.type === "discord"
                 ? Discord
                 : entry.type === "telegram"
-                ? Telegram
-                : entry.type === "github"
-                ? Github
-                : null);
+                  ? Telegram
+                  : entry.type === "github"
+                    ? Github
+                    : null);
 
             return (
               <TableRow key={entry.user}>
@@ -214,10 +230,10 @@ export default function Leaderboard({
                       position === 1
                         ? "bg-yellow-500 text-white"
                         : position === 2
-                        ? "bg-gray-300 text-gray-800"
-                        : position === 3
-                        ? "bg-amber-600 text-white"
-                        : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400"
+                          ? "bg-gray-300 text-gray-800"
+                          : position === 3
+                            ? "bg-amber-600 text-white"
+                            : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400",
                     )}
                   >
                     {position}

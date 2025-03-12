@@ -17,7 +17,11 @@ interface TokenVisibilityManagerProps {
   hiddenTokens: string[];
 }
 
-export function TokenVisibilityManager({ tokens, communityId, hiddenTokens }: TokenVisibilityManagerProps) {
+export function TokenVisibilityManager({
+  tokens,
+  communityId,
+  hiddenTokens,
+}: TokenVisibilityManagerProps) {
   const t = useTranslations("tokens");
 
   const tokenTypes = {

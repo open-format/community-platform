@@ -36,7 +36,12 @@ export default function RefreshButton({ onClick }: RefreshButtonProps) {
   };
 
   return (
-    <Button className="p-0 hover:bg-transparent" variant="ghost" onClick={handleClick} disabled={isLoading}>
+    <Button
+      className="p-0 hover:bg-transparent"
+      variant="ghost"
+      onClick={handleClick}
+      disabled={isLoading}
+    >
       <RefreshCw className={cn("w-4 h-4", { "animate-spin": isLoading })} />
     </Button>
   );
