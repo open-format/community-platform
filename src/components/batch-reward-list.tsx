@@ -36,8 +36,8 @@ export default function BatchRewardList({ rewards }: BatchRewardListProps) {
         <TableBody>
           {rewards.filter((v, i) => i < Math.min(PREVIEW_LIMIT, rewards.length)).map((reward, idx) => (
             <TableRow key={`reward-${idx}`}>
-              <TableCell>{reward.user === reward.userAddress    ? desanitizeString(reward.user)   : `${desanitizeString(reward.userAddress!)} (${desanitizeString(reward.user)})`}</TableCell>
-              <TableCell>{reward.token === reward.tokenAddress  ? desanitizeString(reward.token)  : `${desanitizeString(reward.tokenAddress!)} (${desanitizeString(reward.token)})`}</TableCell>
+              <TableCell>{reward.user === reward.userAddress    ? desanitizeString(reward.user)   : `${desanitizeString(reward.user)} (${desanitizeString(reward.userAddress!)})`}</TableCell>
+              <TableCell>{reward.token === reward.tokenAddress  ? desanitizeString(reward.token)  : `${desanitizeString(reward.token)} (${desanitizeString(reward.tokenAddress!)})`}</TableCell>
               <TableCell>{desanitizeString(reward.amount?.toString())}</TableCell>
               <TableCell className="capitalize">{desanitizeString(reward.actionType)}</TableCell>
               <TableCell>{desanitizeString(reward.rewardId)}</TableCell>
