@@ -143,8 +143,10 @@ type CurrentUser = {
 };
 
 type BatchRewardEntry = {
-  userAddress: string;
-  tokenAddress: string;
+  user: string;
+  token: string;
+  userAddress?: string|null|undefined;
+  tokenAddress?: string|null|undefined;
   amount: number;
   actionType: string;
   rewardId: string;
@@ -170,7 +172,7 @@ type BatchRewardEntryResult = {
 };
 
 type RewardBadgeParams = {
-  actionType: "badge";
+  actionType: "mint-badge";
   communityAddress: string;
   badgeAddress: string;
   receiverAddress: string;
@@ -181,7 +183,7 @@ type RewardBadgeParams = {
 }
 
 type RewardTokenMintParams = {
-  actionType: "mint";
+  actionType: "mint-token";
   communityAddress: string;
   tokenAddress: string;
   receiverAddress: string;
@@ -192,7 +194,7 @@ type RewardTokenMintParams = {
 }
 
 type RewardTokenTransferParams = {
-  actionType: "transfer";
+  actionType: "transfer-token";
   communityAddress: string;
   tokenAddress: string;
   ownerAddress: string;
