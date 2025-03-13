@@ -89,8 +89,16 @@ export default function BatchRewardsForm({ community }: { community: Community }
       })
         .min(10 ** -18, t('form.validation.amountMin'))
     ),
-    actionType: z.string().refine(t => t.toLowerCase() === "mint" || t.toLowerCase() === "transfer" || t.toLowerCase() === "badge", t('form.validation.actionType')),
-    rewardId: z.string().min(3, t('form.validation.rewardIdMin')).max(32, t('form.validation.rewardIdMax')),
+    actionType: z.string().refine(
+      t => t.toLowerCase() === "mint-token" 
+            || t.toLowerCase() === "transfer-token" 
+            || t.toLowerCase() === "mint-badge",
+      t('form.validation.actionType')
+    ),
+    rewardId: z
+      .string()
+      .min(3, t('form.validation.rewardIdMin'))
+      .max(32, t('form.validation.rewardIdMax')),
   });
 
   const FormSchema = z.object({
@@ -189,7 +197,7 @@ export default function BatchRewardsForm({ community }: { community: Community }
           if (!parseResult.success) {
             const err = Object.entries(parseResult.error.flatten().fieldErrors).flatMap(([field, messages]) => messages).join('. ');
             errors.push(t('form.validation.rewardError', { row: i + 1, message: err }));
-          } else if (entryObj.actionType.toLowerCase() === "badge" && !z.number().int().safeParse(Number(entryObj.amount)).success) {
+          } else if (entryObj.actionType.toLowerCase() === "mint-badge" && !z.number().int().safeParse(Number(entryObj.amount)).success) {
             errors.push(t('form.validation.rewardError', { row: i + 1, message: t('form.validation.amountBadgeInt') }));
           } else {
             // Good entry add to rewards
@@ -219,10 +227,10 @@ export default function BatchRewardsForm({ community }: { community: Community }
             reward.tokenAddress = reward.token;
           } else {
             // Search token in community badges and tokens
-            const token = reward.actionType === "badge" ?
+            const token = reward.actionType === "mint-badge" ?
               community.badges.find(b => b.name === reward.token) : community.tokens.find(t => t.token?.name === reward.token);
             if (token) {
-              reward.tokenAddress = reward.actionType === "badge" ? (token as Badge).id : (token as Token).token.id;
+              reward.tokenAddress = reward.actionType === "mint-badge" ? (token as Badge).id : (token as Token).token.id;
             } else {
               errors.push(t('form.validation.tokenNotFound', { tokenName: reward.token, communityName: community.name }));
             }
@@ -351,9 +359,9 @@ export default function BatchRewardsForm({ community }: { community: Community }
         let rewardParams: RewardBadgeParams|RewardTokenMintParams|RewardTokenTransferParams;
         const actionType = reward.actionType.toLowerCase();
         switch (actionType) {
-          case "badge":
+          case "mint-badge":
             rewardParams = {
-              actionType:           "badge",
+              actionType:           "mint-badge",
               communityAddress:     community.id, 
               badgeAddress:         reward.tokenAddress!, 
               receiverAddress:      reward.userAddress!, 
@@ -363,9 +371,9 @@ export default function BatchRewardsForm({ community }: { community: Community }
               metadata:             "",
             };
             break;
-          case "mint":
+          case "mint-token":
             rewardParams =  {
-              actionType:           "mint",
+              actionType:           "mint-token",
               communityAddress:     community.id, 
               tokenAddress:         reward.tokenAddress!, 
               receiverAddress:      reward.userAddress!, 
@@ -375,9 +383,9 @@ export default function BatchRewardsForm({ community }: { community: Community }
               metadata:             "",
             };
             break;
-          case "transfer":
+          case "transfer-token":
             rewardParams = {
-              actionType:           "transfer",
+              actionType:           "transfer-token",
               communityAddress:     community.id, 
               tokenAddress:         reward.tokenAddress!, 
               ownerAddress:         user?.wallet?.address ?? "", 

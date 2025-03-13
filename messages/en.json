@@ -263,7 +263,7 @@
         "amountMin": "Amount must be at least 0.000000000000000001",
         "amountRequired": "Amount is required",
         "amountBadgeInt": "Amount for badges needs to be an integer",
-        "actionType": "Action type has to be 'Mint', 'Transfer' or 'Badge'",
+        "actionType": "Action type has to be 'mint-token', 'transfer-token' or 'mint-badge'",
         "rewardIdMin": "Reward ID must be at least 3 characters",
         "rewardIdMax": "Reward ID can not be longer than 32 characters",
         "parseError": "Row: {row}: {message}",
