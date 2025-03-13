@@ -8,11 +8,11 @@ export async function executeRewardFromParams(
     rewardParams: RewardBadgeParams|RewardTokenMintParams|RewardTokenTransferParams
 ) {
     switch (rewardParams.actionType) {
-        case "badge":
+        case "mint-badge":
             return rewardBadge(config, rewardParams);
-        case "mint":
+        case "mint-token":
             return rewardTokenMint(config, rewardParams);
-        case "transfer":
+        case "transfer-token":
             return rewardTokenTransfer(config, rewardParams)
         default:
             throw new Error('Unknown action type');
@@ -120,7 +120,7 @@ export async function rewardMulticall(
     const encodedFunctionCalls: `0x${string}`[] = [];
     for (const call of functionCalls) {
         switch (call.actionType) {
-            case "transfer":
+            case "transfer-token":
                 const allowanceData = await encodeAllowanceCall(config, call);
                 if (allowanceData) {
                     const currentCalls = encodedAllowanceCalls.get(call.tokenAddress.toLowerCase()) ?? [];
@@ -129,10 +129,10 @@ export async function rewardMulticall(
                 }
                 encodedFunctionCalls.push( encodeTransferCall(call) );
                 break;
-            case "badge":
+            case "mint-badge":
                 encodedFunctionCalls.push( encodeBadgeCall(call) );
                 break;
-            case "mint":
+            case "mint-token":
                 encodedFunctionCalls.push( encodeMintCall(call) );
                 break;
             default:

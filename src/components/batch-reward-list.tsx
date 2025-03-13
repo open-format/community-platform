@@ -39,7 +39,7 @@ export default function BatchRewardList({ rewards }: BatchRewardListProps) {
               <TableCell>{reward.user === reward.userAddress    ? desanitizeString(reward.user)   : `${desanitizeString(reward.userAddress!)} (${desanitizeString(reward.user)})`}</TableCell>
               <TableCell>{reward.token === reward.tokenAddress  ? desanitizeString(reward.token)  : `${desanitizeString(reward.tokenAddress!)} (${desanitizeString(reward.token)})`}</TableCell>
               <TableCell>{desanitizeString(reward.amount?.toString())}</TableCell>
-              <TableCell>{desanitizeString(reward.actionType)}</TableCell>
+              <TableCell className="capitalize">{desanitizeString(reward.actionType)}</TableCell>
               <TableCell>{desanitizeString(reward.rewardId)}</TableCell>
             </TableRow>
           ))}
