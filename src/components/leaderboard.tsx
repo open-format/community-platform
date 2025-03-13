@@ -124,7 +124,9 @@ const EmptyState = ({ metadata }: Pick<LeaderboardProps, "metadata">) => {
     <Card variant="borderless" className="h-full">
       <CardContent>
         <Table>
-          <LeaderboardHeader metadata={metadata} />
+          <TableHeader>
+            <LeaderboardHeader metadata={metadata} />
+          </TableHeader>
           <TableBody>
             <TableRow>
               <TableCell colSpan={3} className="text-center text-muted-foreground py-4">
