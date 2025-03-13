@@ -305,6 +305,11 @@
         "header": {
           "label": "Use First Row as Headers"
         },
+        "multicall": {
+          "label": "Use Multicall",
+          "tooltip1": "Multicall batches several calls in the same blockchain transaction.",
+          "tooltip2": "This saves time and gas, but if a call in the batch fails, all other calls will also fail."
+        },
         "delimiter": {
           "label": "Rows delimiter",
           "placeholder": "Auto",
