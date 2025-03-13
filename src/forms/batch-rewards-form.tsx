@@ -540,11 +540,7 @@ export default function BatchRewardsForm({ community }: { community: Community }
 
       </CardContent>
       <CardContent>
-        {errorList.length > 0 && (<ResultList errors={errorList} />)}
-        {resultList.length > 0 && (<ResultList rewardsResults={resultList} />)}
-        {rewardState !== BatchRewardState.INITIAL && rewardState !== BatchRewardState.PARSING && errorList.length == 0 && <BatchRewardList rewards={rewardList} />}
-        {rewardState === BatchRewardState.PARSING && <Loader2 className="h-6 w-6 animate-spin" />}
-        {rewardState === BatchRewardState.INITIAL && errorList.length == 0 && resultList.length == 0 && (
+        {rewardState === BatchRewardState.INITIAL && resultList.length == 0 && (
           <>
             <div className="text-left text-sm text-gray-500 bg-muted p-4 font-semibold">
               {t.rich("info", { br: () => <br /> })}
@@ -563,6 +559,10 @@ export default function BatchRewardsForm({ community }: { community: Community }
             </div>
           </>
           )}
+        {errorList.length > 0 && (<ResultList errors={errorList} />)}
+        {resultList.length > 0 && (<ResultList rewardsResults={resultList} />)}
+        {rewardState !== BatchRewardState.INITIAL && rewardState !== BatchRewardState.PARSING && errorList.length == 0 && <BatchRewardList rewards={rewardList} />}
+        {rewardState === BatchRewardState.PARSING && <Loader2 className="h-6 w-6 animate-spin" />}
       </CardContent>
     </>
   );
