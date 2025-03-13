@@ -141,3 +141,66 @@ type CurrentUser = {
   wallet_address: Address;
   apps: string[];
 };
+
+type BatchRewardEntry = {
+  user: string;
+  token: string;
+  userAddress?: string|null|undefined;
+  tokenAddress?: string|null|undefined;
+  amount: number;
+  actionType: string;
+  rewardId: string;
+};
+
+type BatchRewardSettings = {
+  header: boolean; 
+  delimiter: string | null | undefined;
+  multicall: boolean;
+};
+
+type BatchRewardProgressInfo = {
+  total: number; 
+  failed: number;
+  success: number;
+};
+
+type BatchRewardEntryResult = {
+  success: boolean;
+  transactionHash: string|null|undefined;
+  errorMessage: string|null|undefined;
+  entry: BatchRewardEntry;
+};
+
+type RewardBadgeParams = {
+  actionType: "mint-badge";
+  communityAddress: string;
+  badgeAddress: string;
+  receiverAddress: string;
+  rewardId: string;
+  amount: number;
+  metadata: string;
+  activityType: string;
+}
+
+type RewardTokenMintParams = {
+  actionType: "mint-token";
+  communityAddress: string;
+  tokenAddress: string;
+  receiverAddress: string;
+  rewardId: string;
+  amount: number;
+  metadata: string;
+  activityType: string;
+}
+
+type RewardTokenTransferParams = {
+  actionType: "transfer-token";
+  communityAddress: string;
+  tokenAddress: string;
+  ownerAddress: string;
+  receiverAddress: string;
+  rewardId: string;
+  amount: number;
+  metadata: string;
+  activityType: string;
+}
