@@ -1,3 +1,10 @@
+## [0.11.1](https://github.com/open-format/community-platform/compare/v0.11.0...v0.11.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* Adjust leaderboard XP filter threshold to show minimal entries ([87b25ba](https://github.com/open-format/community-platform/commit/87b25ba7aa3e8c9433deacd070104a741d59eb4d))
+
 # [0.11.0](https://github.com/open-format/community-platform/compare/v0.10.0...v0.11.0) (2025-03-11)
 
 
