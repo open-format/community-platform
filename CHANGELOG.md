@@ -1,3 +1,10 @@
+# [0.12.0](https://github.com/open-format/community-platform/compare/v0.11.1...v0.12.0) (2025-03-14)
+
+
+### Features
+
+* Display Badge Address on Badge Item Card in BadgeGrid component ([1fd0812](https://github.com/open-format/community-platform/commit/1fd081220a015b3c935d5271047fbd9702a5bf39))
+
 ## [0.11.1](https://github.com/open-format/community-platform/compare/v0.11.0...v0.11.1) (2025-03-13)
 
 
