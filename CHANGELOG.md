@@ -1,3 +1,10 @@
+## [0.12.1](https://github.com/open-format/community-platform/compare/v0.12.0...v0.12.1) (2025-03-14)
+
+
+### Bug Fixes
+
+* token symbol in leaderboard header ([6fa21fc](https://github.com/open-format/community-platform/commit/6fa21fc2114944ac140b41ab6fdbf93b24d84bec))
+
 # [0.12.0](https://github.com/open-format/community-platform/compare/v0.11.1...v0.12.0) (2025-03-14)
 
 
