@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { fetchCommunity, generateLeaderboard } from "@/lib/openformat";
 import { getTranslations } from "next-intl/server";
+import MetricsSection from "@/components/metrics-section";
 
 export default async function Overview({ params }: { params: Promise<{ slug: string }> }) {
   const t = await getTranslations("overview");
@@ -24,9 +25,12 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
   }
 
   return (
-    <div>
+    <div className="space-y-6">
+      <MetricsSection appId={community.id} />
+      
       <Shortcuts community={community} />
       <Separator className="my-lg" />
+      
       <div className="grid grid-cols-2 gap-4">
         <Card variant="borderless" className="h-full">
           <CardHeader className="space-y-1 pb-4">

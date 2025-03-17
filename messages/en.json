@@ -807,5 +807,25 @@
         }
       }
     }
+  },
+  "metrics": {
+    "uniqueUsers": {
+      "title": "Unique Users",
+      "xAxisLabel": "Date",
+      "yAxisLabel": "Unique Users"
+    },
+    "totalRewards": {
+      "title": "Total Rewards",
+      "xAxisLabel": "Date",
+      "yAxisLabel": "Total Rewards"
+    },
+    "rewardDistribution": {
+      "title": "Reward Distribution"
+    },
+    "timeRanges": {
+      "7d": "Last 7 days",
+      "30d": "Last 30 days",
+      "90d": "Last 90 days"
+    }
   }
 }
