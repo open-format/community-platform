@@ -1,6 +1,5 @@
 import { request } from 'graphql-request';
 import { cache } from 'react';
-import { getChainFromCommunityOrCookie } from '@/lib/openformat';
 
 interface MetricDataPoint {
   timestamp: string;
@@ -74,6 +73,8 @@ export const fetchTotalRewardsMetrics = cache(async (
           timestamp_gte: $startTime
           timestamp_lte: $endTime
         }
+        orderBy: timestamp
+        orderDirection: asc
       ) {
         timestamp
         count
@@ -104,50 +105,53 @@ export const fetchTotalRewardsMetrics = cache(async (
 export const fetchRewardDistributionMetrics = cache(async (
   appId: string
 ): Promise<Record<string, RewardIdStats[]> | null> => {
-  const rewardIdsQuery = `
-    query AppRewardIds($appId: String!) {
-      appRewardIds(where: { app: $appId }) {
+  const query = `
+    query RewardDistribution($appId: String!) {
+      rewards(where: { app: $appId }, orderBy: createdAt, orderDirection: desc) {
         rewardId
+        createdAt
       }
     }
   `;
 
   try {
-    const rewardIdsData = await request<{ appRewardIds: AppRewardId[] }>(
-      METRICS_SUBGRAPH_URL,
-      rewardIdsQuery,
-      { appId }
-    );
+    console.log('Fetching reward distribution for appId:', appId);
+    const data = await request<{
+      rewards: { rewardId: string; createdAt: string }[];
+    }>(METRICS_SUBGRAPH_URL, query, { appId });
 
-    if (!rewardIdsData.appRewardIds.length) {
+    console.log('Raw rewards data:', data.rewards);
+
+    if (!data.rewards.length) {
+      console.log('No rewards found');
       return null;
     }
 
-    const statsQuery = `
-      query RewardDistribution($appId: String!) {
-        ${rewardIdsData.appRewardIds.map(({ rewardId }) => `
-          ${rewardId.replace(/[^a-zA-Z0-9_]/g, '_')}: rewardAppRewardIdStats(
-            interval: day
-            first: 1
-            where: {
-              appId: $appId
-              rewardId: "${rewardId}"
-            }
-          ) {
-            timestamp
-            totalCount
-          }
-        `).join('\n')}
+    // Count occurrences of each rewardId
+    const rewardCounts = data.rewards.reduce((acc, reward) => {
+      if (!acc[reward.rewardId]) {
+        acc[reward.rewardId] = {
+          count: 0,
+          createdAt: parseInt(reward.createdAt)
+        };
       }
-    `;
+      acc[reward.rewardId].count++;
+      return acc;
+    }, {} as Record<string, { count: number; createdAt: number }>);
 
-    const statsData = await request(
-      METRICS_SUBGRAPH_URL,
-      statsQuery,
-      { appId }
-    );
+    console.log('Reward counts:', rewardCounts);
 
-    return statsData;
+    // Convert to the expected format
+    const finalStatsMap: Record<string, RewardIdStats[]> = {};
+    Object.entries(rewardCounts).forEach(([rewardId, { count, createdAt }]) => {
+      finalStatsMap[rewardId] = [{
+        timestamp: createdAt.toString(),
+        totalCount: count.toString()
+      }];
+    });
+
+    console.log('Final stats map:', finalStatsMap);
+    return finalStatsMap;
   } catch (error) {
     console.error('Error fetching reward distribution metrics:', error);
     return null;

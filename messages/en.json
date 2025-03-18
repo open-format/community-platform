@@ -820,7 +820,10 @@
       "yAxisLabel": "Total Rewards"
     },
     "rewardDistribution": {
-      "title": "Reward Distribution"
+      "title": "Reward Distribution",
+      "rewardId": "Reward ID",
+      "count": "Count",
+      "noData": "No reward data available"
     },
     "timeRanges": {
       "7d": "Last 7 days",
