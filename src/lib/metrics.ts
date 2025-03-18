@@ -26,7 +26,7 @@ export const fetchUniqueUsersMetrics = cache(async (
   const query = `
     query UniqueUsers($appId: String!, $startTime: String, $endTime: String) {
       userRewardAppStats(
-        interval: day
+        interval: hour
         where: {
           appId: $appId
           timestamp_gte: $startTime
@@ -67,7 +67,7 @@ export const fetchTotalRewardsMetrics = cache(async (
   const query = `
     query TotalRewards($appId: String!, $startTime: String, $endTime: String) {
       rewardAppStats(
-        interval: day
+        interval: hour
         where: {
           appId: $appId
           timestamp_gte: $startTime

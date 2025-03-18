@@ -56,30 +56,39 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
         
         const result = await fetchTotalRewardsMetrics(appId, startTime, endTime);
         if (result) {
-          const formattedData = result.map(item => {
-            // Convert microseconds to milliseconds and adjust for timezone
+          const formattedData = result.reduce((acc: { [key: string]: number }, item) => {
             const timestamp = Math.floor(parseInt(item.timestamp) / 1000000) * 1000;
             const date = new Date(timestamp);
-            // Format date in local timezone
-            return {
-              name: date.toLocaleDateString(undefined, { 
-                month: 'short', 
-                day: 'numeric',
-                year: 'numeric'
-              }),
-              value: Number(item.count)
-            };
-          });
-          setData(formattedData);
+            const dateKey = date.toLocaleDateString(undefined, { 
+              month: 'short', 
+              day: 'numeric',
+              year: 'numeric'
+            });
+            
+            // Aggregate counts by date
+            acc[dateKey] = (acc[dateKey] || 0) + Number(item.count);
+            return acc;
+          }, {});
+
+          // Convert aggregated data to array and sort by date
+          const sortedData = Object.entries(formattedData)
+            .map(([name, value]) => ({ name, value }))
+            .sort((a, b) => {
+              const dateA = new Date(a.name);
+              const dateB = new Date(b.name);
+              return dateA.getTime() - dateB.getTime();
+            });
+
+          setData(sortedData);
 
           // Calculate total rewards and percentage change
-          if (formattedData.length > 0) {
-            const latest = formattedData[formattedData.length - 1];
+          if (sortedData.length > 0) {
+            const latest = sortedData[sortedData.length - 1];
             setTotalRewards(latest.value);
             
             // Calculate percentage change
-            if (formattedData.length > 1) {
-              const previous = formattedData[formattedData.length - 2];
+            if (sortedData.length > 1) {
+              const previous = sortedData[sortedData.length - 2];
               const change = ((latest.value - previous.value) / previous.value) * 100;
               setPercentageChange(change);
             }
