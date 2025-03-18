@@ -13,6 +13,10 @@ import {
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 import { fetchRewardDistributionMetrics } from "@/lib/metrics";
+import { MoreHorizontal } from "lucide-react";
+import { desanitizeString } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 interface RewardIdsListProps {
   appId: string;
@@ -27,6 +31,8 @@ export default function RewardIdsList({ appId }: RewardIdsListProps) {
   const t = useTranslations('metrics');
   const [data, setData] = useState<RewardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
+  const DEFAULT_DISPLAY_COUNT = 7;
 
   useEffect(() => {
     async function fetchData() {
@@ -51,6 +57,9 @@ export default function RewardIdsList({ appId }: RewardIdsListProps) {
 
     fetchData();
   }, [appId]);
+
+  const displayData = showAll ? data : data.slice(0, DEFAULT_DISPLAY_COUNT);
+  const hasMore = data.length > DEFAULT_DISPLAY_COUNT;
 
   if (isLoading) {
     return (
@@ -82,28 +91,62 @@ export default function RewardIdsList({ appId }: RewardIdsListProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('rewardDistribution.title')}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t('rewardDistribution.rewardId')}</TableHead>
-              <TableHead className="text-right">{t('rewardDistribution.count')}</TableHead>
+    <div className="space-y-4">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[100px]">Reward ID</TableHead>
+            <TableHead>Reward Identifier</TableHead>
+            <TableHead className="text-right">Amount</TableHead>
+            <TableHead className="w-[50px]"></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {displayData.map((reward, index) => (
+            <TableRow key={reward.rewardId}>
+              <TableCell>
+                <div className="flex items-center gap-2 h-8">
+                  <span className="font-medium">{index + 1}</span>
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2 h-8">
+                  <span className="font-medium">{desanitizeString(reward.rewardId)}</span>
+                </div>
+              </TableCell>
+              <TableCell className="text-right">
+                <div className="flex items-center justify-end gap-2 h-8">
+                  <span className="font-medium">{reward.totalCount}</span>
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center justify-center h-8">
+                  <button className="h-8 w-8 p-0">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </button>
+                </div>
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((item) => (
-              <TableRow key={item.rewardId}>
-                <TableCell className="font-mono">{item.rewardId}</TableCell>
-                <TableCell className="text-right">{item.totalCount.toLocaleString()}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+          ))}
+        </TableBody>
+      </Table>
+      {hasMore && (
+        <Button
+          variant="ghost"
+          className="w-full text-xs text-muted-foreground hover:text-foreground"
+          onClick={() => setShowAll(!showAll)}
+        >
+          {showAll ? (
+            <>
+              Show less <ChevronUp className="h-4 w-4 ml-2" />
+            </>
+          ) : (
+            <>
+              Show more <ChevronDown className="h-4 w-4 ml-2" />
+            </>
+          )}
+        </Button>
+      )}
+    </div>
   );
 } 

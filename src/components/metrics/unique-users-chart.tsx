@@ -57,30 +57,32 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
   }, [appId, timeRange]);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h3 className="text-lg font-medium">Unique Users</h3>
-          <span className="text-2xl font-bold">{totalUsers}</span>
-          {percentageChange !== 0 && (
-            <span className={`text-sm ${percentageChange > 0 ? 'text-green-500' : 'text-red-500'}`}>
-              {percentageChange > 0 ? '+' : ''}{percentageChange.toFixed(0)}%
-            </span>
-          )}
+    <div className="flex flex-col">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-medium">Unique Users</h3>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl font-bold">{totalUsers}</span>
+            {percentageChange !== 0 && (
+              <span className={`text-sm px-2 py-1 rounded-full ${percentageChange > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                {percentageChange > 0 ? '+' : ''}{percentageChange.toFixed(0)}%
+              </span>
+            )}
+          </div>
+          <Select 
+            value={timeRange} 
+            onValueChange={(value: TimeRange) => setTimeRange(value)}
+          >
+            <SelectTrigger className="h-8 w-[130px] text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(TIME_RANGES).map(([key, { label }]) => (
+                <SelectItem key={key} value={key}>{label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <Select 
-          value={timeRange} 
-          onValueChange={(value: TimeRange) => setTimeRange(value)}
-        >
-          <SelectTrigger className="h-8 w-[130px] text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.entries(TIME_RANGES).map(([key, { label }]) => (
-              <SelectItem key={key} value={key}>{label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
 
       <div className="h-[200px]">
@@ -110,12 +112,12 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
                 if (active && payload && payload.length) {
                   return (
                     <div className="rounded-lg border bg-background p-2 shadow-sm">
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid gap-2">
                         <div className="flex flex-col">
                           <span className="text-[0.70rem] uppercase text-muted-foreground">
                             Users
                           </span>
-                          <span className="font-bold text-muted-foreground">
+                          <span className="font-bold">
                             {payload[0].value}
                           </span>
                         </div>

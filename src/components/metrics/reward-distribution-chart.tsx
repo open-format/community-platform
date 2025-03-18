@@ -58,6 +58,7 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
   const t = useTranslations('metrics');
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [totalRewards, setTotalRewards] = useState(0);
 
   useEffect(() => {
     async function fetchData() {
@@ -70,6 +71,9 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
             value: Number(stats[0]?.totalCount || 0)
           }));
           setData(formattedData);
+          // Calculate total rewards
+          const total = formattedData.reduce((acc, curr) => acc + curr.value, 0);
+          setTotalRewards(total);
         }
       } catch (error) {
         console.error('Error fetching reward distribution data:', error);
@@ -83,106 +87,92 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex justify-between items-center">
-            {t('rewardDistribution.title')}
-            <Skeleton className="h-10 w-[120px]" />
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="h-[300px]">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-medium">Reward Distribution</h3>
+          <Skeleton className="h-8 w-16" />
+        </div>
+        <div className="h-[200px]">
           <Skeleton className="w-full h-full" />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   if (!data.length) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('rewardDistribution.title')}</CardTitle>
-        </CardHeader>
-        <CardContent className="h-[300px] flex items-center justify-center">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-medium">Reward Distribution</h3>
+        </div>
+        <div className="h-[200px] flex items-center justify-center">
           <p className="text-muted-foreground">{t('rewardDistribution.noData')}</p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('rewardDistribution.title')}</CardTitle>
-      </CardHeader>
-      <CardContent className="h-[300px]">
-        <ChartContainer
-          config={{
-            distribution: {
-              label: t('rewardDistribution.title'),
-              theme: {
-                light: "hsl(var(--primary))",
-                dark: "hsl(var(--primary))",
-              },
-            },
-          }}
-        >
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-                stroke="hsl(var(--background))"
-                strokeWidth={2}
-              >
-                {data.map((entry, index) => (
-                  <Cell 
-                    key={`cell-${index}`} 
-                    fill={getColor(index)}
-                    stroke="hsl(var(--background))"
-                    strokeWidth={2}
-                  />
-                ))}
-              </Pie>
-              <Tooltip 
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    return (
-                      <div className="rounded-lg border bg-background p-2 shadow-sm">
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="flex flex-col">
-                            <span className="text-[0.70rem] uppercase text-muted-foreground">
-                              {t('rewardDistribution.rewardId')}
-                            </span>
-                            <span className="font-bold text-muted-foreground">
-                              {payload[0]?.name}
-                            </span>
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="text-[0.70rem] uppercase text-muted-foreground">
-                              {t('rewardDistribution.count')}
-                            </span>
-                            <span className="font-bold">
-                              {payload[0]?.value?.toLocaleString()}
-                            </span>
-                          </div>
+    <div className="flex flex-col">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-medium">Reward Distribution</h3>
+      </div>
+
+      <div className="h-[200px] relative">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={80}
+              fill="#8884d8"
+              paddingAngle={2}
+              dataKey="value"
+              stroke="hsl(var(--background))"
+              strokeWidth={2}
+            >
+              {data.map((entry, index) => (
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={getColor(index)}
+                  stroke="hsl(var(--background))"
+                  strokeWidth={2}
+                />
+              ))}
+            </Pie>
+            <Tooltip 
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  const value = Number(payload[0]?.value || 0);
+                  const percent = ((value / totalRewards) * 100).toFixed(0);
+                  return (
+                    <div className="rounded-lg border bg-background p-2 shadow-sm">
+                      <div className="grid gap-2">
+                        <div className="flex flex-col">
+                          <span className="text-[0.70rem] uppercase text-muted-foreground">
+                            {payload[0]?.name}
+                          </span>
+                          <span className="font-bold">
+                            {value.toLocaleString()} ({percent}%)
+                          </span>
                         </div>
                       </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+                    </div>
+                  );
+                }
+                return null;
+              }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+        {/* Center text */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+          <span className="text-2xl font-bold">{totalRewards.toLocaleString()}</span>
+          <span className="text-sm text-muted-foreground">Rewards</span>
+        </div>
+      </div>
+    </div>
   );
 } 

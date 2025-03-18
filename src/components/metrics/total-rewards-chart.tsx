@@ -99,11 +99,14 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h3 className="text-lg font-medium">Total Rewards</h3>
-            <Skeleton className="h-8 w-16" />
+          <h3 className="text-lg font-medium">Total Rewards</h3>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-8 w-16" />
+              <Skeleton className="h-6 w-16" />
+            </div>
+            <Skeleton className="h-8 w-[130px]" />
           </div>
-          <Skeleton className="h-8 w-[130px]" />
         </div>
         <div className="h-[200px]">
           <Skeleton className="w-full h-full" />
@@ -113,41 +116,37 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h3 className="text-lg font-medium">Total Rewards</h3>
-          <span className="text-2xl font-bold">{totalRewards}</span>
-          {percentageChange !== 0 && (
-            <span className={`text-sm ${percentageChange > 0 ? 'text-green-500' : 'text-red-500'}`}>
-              {percentageChange > 0 ? '+' : ''}{percentageChange.toFixed(0)}%
-            </span>
-          )}
+    <div className="flex flex-col">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-medium">Total Rewards</h3>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl font-bold">{totalRewards}</span>
+            {percentageChange !== 0 && (
+              <span className={`text-sm px-2 py-1 rounded-full ${percentageChange > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                {percentageChange > 0 ? '+' : ''}{percentageChange.toFixed(0)}%
+              </span>
+            )}
+          </div>
+          <Select 
+            value={timeRange} 
+            onValueChange={(value: TimeRange) => setTimeRange(value)}
+          >
+            <SelectTrigger className="h-8 w-[130px] text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(TIME_RANGES).map(([key, { label }]) => (
+                <SelectItem key={key} value={key}>{label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <Select 
-          value={timeRange} 
-          onValueChange={(value: TimeRange) => setTimeRange(value)}
-        >
-          <SelectTrigger className="h-8 w-[130px] text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.entries(TIME_RANGES).map(([key, { label }]) => (
-              <SelectItem key={key} value={key}>{label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
 
       <div className="h-[200px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-            <defs>
-              <linearGradient id="totalRewards" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#0EA5E9" stopOpacity={0.1}/>
-                <stop offset="95%" stopColor="#0EA5E9" stopOpacity={0}/>
-              </linearGradient>
-            </defs>
             <XAxis 
               dataKey="name"
               axisLine={false}
@@ -166,12 +165,12 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
                 if (active && payload && payload.length) {
                   return (
                     <div className="rounded-lg border bg-background p-2 shadow-sm">
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid gap-2">
                         <div className="flex flex-col">
                           <span className="text-[0.70rem] uppercase text-muted-foreground">
                             Rewards
                           </span>
-                          <span className="font-bold text-muted-foreground">
+                          <span className="font-bold">
                             {payload[0].value}
                           </span>
                         </div>
@@ -184,7 +183,7 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
             />
             <Bar 
               dataKey="value" 
-              fill="url(#totalRewards)"
+              fill="hsl(var(--primary))"
               radius={[4, 4, 0, 0]}
             />
           </BarChart>
