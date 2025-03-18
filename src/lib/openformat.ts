@@ -18,6 +18,8 @@ const apiClient = axios.create({
   },
 });
 
+const SUBGRAPH_QUERY_PAGES = 20;
+
 export async function revalidate() {
   revalidatePath("/");
 }
@@ -399,4 +401,164 @@ export async function verifyChallenge(address: string, signature: string) {
   } catch (error) {
     return null;
   }
+}
+
+export async function getAllRewardsByCommunity(
+  communityId: string,
+  startTimestamp: number,
+  endTimestamp: number,
+  tokenAddress: string|null,
+  rewardType: string|null
+): Promise<string> {
+  
+  const chain = await getChainFromCommunityOrCookie();
+  if (!chain) {
+    throw new Error('Chain not found');
+  }
+  let last_reward_created_at: string|null = null;
+  let paginate = true;
+  const options = { 
+      appId:    communityId,
+      start:    startTimestamp.toString(),
+      end:      endTimestamp.toString(),
+      tokenId:  tokenAddress,
+    }
+  const result: RewardListResponse[] = [];
+  while (paginate) {
+    const queryList = getRewardQuery(
+      chain.subgraph_max_first,
+      chain.subgraph_max_skip,
+      tokenAddress != null && tokenAddress.length > 0,
+      rewardType === 'Badge',
+      rewardType === 'Token',
+      last_reward_created_at
+    );
+
+    // Get next page
+    const page = await request<RewardListResponse>(chain.SUBGRAPH_URL, queryList, options);
+    result.push(page); // Save in result
+    // Calculate the total number of elements and update last reward created_at
+    let total_rewards = 0;
+    for (let i = 0; i < SUBGRAPH_QUERY_PAGES; i++) {
+      if (page[`rewards_${i}`] )  { 
+        const len = page[`rewards_${i}`].length;
+        total_rewards += len;  
+        last_reward_created_at = len > 0 ? page[`rewards_${i}`].at(len-1)!.createdAt : last_reward_created_at; // Max reward createdAt in page
+      }      
+    }
+    // Check if we should keep paginating: 
+    //  we retrieved more elements than in max_skip || we retrieved max possible number of elements
+    paginate = (chain.subgraph_max_skip > 0 && total_rewards >= chain.subgraph_max_skip) // elems > max_skip
+      || (total_rewards == chain.subgraph_max_first * SUBGRAPH_QUERY_PAGES) // all pages are full
+  }
+
+  const rewards: Reward[] = [];
+
+  // Rewards can come duplicated, we use this map to remove duplicated elements
+  const rewardIds = new Map<string, boolean>();
+
+  result.forEach( board => {
+    for (let i:number = SUBGRAPH_QUERY_PAGES-1; i >= 0 ; i--) {
+      // Save only new rewards and keep record of them
+      if (board[`rewards_${i}`]) {
+        rewards.push(...board[`rewards_${i}`].filter(b => !rewardIds.has(b.id)));
+        board[`rewards_${i}`].forEach( b => rewardIds.set(b.id, true) );
+      }
+    }
+  });
+
+  const headers = [
+    'id',
+    'transactionHash',
+    'metadataURI',
+    'rewardId',
+    'rewardType',
+    'tokenAddress',
+    'tokenName',
+    'tokenSymbol',
+    'tokenAmount',
+    'badgeAddress',
+    'badgeName',
+    'badgeMetadataURI',
+    'badgeAmount',
+    'userAddress',
+    'createdAt',
+  ];
+  const rows = rewards.map( r => 
+    `${r.id},${r.transactionHash},${r.metadataURI},${r.rewardId},${r.rewardType},`
+    +`${r.token?.id ?? ""},${r.token?.name ?? ""},${r.token?.symbol ?? ""},${r.tokenAmount},`
+    +`${r.badge?.id ?? ""},${r.badge?.name ?? ""},${r.badge?.metadataURI ?? ""},${r.badgeTokens?.length ?? ""},`
+    +`${r.user?.id ?? ""},${r.createdAt}`
+  );
+  return [headers.join(','), ...rows].join('\n');
+}
+
+function getRewardQuery(
+  max_first: number, 
+  max_skip: number,
+  filterTokenAddress: boolean,
+  filterIsBadge: boolean,
+  filterIsToken: boolean,
+  last_reward_created_at: string|null|undefined = undefined,
+): string {
+  const pages = SUBGRAPH_QUERY_PAGES;
+  let query = `
+    query leaderboardTokenData(
+      $appId: String!
+      $tokenId: String
+      $start: String!
+      $end: String!
+    ) {
+  `
+  for (let i = 0; i < pages; i++) {
+    const current_skip = i * max_first;
+    if (max_skip > 0 && current_skip > max_skip) { 
+      // We can not ask for more elements in this query
+      break;
+    }
+    query += `
+      rewards_${i}: rewards(
+        first: ${max_first}
+        skip: ${ current_skip }
+        where: {
+          app_contains_nocase: $appId
+          createdAt_gte: ${ last_reward_created_at ?? "$start" }
+          createdAt_lte: $end
+          ${filterTokenAddress && filterIsToken ? "token_contains_nocase: $tokenId" : ""}
+          ${filterTokenAddress && filterIsBadge ? "badge_contains_nocase: $tokenId" : ""}
+          ${filterIsBadge ? "badge_not: null" : ""}
+          ${filterIsToken ? "token_not: null" : ""}
+        }
+        orderBy: createdAt
+        orderDirection: asc
+      ) {
+          id
+          transactionHash
+          metadataURI
+          rewardId
+          rewardType
+          token {
+            id
+            name
+            symbol
+          }
+          tokenAmount
+          badge {
+            id
+            name
+            metadataURI
+          }
+          badgeTokens {
+            tokenId
+          }
+          user {
+            id
+          }
+          createdAt
+      }
+    `
+  }
+  query += '}'
+
+  return query;
 }

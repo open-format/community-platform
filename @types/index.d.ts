@@ -70,6 +70,7 @@ type Community = {
     dark_mode: boolean;
   };
   tiers: Tier[];
+  rewards?: Reward[] | null;
 };
 
 type Token = {
@@ -107,6 +108,7 @@ type Reward = {
   };
   tokenAmount: string;
   badge: {
+    id?: string;
     name: string;
     metadataURI: string;
   };
@@ -203,4 +205,8 @@ type RewardTokenTransferParams = {
   amount: number;
   metadata: string;
   activityType: string;
+}
+
+type RewardListResponse = {
+  [key: `rewards_${number}`]: Reward[];
 }

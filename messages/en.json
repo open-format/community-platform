@@ -173,9 +173,26 @@
     },
     "activity": {
       "title": "Activity",
+      "export": "Export",
       "description": "A list of the most recent rewards in this community.",
       "empty": "No activity yet",
       "viewAll": "View All"
+    },
+    "exportForm": {
+      "title": "Export activities to CSV file",
+      "description": "Filter activities to export",
+      "tokenLabel": "Token",
+      "rewardTypeLabel": "Reward Type",
+      "rewardTypePlaceholder": "Reward Type: Badge or Token",
+      "rewardTypeBadge": "Badge",
+      "rewardTypeToken": "Token",
+      "startDateLabel": "Start Date",
+      "endDateLabel": "End Date",
+      "clearLabel": "Clear",
+      "exportSuccess": "Activities exported successfully",
+      "exportError": "There was an error exporting activities",
+      "exportingLabel": "Exporting...",
+      "exportLabel": "Export"
     }
   },
   "rewards": {
