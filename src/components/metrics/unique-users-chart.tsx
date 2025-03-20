@@ -32,22 +32,39 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
     const fetchData = async () => {
       const metrics = await fetchUniqueUsersMetrics(appId, startTime, endTime);
       if (metrics) {
-        const formattedData = metrics.map(metric => ({
-          date: format(new Date(parseInt(metric.timestamp) / 1000000), "EEE"),
-          users: metric.count || 0
-        }));
+        // Convert metrics to formatted data
+        const formattedData = metrics
+          .map(metric => {
+            const date = new Date(parseInt(metric.timestamp) / 1000000);
+            return {
+              date: format(date, "yyyy-MM-dd"),
+              displayDate: timeRange === "7d" 
+                ? format(date, "EEE") 
+                : format(date, "MMM d"),
+              users: metric.count || 0
+            };
+          })
+          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
         setData(formattedData);
 
-        // Calculate total users and percentage change
         if (metrics.length > 0) {
+          // If there's only one data point, use its count, otherwise use totalCount
           const latest = metrics[metrics.length - 1];
-          setTotalUsers(latest.totalCount);
+          const total = formattedData.length === 1 
+            ? formattedData[0].users 
+            : latest.totalCount;
+          setTotalUsers(total);
           
-          // Calculate percentage change
-          if (metrics.length > 1) {
-            const previous = metrics[metrics.length - 2];
-            const change = ((latest.totalCount - previous.totalCount) / previous.totalCount) * 100;
+          // Calculate percentage change between first and last day
+          if (formattedData.length > 1) {
+            const firstDay = formattedData[0];
+            const lastDay = formattedData[formattedData.length - 1];
+            const change = ((lastDay.users - firstDay.users) / firstDay.users) * 100;
             setPercentageChange(change);
+          } else {
+            // If there's only one data point, set percentage change to 0
+            setPercentageChange(0);
           }
         }
       }
@@ -95,11 +112,12 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
               </linearGradient>
             </defs>
             <XAxis 
-              dataKey="date" 
+              dataKey="displayDate" 
               axisLine={false}
               tickLine={false}
               tick={{ fill: '#64748B', fontSize: 12 }}
               dy={10}
+              interval={0}
             />
             <YAxis 
               axisLine={false}
@@ -110,15 +128,16 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
             <Tooltip 
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
+                  const date = new Date(payload[0].payload.date + "T00:00:00");
                   return (
                     <div className="rounded-lg border bg-background p-2 shadow-sm">
                       <div className="grid gap-2">
                         <div className="flex flex-col">
                           <span className="text-[0.70rem] uppercase text-muted-foreground">
-                            Users
+                            {format(date, "MMM d, yyyy")}
                           </span>
                           <span className="font-bold">
-                            {payload[0].value}
+                            {payload[0].value} users
                           </span>
                         </div>
                       </div>

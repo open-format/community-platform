@@ -83,14 +83,19 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
 
           // Calculate total rewards and percentage change
           if (sortedData.length > 0) {
-            const latest = sortedData[sortedData.length - 1];
-            setTotalRewards(latest.value);
+            // Calculate total rewards by summing all values in the time range
+            const total = sortedData.reduce((sum, day) => sum + day.value, 0);
+            setTotalRewards(total);
             
-            // Calculate percentage change
+            // Calculate percentage change between first and last day
             if (sortedData.length > 1) {
-              const previous = sortedData[sortedData.length - 2];
-              const change = ((latest.value - previous.value) / previous.value) * 100;
+              const firstDay = sortedData[0];
+              const lastDay = sortedData[sortedData.length - 1];
+              const change = ((lastDay.value - firstDay.value) / firstDay.value) * 100;
               setPercentageChange(change);
+            } else {
+              // If there's only one data point, set percentage change to 0
+              setPercentageChange(0);
             }
           }
         }

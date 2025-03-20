@@ -148,7 +148,7 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
                   const value = Number(payload[0]?.value || 0);
                   const percent = ((value / totalRewards) * 100).toFixed(0);
                   return (
-                    <div className="rounded-lg border bg-background p-2 shadow-sm">
+                    <div className="rounded-lg border bg-background p-2 shadow-sm" style={{ zIndex: 9999 }}>
                       <div className="grid gap-2">
                         <div className="flex flex-col">
                           <span className="text-[0.70rem] uppercase text-muted-foreground">
@@ -164,11 +164,12 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
                 }
                 return null;
               }}
+              wrapperStyle={{ zIndex: 9999 }}
             />
           </PieChart>
         </ResponsiveContainer>
         {/* Center text */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ zIndex: 1 }}>
           <span className="text-2xl font-bold">{totalRewards.toLocaleString()}</span>
           <span className="text-sm text-muted-foreground">Rewards</span>
         </div>
