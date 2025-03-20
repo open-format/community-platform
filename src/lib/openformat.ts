@@ -421,14 +421,14 @@ export async function verifyChallenge(address: string, signature: string) {
   }
 }
 
-export async function createAgentWallet(communityId: string) {
-  console.log("here", config.OPENFORMAT_AGENT_URL);
-  console.log("Creating agent wallet for community", communityId);
+export async function createAgentWallet(community: Community) {
   try {
     const wallet = await createServerWallet();
-    await agentClient.put(`/communities/${communityId}`, {
+    await agentClient.put(`/communities/${community.id}`, {
       communityWalletId: wallet.id,
       communityWalletAddress: wallet.address,
+      name: community.name,
+      description: community.metadata.description,
     });
 
     return { address: wallet.address };
