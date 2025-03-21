@@ -9,7 +9,7 @@ import { cn, filterVisibleTokens } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useEffect, useState, useId } from "react";
+import { useEffect, useState } from "react";
 import Discord from "../../public/icons/discord.svg";
 import Github from "../../public/icons/github.svg";
 import Telegram from "../../public/icons/telegram.svg";
@@ -42,6 +42,10 @@ interface LeaderboardProps {
   }[];
   onTokenSelect?: (tokenId: string) => void;
   slug: string;
+}
+
+interface DatePickerProps {
+  onDateChange: (date: DateRange | null) => void;
 }
 
 function LeaderboardHeader({
@@ -145,13 +149,15 @@ const EmptyState = ({metadata}: Pick<LeaderboardProps, "metadata">) => {
   );
 };
 
-const DatePickerWithPresets = () => {
+const DatePickerWithPresets = ({onDateChange}: DatePickerProps) => {
+  const today = new Date();
+  const t = useTranslations( "overview.leaderboard" );
   const [date, setDate] = useState<DateRange | undefined>( {
-    from: new Date(),
+    from: new Date(new Date().setDate(today.getDate() - 30)),
     to: new Date(),
   } );
-  const [preset, setPreset] = useState<string>( "4" );
-  const [startMonth, setStartMonth] = useState( new Date( 2025, 0, 2 ) );
+  const [preset, setPreset] = useState<string>( "0" );
+  const [startMonth, setStartMonth] = useState( new Date(new Date().setDate(today.getDate() - 30)) );
   const [endMonth, setEndMonth] = useState( new Date() );
   const presets = {
     "0": "Last month",
@@ -161,17 +167,22 @@ const DatePickerWithPresets = () => {
     "4": "Custom",
   };
 
-  const daysAgo = n => {
-    let d = new Date();
+  const daysAgo = (n: number) => {
+    const d = new Date();
     d.setDate( d.getDate() - Math.abs( n ) );
     return d;
   };
 
-  const onDayClick= (day, modifiers) => {
-    console.log(day, modifiers);
-    setDate(day);
-    setPreset("4");
+  const onDayClick = (day: DateRange) => {
+    setDate( day );
+    setPreset( "4" );
   };
+
+  useEffect( () => {
+    if (date?.to && date.from && onDateChange) {
+      onDateChange( date );
+    }
+  }, [date] );
 
   return (
     <Popover>
@@ -194,7 +205,7 @@ const DatePickerWithPresets = () => {
               format( date.from, "LLL dd, y" )
             )
           ) : (
-            <span>Pick a date</span>
+            <span>{t( "datePicker.pickDate" )}</span>
           )}
         </Button>
       </PopoverTrigger>
@@ -205,8 +216,6 @@ const DatePickerWithPresets = () => {
         <Select
           value={preset}
           onValueChange={(value) => {
-            const today = new Date();
-
             if (value === '0') {
               const newFrom = daysAgo( 30 );
               const newDate: DateRange = {
@@ -253,11 +262,11 @@ const DatePickerWithPresets = () => {
             <SelectValue placeholder={presets[preset]}/>
           </SelectTrigger>
           <SelectContent position="popper">
-            <SelectItem value="4">Custom</SelectItem>
-            <SelectItem value="0">Last month</SelectItem>
-            <SelectItem value="1">This month</SelectItem>
-            <SelectItem value="2">Three months</SelectItem>
-            <SelectItem value="3">All time</SelectItem>
+            <SelectItem value="4">{t( "datePicker.custom" )}</SelectItem>
+            <SelectItem value="0">{t( "datePicker.lastMonth" )}</SelectItem>
+            <SelectItem value="1">{t( "datePicker.thisMonth" )}</SelectItem>
+            <SelectItem value="2">{t( "datePicker.threeMonths" )}</SelectItem>
+            <SelectItem value="3">{t( "datePicker.allTime" )}</SelectItem>
           </SelectContent>
         </Select>
         <div className="rounded-md border">
@@ -271,7 +280,7 @@ const DatePickerWithPresets = () => {
             onMonthChange={setStartMonth}
             numberOfMonths={2}
             required
-            disabled={{after: new Date(), before: new Date(2022, 3, 2)}}
+            disabled={{after: new Date(), before: new Date( 2022, 3, 2 )}}
           />
         </div>
       </PopoverContent>
@@ -291,6 +300,10 @@ export default function Leaderboard({
   const t = useTranslations( "overview.leaderboard" );
   const [localData, setLocalData] = useState<LeaderboardEntry[] | null>( data );
   const [isLoading, setIsLoading] = useState( initialLoading );
+  const [date, setDate] = useState<DateRange | undefined>( {
+    from: new Date(new Date().setDate(new Date().getDate() - 30)),
+    to: new Date(),
+  } );
 
   // Filter tokens before using them
   const visibleTokens = filterVisibleTokens( tokens, metadata?.hidden_tokens );
@@ -310,7 +323,7 @@ export default function Leaderboard({
   const handleTokenSelect = async (tokenId: string) => {
     setIsLoading( true );
     try {
-      const newData = await generateLeaderboard( slug, tokenId );
+      const newData = await generateLeaderboard( slug, tokenId, date?.from?.getTime().toString(), date?.to?.getTime().toString() );
       setLocalData( newData );
       setSelectedTokenId( tokenId );
     } finally {
@@ -383,6 +396,12 @@ export default function Leaderboard({
     </Table>
   );
 
+  useEffect( () => {
+    if (date && date.from && date.to) {
+      handleTokenSelect(selectedTokenId);
+    }
+  }, [date]);
+
   return (
     <Card variant="borderless" className="h-full">
       <CardHeader>
@@ -403,7 +422,7 @@ export default function Leaderboard({
             </Select>
           </div>
           <div className="space-y-2">
-            <DatePickerWithPresets/>
+            <DatePickerWithPresets onDateChange={setDate}/>
           </div>
         </div>
       </CardHeader>
