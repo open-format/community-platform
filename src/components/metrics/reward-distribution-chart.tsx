@@ -87,13 +87,18 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
+      <div className="flex flex-col">
+        <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-medium">Reward Distribution</h3>
-          <Skeleton className="h-8 w-16" />
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-8 w-16" />
+              <Skeleton className="h-6 w-16" />
+            </div>
+          </div>
         </div>
-        <div className="h-[200px]">
-          <Skeleton className="w-full h-full" />
+        <div className="h-[200px] relative">
+          <Skeleton className="w-full h-full rounded-lg" />
         </div>
       </div>
     );
@@ -101,11 +106,11 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
 
   if (!data.length) {
     return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
+      <div className="flex flex-col">
+        <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-medium">Reward Distribution</h3>
         </div>
-        <div className="h-[200px] flex items-center justify-center">
+        <div className="h-[200px] relative flex items-center justify-center">
           <p className="text-muted-foreground">{t('rewardDistribution.noData')}</p>
         </div>
       </div>

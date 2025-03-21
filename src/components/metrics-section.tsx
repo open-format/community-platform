@@ -17,11 +17,19 @@ interface MetricsSectionProps {
 export default function MetricsSection({ appId }: MetricsSectionProps) {
   const t = useTranslations('metrics');
   const [communityData, setCommunityData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
-      const data = await fetchCommunity(appId);
-      setCommunityData(data);
+      try {
+        setIsLoading(true);
+        const data = await fetchCommunity(appId);
+        setCommunityData(data);
+      } catch (error) {
+        console.error('Error fetching community data:', error);
+      } finally {
+        setIsLoading(false);
+      }
     }
     fetchData();
   }, [appId]);
@@ -75,7 +83,7 @@ export default function MetricsSection({ appId }: MetricsSectionProps) {
           </div>
           <div className="rounded-xl text-card-foreground shadow-sm border bg-card/40">
             <div className="p-6">
-              <Activity rewards={communityData?.rewards || []} showUserAddress={true} />
+              <Activity rewards={communityData?.rewards || []} showUserAddress={true} isLoading={isLoading} />
             </div>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { format, subDays } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface UniqueUsersChartProps {
   appId: string;
@@ -23,16 +24,17 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
   const [totalUsers, setTotalUsers] = useState(0);
   const [percentageChange, setPercentageChange] = useState(0);
   const [timeRange, setTimeRange] = useState<TimeRange>("7d");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const now = Date.now() * 1000; // Convert to microseconds
+    const now = Date.now() * 1000;
     const startTime = (subDays(new Date(), TIME_RANGES[timeRange].days).getTime() * 1000).toString();
     const endTime = now.toString();
 
     const fetchData = async () => {
+      setIsLoading(true);
       const metrics = await fetchUniqueUsersMetrics(appId, startTime, endTime);
       if (metrics) {
-        // Convert metrics to formatted data
         const formattedData = metrics
           .map(metric => {
             const date = new Date(parseInt(metric.timestamp) / 1000000);
@@ -49,29 +51,47 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
         setData(formattedData);
 
         if (metrics.length > 0) {
-          // If there's only one data point, use its count, otherwise use totalCount
           const latest = metrics[metrics.length - 1];
           const total = formattedData.length === 1 
             ? formattedData[0].users 
             : latest.totalCount;
           setTotalUsers(total);
           
-          // Calculate percentage change between first and last day
           if (formattedData.length > 1) {
             const firstDay = formattedData[0];
             const lastDay = formattedData[formattedData.length - 1];
             const change = ((lastDay.users - firstDay.users) / firstDay.users) * 100;
             setPercentageChange(change);
           } else {
-            // If there's only one data point, set percentage change to 0
             setPercentageChange(0);
           }
         }
       }
+      setIsLoading(false);
     };
 
     fetchData();
   }, [appId, timeRange]);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-medium">Unique Users</h3>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-8 w-16" />
+              <Skeleton className="h-6 w-16" />
+            </div>
+            <Skeleton className="h-8 w-[130px]" />
+          </div>
+        </div>
+        <div className="h-[200px]">
+          <Skeleton className="w-full h-full rounded-lg" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col">

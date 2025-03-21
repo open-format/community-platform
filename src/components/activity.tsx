@@ -18,14 +18,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Activity({
   rewards,
   showUserAddress = false,
+  isLoading = false,
 }: {
   rewards: Reward[];
   title?: string;
   showUserAddress?: boolean;
+  isLoading?: boolean;
 }) {
   const t = useTranslations('activity');
   const chain = useCurrentChain();
@@ -37,6 +40,51 @@ export default function Activity({
       return <TrophyIcon className="h-4 w-4" />;
     }
     return <CoinsIcon className="h-4 w-4" />;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Reward Identifier</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>User</TableHead>
+              <TableHead className="w-[50px]"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array(7).fill(null).map((_, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <div className="flex items-center gap-2 h-8">
+                    <Skeleton className="h-4 w-4" />
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2 h-8">
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2 h-8">
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center justify-center h-8">
+                    <Skeleton className="h-4 w-4" />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <Skeleton className="h-8 w-full" />
+      </div>
+    );
   }
 
   if (!rewards || rewards.length === 0) {

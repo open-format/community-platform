@@ -44,12 +44,9 @@ export default function RewardIdsList({ appId }: RewardIdsListProps) {
             rewardId,
             totalCount: Number(stats[0]?.totalCount || 0)
           }));
-          // Sort by total count in descending order
           formattedData.sort((a, b) => b.totalCount - a.totalCount);
           setData(formattedData);
         }
-      } catch (error) {
-        console.error('Error fetching reward IDs data:', error);
       } finally {
         setIsLoading(false);
       }
@@ -63,30 +60,50 @@ export default function RewardIdsList({ appId }: RewardIdsListProps) {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex justify-between items-center">
-            {t('rewardDistribution.title')}
-            <Skeleton className="h-10 w-[120px]" />
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="w-full h-[300px]" />
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-medium">{t('rewardDistribution.title')}</h3>
+          <Skeleton className="h-8 w-[120px]" />
+        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Reward ID</TableHead>
+              <TableHead>Total Count</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array(7).fill(null).map((_, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <div className="flex items-center gap-2 h-8">
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2 h-8">
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <Skeleton className="h-8 w-full" />
+      </div>
     );
   }
 
   if (!data.length) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('rewardDistribution.title')}</CardTitle>
-        </CardHeader>
-        <CardContent className="h-[300px] flex items-center justify-center">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-medium">{t('rewardDistribution.title')}</h3>
+        </div>
+        <div className="h-[300px] flex items-center justify-center">
           <p className="text-muted-foreground">{t('rewardDistribution.noData')}</p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
