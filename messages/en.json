@@ -186,6 +186,7 @@
       "rewardTypePlaceholder": "Reward Type: Badge or Token",
       "rewardTypeBadge": "Badge",
       "rewardTypeToken": "Token",
+      "rewardTypeAll": "All Reward Types",
       "startDateLabel": "Start Date",
       "endDateLabel": "End Date",
       "clearLabel": "Clear",
@@ -759,7 +760,9 @@
     "enterAddress": "Enter a valid contract address",
     "createNew": "Create a new token or badge in your community",
     "tokens": "Tokens",
-    "badges": "Badges"
+    "badges": "Badges",
+    "allHeading": "All",
+    "allName": "All tokens and badges"
   },
   "userSelector": {
     "icons": {

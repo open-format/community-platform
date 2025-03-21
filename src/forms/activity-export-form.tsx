@@ -40,8 +40,8 @@ export function ActivityExportForm({ open, close, community }: ActivityExportFor
   const FormSchema = z.object({
     startDate:        z.date().optional(),
     endDate:          z.date().optional(),
-    rewardType:       z.string().optional(),
-    tokenAddress:     z.string().optional(),
+    rewardType:       z.enum(['Token', 'Badge', 'All']),
+    tokenAddress:     z.string(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -49,8 +49,8 @@ export function ActivityExportForm({ open, close, community }: ActivityExportFor
     defaultValues: {
       startDate:    undefined,
       endDate:      undefined,
-      rewardType:   "",
-      tokenAddress: "",
+      rewardType:   "All",
+      tokenAddress: "All",
     },
   });
 
@@ -62,8 +62,8 @@ export function ActivityExportForm({ open, close, community }: ActivityExportFor
         community.id,
         data.startDate ? data.startDate.getTime()/1000 : 0,
         data.endDate ? data.endDate.getTime()/1000 : 99999999999,
-        data.tokenAddress ?? null,
-        data.rewardType ?? null
+        data.tokenAddress === 'All' ? null : data.tokenAddress,
+        data.rewardType === 'All' ? null : data.rewardType,
       )
 
       const blob = new Blob([rewards], { type: 'text/csv;charset=utf-8;' });
@@ -179,6 +179,7 @@ export function ActivityExportForm({ open, close, community }: ActivityExportFor
                         <SelectValue placeholder={t('rewardTypePlaceholder')} />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="All">{t('rewardTypeAll')}</SelectItem>
                         <SelectItem value="Badge">{t('rewardTypeBadge')}</SelectItem>
                         <SelectItem value="Token">{t('rewardTypeToken')}</SelectItem>
                       </SelectContent>
@@ -200,9 +201,12 @@ export function ActivityExportForm({ open, close, community }: ActivityExportFor
                       tokens={community.tokens}
                       badges={community.badges}
                       value={field.value ?? ""}
+                      includeAllOption={true}
                       onChange={field.onChange}
-                      onTokenTypeChange={(isBadge) => {
-                        if (isBadge) {
+                      onTokenTypeChange={(isBadge, value) => {
+                        if (value === 'All') {
+                          form.setValue("rewardType", 'All');
+                        } else if (isBadge) {
                           form.setValue("rewardType", 'Badge');
                         } else {
                           form.setValue("rewardType", 'Token');

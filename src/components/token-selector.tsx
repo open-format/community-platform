@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, Award, Check, ChevronsUpDown, CircleDollarSign } from "lucide-react";
+import { AlertCircle, AsteriskIcon, Award, Check, ChevronsUpDown, CircleDollarSign } from "lucide-react";
 import * as React from "react";
 import { useTranslations } from 'next-intl';
 
@@ -15,7 +15,7 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { addressSplitter, cn, filterVisibleTokens } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { isAddress } from "viem";
 
 export default function TokenSelector({
@@ -24,12 +24,14 @@ export default function TokenSelector({
   value,
   onChange,
   onTokenTypeChange,
+  includeAllOption,
 }: {
   tokens: Token[];
   badges: Badge[];
   value: string;
   onChange: (value: string) => void;
-  onTokenTypeChange?: (isBadge: boolean) => void;
+  onTokenTypeChange?: (isBadge: boolean, value: string) => void;
+  includeAllOption?: boolean;
 }) {
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
@@ -37,11 +39,12 @@ export default function TokenSelector({
 
   React.useEffect(() => {
     if (value && 
+        !(includeAllOption && value === 'All') &&
         !tokens.some(token => token.token.id === value) && 
         !badges.some(badge => badge.id === value)) {
       onChange("");
     }
-  }, [tokens, badges, value, onChange]);
+  }, [tokens, badges, value, onChange, includeAllOption]);
 
   const handleSelect = (currentValue: string) => {
     console.log('HandleSelect - Current:', currentValue);
@@ -53,14 +56,17 @@ export default function TokenSelector({
     if (onTokenTypeChange) {
       const isBadge = badges.some((badge) => badge.id === currentValue);
       console.log('Is Badge:', isBadge);
-      onTokenTypeChange(isBadge);
+      onTokenTypeChange(isBadge, currentValue);
     }
 
     setOpen(false);
   };
 
   const handleCustomInput = (input: string) => {
-    if (isAddress(input)) {
+    if (includeAllOption && input === 'All') {
+      onChange(input);
+      setOpen(false);
+    } else if (isAddress(input)) {
       onChange(input.toLowerCase());
       setOpen(false);
     }
@@ -86,6 +92,11 @@ export default function TokenSelector({
     if (isAddress(value)) {
       return value;
     }
+
+    if (includeAllOption && value === 'All') {
+      return t('allName');
+    }
+
     return t('searchPlaceholder');
   };
 
@@ -119,6 +130,20 @@ export default function TokenSelector({
                 </ul>
               </div>
             </CommandEmpty>
+            {includeAllOption && <CommandGroup heading={t('allHeading')}>
+                <CommandItem
+                  key={'all-tokens-and-badges-item'}
+                  value={'All'}
+                  onSelect={() => handleSelect('All')}
+                >
+                <AsteriskIcon className={cn("mr-2 h-4 w-4","opacity-100")} />
+                {t('allName')}
+                <Check className={cn(
+                  "ml-auto h-4 w-4",
+                  value === 'All' ? "opacity-100" : "opacity-0"
+                )} />
+                </CommandItem>
+            </CommandGroup>}
             <CommandGroup heading={t('tokens')}>
               {tokens.map((item) => (
                 <CommandItem
