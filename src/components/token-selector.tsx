@@ -36,17 +36,23 @@ export default function TokenSelector({
   const t = useTranslations('tokenSelector');
 
   React.useEffect(() => {
-    if (value && !tokens.some(token => token.token.id === value)) {
+    if (value && 
+        !tokens.some(token => token.token.id === value) && 
+        !badges.some(badge => badge.id === value)) {
       onChange("");
     }
-  }, [tokens, value, onChange]);
+  }, [tokens, badges, value, onChange]);
 
   const handleSelect = (currentValue: string) => {
-    const newValue = currentValue === value ? "" : currentValue;
-    onChange(newValue);
+    console.log('HandleSelect - Current:', currentValue);
+    console.log('HandleSelect - Previous:', value);
+    
+    // Always update with the new value
+    onChange(currentValue);
 
     if (onTokenTypeChange) {
-      const isBadge = badges.some((badge) => badge.id === newValue);
+      const isBadge = badges.some((badge) => badge.id === currentValue);
+      console.log('Is Badge:', isBadge);
       onTokenTypeChange(isBadge);
     }
 
@@ -61,10 +67,22 @@ export default function TokenSelector({
   };
 
   const getDisplayValue = () => {
-    const selectedItem = [...tokens, ...badges].find((item) => item.token?.id === value);
-    if (selectedItem) {
-      return `${selectedItem.token?.name} (${selectedItem.token?.id})`;
+    // Debug the display value calculation
+    const selectedBadge = badges.find((badge) => badge.id === value);
+    const selectedToken = tokens.find((item) => item.token?.id === value);
+    
+    console.log('GetDisplayValue - Selected Badge:', selectedBadge);
+    console.log('GetDisplayValue - Selected Token:', selectedToken);
+    console.log('GetDisplayValue - Current Value:', value);
+
+    if (selectedBadge) {
+      return selectedBadge.name;
     }
+    
+    if (selectedToken) {
+      return `${selectedToken.token?.name} (${selectedToken.token?.id})`;
+    }
+    
     if (isAddress(value)) {
       return value;
     }
@@ -103,10 +121,20 @@ export default function TokenSelector({
             </CommandEmpty>
             <CommandGroup heading={t('tokens')}>
               {tokens.map((item) => (
-                <CommandItem key={item.token.id} value={item.token.name} onSelect={() => handleSelect(item.token.id)}>
-                  <CircleDollarSign className={cn("mr-2 h-4 w-4", value === item.id ? "opacity-100" : "opacity-40")} />
-                  {`${item.token.name} (${addressSplitter(item.token.id, 4)})`}
-                  <Check className={cn("ml-auto h-4 w-4", value === item.id ? "opacity-100" : "opacity-0")} />
+                <CommandItem
+                  key={item.token.id}
+                  value={item.token.name}
+                  onSelect={() => handleSelect(item.token.id)}
+                >
+                  <CircleDollarSign className={cn(
+                    "mr-2 h-4 w-4",
+                    value === item.token.id ? "opacity-100" : "opacity-40"
+                  )} />
+                  {item.token.name}
+                  <Check className={cn(
+                    "ml-auto h-4 w-4",
+                    value === item.token.id ? "opacity-100" : "opacity-0"
+                  )} />
                 </CommandItem>
               ))}
             </CommandGroup>

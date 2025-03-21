@@ -55,6 +55,7 @@
       "overview": "Overview",
       "settings": "Community Page",
       "rewards": "Rewards",
+      "batchRewards": "Batch Rewards",
       "tokens": "Tokens",
       "badges": "Badges",
       "agents": "Community Agents"
@@ -257,6 +258,130 @@
     },
     "title": "Rewards",
     "notFound": "Community not found"
+  },
+  "batchRewards": {
+    "form": {
+      "validation": {
+        "fileSizeExceeded": "CSF size must be less than 100MB",
+        "wrongColumns": "Wrong number of fields, expected: {columnsExpected}, found {columnsFound}",
+        "columnNotFound": "Column {columnName} not found in fields {columnsFound}",
+        "user": "User has to be a blockchain address or a username",
+        "userMax": "User is too long, it has to be a blockchain address or a username",
+        "tokenRequired": "Token has to be a blockchain address or a token name",
+        "amountMin": "Amount must be at least 0.000000000000000001",
+        "amountRequired": "Amount is required",
+        "amountBadgeInt": "Amount for badges needs to be an integer",
+        "actionType": "Action type has to be 'mint-token', 'transfer-token' or 'mint-badge'",
+        "rewardIdMin": "Reward ID must be at least 3 characters",
+        "rewardIdMax": "Reward ID can not be longer than 32 characters",
+        "parseError": "Row: {row}: {message}",
+        "rewardError": "Reward #{row}: {message}",
+        "tokenNotFound": "Token {tokenName} not found in current community {communityName}"
+
+      },
+      "fields": {
+        "csvFile": {
+          "label": "Select a CSV file"
+        }
+      },
+      "buttons": {
+        "settings": "Settings",
+        "uploading": "Uploading...",
+        "upload": "Upload",
+        "abort": "Stop Rewards",
+        "reward": "Proccess Rewards",
+        "rewarding": "Rewarding..."
+      },
+      "toast": {
+        "processing": "Processing reward...",
+        "uploadSuccess": "Rewards uploaded",
+        "rewardsSuccess": "Rewards successfully awarded!",
+        "error": {
+          "generic": "An unexpected error occurred",
+          "failed": "Failed to process some reward"
+        }
+      }
+    },
+    "progress": {
+      "title": "Proccessing Rewards",
+      "success": "Successful: {success}",
+      "failed": "Failed: {failed}",
+      "total": "Total: {total}"
+    },
+    "settings": {
+      "title": "Settings",
+      "saveLabel": "Save",
+      "description": "Batch rewards settings",
+      "fields": {
+        "header": {
+          "label": "Use First Row as Headers"
+        },
+        "multicall": {
+          "label": "Use Multicall",
+          "tooltip1": "Multicall batches several calls in the same blockchain transaction.",
+          "tooltip2": "This saves time and gas, but if a call in the batch fails, all other calls will also fail."
+        },
+        "delimiter": {
+          "label": "Rows delimiter",
+          "placeholder": "Auto",
+          "otherLabel": "Specify",
+          "otherPlaceholder": "example: |",
+          "options": {
+            "auto": "Auto",
+            "comma": "Comma",
+            "semicolon": "Semicolon",
+            "other": "Other"
+          },
+          "tooltip": "Character that separates one field from the next in the same row. 'Auto' option lets the application autodetect this."
+        }
+      }
+    },
+    "table": {
+      "title": "Preview:",
+      "uploadedMessageFirst": "Uploaded {count} rewards. Showing only the first {firstCount}:",
+      "uploadedMessageFull": "Uploaded {count} rewards:",
+      "user": "User",
+      "token": "Token",
+      "amount": "Amount",
+      "actionType": "Action Type",
+      "rewardId": "Reward Id"
+    },
+    "title": "Batch Rewards",
+    "notFound": "Community not found",
+    "usernameSearchFailed": "There was an internal error searching for usernames",
+    "differentWalletsError": "Username {handle} has different wallets associated: {wallets}",
+    "noWallets": "Can not find a wallet for username {handle}",
+    "noRewards": "No rewards uploaded",
+    "info": "CSV file should have the following headers: user, token, amount, actionType, rewardId",
+    "infoList": "<ul><li>user: Address or username of the user that will receive the tokens.</li><li>token: Addres or name of the token/badge to reward.</li><li>amount: Amount to reward.</li><li>actionType: Mint, Transfer or Badge.</li><li>rewardId: Reward Identifier, ex: first-post.</li></ul>",
+    "results": {
+      "title": "Errors:",
+      "resultsTitle": "Results:",
+      "importMessageFirst": "Found {count} errors while uploading the rewards. Showing only the first {firstCount} errors:",
+      "importMessageFull": "Found {count} errors while uploading the rewards:",
+      "processMessageFirst": "Found {count} errors while processing the rewards. Showing only the first {firstCount} errors:",
+      "processMessageFull": "Found {count} errors while processing the rewards:",
+      "rewardsMessage": "Processed {total} rewards, Failed {failed}, Success {success}:",
+      "successTransaction": "Reward #{index} finished successfully.",
+      "successTransactionLink": "View Transaction",
+      "failedTransaction": "Error: {error}",
+      "userAddress": "User: {address}",
+      "rewardId": "Reward ID: {id}",
+      "actionType": "Action Type: {type}",
+      "transactionLink": "Transaction link: {link}",
+      "successResults": "Result: {success}",
+      "successful": "Successful",
+      "failed": "Failed",
+      "copySuccess": "Results copied to clipboard",
+      "copyFailed": "Failed to copy results",
+      "copyErrorSuccess": "Errors copied to clipboard",
+      "copyErrorsFailed": "Failed to copy errors",
+      "viewTransactionLabel": "View Transaction",
+      "tooltips": {
+        "copyErrors": "Copy all errors.",
+        "copyResults": "Copy all results."
+      }
+    }
   },
   "shortcuts": {
     "configureCommunity": {

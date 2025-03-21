@@ -2,8 +2,21 @@
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { generateLeaderboard } from "@/lib/openformat";
 import { cn, filterVisibleTokens } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
@@ -50,53 +63,46 @@ interface DatePickerProps {
 
 function LeaderboardHeader({
   metadata,
-  selectedTokenId,
-  tokens,
+  selectedToken,
 }: {
   metadata: any;
-  selectedTokenId: string;
-  tokens: {
-    token: {
-      id: string;
-      name: string;
-    };
-  }[];
+  selectedToken: { token: { id: string; name: string; symbol: string } };
 }) {
   const t = useTranslations( "overview.leaderboard" );
 
-  const selectedToken = tokens?.find( (t) => t.token.id === selectedTokenId ) || tokens?.[0];
-
   return (
     <TableRow>
-      <TableHead>{t( "rank" )}</TableHead>
-      <TableHead>{metadata?.user_label ?? t( "user" )}</TableHead>
+      <TableHead>{t("rank")}</TableHead>
+      <TableHead>{metadata?.user_label ?? t("user")}</TableHead>
       <TableHead className="text-right capitalize whitespace-nowrap">
-        {selectedToken?.token ? `${selectedToken.token.name} (${selectedToken.token.symbol})` : t( "points" )}
+        {selectedToken?.token
+          ? `${selectedToken.token.name} (${selectedToken.token.symbol})`
+          : t("points")}
       </TableHead>
     </TableRow>
   );
 }
 
 const LeaderboardSkeleton = () => {
-  const t = useTranslations( "overview.leaderboard" );
+  const t = useTranslations("overview.leaderboard");
 
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>{t( "rank" )}</TableHead>
+          <TableHead>{t("rank")}</TableHead>
           <TableHead>
-            <Skeleton className="h-4 w-20"/>
+            <Skeleton className="h-4 w-20" />
           </TableHead>
           <TableHead className="text-right">
-            <Skeleton className="h-4 w-16 ml-auto"/>
+            <Skeleton className="h-4 w-16 ml-auto" />
           </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {Array( 5 )
-          .fill( null )
-          .map( (_, index) => (
+        {Array(5)
+          .fill(null)
+          .map((_, index) => (
             <TableRow key={index}>
               <TableCell>
                 <div
@@ -108,7 +114,7 @@ const LeaderboardSkeleton = () => {
                         ? "bg-gray-300 text-gray-800"
                         : index === 2
                           ? "bg-amber-600 text-white"
-                          : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400"
+                          : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400",
                   )}
                 >
                   {index + 1}
@@ -116,30 +122,32 @@ const LeaderboardSkeleton = () => {
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
-                  <Skeleton className="h-4 w-40"/>
+                  <Skeleton className="h-4 w-40" />
                 </div>
               </TableCell>
               <TableCell className="text-right">
-                <Skeleton className="h-4 w-20 ml-auto"/>
+                <Skeleton className="h-4 w-20 ml-auto" />
               </TableCell>
             </TableRow>
-          ) )}
+          ))}
       </TableBody>
     </Table>
   );
 };
 
-const EmptyState = ({metadata}: Pick<LeaderboardProps, "metadata">) => {
-  const t = useTranslations( "overview.leaderboard" );
+const EmptyState = ({ metadata }: Pick<LeaderboardProps, "metadata">) => {
+  const t = useTranslations("overview.leaderboard");
   return (
     <Card variant="borderless" className="h-full">
       <CardContent>
         <Table>
-          <LeaderboardHeader metadata={metadata}/>
+          <TableHeader>
+            <LeaderboardHeader metadata={metadata} />
+          </TableHeader>
           <TableBody>
             <TableRow>
               <TableCell colSpan={3} className="text-center text-muted-foreground py-4">
-                {t( "noData" )}
+                {t("noData")}
               </TableCell>
             </TableRow>
           </TableBody>
@@ -306,49 +314,50 @@ export default function Leaderboard({
   } );
 
   // Filter tokens before using them
-  const visibleTokens = filterVisibleTokens( tokens, metadata?.hidden_tokens );
+  const visibleTokens = filterVisibleTokens(tokens, metadata?.hidden_tokens);
 
   const [selectedTokenId, setSelectedTokenId] = useState<string>(
-    metadata?.token_to_display || visibleTokens?.[0]?.token.id || ""
+    metadata?.token_to_display || visibleTokens?.[0]?.token.id || "",
   );
 
-  useEffect( () => {
+  useEffect(() => {
     if (visibleTokens?.length > 0) {
       const defaultTokenId = metadata?.token_to_display || visibleTokens[0].token.id;
-      setSelectedTokenId( defaultTokenId );
-      handleTokenSelect( defaultTokenId );
+      setSelectedTokenId(defaultTokenId);
+      handleTokenSelect(defaultTokenId);
     }
-  }, [] );
+  }, []);
 
   const handleTokenSelect = async (tokenId: string) => {
-    setIsLoading( true );
+    setIsLoading(true);
     try {
-      const newData = await generateLeaderboard( slug, tokenId, date?.from?.getTime().toString(), date?.to?.getTime().toString() );
-      setLocalData( newData );
-      setSelectedTokenId( tokenId );
+      const newData = await generateLeaderboard(slug, tokenId);
+      setLocalData(newData);
+      setSelectedTokenId(tokenId);
     } finally {
-      setIsLoading( false );
+      setIsLoading(false);
     }
   };
 
-  const selectedToken = tokens?.find( (t) => t.token.id === selectedTokenId );
+  const selectedToken = tokens?.find((t) => t.token.id === selectedTokenId);
 
   const content = isLoading ? (
-    <LeaderboardSkeleton/>
+    <LeaderboardSkeleton />
   ) : !localData || localData.length === 0 || localData?.error ? (
-    <EmptyState metadata={metadata}/>
+    <EmptyState metadata={metadata} />
   ) : (
     <Table className="w-full">
       <TableHeader>
-        <LeaderboardHeader metadata={metadata} selectedToken={selectedToken}/>
+        <LeaderboardHeader metadata={metadata} selectedToken={selectedToken} />
       </TableHeader>
       <TableBody>
         {localData
-          ?.filter( (e) => e.xp_rewarded > "1" )
-          ?.map( (entry, index) => {
+          ?.filter((e) => e.xp_rewarded > "0.001")
+          ?.map((entry, index) => {
             const position = index + 1;
             const isCurrentUser =
-              user?.wallet?.address && entry.user.toLowerCase() === user?.wallet?.address.toLowerCase();
+              user?.wallet?.address &&
+              entry.user.toLowerCase() === user?.wallet?.address.toLowerCase();
             const SocialIcon =
               showSocialHandles &&
               (entry.type === "discord"
@@ -371,7 +380,7 @@ export default function Leaderboard({
                           ? "bg-gray-300 text-gray-800"
                           : position === 3
                             ? "bg-amber-600 text-white"
-                            : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400"
+                            : "bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400",
                     )}
                   >
                     {position}
@@ -382,7 +391,7 @@ export default function Leaderboard({
                     <span className="text-xs">{showSocialHandles ? entry.handle : entry.user}</span>
                     {SocialIcon && (
                       <div className="bg-white rounded-full p-1">
-                        <Image src={SocialIcon} alt={entry.type} width={16} height={16}/>
+                        <Image src={SocialIcon} alt={entry.type} width={16} height={16} />
                       </div>
                     )}
                     {isCurrentUser && <Badge>You</Badge>}
@@ -391,7 +400,7 @@ export default function Leaderboard({
                 <TableCell className="text-right font-semibold">{entry.xp_rewarded}</TableCell>
               </TableRow>
             );
-          } )}
+          })}
       </TableBody>
     </Table>
   );
@@ -407,17 +416,17 @@ export default function Leaderboard({
       <CardHeader>
         <div className="flex items-end justify-between mb-4">
           <div className="space-y-2">
-            <Label>{t( "token" )}</Label>
+            <Label>{t("token")}</Label>
             <Select value={selectedTokenId} onValueChange={handleTokenSelect}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder={t( "selectToken" )}/>
+                <SelectValue placeholder={t("selectToken")} />
               </SelectTrigger>
               <SelectContent>
-                {visibleTokens?.map( (i) => (
+                {visibleTokens?.map((i) => (
                   <SelectItem key={i.token.id} value={i.token.id}>
                     {i.token.name}
                   </SelectItem>
-                ) )}
+                ))}
               </SelectContent>
             </Select>
           </div>
