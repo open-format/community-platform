@@ -331,7 +331,7 @@ export default function Leaderboard({
   const handleTokenSelect = async (tokenId: string) => {
     setIsLoading(true);
     try {
-      const newData = await generateLeaderboard(slug, tokenId);
+      const newData = await generateLeaderboard(slug, tokenId, date?.from?.getTime().toString(), date?.to?.getTime().toString());
       setLocalData(newData);
       setSelectedTokenId(tokenId);
     } finally {
