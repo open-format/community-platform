@@ -777,6 +777,12 @@
       "userNotFound": "User not found"
     }
   },
+  "rewardTypeSelector": {
+    "searchPlaceholder": "Select reward token type...",
+    "badgeName": "Badge",
+    "tokenName": "Token",
+    "allName": "All reward types"
+  },
   "layout": {
     "logo": "OpenFormat Logo",
     "communities": "Communities"

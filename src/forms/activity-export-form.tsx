@@ -20,8 +20,8 @@ import {
 import { useRevalidate } from "@/hooks/useRevalidate";
 import { useState } from "react";
 import TokenSelector from "@/components/token-selector";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getAllRewardsByCommunity } from "@/lib/openformat";
+import RewardTypeSelector from "@/components/reward-type-selector";
 
 interface ActivityExportFormProps {
   open: boolean;
@@ -161,29 +161,17 @@ export function ActivityExportForm({ open, close, community }: ActivityExportFor
               control={form.control}
               name="rewardType"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <p>{t('rewardTypeLabel')}</p>
-                  </FormLabel>
+                <FormItem className="col-span-2 flex flex-col gap-2">
+                  <FormLabel>{t('rewardTypeLabel')}</FormLabel>
                   <FormControl>
-                    <Select
-                    key={'custom-key' + field.value}
-                      onValueChange={(value) => {
-                        field.onChange(value);
-                        form.setValue("tokenAddress", undefined);
+                    <RewardTypeSelector 
+                      value={field.value}
+                      includeAllOption={true}
+                      onChange={field.onChange}
+                      onSelectedItemChange={(val) => {
+                        form.setValue("tokenAddress", 'All');
                       }}
-                      defaultValue={field.value}
-                      disabled={isLoading}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('rewardTypePlaceholder')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="All">{t('rewardTypeAll')}</SelectItem>
-                        <SelectItem value="Badge">{t('rewardTypeBadge')}</SelectItem>
-                        <SelectItem value="Token">{t('rewardTypeToken')}</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
