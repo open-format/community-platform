@@ -3,7 +3,7 @@
 import { settingsFacetAbi } from "@/abis/SettingsFacet";
 import envConfig from "@/constants/config";
 import PermissionsDialog from "@/dialogs/permissions-dialog";
-import { ADMIN_ROLE } from "@/helpers/contract";
+import { OPERATOR_ROLE } from "@/helpers/contract";
 import { txOverrides } from "@/lib/chain";
 import { createAgentWallet } from "@/lib/openformat";
 import { addressSplitter, cn } from "@/lib/utils";
@@ -63,7 +63,7 @@ export default function SetupAgent({ community, agentWallet }: SetupAgentProps) 
     address: community.id as Address,
     abi: settingsFacetAbi,
     functionName: "hasRole",
-    args: [ADMIN_ROLE, walletAddress as Address],
+    args: [OPERATOR_ROLE, walletAddress as Address],
   });
 
   // Initialize completedSteps based on agentWallet and permissions
@@ -127,7 +127,7 @@ export default function SetupAgent({ community, agentWallet }: SetupAgentProps) 
       const grantRoleData = encodeFunctionData({
         abi: settingsFacetAbi,
         functionName: "grantRole",
-        args: [ADMIN_ROLE, walletAddress as Address],
+        args: [OPERATOR_ROLE, walletAddress as Address],
       });
 
       const hash = await writeContract(config, {

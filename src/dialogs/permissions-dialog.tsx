@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ADMIN_ROLE } from "@/helpers/contract";
+import { OPERATOR_ROLE } from "@/helpers/contract";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { CheckCircle, Shield } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -62,7 +62,7 @@ export default function PermissionsDialog({
           address: community.id as Address,
           abi: settingsFacetAbi,
           functionName: "revokeRole",
-          args: [ADMIN_ROLE, agentWallet as Address],
+          args: [OPERATOR_ROLE, agentWallet as Address],
           ...overrides,
         });
 
