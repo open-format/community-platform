@@ -1,3 +1,19 @@
+# [0.14.0](https://github.com/open-format/community-platform/compare/v0.13.0...v0.14.0) (2025-03-24)
+
+
+### Features
+
+* Hide create api key item to not community owners ([fab8633](https://github.com/open-format/community-platform/commit/fab8633ae7faf60d62afee5f80aa51b490979d07))
+* Only check if communities in the pathname. ([2139a4f](https://github.com/open-format/community-platform/commit/2139a4f9bac476daf576a33cef20b3eb55737f27))
+
+# [0.13.0](https://github.com/open-format/community-platform/compare/v0.12.1...v0.13.0) (2025-03-24)
+
+
+### Features
+
+* add Telegram account linking functionality ([0c418b2](https://github.com/open-format/community-platform/commit/0c418b239bd2d530f28b5eeb799090659761c87a))
+* added account unlinking functionality and ui and updated error handling ([4ed0f57](https://github.com/open-format/community-platform/commit/4ed0f5701d3452ef332282a3a4ff4cdbeaf16e48))
+
 ## [0.12.1](https://github.com/open-format/community-platform/compare/v0.12.0...v0.12.1) (2025-03-14)
 
 
