@@ -1,3 +1,11 @@
+# [0.13.0](https://github.com/open-format/community-platform/compare/v0.12.1...v0.13.0) (2025-03-24)
+
+
+### Features
+
+* add Telegram account linking functionality ([0c418b2](https://github.com/open-format/community-platform/commit/0c418b239bd2d530f28b5eeb799090659761c87a))
+* added account unlinking functionality and ui and updated error handling ([4ed0f57](https://github.com/open-format/community-platform/commit/4ed0f5701d3452ef332282a3a4ff4cdbeaf16e48))
+
 ## [0.12.1](https://github.com/open-format/community-platform/compare/v0.12.0...v0.12.1) (2025-03-14)
 
 
