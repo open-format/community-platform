@@ -3,8 +3,8 @@
 import config from "@/constants/config";
 import { PrivyClient } from "@privy-io/server-auth";
 import { cookies } from "next/headers";
+import pMap from "p-map";
 import type { Address } from "viem";
-import pMap from 'p-map';
 
 if (!config.NEXT_PUBLIC_PRIVY_APP_ID || !config.PRIVY_APP_SECRET) {
   throw new Error("Privy app ID or secret is not set");
@@ -42,7 +42,6 @@ export async function findAllUsersByHandle(handles: string[]) {
     concurrency: PRIVY_FIND_USER_CONCURRENCY_LIMIT,
     stopOnError: true,
   });
-
 }
 
 async function findAllSocialsByHandle(handle: string) {
@@ -125,4 +124,12 @@ export async function getUserHandle(wallet: Address): Promise<{
   }
 
   return null;
+}
+
+export async function createServerWallet() {
+  const wallet = await privyClient.walletApi.create({
+    chainType: "ethereum",
+  });
+
+  return wallet;
 }
