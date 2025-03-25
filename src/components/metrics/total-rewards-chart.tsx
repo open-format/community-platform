@@ -20,6 +20,8 @@ import {
 } from 'recharts';
 import { useEffect, useState } from "react";
 import { fetchTotalRewardsMetrics } from "@/lib/metrics";
+import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
 
 interface TotalRewardsChartProps {
   appId: string;
@@ -39,7 +41,7 @@ const TIME_RANGES = {
 type TimeRange = keyof typeof TIME_RANGES;
 
 export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
-  const t = useTranslations('metrics');
+  const t = useTranslations('metrics.totalRewards');
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<TimeRange>("7d");
@@ -57,8 +59,8 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
         const result = await fetchTotalRewardsMetrics(appId, startTime, endTime);
         if (result) {
           const formattedData = result.reduce((acc: { [key: string]: number }, item) => {
-            const timestamp = Math.floor(parseInt(item.timestamp) / 1000000) * 1000;
-            const date = new Date(timestamp);
+            const timestamp = parseInt(item.timestamp) / 1000000; // Convert from microseconds to seconds
+            const date = new Date(timestamp * 1000); // Convert seconds to milliseconds
             const dateKey = date.toLocaleDateString(undefined, { 
               month: 'short', 
               day: 'numeric',
@@ -66,7 +68,7 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
             });
             
             // Aggregate counts by date
-            acc[dateKey] = (acc[dateKey] || 0) + Number(item.count);
+            acc[dateKey] = (acc[dateKey] || 0) + Number(item.totalCount);
             return acc;
           }, {});
 
@@ -113,7 +115,7 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium">Total Rewards</h3>
+          <h3 className="text-lg font-medium">{t('title')}</h3>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Skeleton className="h-8 w-16" />
@@ -132,7 +134,7 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
   return (
     <div className="flex flex-col">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-medium">Total Rewards</h3>
+        <h3 className="text-lg font-medium">{t('title')}</h3>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="text-2xl font-bold">{totalRewards}</span>
@@ -150,8 +152,10 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(TIME_RANGES).map(([key, { label }]) => (
-                <SelectItem key={key} value={key}>{label}</SelectItem>
+              {Object.entries(TIME_RANGES).map(([key]) => (
+                <SelectItem key={key} value={key}>
+                  {t(`timeRanges.${key}`)}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -177,15 +181,16 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
             <Tooltip 
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
+                  const date = new Date(payload[0].payload.name);
                   return (
                     <div className="rounded-lg border bg-background p-2 shadow-sm">
                       <div className="grid gap-2">
                         <div className="flex flex-col">
                           <span className="text-[0.70rem] uppercase text-muted-foreground">
-                            Rewards
+                            {format(date, "MMM d, yyyy")}
                           </span>
                           <span className="font-bold">
-                            {payload[0].value}
+                            {payload[0].value} {t('rewards')}
                           </span>
                         </div>
                       </div>

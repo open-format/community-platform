@@ -1,7 +1,6 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
 import { addressSplitter, desanitizeString, timeAgo } from "@/lib/utils";
 import { CoinsIcon, ExternalLinkIcon, TrophyIcon } from "lucide-react";
@@ -15,10 +14,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+
+const ITEMS_PER_PAGE = 5;
 
 export default function Activity({
   rewards,
@@ -30,10 +37,9 @@ export default function Activity({
   showUserAddress?: boolean;
   isLoading?: boolean;
 }) {
-  const t = useTranslations('activity');
+  const t = useTranslations('metrics.activity');
   const chain = useCurrentChain();
-  const [showAll, setShowAll] = useState(false);
-  const DEFAULT_DISPLAY_COUNT = 7;
+  const [currentPage, setCurrentPage] = useState(1);
 
   function getIcon(reward: Reward) {
     if (reward.badgeTokens.length > 0) {
@@ -48,14 +54,14 @@ export default function Activity({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Reward Identifier</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>User</TableHead>
+              <TableHead>{t('rewardIdentifier')}</TableHead>
+              <TableHead>{t('date')}</TableHead>
+              <TableHead>{t('user')}</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {Array(7).fill(null).map((_, index) => (
+            {[...Array(5)].map((_, index) => (
               <TableRow key={index}>
                 <TableCell>
                   <div className="flex items-center gap-2 h-8">
@@ -82,7 +88,6 @@ export default function Activity({
             ))}
           </TableBody>
         </Table>
-        <Skeleton className="h-8 w-full" />
       </div>
     );
   }
@@ -95,17 +100,18 @@ export default function Activity({
     );
   }
 
-  const displayRewards = showAll ? rewards : rewards.slice(0, DEFAULT_DISPLAY_COUNT);
-  const hasMore = rewards.length > DEFAULT_DISPLAY_COUNT;
+  const totalPages = Math.ceil(rewards.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const displayRewards = rewards.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
     <div className="space-y-4">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Reward Identifier</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>User</TableHead>
+            <TableHead>{t('rewardIdentifier')}</TableHead>
+            <TableHead>{t('date')}</TableHead>
+            <TableHead>{t('user')}</TableHead>
             <TableHead className="w-[50px]"></TableHead>
           </TableRow>
         </TableHeader>
@@ -146,22 +152,35 @@ export default function Activity({
           ))}
         </TableBody>
       </Table>
-      {hasMore && (
-        <Button
-          variant="ghost"
-          className="w-full text-xs text-muted-foreground hover:text-foreground"
-          onClick={() => setShowAll(!showAll)}
-        >
-          {showAll ? (
-            <>
-              Show less <ChevronUp className="h-4 w-4 ml-2" />
-            </>
-          ) : (
-            <>
-              Show more <ChevronDown className="h-4 w-4 ml-2" />
-            </>
-          )}
-        </Button>
+      {totalPages > 1 && (
+        <div className="mt-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  aria-disabled={currentPage === 1}
+                />
+              </PaginationItem>
+              {[...Array(totalPages)].map((_, i) => (
+                <PaginationItem key={i + 1}>
+                  <PaginationLink
+                    onClick={() => setCurrentPage(i + 1)}
+                    isActive={currentPage === i + 1}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  aria-disabled={currentPage === totalPages}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       )}
     </div>
   );

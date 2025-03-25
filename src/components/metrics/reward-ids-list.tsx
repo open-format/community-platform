@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslations } from 'next-intl';
 import {
@@ -13,10 +13,16 @@ import {
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 import { fetchRewardDistributionMetrics } from "@/lib/metrics";
-import { MoreHorizontal } from "lucide-react";
 import { desanitizeString } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
 
 interface RewardIdsListProps {
   appId: string;
@@ -27,12 +33,14 @@ interface RewardData {
   totalCount: number;
 }
 
+const ITEMS_PER_PAGE = 5;
+
 export default function RewardIdsList({ appId }: RewardIdsListProps) {
-  const t = useTranslations('metrics');
+  const t = useTranslations('metrics.rewards');
   const [data, setData] = useState<RewardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [showAll, setShowAll] = useState(false);
-  const DEFAULT_DISPLAY_COUNT = 7;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
     async function fetchData() {
@@ -40,12 +48,14 @@ export default function RewardIdsList({ appId }: RewardIdsListProps) {
         setIsLoading(true);
         const result = await fetchRewardDistributionMetrics(appId);
         if (result) {
-          const formattedData = Object.entries(result).map(([rewardId, stats]) => ({
-            rewardId,
-            totalCount: Number(stats[0]?.totalCount || 0)
-          }));
-          formattedData.sort((a, b) => b.totalCount - a.totalCount);
+          const formattedData = Object.entries(result)
+            .map(([rewardId, stats]) => ({
+              rewardId,
+              totalCount: Number(stats[0]?.totalCount || 0)
+            }))
+            .sort((a, b) => b.totalCount - a.totalCount);
           setData(formattedData);
+          setTotalItems(formattedData.length);
         }
       } finally {
         setIsLoading(false);
@@ -55,115 +65,159 @@ export default function RewardIdsList({ appId }: RewardIdsListProps) {
     fetchData();
   }, [appId]);
 
-  const displayData = showAll ? data : data.slice(0, DEFAULT_DISPLAY_COUNT);
-  const hasMore = data.length > DEFAULT_DISPLAY_COUNT;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentData = data.slice(startIndex, endIndex);
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium">{t('rewardDistribution.title')}</h3>
-          <Skeleton className="h-8 w-[120px]" />
-        </div>
+      <Card>
+        <CardContent className="p-6">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t('rank')}</TableHead>
+                <TableHead>{t('rewardId')}</TableHead>
+                <TableHead>{t('totalCount')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[...Array(ITEMS_PER_PAGE)].map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <div className="flex items-center gap-2 h-8">
+                      <Skeleton className="h-4 w-8" />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2 h-8">
+                      <Skeleton className="h-4 w-32" />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2 h-8">
+                      <Skeleton className="h-4 w-16" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!data.length) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <p className="text-muted-foreground">{t('noData')}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardContent className="p-6">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Reward ID</TableHead>
-              <TableHead>Total Count</TableHead>
+              <TableHead>{t('rank')}</TableHead>
+              <TableHead>{t('rewardId')}</TableHead>
+              <TableHead>{t('totalCount')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {Array(7).fill(null).map((_, index) => (
-              <TableRow key={index}>
+            {currentData.map((reward, index) => (
+              <TableRow key={reward.rewardId}>
                 <TableCell>
                   <div className="flex items-center gap-2 h-8">
-                    <Skeleton className="h-4 w-32" />
+                    <span className="font-medium">{startIndex + index + 1}</span>
                   </div>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2 h-8">
-                    <Skeleton className="h-4 w-16" />
+                    <span className="font-medium">{desanitizeString(reward.rewardId)}</span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2 h-8">
+                    <span className="font-medium">{reward.totalCount}</span>
                   </div>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
-        <Skeleton className="h-8 w-full" />
-      </div>
-    );
-  }
-
-  if (!data.length) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium">{t('rewardDistribution.title')}</h3>
-        </div>
-        <div className="h-[300px] flex items-center justify-center">
-          <p className="text-muted-foreground">{t('rewardDistribution.noData')}</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">Reward ID</TableHead>
-            <TableHead>Reward Identifier</TableHead>
-            <TableHead className="text-right">Amount</TableHead>
-            <TableHead className="w-[50px]"></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {displayData.map((reward, index) => (
-            <TableRow key={reward.rewardId}>
-              <TableCell>
-                <div className="flex items-center gap-2 h-8">
-                  <span className="font-medium">{index + 1}</span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2 h-8">
-                  <span className="font-medium">{desanitizeString(reward.rewardId)}</span>
-                </div>
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="flex items-center justify-end gap-2 h-8">
-                  <span className="font-medium">{reward.totalCount}</span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center justify-center h-8">
-                  <button className="h-8 w-8 p-0">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      {hasMore && (
-        <Button
-          variant="ghost"
-          className="w-full text-xs text-muted-foreground hover:text-foreground"
-          onClick={() => setShowAll(!showAll)}
-        >
-          {showAll ? (
-            <>
-              Show less <ChevronUp className="h-4 w-4 ml-2" />
-            </>
-          ) : (
-            <>
-              Show more <ChevronDown className="h-4 w-4 ml-2" />
-            </>
-          )}
-        </Button>
-      )}
-    </div>
+        {totalPages > 1 && (
+          <div className="mt-4">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+                {currentPage > 2 && (
+                  <>
+                    <PaginationItem>
+                      <PaginationLink onClick={() => setCurrentPage(1)}>1</PaginationLink>
+                    </PaginationItem>
+                    {currentPage > 3 && (
+                      <PaginationItem>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    )}
+                  </>
+                )}
+                {currentPage > 1 && (
+                  <PaginationItem>
+                    <PaginationLink onClick={() => setCurrentPage(prev => prev - 1)}>
+                      {currentPage - 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                )}
+                <PaginationItem>
+                  <PaginationLink isActive>{currentPage}</PaginationLink>
+                </PaginationItem>
+                {currentPage < totalPages && (
+                  <PaginationItem>
+                    <PaginationLink onClick={() => setCurrentPage(prev => prev + 1)}>
+                      {currentPage + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                )}
+                {currentPage < totalPages - 1 && (
+                  <>
+                    {currentPage < totalPages - 2 && (
+                      <PaginationItem>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    )}
+                    <PaginationItem>
+                      <PaginationLink onClick={() => setCurrentPage(totalPages)}>
+                        {totalPages}
+                      </PaginationLink>
+                    </PaginationItem>
+                  </>
+                )}
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 } 

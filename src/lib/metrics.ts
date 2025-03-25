@@ -16,6 +16,14 @@ interface RewardIdStats {
   totalCount: string;
 }
 
+interface RewardIdResponse {
+  rewards: Array<{ id: string }>;
+}
+
+interface RewardStatsResponse {
+  [key: string]: Array<{ timestamp: string; totalCount: string }>;
+}
+
 const METRICS_SUBGRAPH_URL = "https://api.studio.thegraph.com/query/82634/open-format-arbitrum-sepolia/version/latest";
 
 export const fetchUniqueUsersMetrics = cache(async (
@@ -41,7 +49,6 @@ export const fetchUniqueUsersMetrics = cache(async (
   `;
 
   try {
-    console.log('Fetching unique users with:', { appId, startTime, endTime }); // Debug log
     const data = await request<{ userRewardAppStats: MetricDataPoint[] }>(
       METRICS_SUBGRAPH_URL,
       query,
@@ -51,7 +58,6 @@ export const fetchUniqueUsersMetrics = cache(async (
         endTime
       }
     );
-    console.log('Unique users response:', data.userRewardAppStats); // Debug log
     return data.userRewardAppStats;
   } catch (error) {
     console.error('Error fetching unique users metrics:', error);
@@ -84,7 +90,6 @@ export const fetchTotalRewardsMetrics = cache(async (
   `;
 
   try {
-    console.log('Fetching total rewards with:', { appId, startTime, endTime }); // Debug log
     const data = await request<{ rewardAppStats: MetricDataPoint[] }>(
       METRICS_SUBGRAPH_URL,
       query,
@@ -94,7 +99,6 @@ export const fetchTotalRewardsMetrics = cache(async (
         endTime
       }
     );
-    console.log('Total rewards response:', data); // Debug log
     return data.rewardAppStats;
   } catch (error) {
     console.error('Error fetching total rewards metrics:', error);
@@ -102,58 +106,72 @@ export const fetchTotalRewardsMetrics = cache(async (
   }
 });
 
-export const fetchRewardDistributionMetrics = cache(async (
-  appId: string
-): Promise<Record<string, RewardIdStats[]> | null> => {
-  const query = `
-    query RewardDistribution($appId: String!) {
-      rewards(where: { app: $appId }, orderBy: createdAt, orderDirection: desc) {
-        rewardId
-        createdAt
+export const fetchRewardDistributionMetrics = cache(
+  async (appId: string): Promise<Record<string, RewardIdStats[]> | null> => {
+    const rewardIdsQuery = `
+      query RewardDistribution($appId: String!) {
+        appRewardIds(where: {app: $appId}) {
+          rewardId
+        }
       }
-    }
-  `;
+    `;
 
-  try {
-    console.log('Fetching reward distribution for appId:', appId);
-    const data = await request<{
-      rewards: { rewardId: string; createdAt: string }[];
-    }>(METRICS_SUBGRAPH_URL, query, { appId });
+    try {
+      const idsData = await request<{
+        appRewardIds: { rewardId: string }[];
+      }>(METRICS_SUBGRAPH_URL, rewardIdsQuery, { appId });
 
-    console.log('Raw rewards data:', data.rewards);
+      if (!idsData.appRewardIds.length) {
+        return null;
+      }
 
-    if (!data.rewards.length) {
-      console.log('No rewards found');
+      let combinedQuery = `
+        query CombinedRewardStats($appId: String!) {
+      `;
+
+      idsData.appRewardIds.forEach((item, index) => {
+        const safeRewardId = `reward_${index}`;
+        combinedQuery += `
+          ${safeRewardId}: rewardAppRewardIdStats(
+            interval: day
+            first: 1
+            where: {appId: $appId, rewardId: "${item.rewardId}"}
+          ) {
+            timestamp
+            totalCount
+            rewardId
+          }
+        `;
+      });
+
+      combinedQuery += `
+        }
+      `;
+
+      const combinedData = await request<Record<string, Array<{
+        timestamp: string;
+        totalCount: string;
+        rewardId: string;
+      }>>>(METRICS_SUBGRAPH_URL, combinedQuery, { appId });
+
+      const finalStatsMap: Record<string, RewardIdStats[]> = {};
+
+      idsData.appRewardIds.forEach((item, index) => {
+        const alias = `reward_${index}`;
+        const stats = combinedData[alias];
+
+        if (stats && stats.length > 0) {
+          finalStatsMap[item.rewardId] = stats.map((stat: any) => ({
+            timestamp: stat.timestamp,
+            totalCount: stat.totalCount.toString(),
+          }));
+        }
+      });
+
+      return finalStatsMap;
+    } catch (error) {
+      console.error("Error fetching reward distribution metrics:", error);
       return null;
     }
-
-    // Count occurrences of each rewardId
-    const rewardCounts = data.rewards.reduce((acc, reward) => {
-      if (!acc[reward.rewardId]) {
-        acc[reward.rewardId] = {
-          count: 0,
-          createdAt: parseInt(reward.createdAt)
-        };
-      }
-      acc[reward.rewardId].count++;
-      return acc;
-    }, {} as Record<string, { count: number; createdAt: number }>);
-
-    console.log('Reward counts:', rewardCounts);
-
-    // Convert to the expected format
-    const finalStatsMap: Record<string, RewardIdStats[]> = {};
-    Object.entries(rewardCounts).forEach(([rewardId, { count, createdAt }]) => {
-      finalStatsMap[rewardId] = [{
-        timestamp: createdAt.toString(),
-        totalCount: count.toString()
-      }];
-    });
-
-    console.log('Final stats map:', finalStatsMap);
-    return finalStatsMap;
-  } catch (error) {
-    console.error('Error fetching reward distribution metrics:', error);
-    return null;
-  }
-});
+  },
+);

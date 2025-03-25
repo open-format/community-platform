@@ -36,7 +36,7 @@ export default function MetricsSection({ appId }: MetricsSectionProps) {
 
   return (
     <div className="space-y-8 pt-6">
-      <h2 className="text-2xl font-semibold tracking-tight">Community insight</h2>
+      <h2 className="text-2xl font-semibold tracking-tight">{t('title')}</h2>
       
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -66,20 +66,16 @@ export default function MetricsSection({ appId }: MetricsSectionProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight">Rewards</h2>
-            <p className="text-sm text-muted-foreground">A list of all the rewards in this community.</p>
+            <h2 className="text-2xl font-semibold tracking-tight">{t('rewards.title')}</h2>
+            <p className="text-sm text-muted-foreground">{t('rewards.description')}</p>
           </div>
-          <div className="rounded-xl text-card-foreground shadow-sm border bg-card/40">
-            <div className="p-6">
-              <RewardIdsList appId={appId} />
-            </div>
-          </div>
+          <RewardIdsList appId={appId} />
         </div>
 
         <div className="space-y-4">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight">Activity</h2>
-            <p className="text-sm text-muted-foreground">A list of the most recent rewards in this community.</p>
+            <h2 className="text-2xl font-semibold tracking-tight">{t('activity.title')}</h2>
+            <p className="text-sm text-muted-foreground">{t('activity.description')}</p>
           </div>
           <div className="rounded-xl text-card-foreground shadow-sm border bg-card/40">
             <div className="p-6">

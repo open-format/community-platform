@@ -29,6 +29,11 @@ interface ChartData {
   value: number;
 }
 
+interface RewardIdStats {
+  timestamp: string;
+  totalCount: string;
+}
+
 const COLORS = [
   'hsl(222.2, 47.4%, 11.2%)', // primary
   'hsl(217.2, 32.6%, 17.5%)', // secondary
@@ -55,7 +60,7 @@ function getColor(index: number): string {
 }
 
 export default function RewardDistributionChart({ appId }: RewardDistributionChartProps) {
-  const t = useTranslations('metrics');
+  const t = useTranslations('metrics.rewardDistribution');
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalRewards, setTotalRewards] = useState(0);
@@ -66,14 +71,18 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
         setIsLoading(true);
         const result = await fetchRewardDistributionMetrics(appId);
         if (result) {
-          const formattedData = Object.entries(result).map(([rewardId, stats]) => ({
-            name: rewardId,
-            value: Number(stats[0]?.totalCount || 0)
-          }));
+          const formattedData = Object.entries(result).map(([rewardId, stats]: [string, RewardIdStats[]]) => {
+            return {
+              name: rewardId,
+              value: Number(stats[0]?.totalCount || 0)
+            };
+          });
           setData(formattedData);
-          // Calculate total rewards
           const total = formattedData.reduce((acc, curr) => acc + curr.value, 0);
           setTotalRewards(total);
+        } else {
+          setData([]);
+          setTotalRewards(0);
         }
       } catch (error) {
         console.error('Error fetching reward distribution data:', error);
@@ -89,7 +98,7 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
     return (
       <div className="flex flex-col">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium">Reward Distribution</h3>
+          <h3 className="text-lg font-medium">{t('title')}</h3>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Skeleton className="h-8 w-16" />
@@ -108,10 +117,10 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
     return (
       <div className="flex flex-col">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium">Reward Distribution</h3>
+          <h3 className="text-lg font-medium">{t('title')}</h3>
         </div>
         <div className="h-[200px] relative flex items-center justify-center">
-          <p className="text-muted-foreground">{t('rewardDistribution.noData')}</p>
+          <p className="text-muted-foreground">{t('noData')}</p>
         </div>
       </div>
     );
@@ -120,7 +129,7 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
   return (
     <div className="flex flex-col">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-medium">Reward Distribution</h3>
+        <h3 className="text-lg font-medium">{t('title')}</h3>
       </div>
 
       <div className="h-[200px] relative">
@@ -176,7 +185,7 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
         {/* Center text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ zIndex: 1 }}>
           <span className="text-2xl font-bold">{totalRewards.toLocaleString()}</span>
-          <span className="text-sm text-muted-foreground">Rewards</span>
+          <span className="text-sm text-muted-foreground">{t('rewards')}</span>
         </div>
       </div>
     </div>

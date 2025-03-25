@@ -809,26 +809,56 @@
     }
   },
   "metrics": {
+    "title": "Community insight",
     "uniqueUsers": {
       "title": "Unique Users",
-      "xAxisLabel": "Date",
-      "yAxisLabel": "Unique Users"
+      "total": "Total Users",
+      "noData": "No user data available",
+      "users": "users",
+      "timeRanges": {
+        "7d": "Last week",
+        "30d": "Last month",
+        "90d": "Last 3 months"
+      }
     },
     "totalRewards": {
       "title": "Total Rewards",
-      "xAxisLabel": "Date",
-      "yAxisLabel": "Total Rewards"
+      "noData": "No reward data available",
+      "rewards": "rewards",
+      "timeRanges": {
+        "7d": "Last week",
+        "30d": "Last month",
+        "90d": "Last 3 months"
+      }
     },
     "rewardDistribution": {
       "title": "Reward Distribution",
-      "rewardId": "Reward ID",
-      "count": "Count",
-      "noData": "No reward data available"
+      "noData": "No distribution data available",
+      "rewards": "Rewards",
+      "rank": "Rank",
+      "rewardId": "Reward Identifier",
+      "totalCount": "Total Count"
     },
-    "timeRanges": {
-      "7d": "Last 7 days",
-      "30d": "Last 30 days",
-      "90d": "Last 90 days"
+    "rewards": {
+      "title": "Rewards",
+      "description": "A list of all rewards in this community.",
+      "rank": "Rank",
+      "rewardId": "Reward ID",
+      "totalCount": "Total Count",
+      "noData": "No rewards data available"
+    },
+    "activity": {
+      "title": "Activity",
+      "description": "A list of the most recent rewards in this community.",
+      "rewardIdentifier": "Reward Identifier",
+      "date": "Date",
+      "user": "User",
+      "noActivity": "No activity yet",
+      "showMore": "Show more",
+      "showLess": "Show less",
+      "ariaLabels": {
+        "viewTransaction": "View transaction"
+      }
     }
   }
 }

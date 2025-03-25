@@ -6,20 +6,22 @@ import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "rec
 import { format, subDays } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslations } from 'next-intl';
 
 interface UniqueUsersChartProps {
   appId: string;
 }
 
 const TIME_RANGES = {
-  "7d": { days: 7, label: "Last week" },
-  "30d": { days: 30, label: "Last month" },
-  "90d": { days: 90, label: "Last 3 months" },
+  "7d": { days: 7 },
+  "30d": { days: 30 },
+  "90d": { days: 90 },
 } as const;
 
 type TimeRange = keyof typeof TIME_RANGES;
 
 export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
+  const t = useTranslations('metrics.uniqueUsers');
   const [data, setData] = useState<any[]>([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [percentageChange, setPercentageChange] = useState(0);
@@ -37,9 +39,9 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
       if (metrics) {
         const formattedData = metrics
           .map(metric => {
-            const date = new Date(parseInt(metric.timestamp) / 1000000);
+            const date = new Date(parseInt(metric.timestamp) / 1000);
             return {
-              date: format(date, "yyyy-MM-dd"),
+              date: metric.timestamp,
               displayDate: timeRange === "7d" 
                 ? format(date, "EEE") 
                 : format(date, "MMM d"),
@@ -77,7 +79,7 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
     return (
       <div className="flex flex-col">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium">Unique Users</h3>
+          <h3 className="text-lg font-medium">{t('title')}</h3>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Skeleton className="h-8 w-16" />
@@ -96,7 +98,7 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
   return (
     <div className="flex flex-col">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-medium">Unique Users</h3>
+        <h3 className="text-lg font-medium">{t('title')}</h3>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="text-2xl font-bold">{totalUsers}</span>
@@ -114,8 +116,8 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(TIME_RANGES).map(([key, { label }]) => (
-                <SelectItem key={key} value={key}>{label}</SelectItem>
+              {Object.entries(TIME_RANGES).map(([key]) => (
+                <SelectItem key={key} value={key}>{t(`timeRanges.${key}`)}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -148,7 +150,7 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
             <Tooltip 
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
-                  const date = new Date(payload[0].payload.date + "T00:00:00");
+                  const date = new Date(parseInt(payload[0].payload.date) / 1000);
                   return (
                     <div className="rounded-lg border bg-background p-2 shadow-sm">
                       <div className="grid gap-2">
@@ -157,7 +159,7 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
                             {format(date, "MMM d, yyyy")}
                           </span>
                           <span className="font-bold">
-                            {payload[0].value} users
+                            {payload[0].value} {t('users')}
                           </span>
                         </div>
                       </div>
