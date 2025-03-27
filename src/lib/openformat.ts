@@ -11,6 +11,7 @@ import {cache} from "react";
 import type {Address} from "viem";
 import {getCurrentUser, getUserHandle} from "./privy";
 import { formatTokenAmount } from "./utils";
+import dayjs from "dayjs";
 
 const apiClient = axios.create({
   baseURL: config.OPENFORMAT_API_URL,
@@ -477,7 +478,9 @@ export async function getAllRewardsByCommunity(
     'rewardId',
   ];
   const rows = rewards.map( r => 
-    `${r.transactionHash},${r.createdAt},${r.user?.id ?? ""},${r.token?.id ?? r.badge?.id ?? ""}`
+    `${r.transactionHash}`
+    +`,${dayjs.unix(Number(r.createdAt)).toISOString()}`
+    +`,${r.user?.id ?? ""},${r.token?.id ?? r.badge?.id ?? ""}`
     +`,${r.tokenAmount === "0" ? 
         r.badgeTokens?.length 
         : formatTokenAmount(BigInt(r.tokenAmount), r.token?.decimals)}`
