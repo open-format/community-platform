@@ -44,11 +44,11 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
               date: metric.timestamp,
               displayDate: timeRange === "7d" 
                 ? format(date, "EEE") 
-                : format(date, "MMM d"),
+                : format(date, "MMM d, yyyy"),
               users: metric.count || 0
             };
           })
-          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
         setData(formattedData);
 
@@ -60,8 +60,8 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
           setTotalUsers(total);
           
           if (formattedData.length > 1) {
-            const firstDay = formattedData[0];
-            const lastDay = formattedData[formattedData.length - 1];
+            const firstDay = formattedData[formattedData.length - 1];
+            const lastDay = formattedData[0];
             const change = ((lastDay.users - firstDay.users) / firstDay.users) * 100;
             setPercentageChange(change);
           } else {
@@ -90,6 +90,9 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
         </div>
         <div className="h-[200px]">
           <Skeleton className="w-full h-full rounded-lg" />
+        </div>
+        <div className="text-xs text-muted-foreground mt-2">
+          <Skeleton className="h-4 w-full" />
         </div>
       </div>
     );
@@ -181,6 +184,9 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
           </AreaChart>
         </ResponsiveContainer>
       </div>
+      <p className="text-xs text-muted-foreground mt-2">
+        {t('description')}
+      </p>
     </div>
   );
 } 

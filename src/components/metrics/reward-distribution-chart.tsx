@@ -1,15 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslations } from 'next-intl';
-import { 
-  ChartContainer, 
-  ChartTooltip, 
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent
-} from "@/components/ui/chart";
 import { 
   PieChart,
   Pie,
@@ -35,16 +27,15 @@ interface RewardIdStats {
 }
 
 const COLORS = [
-  'hsl(222.2, 47.4%, 11.2%)', // primary
-  'hsl(217.2, 32.6%, 17.5%)', // secondary
-  'hsl(215, 20.2%, 65.1%)',   // accent
-  'hsl(0, 84.2%, 60.2%)',     // destructive
-  'hsl(215, 16.3%, 46.9%)',   // muted
-  'hsl(222.2, 47.4%, 11.2%)', // popover
-  'hsl(0, 0%, 100%)',         // card
-  'hsl(214.3, 31.8%, 91.4%)', // border
-  'hsl(214.3, 31.8%, 91.4%)', // input
-  'hsl(222.2, 47.4%, 11.2%)', // ring
+  'hsl(222.2, 47.4%, 11.2%)', // primary - dark blue
+  'hsl(0, 84.2%, 60.2%)',     // destructive - red
+  'hsl(142.1, 76.2%, 36.3%)', // success - green
+  'hsl(215, 20.2%, 65.1%)',   // accent - blue
+  'hsl(262.1, 83.3%, 57.8%)', // purple
+  'hsl(45, 93%, 47.1%)',      // yellow
+  'hsl(346.8, 77.2%, 49.8%)', // pink
+  'hsl(199, 89%, 48.4%)',     // cyan
+  'hsl(24, 95%, 53.1%)',      // orange
 ];
 
 // Generate a color based on index
@@ -56,7 +47,7 @@ function getColor(index: number): string {
   const goldenRatio = 0.618033988749895;
   const hue = (index * goldenRatio * 360) % 360;
   
-  return `hsl(${hue}, 70%, 60%)`;
+  return `hsl(${hue}, 85%, 55%)`;
 }
 
 export default function RewardDistributionChart({ appId }: RewardDistributionChartProps) {
@@ -109,6 +100,9 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
         <div className="h-[200px] relative">
           <Skeleton className="w-full h-full rounded-lg" />
         </div>
+        <div className="text-xs text-muted-foreground mt-2">
+          <Skeleton className="h-4 w-full" />
+        </div>
       </div>
     );
   }
@@ -122,6 +116,9 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
         <div className="h-[200px] relative flex items-center justify-center">
           <p className="text-muted-foreground">{t('noData')}</p>
         </div>
+        <p className="text-sm text-muted-foreground mt-2">
+          {t('description')}
+        </p>
       </div>
     );
   }
@@ -188,6 +185,9 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
           <span className="text-sm text-muted-foreground">{t('rewards')}</span>
         </div>
       </div>
+      <p className="text-xs text-muted-foreground mt-2">
+        {t('description')}
+      </p>
     </div>
   );
 } 

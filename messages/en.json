@@ -811,6 +811,7 @@
   "metrics": {
     "title": "Community insight",
     "uniqueUsers": {
+      "description": "Daily unique users who received rewards. Percentage shows change from first to last day.",
       "title": "Unique Users",
       "total": "Total Users",
       "noData": "No user data available",
@@ -825,6 +826,7 @@
       "title": "Total Rewards",
       "noData": "No reward data available",
       "rewards": "rewards",
+      "description": "The running total of all tokens rewarded in the app over time, across all users and reward types.",
       "timeRanges": {
         "7d": "Last week",
         "30d": "Last month",
@@ -832,6 +834,7 @@
       }
     },
     "rewardDistribution": {
+      "description": "Proportion of rewards by type. Size indicates relative distribution.",
       "title": "Reward Distribution",
       "noData": "No distribution data available",
       "rewards": "Rewards",

@@ -1,27 +1,21 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslations } from 'next-intl';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  ChartContainer, 
-  ChartTooltip, 
-  ChartTooltipContent
-} from "@/components/ui/chart";
 import { 
   BarChart,
   Bar,
   XAxis,
   YAxis,
   ResponsiveContainer,
-  CartesianGrid,
-  Tooltip
+  Tooltip,
+  AreaChart,
+  Area
 } from 'recharts';
 import { useEffect, useState } from "react";
 import { fetchTotalRewardsMetrics } from "@/lib/metrics";
 import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
 
 interface TotalRewardsChartProps {
   appId: string;
@@ -52,23 +46,22 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
     async function fetchData() {
       try {
         setIsLoading(true);
-        const now = Math.floor(Date.now() / 1000); // Current time in seconds
-        const endTime = (now * 1000000).toString(); // Convert to microseconds
-        const startTime = ((now - (TIME_RANGES[timeRange].days * 24 * 60 * 60)) * 1000000).toString(); // Convert to microseconds
+        const now = Math.floor(Date.now() / 1000);
+        const endTime = (now * 1000000).toString();
+        const startTime = ((now - (TIME_RANGES[timeRange].days * 24 * 60 * 60)) * 1000000).toString();
         
         const result = await fetchTotalRewardsMetrics(appId, startTime, endTime);
         if (result) {
           const formattedData = result.reduce((acc: { [key: string]: number }, item) => {
-            const timestamp = parseInt(item.timestamp) / 1000000; // Convert from microseconds to seconds
-            const date = new Date(timestamp * 1000); // Convert seconds to milliseconds
+            const timestamp = parseInt(item.timestamp) / 1000000;
+            const date = new Date(timestamp * 1000); 
             const dateKey = date.toLocaleDateString(undefined, { 
               month: 'short', 
               day: 'numeric',
               year: 'numeric'
             });
             
-            // Aggregate counts by date
-            acc[dateKey] = (acc[dateKey] || 0) + Number(item.totalCount);
+            acc[dateKey] = (acc[dateKey] || 0) + Number(item.count);
             return acc;
           }, {});
 
@@ -84,19 +77,16 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
           setData(sortedData);
 
           // Calculate total rewards and percentage change
-          if (sortedData.length > 0) {
-            // Calculate total rewards by summing all values in the time range
-            const total = sortedData.reduce((sum, day) => sum + day.value, 0);
-            setTotalRewards(total);
+          if (result.length > 0) {
+            const latest = result[result.length - 1];
+            setTotalRewards(Number(latest.totalCount));
             
-            // Calculate percentage change between first and last day
             if (sortedData.length > 1) {
-              const firstDay = sortedData[0];
-              const lastDay = sortedData[sortedData.length - 1];
-              const change = ((lastDay.value - firstDay.value) / firstDay.value) * 100;
+              const firstPoint = sortedData[0];
+              const lastPoint = sortedData[sortedData.length - 1];
+              const change = ((lastPoint.value - firstPoint.value) / firstPoint.value) * 100;
               setPercentageChange(change);
             } else {
-              // If there's only one data point, set percentage change to 0
               setPercentageChange(0);
             }
           }
@@ -113,19 +103,22 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
+      <div className="flex flex-col">
+        <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-medium">{t('title')}</h3>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <Skeleton className="h-8 w-16" />
-              <Skeleton className="h-6 w-16" />
+              <Skeleton className="h-6 w-12" />
+              <Skeleton className="h-8 w-12" />
             </div>
-            <Skeleton className="h-8 w-[130px]" />
+            <Skeleton className="h-8 w-[110px]" />
           </div>
         </div>
         <div className="h-[200px]">
           <Skeleton className="w-full h-full" />
+        </div>
+        <div className="text-xs text-muted-foreground mt-2">
+          <Skeleton className="h-4 w-full" />
         </div>
       </div>
     );
@@ -167,38 +160,15 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
           <BarChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
             <XAxis 
               dataKey="name"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: '#64748B', fontSize: 12 }}
-              dy={10}
+              tick={{ fontSize: 12 }}
             />
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: '#64748B', fontSize: 12 }}
-              dx={-10}
+            <YAxis 
+              tick={{ fontSize: 12 }}
+              tickFormatter={(value) => value.toLocaleString()}
             />
-            <Tooltip 
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  const date = new Date(payload[0].payload.name);
-                  return (
-                    <div className="rounded-lg border bg-background p-2 shadow-sm">
-                      <div className="grid gap-2">
-                        <div className="flex flex-col">
-                          <span className="text-[0.70rem] uppercase text-muted-foreground">
-                            {format(date, "MMM d, yyyy")}
-                          </span>
-                          <span className="font-bold">
-                            {payload[0].value} {t('rewards')}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
-                return null;
-              }}
+            <Tooltip
+              formatter={(value: number) => [value.toLocaleString(), t('rewards')]}
+              labelFormatter={(label) => label}
             />
             <Bar 
               dataKey="value" 
@@ -208,6 +178,9 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
           </BarChart>
         </ResponsiveContainer>
       </div>
+      <p className="text-xs text-muted-foreground mt-2">
+        {t('description')}
+      </p>
     </div>
   );
 }

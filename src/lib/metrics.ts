@@ -1,5 +1,6 @@
 import { request } from 'graphql-request';
 import { cache } from 'react';
+import { getChainFromCommunityOrCookie } from './openformat';
 
 interface MetricDataPoint {
   timestamp: string;
@@ -24,13 +25,14 @@ interface RewardStatsResponse {
   [key: string]: Array<{ timestamp: string; totalCount: string }>;
 }
 
-const METRICS_SUBGRAPH_URL = "https://api.studio.thegraph.com/query/82634/open-format-arbitrum-sepolia/version/latest";
-
 export const fetchUniqueUsersMetrics = cache(async (
   appId: string, 
   startTime?: string, 
   endTime?: string
 ): Promise<MetricDataPoint[] | null> => {
+    const chain = await getChainFromCommunityOrCookie(appId);
+    if (!chain) return null;
+
   const query = `
     query UniqueUsers($appId: String!, $startTime: String, $endTime: String) {
       userRewardAppStats(
@@ -50,7 +52,7 @@ export const fetchUniqueUsersMetrics = cache(async (
 
   try {
     const data = await request<{ userRewardAppStats: MetricDataPoint[] }>(
-      METRICS_SUBGRAPH_URL,
+      chain.SUBGRAPH_URL,
       query,
       {
         appId,
@@ -70,6 +72,9 @@ export const fetchTotalRewardsMetrics = cache(async (
   startTime?: string, 
   endTime?: string
 ): Promise<MetricDataPoint[] | null> => {
+  const chain = await getChainFromCommunityOrCookie(appId);
+  if (!chain) return null;
+
   const query = `
     query TotalRewards($appId: String!, $startTime: String, $endTime: String) {
       rewardAppStats(
@@ -91,7 +96,7 @@ export const fetchTotalRewardsMetrics = cache(async (
 
   try {
     const data = await request<{ rewardAppStats: MetricDataPoint[] }>(
-      METRICS_SUBGRAPH_URL,
+      chain.SUBGRAPH_URL,
       query,
       {
         appId,
@@ -108,6 +113,9 @@ export const fetchTotalRewardsMetrics = cache(async (
 
 export const fetchRewardDistributionMetrics = cache(
   async (appId: string): Promise<Record<string, RewardIdStats[]> | null> => {
+    const chain = await getChainFromCommunityOrCookie(appId);
+    if (!chain) return null;
+
     const rewardIdsQuery = `
       query RewardDistribution($appId: String!) {
         appRewardIds(where: {app: $appId}) {
@@ -119,7 +127,7 @@ export const fetchRewardDistributionMetrics = cache(
     try {
       const idsData = await request<{
         appRewardIds: { rewardId: string }[];
-      }>(METRICS_SUBGRAPH_URL, rewardIdsQuery, { appId });
+      }>(chain.SUBGRAPH_URL, rewardIdsQuery, { appId });
 
       if (!idsData.appRewardIds.length) {
         return null;
@@ -152,7 +160,7 @@ export const fetchRewardDistributionMetrics = cache(
         timestamp: string;
         totalCount: string;
         rewardId: string;
-      }>>>(METRICS_SUBGRAPH_URL, combinedQuery, { appId });
+      }>>>(chain.SUBGRAPH_URL, combinedQuery, { appId });
 
       const finalStatsMap: Record<string, RewardIdStats[]> = {};
 
