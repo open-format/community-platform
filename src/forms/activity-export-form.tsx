@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import 'react-datepicker/dist/react-datepicker.css';
 
 import {
   Dialog,
