@@ -468,27 +468,16 @@ export async function getAllRewardsByCommunity(
   });
 
   const headers = [
-    'id',
     'transactionHash',
-    'metadataURI',
-    'rewardId',
-    'rewardType',
-    'tokenAddress',
-    'tokenName',
-    'tokenSymbol',
-    'tokenAmount',
-    'badgeAddress',
-    'badgeName',
-    'badgeMetadataURI',
-    'badgeAmount',
-    'userAddress',
     'createdAt',
+    'userAddress',
+    'tokenAddress',
+    'amount',
+    'rewardId',
   ];
   const rows = rewards.map( r => 
-    `${r.id},${r.transactionHash},${r.metadataURI},${r.rewardId},${r.rewardType},`
-    +`${r.token?.id ?? ""},${r.token?.name ?? ""},${r.token?.symbol ?? ""},${r.tokenAmount},`
-    +`${r.badge?.id ?? ""},${r.badge?.name ?? ""},${r.badge?.metadataURI ?? ""},${r.badgeTokens?.length ?? ""},`
-    +`${r.user?.id ?? ""},${r.createdAt}`
+    `${r.transactionHash},${r.createdAt},${r.user?.id ?? ""},${r.token?.id ?? r.badge?.id ?? ""}`
+    +`,${r.tokenAmount === "0" ? r.badgeTokens?.length : r.tokenAmount},${r.rewardId}`
   );
   return [headers.join(','), ...rows].join('\n');
 }
