@@ -173,9 +173,29 @@
     },
     "activity": {
       "title": "Activity",
+      "export": "Export",
       "description": "A list of the most recent rewards in this community.",
       "empty": "No activity yet",
       "viewAll": "View All"
+    },
+    "exportForm": {
+      "title": "Export activities to CSV file",
+      "description": "Filter activities to export",
+      "tokenLabel": "Token",
+      "rewardTypeLabel": "Reward Type",
+      "rewardTypePlaceholder": "Reward Type: Badge or Token",
+      "rewardTypeBadge": "Badge",
+      "rewardTypeToken": "Token",
+      "rewardTypeAll": "All Reward Types",
+      "startDateLabel": "Start Date",
+      "startDatePlaceholder": "Pick a start date",
+      "endDateLabel": "End Date",
+      "endDatePlaceholder": "Pick an end date",
+      "clearLabel": "Clear",
+      "exportSuccess": "Activities exported successfully",
+      "exportError": "There was an error exporting activities",
+      "exportingLabel": "Exporting...",
+      "exportLabel": "Export"
     }
   },
   "rewards": {
@@ -785,7 +805,9 @@
     "enterAddress": "Enter a valid contract address",
     "createNew": "Create a new token or badge in your community",
     "tokens": "Tokens",
-    "badges": "Badges"
+    "badges": "Badges",
+    "allHeading": "All",
+    "allName": "All tokens and badges"
   },
   "userSelector": {
     "icons": {
@@ -799,6 +821,12 @@
       "userFound": "User found",
       "userNotFound": "User not found"
     }
+  },
+  "rewardTypeSelector": {
+    "searchPlaceholder": "Select reward token type...",
+    "badgeName": "Badge",
+    "tokenName": "Token",
+    "allName": "All reward types"
   },
   "layout": {
     "logo": "OpenFormat Logo",
