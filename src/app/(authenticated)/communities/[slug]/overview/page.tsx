@@ -1,4 +1,4 @@
-import Activity from "@/components/activity";
+import ActivityCard from "@/components/activity-card";
 import Leaderboard from "@/components/leaderboard";
 import RefreshButton from "@/components/refresh-button";
 import Shortcuts from "@/components/shortcuts";
@@ -8,10 +8,10 @@ import { fetchCommunity, generateLeaderboard } from "@/lib/openformat";
 import { getTranslations } from "next-intl/server";
 
 export default async function Overview({ params }: { params: Promise<{ slug: string }> }) {
-  const t = await getTranslations("overview");
-  const slug = (await params).slug as `0x${string}`;
-  const community = await fetchCommunity(slug);
-  const leaderboard = await generateLeaderboard(slug, community.metadata.token_to_display);
+  const t                           = await getTranslations("overview");
+  const slug                        = (await params).slug as `0x${string}`;
+  const community                   = await fetchCommunity(slug);
+  const leaderboard                 = await generateLeaderboard(slug, community.metadata.token_to_display);
 
   if (!community) {
     return (
@@ -52,18 +52,7 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
           </CardContent>
         </Card>
 
-        <Card variant="borderless">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <h1>{t("activity.title")}</h1>
-              <RefreshButton />
-            </div>
-            <CardDescription>{t("activity.description")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Activity rewards={community?.rewards || []} showUserAddress={true} />
-          </CardContent>
-        </Card>
+        <ActivityCard community={community} />
       </div>
     </div>
   );

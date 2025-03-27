@@ -1,3 +1,20 @@
+# [0.15.0](https://github.com/open-format/community-platform/compare/v0.14.0...v0.15.0) (2025-03-27)
+
+
+### Bug Fixes
+
+* Added default 'All' value for tokenAddress and rewardType ([73d493e](https://github.com/open-format/community-platform/commit/73d493ea6ca30e72eb8d81d3d8d56388cefe0aaf))
+* Converting timestamps to dates in csv export ([b50cc55](https://github.com/open-format/community-platform/commit/b50cc5522e2fb180b5fcc9d8b52df063d3d5cd89))
+* Fixed overlap problem with calendar and reward type select ([a03b591](https://github.com/open-format/community-platform/commit/a03b591e3e6a42d073194c9102ee4be888daaaba))
+* Replacing date picker component in Activities export form ([e1ab863](https://github.com/open-format/community-platform/commit/e1ab863300aa843fcb8d9cd62e72c21571181c6b))
+* Solved bug with selects in export activities modal ([886d763](https://github.com/open-format/community-platform/commit/886d76363286a9dd1cd13be17ab5341d143a37c3))
+* Updated CSV columns for Activity export ([3a94c2f](https://github.com/open-format/community-platform/commit/3a94c2fa9cd77e2a04576a11e6e07b1ae982737c))
+
+
+### Features
+
+* Formatting token amount in activities csv export ([ed03cb1](https://github.com/open-format/community-platform/commit/ed03cb1f4cb7c0ce61c30288958dadcfaa4ce7cc))
+
 # [0.14.0](https://github.com/open-format/community-platform/compare/v0.13.0...v0.14.0) (2025-03-24)
 
 
