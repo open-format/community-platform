@@ -176,7 +176,8 @@
         "thisMonth": "This Month",
         "lastMonth": "Last Month",
         "threeMonths": "Three Months",
-        "allTime": "All time"
+        "allTime": "All time",
+        "lastWeek": "Last Week"
       }
     },
     "activity": {

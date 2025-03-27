@@ -162,7 +162,7 @@ export default function Leaderboard({
   const [localData, setLocalData] = useState<LeaderboardEntry[] | null>( data );
   const [isLoading, setIsLoading] = useState( initialLoading );
   const [date, setDate] = useState<DateRange | undefined>( {
-    from: new Date(new Date().setDate(new Date().getDate() - 30)),
+    from: new Date(new Date().setDate(new Date().getDate() - 7)),
     to: new Date(),
   } );
 

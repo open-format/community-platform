@@ -17,10 +17,10 @@ export default function DatePickerWithPresets({onDateChange}: DatePickerProps) {
   const today = new Date();
   const t = useTranslations( "overview.leaderboard" );
   const [date, setDate] = useState<DateRange | undefined>( {
-    from: new Date( new Date().setDate( today.getDate() - 30 ) ),
+    from: new Date( new Date().setDate( today.getDate() - 7 ) ),
     to: new Date(),
   } );
-  const [preset, setPreset] = useState<string>( "0" );
+  const [preset, setPreset] = useState<string>( "5" );
   const [startMonth, setStartMonth] = useState( new Date( new Date().setDate( today.getDate() - 30 ) ) );
   const [endMonth, setEndMonth] = useState( new Date() );
   const presets = {
@@ -29,6 +29,7 @@ export default function DatePickerWithPresets({onDateChange}: DatePickerProps) {
     "2": "Three months",
     "3": "All time",
     "4": "Custom",
+    "5": "Last week",
   };
 
   const daysAgo = (n: number) => {
@@ -80,7 +81,7 @@ export default function DatePickerWithPresets({onDateChange}: DatePickerProps) {
         <Select
           value={preset}
           onValueChange={(value) => {
-            if (value === '0') {
+            if (value === "0") {
               const newFrom = daysAgo( 30 );
               const newDate: DateRange = {
                 from: newFrom,
@@ -99,25 +100,35 @@ export default function DatePickerWithPresets({onDateChange}: DatePickerProps) {
               setDate( newDate );
               setStartMonth( thisMonth );
               setPreset( "1" );
-            } else if (value === '2') {
+            } else if (value === "2") {
               const newFrom = daysAgo( 90 );
               const newDate: DateRange = {
                 from: newFrom,
-                to: new Date(),
+                to: today,
               };
               setDate( newDate );
               setStartMonth( newFrom )
               setEndMonth( today );
               setPreset( "2" );
-            } else if (value === '3') {
+            } else if (value === "3") {
               const newDate: DateRange = {
                 from: new Date( 2022, 3, 2 ),
-                to: new Date(),
+                to: today,
               };
               setDate( newDate );
               setStartMonth( new Date( 2022, 3, 2 ) )
               setEndMonth( today );
               setPreset( "3" );
+            } else if (value === "5") {
+              const newFrom = daysAgo( 7 );
+              const newDate: DateRange = {
+                from: newFrom,
+                to: today,
+              };
+              setDate( newDate );
+              setStartMonth( newFrom )
+              setEndMonth( today );
+              setPreset( "5" );
             }
           }
           }
@@ -127,8 +138,9 @@ export default function DatePickerWithPresets({onDateChange}: DatePickerProps) {
           </SelectTrigger>
           <SelectContent position="popper">
             <SelectItem value="4">{t( "datePicker.custom" )}</SelectItem>
-            <SelectItem value="0">{t( "datePicker.lastMonth" )}</SelectItem>
+            <SelectItem value="5">{t( "datePicker.lastWeek" )}</SelectItem>
             <SelectItem value="1">{t( "datePicker.thisMonth" )}</SelectItem>
+            <SelectItem value="0">{t( "datePicker.lastMonth" )}</SelectItem>
             <SelectItem value="2">{t( "datePicker.threeMonths" )}</SelectItem>
             <SelectItem value="3">{t( "datePicker.allTime" )}</SelectItem>
           </SelectContent>
