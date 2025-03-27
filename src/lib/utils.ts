@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { twMerge } from "tailwind-merge";
 import type { Address } from "viem";
+import { etherUnits, formatUnits as viemFormatUnits } from "viem";
 dayjs.extend(relativeTime);
 
 export function cn(...inputs: ClassValue[]) {
@@ -188,4 +189,11 @@ export function getAddress(user: User | null): Address {
 
 export function filterVisibleTokens(tokens: Token[], hiddenTokens: string[] = []) {
   return tokens.filter(token => !hiddenTokens.includes(token.token.id));
+}
+
+export function formatTokenAmount(
+  amount: bigint = BigInt(0),
+  tokenDecimals: number|null|undefined
+): string {
+  return viemFormatUnits(amount, tokenDecimals ?? etherUnits['wei']);
 }
