@@ -10,6 +10,7 @@ import {cookies} from "next/headers";
 import {cache} from "react";
 import type {Address} from "viem";
 import {getCurrentUser, getUserHandle} from "./privy";
+import { formatTokenAmount } from "./utils";
 
 const apiClient = axios.create({
   baseURL: config.OPENFORMAT_API_URL,
@@ -477,7 +478,10 @@ export async function getAllRewardsByCommunity(
   ];
   const rows = rewards.map( r => 
     `${r.transactionHash},${r.createdAt},${r.user?.id ?? ""},${r.token?.id ?? r.badge?.id ?? ""}`
-    +`,${r.tokenAmount === "0" ? r.badgeTokens?.length : r.tokenAmount},${r.rewardId}`
+    +`,${r.tokenAmount === "0" ? 
+        r.badgeTokens?.length 
+        : formatTokenAmount(BigInt(r.tokenAmount), r.token?.decimals)}`
+    +`,${r.rewardId}`
   );
   return [headers.join(','), ...rows].join('\n');
 }
@@ -530,6 +534,7 @@ function getRewardQuery(
             id
             name
             symbol
+            decimals
           }
           tokenAmount
           badge {

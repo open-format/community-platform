@@ -105,6 +105,7 @@ type Reward = {
     id: string;
     name: string;
     symbol: string;
+    decimals: number;
   };
   tokenAmount: string;
   badge: {
