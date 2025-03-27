@@ -22,6 +22,11 @@ import { useState } from "react";
 import TokenSelector from "@/components/token-selector";
 import { getAllRewardsByCommunity } from "@/lib/openformat";
 import RewardTypeSelector from "@/components/reward-type-selector";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
 
 interface ActivityExportFormProps {
   open: boolean;
@@ -89,6 +94,9 @@ export function ActivityExportForm({ open, close, community }: ActivityExportFor
     }
   }
 
+  const startDateWatch = form.watch("startDate");
+  const endDateWatch = form.watch("endDate");
+
   return (
     <Dialog open={open} onOpenChange={close}>
       <DialogContent className="w-full max-w-2xl">
@@ -110,20 +118,28 @@ export function ActivityExportForm({ open, close, community }: ActivityExportFor
                     <div className="flex items-center gap-2">
                       <FormLabel>{t('startDateLabel')}</FormLabel>
                     </div>
-                    <FormControl>
-                    <DatePicker
-                      selected={field.value}
-                      onChange={field.onChange}
-                      placeholderText="Start Date"
-                      isClearable
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                      selectsStart
-                      startDate={field.value}
-                      endDate={form.getValues("endDate")}
-                      startOpen={false}
-                      disabled={isLoading}
-                    />
-                    </FormControl>
+                    <Popover modal={true}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn("w-[240px] pl-3 text-left font-normal",!field.value && "text-muted-foreground")}
+                          >
+                            {field.value ? (format(field.value, "PPP")) : (<span>{t('startDatePlaceholder')}</span>)}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={{after: endDateWatch ?? new Date()}}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>                    
                     <FormMessage />
                   </FormItem>
                 )}
@@ -137,20 +153,28 @@ export function ActivityExportForm({ open, close, community }: ActivityExportFor
                     <div className="flex items-center gap-2">
                       <FormLabel>{t('endDateLabel')}</FormLabel>
                     </div>
-                    <FormControl>
-                    <DatePicker
-                      selected={field.value}
-                      onChange={field.onChange}
-                      placeholderText="End Date"
-                      isClearable
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                      selectsEnd
-                      startDate={form.getValues("startDate")}
-                      endDate={field.value}
-                      minDate={form.getValues("startDate")}
-                      disabled={isLoading}
-                    />
-                    </FormControl>
+                    <Popover modal={true}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn("w-[240px] pl-3 text-left font-normal",!field.value && "text-muted-foreground")}
+                          >
+                            {field.value ? (format(field.value, "PPP")) : (<span>{t('endDatePlaceholder')}</span>)}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={{before: startDateWatch ?? new Date("1900-01-01")}}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>                    
                     <FormMessage />
                   </FormItem>
                 )}
@@ -210,17 +234,6 @@ export function ActivityExportForm({ open, close, community }: ActivityExportFor
               type="submit"
               disabled={isLoading}
             >{isLoading ? t('exportingLabel') : t('exportLabel')}</Button>
-            <Button 
-              disabled={isLoading}
-              variant={"secondary"}
-              onClick={(e) => {
-                e.preventDefault();
-                form.reset();
-                setShouldRevalidate(true);          
-              }}
-            >
-              {t('clearLabel')}
-            </Button>
           </form>
         </Form>
       </DialogContent>
