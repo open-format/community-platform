@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import {
@@ -21,12 +20,12 @@ import { useRevalidate } from "@/hooks/useRevalidate";
 import { useState } from "react";
 import TokenSelector from "@/components/token-selector";
 import { getAllRewardsByCommunity } from "@/lib/openformat";
-import RewardTypeSelector from "@/components/reward-type-selector";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ActivityExportFormProps {
   open: boolean;
@@ -185,17 +184,29 @@ export function ActivityExportForm({ open, close, community }: ActivityExportFor
               control={form.control}
               name="rewardType"
               render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col gap-2">
-                  <FormLabel>{t('rewardTypeLabel')}</FormLabel>
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2">
+                    <p>{t('rewardTypeLabel')}</p>
+                  </FormLabel>
                   <FormControl>
-                    <RewardTypeSelector 
-                      value={field.value}
-                      includeAllOption={true}
-                      onChange={field.onChange}
-                      onSelectedItemChange={(val) => {
+                    <Select
+                    key={'custom-key' + field.value}
+                      onValueChange={(value) => {
+                        field.onChange(value);
                         form.setValue("tokenAddress", 'All');
                       }}
-                    />
+                      defaultValue={field.value}
+                      disabled={isLoading}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('rewardTypePlaceholder')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="All">{t('rewardTypeAll')}</SelectItem>
+                        <SelectItem value="Badge">{t('rewardTypeBadge')}</SelectItem>
+                        <SelectItem value="Token">{t('rewardTypeToken')}</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -210,6 +221,7 @@ export function ActivityExportForm({ open, close, community }: ActivityExportFor
                   <FormLabel>{t('tokenLabel')}</FormLabel>
                   <FormControl>
                     <TokenSelector
+                      forceModal={true}
                       tokens={community.tokens}
                       badges={community.badges}
                       value={field.value ?? ""}

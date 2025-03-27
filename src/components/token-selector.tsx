@@ -25,6 +25,7 @@ export default function TokenSelector({
   onChange,
   onTokenTypeChange,
   includeAllOption,
+  forceModal,
 }: {
   tokens: Token[];
   badges: Badge[];
@@ -32,6 +33,7 @@ export default function TokenSelector({
   onChange: (value: string) => void;
   onTokenTypeChange?: (isBadge: boolean, value: string) => void;
   includeAllOption?: boolean;
+  forceModal?: boolean;
 }) {
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
@@ -101,7 +103,7 @@ export default function TokenSelector({
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={forceModal}>
       <PopoverTrigger asChild>
         <Button variant="outline" role="combobox" aria-expanded={open} className="justify-between flex-1">
           {getDisplayValue()}
