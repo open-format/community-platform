@@ -1,14 +1,6 @@
 "use client";
 
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import {
   Table,
   TableBody,
   TableCell,
@@ -21,9 +13,7 @@ import { addressSplitter, desanitizeString, timeAgo } from "@/lib/utils";
 import { CoinsIcon, ExternalLinkIcon, TrophyIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useState } from "react";
-
-const ITEMS_PER_PAGE = 5;
+import { Skeleton } from "./ui/skeleton";
 
 export default function ActivityCard({
   rewards,
@@ -32,7 +22,6 @@ export default function ActivityCard({
 }) {
   const t = useTranslations("metrics.activity");
   const chain = useCurrentChain();
-  const [currentPage, setCurrentPage] = useState(1);
 
   function getIcon(reward: Reward) {
     if (reward.badgeTokens.length > 0) {
@@ -49,10 +38,6 @@ export default function ActivityCard({
     );
   }
 
-  const totalPages = Math.ceil(rewards.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const displayRewards = rewards.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
   return (
     <div className="space-y-4">
       <Table>
@@ -65,7 +50,7 @@ export default function ActivityCard({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {displayRewards.map((reward) => (
+          {rewards.map((reward) => (
             <TableRow key={reward.id}>
               <TableCell>
                 <div className="flex items-center gap-2 h-8">
@@ -103,36 +88,42 @@ export default function ActivityCard({
           ))}
         </TableBody>
       </Table>
-      {totalPages > 1 && (
-        <div className="mt-4">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  aria-disabled={currentPage === 1}
-                />
-              </PaginationItem>
-              {[...Array(totalPages)].map((_, i) => (
-                <PaginationItem key={i + 1}>
-                  <PaginationLink
-                    onClick={() => setCurrentPage(i + 1)}
-                    isActive={currentPage === i + 1}
-                  >
-                    {i + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  aria-disabled={currentPage === totalPages}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      )}
+    </div>
+  );
+}
+
+export function ActivityCardSkeleton() {
+  const t = useTranslations("metrics.activity");
+  return (
+    <div className="space-y-4">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{t("rewardIdentifier")}</TableHead>
+            <TableHead>{t("date")}</TableHead>
+            <TableHead>{t("user")}</TableHead>
+            <TableHead className="w-[50px]" />
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <TableRow key={index}>
+              <TableCell>
+                <Skeleton className="w-full h-8" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="w-full h-8" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="w-full h-8" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="w-full h-8" />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }
