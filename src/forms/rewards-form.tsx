@@ -258,7 +258,7 @@ export default function RewardsForm({ community }: { community: Community }) {
                     badges={community.badges}
                     value={field.value}
                     onChange={field.onChange}
-                    onTokenTypeChange={(isBadge) => {
+                    onTokenTypeChange={(isBadge, value) => {
                       if (isBadge) {
                         form.setValue("amount", 1);
                       } else {

@@ -1,3 +1,57 @@
+# [0.15.0](https://github.com/open-format/community-platform/compare/v0.14.0...v0.15.0) (2025-03-27)
+
+
+### Bug Fixes
+
+* Added default 'All' value for tokenAddress and rewardType ([73d493e](https://github.com/open-format/community-platform/commit/73d493ea6ca30e72eb8d81d3d8d56388cefe0aaf))
+* Converting timestamps to dates in csv export ([b50cc55](https://github.com/open-format/community-platform/commit/b50cc5522e2fb180b5fcc9d8b52df063d3d5cd89))
+* Fixed overlap problem with calendar and reward type select ([a03b591](https://github.com/open-format/community-platform/commit/a03b591e3e6a42d073194c9102ee4be888daaaba))
+* Replacing date picker component in Activities export form ([e1ab863](https://github.com/open-format/community-platform/commit/e1ab863300aa843fcb8d9cd62e72c21571181c6b))
+* Solved bug with selects in export activities modal ([886d763](https://github.com/open-format/community-platform/commit/886d76363286a9dd1cd13be17ab5341d143a37c3))
+* Updated CSV columns for Activity export ([3a94c2f](https://github.com/open-format/community-platform/commit/3a94c2fa9cd77e2a04576a11e6e07b1ae982737c))
+
+
+### Features
+
+* Formatting token amount in activities csv export ([ed03cb1](https://github.com/open-format/community-platform/commit/ed03cb1f4cb7c0ce61c30288958dadcfaa4ce7cc))
+
+# [0.14.0](https://github.com/open-format/community-platform/compare/v0.13.0...v0.14.0) (2025-03-24)
+
+
+### Features
+
+* Hide create api key item to not community owners ([fab8633](https://github.com/open-format/community-platform/commit/fab8633ae7faf60d62afee5f80aa51b490979d07))
+* Only check if communities in the pathname. ([2139a4f](https://github.com/open-format/community-platform/commit/2139a4f9bac476daf576a33cef20b3eb55737f27))
+
+# [0.13.0](https://github.com/open-format/community-platform/compare/v0.12.1...v0.13.0) (2025-03-24)
+
+
+### Features
+
+* add Telegram account linking functionality ([0c418b2](https://github.com/open-format/community-platform/commit/0c418b239bd2d530f28b5eeb799090659761c87a))
+* added account unlinking functionality and ui and updated error handling ([4ed0f57](https://github.com/open-format/community-platform/commit/4ed0f5701d3452ef332282a3a4ff4cdbeaf16e48))
+
+## [0.12.1](https://github.com/open-format/community-platform/compare/v0.12.0...v0.12.1) (2025-03-14)
+
+
+### Bug Fixes
+
+* token symbol in leaderboard header ([6fa21fc](https://github.com/open-format/community-platform/commit/6fa21fc2114944ac140b41ab6fdbf93b24d84bec))
+
+# [0.12.0](https://github.com/open-format/community-platform/compare/v0.11.1...v0.12.0) (2025-03-14)
+
+
+### Features
+
+* Display Badge Address on Badge Item Card in BadgeGrid component ([1fd0812](https://github.com/open-format/community-platform/commit/1fd081220a015b3c935d5271047fbd9702a5bf39))
+
+## [0.11.1](https://github.com/open-format/community-platform/compare/v0.11.0...v0.11.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* Adjust leaderboard XP filter threshold to show minimal entries ([87b25ba](https://github.com/open-format/community-platform/commit/87b25ba7aa3e8c9433deacd070104a741d59eb4d))
+
 # [0.11.0](https://github.com/open-format/community-platform/compare/v0.10.0...v0.11.0) (2025-03-11)
 
 

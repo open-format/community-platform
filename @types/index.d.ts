@@ -70,6 +70,7 @@ type Community = {
     dark_mode: boolean;
   };
   tiers: Tier[];
+  rewards?: Reward[] | null;
 };
 
 type Token = {
@@ -104,9 +105,11 @@ type Reward = {
     id: string;
     name: string;
     symbol: string;
+    decimals: number;
   };
   tokenAmount: string;
   badge: {
+    id?: string;
     name: string;
     metadataURI: string;
   };
@@ -140,4 +143,71 @@ type CurrentUser = {
   id: string;
   wallet_address: Address;
   apps: string[];
+};
+
+type BatchRewardEntry = {
+  user: string;
+  token: string;
+  userAddress?: string | null | undefined;
+  tokenAddress?: string | null | undefined;
+  amount: number;
+  actionType: string;
+  rewardId: string;
+};
+
+type BatchRewardSettings = {
+  header: boolean;
+  delimiter: string | null | undefined;
+  multicall: boolean;
+};
+
+type BatchRewardProgressInfo = {
+  total: number;
+  failed: number;
+  success: number;
+};
+
+type BatchRewardEntryResult = {
+  success: boolean;
+  transactionHash: string | null | undefined;
+  errorMessage: string | null | undefined;
+  entry: BatchRewardEntry;
+};
+
+type RewardBadgeParams = {
+  actionType: "mint-badge";
+  communityAddress: string;
+  badgeAddress: string;
+  receiverAddress: string;
+  rewardId: string;
+  amount: number;
+  metadata: string;
+  activityType: string;
+};
+
+type RewardTokenMintParams = {
+  actionType: "mint-token";
+  communityAddress: string;
+  tokenAddress: string;
+  receiverAddress: string;
+  rewardId: string;
+  amount: number;
+  metadata: string;
+  activityType: string;
+};
+
+type RewardTokenTransferParams = {
+  actionType: "transfer-token";
+  communityAddress: string;
+  tokenAddress: string;
+  ownerAddress: string;
+  receiverAddress: string;
+  rewardId: string;
+  amount: number;
+  metadata: string;
+  activityType: string;
+};
+
+type RewardListResponse = {
+  [key: `rewards_${number}`]: Reward[];
 };

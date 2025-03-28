@@ -172,9 +172,29 @@
     },
     "activity": {
       "title": "Activity",
+      "export": "Export",
       "description": "A list of the most recent rewards in this community.",
       "empty": "No activity yet",
       "viewAll": "View All"
+    },
+    "exportForm": {
+      "title": "Export activities to CSV file",
+      "description": "Filter activities to export",
+      "tokenLabel": "Token",
+      "rewardTypeLabel": "Reward Type",
+      "rewardTypePlaceholder": "Reward Type: Badge or Token",
+      "rewardTypeBadge": "Badge",
+      "rewardTypeToken": "Token",
+      "rewardTypeAll": "All Reward Types",
+      "startDateLabel": "Start Date",
+      "startDatePlaceholder": "Pick a start date",
+      "endDateLabel": "End Date",
+      "endDatePlaceholder": "Pick an end date",
+      "clearLabel": "Clear",
+      "exportSuccess": "Activities exported successfully",
+      "exportError": "There was an error exporting activities",
+      "exportingLabel": "Exporting...",
+      "exportLabel": "Export"
     }
   },
   "rewards": {
@@ -355,6 +375,49 @@
       "connect": "Connect {service} account",
       "connected": "Connected to {service} as {username}",
       "disconnect": "Disconnect {service} account"
+    },
+    "discord": {
+      "connect": "Connect Discord",
+      "connected": "Connected to Discord",
+      "unlinked": "Discord account disconnected",
+      "errors": {
+        "unlinkFailed": "Failed to disconnect Discord"
+      }
+    },
+    "github": {
+      "connect": "Connect Github",
+      "connected": "Connected to Github",
+      "unlinked": "GitHub account disconnected",
+      "errors": {
+        "unlinkFailed": "Failed to disconnect GitHub"
+      }
+    },
+    "telegram": {
+      "connect": "Connect Telegram",
+      "connected": "Connected to Telegram",
+      "unlinked": "Telegram account disconnected",
+      "errors": {
+        "linkFailed": "Failed to connect Telegram",
+        "unlinkFailed": "Failed to disconnect Telegram"
+      },
+      "ariaLabels": {
+        "connect": "Connect Telegram account",
+        "disconnect": "Disconnect Telegram account"
+      }
+    },
+    "google": {
+      "connect": "Connect Google",
+      "connected": "Connected to Google",
+      "errors": {
+        "unlinkFailed": "Failed to disconnect Google"
+      }
+    },
+    "email": {
+      "connect": "Connect Email",
+      "connected": "Connected to Email",
+      "errors": {
+        "unlinkFailed": "Failed to disconnect Email"
+      }
     }
   },
   "activity": {
@@ -615,7 +678,9 @@
     "enterAddress": "Enter a valid contract address",
     "createNew": "Create a new token or badge in your community",
     "tokens": "Tokens",
-    "badges": "Badges"
+    "badges": "Badges",
+    "allHeading": "All",
+    "allName": "All tokens and badges"
   },
   "userSelector": {
     "icons": {
@@ -629,6 +694,12 @@
       "userFound": "User found",
       "userNotFound": "User not found"
     }
+  },
+  "rewardTypeSelector": {
+    "searchPlaceholder": "Select reward token type...",
+    "badgeName": "Badge",
+    "tokenName": "Token",
+    "allName": "All reward types"
   },
   "layout": {
     "logo": "OpenFormat Logo",
