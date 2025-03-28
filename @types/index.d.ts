@@ -148,29 +148,29 @@ type CurrentUser = {
 type BatchRewardEntry = {
   user: string;
   token: string;
-  userAddress?: string|null|undefined;
-  tokenAddress?: string|null|undefined;
+  userAddress?: string | null | undefined;
+  tokenAddress?: string | null | undefined;
   amount: number;
   actionType: string;
   rewardId: string;
 };
 
 type BatchRewardSettings = {
-  header: boolean; 
+  header: boolean;
   delimiter: string | null | undefined;
   multicall: boolean;
 };
 
 type BatchRewardProgressInfo = {
-  total: number; 
+  total: number;
   failed: number;
   success: number;
 };
 
 type BatchRewardEntryResult = {
   success: boolean;
-  transactionHash: string|null|undefined;
-  errorMessage: string|null|undefined;
+  transactionHash: string | null | undefined;
+  errorMessage: string | null | undefined;
   entry: BatchRewardEntry;
 };
 
@@ -183,7 +183,7 @@ type RewardBadgeParams = {
   amount: number;
   metadata: string;
   activityType: string;
-}
+};
 
 type RewardTokenMintParams = {
   actionType: "mint-token";
@@ -194,7 +194,7 @@ type RewardTokenMintParams = {
   amount: number;
   metadata: string;
   activityType: string;
-}
+};
 
 type RewardTokenTransferParams = {
   actionType: "transfer-token";
@@ -206,8 +206,8 @@ type RewardTokenTransferParams = {
   amount: number;
   metadata: string;
   activityType: string;
-}
+};
 
 type RewardListResponse = {
   [key: `rewards_${number}`]: Reward[];
-}
+};
