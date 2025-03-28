@@ -28,6 +28,9 @@ import Github from "../../public/icons/github.svg";
 import Telegram from "../../public/icons/telegram.svg";
 import { Badge } from "./ui/badge";
 import { Skeleton } from "./ui/skeleton";
+import { DateRange } from "react-day-picker";
+import DatePickerWithPresets from "@/components/date-picker";
+import dayjs from 'dayjs';
 
 interface LeaderboardProps {
   data: LeaderboardEntry[] | null;
@@ -57,7 +60,7 @@ function LeaderboardHeader({
   metadata: any;
   selectedToken: { token: { id: string; name: string; symbol: string } };
 }) {
-  const t = useTranslations("overview.leaderboard");
+  const t = useTranslations( "overview.leaderboard" );
 
   return (
     <TableRow>
@@ -154,10 +157,14 @@ export default function Leaderboard({
   tokens,
   slug,
 }: LeaderboardProps) {
-  const { user } = usePrivy();
-  const t = useTranslations("overview.leaderboard");
-  const [localData, setLocalData] = useState<LeaderboardEntry[] | null>(data);
-  const [isLoading, setIsLoading] = useState(initialLoading);
+  const {user} = usePrivy();
+  const t = useTranslations( "overview.leaderboard" );
+  const [localData, setLocalData] = useState<LeaderboardEntry[] | null>( data );
+  const [isLoading, setIsLoading] = useState( initialLoading );
+  const [date, setDate] = useState<DateRange | undefined>( {
+    from: new Date(new Date().setDate(new Date().getDate() - 7)),
+    to: new Date(),
+  } );
 
   // Filter tokens before using them
   const visibleTokens = filterVisibleTokens(tokens, metadata?.hidden_tokens);
@@ -177,7 +184,9 @@ export default function Leaderboard({
   const handleTokenSelect = async (tokenId: string) => {
     setIsLoading(true);
     try {
-      const newData = await generateLeaderboard(slug, tokenId);
+      const startDate = dayjs(date?.from).unix().toString();
+      const endDate = dayjs(date?.to).unix().toString();
+      const newData = await generateLeaderboard(slug, tokenId, startDate, endDate);
       setLocalData(newData);
       setSelectedTokenId(tokenId);
     } finally {
@@ -251,10 +260,16 @@ export default function Leaderboard({
     </Table>
   );
 
+  useEffect( () => {
+    if (date && date.from && date.to) {
+      handleTokenSelect(selectedTokenId);
+    }
+  }, [date]);
+
   return (
     <Card variant="borderless" className="h-full">
       <CardHeader>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-end justify-between mb-4">
           <div className="space-y-2">
             <Label>{t("token")}</Label>
             <Select value={selectedTokenId} onValueChange={handleTokenSelect}>
@@ -269,6 +284,9 @@ export default function Leaderboard({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div className="space-y-2">
+            <DatePickerWithPresets onDateChange={setDate}/>
           </div>
         </div>
       </CardHeader>
