@@ -12,20 +12,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
-import { fetchRewardDistributionMetrics } from "@/lib/metrics";
 import { desanitizeString } from "@/lib/utils";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-  PaginationEllipsis,
-} from "@/components/ui/pagination";
+import { Button, buttonVariants } from "@/components/ui/button";
 
-interface RewardIdsListProps {
-  appId: string;
+interface RewardIdStats {
+  timestamp: string;
+  totalCount: string;
 }
 
 interface RewardData {
@@ -33,42 +25,38 @@ interface RewardData {
   totalCount: number;
 }
 
+interface RewardIdsListProps {
+  appId: string;
+  data: Record<string, RewardIdStats[]> | null;
+}
+
 const ITEMS_PER_PAGE = 5;
 
-export default function RewardIdsList({ appId }: RewardIdsListProps) {
+export default function RewardIdsList({ appId, data }: RewardIdsListProps) {
   const t = useTranslations('metrics.rewards');
-  const [data, setData] = useState<RewardData[]>([]);
+  const [formattedData, setFormattedData] = useState<RewardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        setIsLoading(true);
-        const result = await fetchRewardDistributionMetrics(appId);
-        if (result) {
-          const formattedData = Object.entries(result)
-            .map(([rewardId, stats]) => ({
-              rewardId,
-              totalCount: Number(stats[0]?.totalCount || 0)
-            }))
-            .sort((a, b) => b.totalCount - a.totalCount);
-          setData(formattedData);
-          setTotalItems(formattedData.length);
-        }
-      } finally {
-        setIsLoading(false);
-      }
+    if (data) {
+      const formatted = Object.entries(data)
+        .map(([rewardId, stats]) => ({
+          rewardId,
+          totalCount: Number(stats[0]?.totalCount || 0)
+        }))
+        .sort((a, b) => b.totalCount - a.totalCount);
+      setFormattedData(formatted);
+      setTotalItems(formatted.length);
     }
-
-    fetchData();
-  }, [appId]);
+    setIsLoading(false);
+  }, [data]);
 
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentData = data.slice(startIndex, endIndex);
+  const currentData = formattedData.slice(startIndex, endIndex);
 
   if (isLoading) {
     return (
@@ -104,16 +92,33 @@ export default function RewardIdsList({ appId }: RewardIdsListProps) {
               ))}
             </TableBody>
           </Table>
+          <div className="flex items-center space-x-2 justify-center mt-4">
+            <Button
+              variant="outline"
+              disabled
+              className="px-4 py-2 text-sm font-medium border rounded-lg hover:bg-secondary"
+            >
+              Previous
+            </Button>
+            <div className={buttonVariants({ variant: "outline" })}>1</div>
+            <Button
+              variant="outline"
+              disabled
+              className="px-4 py-2 text-sm font-medium border rounded-lg hover:bg-secondary"
+            >
+              Next
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
-  if (!data.length) {
+  if (!formattedData.length) {
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="flex flex-col items-center justify-center py-8 text-center">
+          <div className="flex flex-col items-center justify-center h-[200px]">
             <p className="text-muted-foreground">{t('noData')}</p>
           </div>
         </CardContent>
@@ -155,66 +160,24 @@ export default function RewardIdsList({ appId }: RewardIdsListProps) {
           </TableBody>
         </Table>
         {totalPages > 1 && (
-          <div className="mt-4">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious 
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
-                  />
-                </PaginationItem>
-                {currentPage > 2 && (
-                  <>
-                    <PaginationItem>
-                      <PaginationLink onClick={() => setCurrentPage(1)}>1</PaginationLink>
-                    </PaginationItem>
-                    {currentPage > 3 && (
-                      <PaginationItem>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    )}
-                  </>
-                )}
-                {currentPage > 1 && (
-                  <PaginationItem>
-                    <PaginationLink onClick={() => setCurrentPage(prev => prev - 1)}>
-                      {currentPage - 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                )}
-                <PaginationItem>
-                  <PaginationLink isActive>{currentPage}</PaginationLink>
-                </PaginationItem>
-                {currentPage < totalPages && (
-                  <PaginationItem>
-                    <PaginationLink onClick={() => setCurrentPage(prev => prev + 1)}>
-                      {currentPage + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                )}
-                {currentPage < totalPages - 1 && (
-                  <>
-                    {currentPage < totalPages - 2 && (
-                      <PaginationItem>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    )}
-                    <PaginationItem>
-                      <PaginationLink onClick={() => setCurrentPage(totalPages)}>
-                        {totalPages}
-                      </PaginationLink>
-                    </PaginationItem>
-                  </>
-                )}
-                <PaginationItem>
-                  <PaginationNext 
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+          <div className="flex items-center space-x-2 justify-center mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 text-sm font-medium border rounded-lg hover:bg-secondary"
+            >
+              Previous
+            </Button>
+            <div className={buttonVariants({ variant: "outline" })}>{currentPage}</div>
+            <Button
+              variant="outline"
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 text-sm font-medium border rounded-lg hover:bg-secondary"
+            >
+              Next
+            </Button>
           </div>
         )}
       </CardContent>

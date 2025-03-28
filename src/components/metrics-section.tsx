@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { ActivityExportDialog } from "@/dialogs/activity-export-dialog";
 import { fetchPaginatedRewardsByCommunity } from "@/lib/openformat";
+import { fetchRewardDistributionMetrics } from "@/lib/metrics";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -25,11 +26,19 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
 
   const {
     data: rewards,
-    isLoading,
+    isLoading: isLoadingRewards,
     isFetching,
   } = useQuery({
     queryKey: ["rewards", community.id, page],
     queryFn: () => fetchPaginatedRewardsByCommunity(community.id, PAGE_SIZE, page * PAGE_SIZE),
+  });
+
+  const {
+    data: rewardDistribution,
+    isLoading: isLoadingDistribution,
+  } = useQuery({
+    queryKey: ["rewardDistribution", community.id],
+    queryFn: () => fetchRewardDistributionMetrics(community.id),
   });
 
   // Check if there might be more data
@@ -58,7 +67,7 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
         {/* Reward Distribution Card */}
         <Card>
           <CardContent className="pt-6 px-6 pb-3">
-            <RewardDistributionChart appId={community.id} />
+            <RewardDistributionChart appId={community.id} data={rewardDistribution || null} />
           </CardContent>
         </Card>
       </div>
@@ -68,9 +77,9 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
         <div className="space-y-4">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight">{t("rewards.title")}</h2>
-            <p className="text-sm text-muted-foreground">{t("rewards.description")}</p>
+            <p className="text-sm pb-2 text-muted-foreground">{t("rewards.description")}</p>
           </div>
-          <RewardIdsList appId={community.id} />
+          <RewardIdsList appId={community.id} data={rewardDistribution || null} />
         </div>
 
         <div className="space-y-4">
@@ -86,7 +95,7 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
           </div>
           <div className="rounded-xl text-card-foreground shadow-sm border bg-card/40">
             <div className="p-6">
-              {isLoading ? <ActivityCardSkeleton /> : <ActivityCard rewards={rewards || []} />}
+              {isLoadingRewards ? <ActivityCardSkeleton /> : <ActivityCard rewards={rewards || []} />}
               <div className="flex items-center space-x-2 justify-center mt-4">
                 <Button
                   variant="outline"

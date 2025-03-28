@@ -54,7 +54,7 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
               users: metric.count || 0,
             };
           })
-          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
         setData(formattedData);
 
@@ -64,8 +64,8 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
           setTotalUsers(total);
 
           if (formattedData.length > 1) {
-            const firstDay = formattedData[formattedData.length - 1];
-            const lastDay = formattedData[0];
+            const firstDay = formattedData[0];
+            const lastDay = formattedData[formattedData.length - 1];
             const change = ((lastDay.users - firstDay.users) / firstDay.users) * 100;
             setPercentageChange(change);
           } else {
@@ -98,6 +98,37 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
         <div className="text-xs text-muted-foreground mt-2">
           <Skeleton className="h-4 w-full" />
         </div>
+      </div>
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="flex flex-col">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-medium">{t("title")}</h3>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold">0</span>
+            </div>
+            <Select value={timeRange} onValueChange={(value: TimeRange) => setTimeRange(value)}>
+              <SelectTrigger className="h-8 w-[130px] text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(TIME_RANGES).map(([key]) => (
+                  <SelectItem key={key} value={key}>
+                    {t(`timeRanges.${key}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="h-[200px] flex items-center justify-center">
+          <p className="text-muted-foreground">{t('noData')}</p>
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">{t("description")}</p>
       </div>
     );
   }

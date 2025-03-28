@@ -11,9 +11,11 @@ import {
 } from 'recharts';
 import { useEffect, useState } from "react";
 import { fetchRewardDistributionMetrics } from "@/lib/metrics";
+import { desanitizeString } from "@/lib/utils";
 
 interface RewardDistributionChartProps {
   appId: string;
+  data: Record<string, RewardIdStats[]> | null;
 }
 
 interface ChartData {
@@ -50,40 +52,29 @@ function getColor(index: number): string {
   return `hsl(${hue}, 85%, 55%)`;
 }
 
-export default function RewardDistributionChart({ appId }: RewardDistributionChartProps) {
+export default function RewardDistributionChart({ appId, data }: RewardDistributionChartProps) {
   const t = useTranslations('metrics.rewardDistribution');
-  const [data, setData] = useState<ChartData[]>([]);
+  const [chartData, setChartData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalRewards, setTotalRewards] = useState(0);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        setIsLoading(true);
-        const result = await fetchRewardDistributionMetrics(appId);
-        if (result) {
-          const formattedData = Object.entries(result).map(([rewardId, stats]: [string, RewardIdStats[]]) => {
-            return {
-              name: rewardId,
-              value: Number(stats[0]?.totalCount || 0)
-            };
-          });
-          setData(formattedData);
-          const total = formattedData.reduce((acc, curr) => acc + curr.value, 0);
-          setTotalRewards(total);
-        } else {
-          setData([]);
-          setTotalRewards(0);
-        }
-      } catch (error) {
-        console.error('Error fetching reward distribution data:', error);
-      } finally {
-        setIsLoading(false);
-      }
+    if (data) {
+      const formatted = Object.entries(data)
+        .map(([rewardId, stats]) => ({
+          name: desanitizeString(rewardId),
+          value: Number(stats[0]?.totalCount || 0)
+        }))
+        .sort((a, b) => b.value - a.value);
+      setChartData(formatted);
+      const total = formatted.reduce((acc, curr) => acc + curr.value, 0);
+      setTotalRewards(total);
+    } else {
+      setChartData([]);
+      setTotalRewards(0);
     }
-
-    fetchData();
-  }, [appId]);
+    setIsLoading(false);
+  }, [data]);
 
   if (isLoading) {
     return (
@@ -107,7 +98,7 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
     );
   }
 
-  if (!data.length) {
+  if (!chartData.length) {
     return (
       <div className="flex flex-col">
         <div className="flex items-center justify-between mb-4">
@@ -133,7 +124,7 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={data}
+              data={chartData}
               cx="50%"
               cy="50%"
               innerRadius={60}
@@ -144,7 +135,7 @@ export default function RewardDistributionChart({ appId }: RewardDistributionCha
               stroke="hsl(var(--background))"
               strokeWidth={2}
             >
-              {data.map((entry, index) => (
+              {chartData.map((entry, index) => (
                 <Cell 
                   key={`cell-${index}`} 
                   fill={getColor(index)}

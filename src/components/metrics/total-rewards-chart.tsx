@@ -15,7 +15,7 @@ import {
 } from 'recharts';
 import { useEffect, useState } from "react";
 import { fetchTotalRewardsMetrics } from "@/lib/metrics";
-import { format } from "date-fns";
+import { startOfWeek, endOfWeek, format, isWithinInterval } from 'date-fns';
 
 interface TotalRewardsChartProps {
   appId: string;
@@ -52,25 +52,55 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
         
         const result = await fetchTotalRewardsMetrics(appId, startTime, endTime);
         if (result) {
-          const formattedData = result.reduce((acc: { [key: string]: number }, item) => {
-            const timestamp = parseInt(item.timestamp) / 1000000;
-            const date = new Date(timestamp * 1000); 
-            const dateKey = date.toLocaleDateString(undefined, { 
-              month: 'short', 
-              day: 'numeric',
-              year: 'numeric'
-            });
+          let formattedData: { [key: string]: number } = {};
+
+          if (timeRange === "90d") {
+            // Group data by weeks for 90-day view
+            const weeks: { start: Date; end: Date }[] = [];
+            const endDate = new Date();
+            let currentDate = new Date(endDate.getTime() - (90 * 24 * 60 * 60 * 1000));
             
-            acc[dateKey] = (acc[dateKey] || 0) + Number(item.count);
-            return acc;
-          }, {});
+            while (currentDate <= endDate) {
+              weeks.push({
+                start: startOfWeek(currentDate),
+                end: endOfWeek(currentDate)
+              });
+              currentDate = new Date(currentDate.getTime() + (7 * 24 * 60 * 60 * 1000));
+            }
+
+            result.forEach(item => {
+              const timestamp = parseInt(item.timestamp) / 1000000;
+              const date = new Date(timestamp * 1000);
+              
+              // Find which week this data point belongs to
+              const week = weeks.find(w => isWithinInterval(date, { start: w.start, end: w.end }));
+              if (week) {
+                const weekKey = `${format(week.start, 'MMM d')} - ${format(week.end, 'MMM d')}`;
+                formattedData[weekKey] = (formattedData[weekKey] || 0) + Number(item.count);
+              }
+            });
+          } else {
+            // Original daily grouping for 7d and 30d views
+            formattedData = result.reduce((acc: { [key: string]: number }, item) => {
+              const timestamp = parseInt(item.timestamp) / 1000000;
+              const date = new Date(timestamp * 1000); 
+              const dateKey = date.toLocaleDateString(undefined, { 
+                month: 'short', 
+                day: 'numeric',
+                year: 'numeric'
+              });
+              
+              acc[dateKey] = (acc[dateKey] || 0) + Number(item.count);
+              return acc;
+            }, {});
+          }
 
           // Convert aggregated data to array and sort by date
           const sortedData = Object.entries(formattedData)
             .map(([name, value]) => ({ name, value }))
             .sort((a, b) => {
-              const dateA = new Date(a.name);
-              const dateB = new Date(b.name);
+              const dateA = new Date(a.name.split(' - ')[0]);
+              const dateB = new Date(b.name.split(' - ')[0]);
               return dateA.getTime() - dateB.getTime();
             });
 
@@ -78,8 +108,8 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
 
           // Calculate total rewards and percentage change
           if (result.length > 0) {
-            const latest = result[result.length - 1];
-            setTotalRewards(Number(latest.totalCount));
+            const total = result.reduce((acc, curr) => acc + Number(curr.count), 0);
+            setTotalRewards(total);
             
             if (sortedData.length > 1) {
               const firstPoint = sortedData[0];
@@ -120,6 +150,42 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
         <div className="text-xs text-muted-foreground mt-2">
           <Skeleton className="h-4 w-full" />
         </div>
+      </div>
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="flex flex-col">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-medium">{t('title')}</h3>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold">0</span>
+            </div>
+            <Select 
+              value={timeRange} 
+              onValueChange={(value: TimeRange) => setTimeRange(value)}
+            >
+              <SelectTrigger className="h-8 w-[130px] text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(TIME_RANGES).map(([key]) => (
+                  <SelectItem key={key} value={key}>
+                    {t(`timeRanges.${key}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="h-[200px] flex items-center justify-center">
+          <p className="text-muted-foreground">{t('noData')}</p>
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          {t('description')}
+        </p>
       </div>
     );
   }
