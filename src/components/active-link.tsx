@@ -12,7 +12,7 @@ interface ActiveLinkProps {
 
 export default function ActiveLink({ href, children, className }: ActiveLinkProps) {
   const pathname = usePathname();
-  const isActive = pathname.endsWith(href);
+  const isActive = pathname.endsWith(`/${href}`);
 
   return (
     <Link
