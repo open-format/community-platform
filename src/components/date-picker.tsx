@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 
 interface DatePickerProps {
-  onDateChange: (date: DateRange | null) => void;
+  onDateChange: (date: DateRange | undefined) => void;
 }
 
 export default function DatePickerWithPresets({onDateChange}: DatePickerProps) {
