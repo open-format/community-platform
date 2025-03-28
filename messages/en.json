@@ -289,7 +289,6 @@
         "parseError": "Row: {row}: {message}",
         "rewardError": "Reward #{row}: {message}",
         "tokenNotFound": "Token {tokenName} not found in current community {communityName}"
-
       },
       "fields": {
         "csvFile": {
@@ -301,7 +300,7 @@
         "uploading": "Uploading...",
         "upload": "Upload",
         "abort": "Stop Rewards",
-        "reward": "Proccess Rewards",
+        "reward": "Process Rewards",
         "rewarding": "Rewarding..."
       },
       "toast": {
@@ -315,7 +314,7 @@
       }
     },
     "progress": {
-      "title": "Proccessing Rewards",
+      "title": "Processing Rewards",
       "success": "Successful: {success}",
       "failed": "Failed: {failed}",
       "total": "Total: {total}"
@@ -1003,6 +1002,62 @@
           "communityIdFailed": "Failed to get community id",
           "generic": "Failed to create community. Please try again."
         }
+      }
+    }
+  },
+  "metrics": {
+    "title": "Community insight",
+    "uniqueUsers": {
+      "description": "Daily unique users who received rewards. Percentage shows change from first to last day.",
+      "title": "Unique Users",
+      "total": "Total Users",
+      "noData": "No user data available",
+      "users": "users",
+      "timeRanges": {
+        "7d": "Last week",
+        "30d": "Last month",
+        "90d": "Last 3 months"
+      }
+    },
+    "totalRewards": {
+      "title": "Total Rewards",
+      "noData": "No reward data available",
+      "rewards": "rewards",
+      "description": "The running total of all tokens rewarded in the app over time, across all users and reward types.",
+      "timeRanges": {
+        "7d": "Last week",
+        "30d": "Last month",
+        "90d": "Last 3 months"
+      }
+    },
+    "rewardDistribution": {
+      "description": "Proportion of rewards by type. Size indicates relative distribution.",
+      "title": "Reward Distribution",
+      "noData": "No distribution data available",
+      "rewards": "Rewards",
+      "rank": "Rank",
+      "rewardId": "Reward Identifier",
+      "totalCount": "Total Count"
+    },
+    "rewards": {
+      "title": "Rewards",
+      "description": "A list of all rewards in this community.",
+      "rank": "Rank",
+      "rewardId": "Reward ID",
+      "totalCount": "Total Count",
+      "noData": "No rewards data available"
+    },
+    "activity": {
+      "title": "Activity",
+      "description": "A list of the most recent rewards in this community.",
+      "rewardIdentifier": "Reward Identifier",
+      "date": "Date",
+      "user": "User",
+      "noActivity": "No activity yet",
+      "showMore": "Show more",
+      "showLess": "Show less",
+      "ariaLabels": {
+        "viewTransaction": "View transaction"
       }
     }
   }
