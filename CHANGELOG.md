@@ -1,3 +1,19 @@
+# [0.16.0](https://github.com/open-format/community-platform/compare/v0.15.0...v0.16.0) (2025-03-28)
+
+
+### Bug Fixes
+
+* Change data type at variable declaration ([a464e85](https://github.com/open-format/community-platform/commit/a464e85529d841e9bccba71e7d0f4ae9a341798a))
+* Change data type at variable declaration ([fe13b2b](https://github.com/open-format/community-platform/commit/fe13b2b471c13c31438694bfb786ef41cea13e2f))
+
+
+### Features
+
+* Add missed date params after merge main branch into Implement Date Range Filtering for Leaderboard feature ([311e4eb](https://github.com/open-format/community-platform/commit/311e4ebfcf181b694e2ab39d2bd83f7fdae6a640))
+* Implement Date Range Filtering for Leaderboard ([ad5ddfd](https://github.com/open-format/community-platform/commit/ad5ddfd8a24e681454b8424a04e2d19e633e7d98))
+* Implement Date Range Filtering for Leaderboard ([1f9d3ae](https://github.com/open-format/community-platform/commit/1f9d3ae065f2060c932c19a2978b42ea097a8f12))
+* Pass date to backend function to generate leaderboard ([c4a887c](https://github.com/open-format/community-platform/commit/c4a887c8ad3e790e267a38b06f327ce3029f42e5))
+
 # [0.15.0](https://github.com/open-format/community-platform/compare/v0.14.0...v0.15.0) (2025-03-27)
 
 
