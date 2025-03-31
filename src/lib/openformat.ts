@@ -361,6 +361,8 @@ query ($user: ID!, $community: String!) {
 export async function generateLeaderboard(
   slugOrId: string,
   tokenId?: string,
+  startDate: string = "0",
+  endDate: string = "99999999999999999999999999"
 ): Promise<LeaderboardEntry[] | null> {
   const chain = await getChainFromCommunityOrCookie(slugOrId);
 
@@ -380,8 +382,8 @@ export async function generateLeaderboard(
     const params = new URLSearchParams();
     params.set("app_id", communityFromDb.id);
     params.set("token_id", selectedTokenId);
-    params.set("start", "0");
-    params.set("end", "99999999999999999999999999");
+    params.set("start", startDate);
+    params.set("end", endDate);
     // @TODO: Make this dynamic
     params.set(
       "chain",
