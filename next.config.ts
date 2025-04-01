@@ -1,11 +1,24 @@
 import createNextIntlPlugin from 'next-intl/plugin';
-import type { NextConfig } from "next";
+import type {NextConfig} from "next";
 
 const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ["ipfs.io", "placehold.co", "857c4f158967b95f96003045fdb8c641.ipfscdn.io"],
+    remotePatterns: [{
+      protocol: 'https',
+      hostname: 'ipfs.io',
+    }, {
+      protocol: 'https',
+      hostname: 'placehold.co',
+    }, {
+      protocol: 'https',
+      hostname: '857c4f158967b95f96003045fdb8c641.ipfscdn.io',
+    },
+      {
+        protocol: 'https',
+        hostname: '*.ipfscdn.io',
+      }],
   },
   typescript: {
     //@DEV Don't be lazy. Fix the types pal
