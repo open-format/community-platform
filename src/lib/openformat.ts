@@ -236,7 +236,6 @@ export async function fetchPaginatedRewardsByCommunity(
     id
     transactionHash
     metadataURI
-    rewardId
     rewardType
     token {
       id
