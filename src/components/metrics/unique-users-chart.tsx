@@ -8,8 +8,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchUniqueUsersMetrics } from "@/lib/metrics";
-import { format, subDays } from "date-fns";
+import { fetchUniqueUsersMetricsWrapped } from "@/lib/metrics";
+import { format, subDays, startOfWeek, endOfWeek, isWithinInterval } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -43,34 +43,146 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
 
     const fetchData = async () => {
       setIsLoading(true);
-      const metrics = await fetchUniqueUsersMetrics(appId, startTime, endTime);
-      if (metrics) {
-        const formattedData = metrics
-          .map((metric) => {
-            const date = new Date(parseInt(metric.timestamp) / 1000);
-            return {
-              date: metric.timestamp,
-              displayDate: timeRange === "7d" ? format(date, "EEE") : format(date, "MMM d, yyyy"),
-              users: metric.count || 0,
+      const result = await fetchUniqueUsersMetricsWrapped(appId, startTime, endTime);
+      if (result) {
+        let formattedData: { [key: string]: { users: number; displayName: string } } = {};
+
+        if (timeRange === "90d") {
+          // Group data by weeks for 90-day view
+          const weeks: { start: Date; end: Date }[] = [];
+          const endDate = new Date();
+          let currentDate = new Date(endDate.getTime() - (90 * 24 * 60 * 60 * 1000));
+          
+          while (currentDate <= endDate) {
+            weeks.push({
+              start: startOfWeek(currentDate),
+              end: endOfWeek(currentDate)
+            });
+            currentDate = new Date(currentDate.getTime() + (7 * 24 * 60 * 60 * 1000));
+          }
+
+          // Initialize all weeks with zero values
+          weeks.forEach(week => {
+            const weekKey = `${format(week.start, 'MMM d, yyyy')} - ${format(week.end, 'MMM d, yyyy')}`;
+            const displayKey = `${format(week.start, 'MMM d')} - ${format(week.end, 'MMM d')}`;
+            formattedData[weekKey] = { users: 0, displayName: displayKey };
+          });
+
+          // Add actual values
+          result.forEach(item => {
+            const timestamp = parseInt(item.timestamp) / 1000000;
+            const date = new Date(timestamp * 1000);
+            
+            const week = weeks.find(w => isWithinInterval(date, { start: w.start, end: w.end }));
+            if (week) {
+              const weekKey = `${format(week.start, 'MMM d, yyyy')} - ${format(week.end, 'MMM d, yyyy')}`;
+              const displayKey = `${format(week.start, 'MMM d')} - ${format(week.end, 'MMM d')}`;
+              formattedData[weekKey] = {
+                users: (formattedData[weekKey]?.users || 0) + Number(item.count),
+                displayName: displayKey
+              };
+            }
+          });
+        } else {
+          const dates: Date[] = [];
+          const endDate = new Date();
+          let currentDate = new Date(endDate.getTime() - (TIME_RANGES[timeRange].days * 24 * 60 * 60 * 1000));
+          
+          while (currentDate <= endDate) {
+            dates.push(new Date(currentDate));
+            currentDate = new Date(currentDate.getTime() + (24 * 60 * 60 * 1000));
+          }
+
+          dates.forEach(date => {
+            const dateKey = date.toLocaleDateString(undefined, { 
+              month: 'short', 
+              day: 'numeric',
+              year: 'numeric'
+            });
+            const displayKey = date.toLocaleDateString(undefined, { 
+              month: 'short', 
+              day: 'numeric'
+            });
+            formattedData[dateKey] = { users: 0, displayName: displayKey };
+          });
+
+          result.forEach(item => {
+            const timestamp = parseInt(item.timestamp) / 1000000;
+            const date = new Date(timestamp * 1000); 
+            const dateKey = date.toLocaleDateString(undefined, { 
+              month: 'short', 
+              day: 'numeric',
+              year: 'numeric'
+            });
+            const displayKey = date.toLocaleDateString(undefined, { 
+              month: 'short', 
+              day: 'numeric'
+            });
+            
+            formattedData[dateKey] = {
+              users: (formattedData[dateKey]?.users || 0) + Number(item.count),
+              displayName: displayKey
             };
-          })
-          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          });
+        }
 
-        setData(formattedData);
+        const sortedData = Object.entries(formattedData)
+          .map(([name, data]) => ({ 
+            name: data.displayName, 
+            users: data.users,
+            fullDate: name
+          }))
+          .sort((a, b) => {
+            const getDate = (name: string) => {
+              if (name.includes(' - ')) {
+                const [startDate] = name.split(' - ');
+                return new Date(startDate);
+              }
+              return new Date(name);
+            };
+            return getDate(a.fullDate).getTime() - getDate(b.fullDate).getTime();
+          });
 
-        if (metrics.length > 0) {
-          const latest = metrics[metrics.length - 1];
-          const total = formattedData.length === 1 ? formattedData[0].users : latest.totalCount;
+        setData(sortedData);
+
+        if (result.length > 0) {
+          const total = sortedData.reduce((acc, curr) => acc + curr.users, 0);
           setTotalUsers(total);
+          
+          if (sortedData.length > 1) {
+            const nonZeroData = sortedData.filter(point => point.users > 0);
+            
+            if (nonZeroData.length >= 2) {
+              if (timeRange === "7d") {
+                // For 7-day view, use direct percentage change
+                const firstValue = nonZeroData[0].users;
+                const lastValue = nonZeroData[nonZeroData.length - 1].users;
+                const percentageChange = ((lastValue - firstValue) / firstValue) * 100;
+                setPercentageChange(isNaN(percentageChange) ? 0 : percentageChange);
+              } else {
+                // For 30 and 90 day views, use linear regression
+                const n = nonZeroData.length;
+                const sumX = (n - 1) * n / 2;
+                const sumY = nonZeroData.reduce((acc, point) => acc + point.users, 0);
+                const sumXY = nonZeroData.reduce((acc, point, i) => acc + (i * point.users), 0);
+                const sumX2 = (n - 1) * n * (2 * n - 1) / 6;
 
-          if (formattedData.length > 1) {
-            const firstDay = formattedData[0];
-            const lastDay = formattedData[formattedData.length - 1];
-            const change = ((lastDay.users - firstDay.users) / firstDay.users) * 100;
-            setPercentageChange(change);
+                const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+                const firstValue = nonZeroData[0].users;
+                const lastValue = firstValue + (slope * (n - 1));
+                const percentageChange = ((lastValue - firstValue) / firstValue) * 100;
+                
+                setPercentageChange(isNaN(percentageChange) ? 0 : percentageChange);
+              }
+            } else {
+              setPercentageChange(0);
+            }
           } else {
             setPercentageChange(0);
           }
+        } else {
+          setTotalUsers(0);
+          setPercentageChange(0);
         }
       }
       setIsLoading(false);
@@ -174,12 +286,12 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
               </linearGradient>
             </defs>
             <XAxis
-              dataKey="displayDate"
+              dataKey="name"
               axisLine={false}
               tickLine={false}
               tick={{ fill: "#64748B", fontSize: 12 }}
               dy={10}
-              interval={0}
+              interval={timeRange === "90d" ? 3 : timeRange === "30d" ? 6 : 1}
             />
             <YAxis
               axisLine={false}
@@ -190,13 +302,12 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
             <Tooltip
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
-                  const date = new Date(parseInt(payload[0].payload.date) / 1000);
                   return (
                     <div className="rounded-lg border bg-background p-2 shadow-sm">
                       <div className="grid gap-2">
                         <div className="flex flex-col">
                           <span className="text-[0.70rem] uppercase text-muted-foreground">
-                            {format(date, "MMM d, yyyy")}
+                            {payload[0].payload.name}
                           </span>
                           <span className="font-bold">
                             {payload[0].value} {t("users")}

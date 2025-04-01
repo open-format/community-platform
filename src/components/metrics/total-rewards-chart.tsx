@@ -10,11 +10,9 @@ import {
   YAxis,
   ResponsiveContainer,
   Tooltip,
-  AreaChart,
-  Area
 } from 'recharts';
 import { useEffect, useState } from "react";
-import { fetchTotalRewardsMetrics } from "@/lib/metrics";
+import { fetchTotalRewardsMetricsWrapped } from "@/lib/metrics";
 import { startOfWeek, endOfWeek, format, isWithinInterval } from 'date-fns';
 
 interface TotalRewardsChartProps {
@@ -50,9 +48,9 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
         const endTime = (now * 1000000).toString();
         const startTime = ((now - (TIME_RANGES[timeRange].days * 24 * 60 * 60)) * 1000000).toString();
         
-        const result = await fetchTotalRewardsMetrics(appId, startTime, endTime);
+        const result = await fetchTotalRewardsMetricsWrapped(appId, startTime, endTime);
         if (result) {
-          let formattedData: { [key: string]: number } = {};
+          let formattedData: { [key: string]: { value: number; displayName: string } } = {};
 
           if (timeRange === "90d") {
             // Group data by weeks for 90-day view
@@ -68,20 +66,55 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
               currentDate = new Date(currentDate.getTime() + (7 * 24 * 60 * 60 * 1000));
             }
 
+            // Initialize all weeks with zero values
+            weeks.forEach(week => {
+              const weekKey = `${format(week.start, 'MMM d, yyyy')} - ${format(week.end, 'MMM d, yyyy')}`;
+              const displayKey = `${format(week.start, 'MMM d')} - ${format(week.end, 'MMM d')}`;
+              formattedData[weekKey] = { value: 0, displayName: displayKey };
+            });
+
+            // Add actual values
             result.forEach(item => {
               const timestamp = parseInt(item.timestamp) / 1000000;
               const date = new Date(timestamp * 1000);
               
-              // Find which week this data point belongs to
               const week = weeks.find(w => isWithinInterval(date, { start: w.start, end: w.end }));
               if (week) {
-                const weekKey = `${format(week.start, 'MMM d')} - ${format(week.end, 'MMM d')}`;
-                formattedData[weekKey] = (formattedData[weekKey] || 0) + Number(item.count);
+                const weekKey = `${format(week.start, 'MMM d, yyyy')} - ${format(week.end, 'MMM d, yyyy')}`;
+                const displayKey = `${format(week.start, 'MMM d')} - ${format(week.end, 'MMM d')}`;
+                formattedData[weekKey] = {
+                  value: (formattedData[weekKey]?.value || 0) + Number(item.count),
+                  displayName: displayKey
+                };
               }
             });
           } else {
-            // Original daily grouping for 7d and 30d views
-            formattedData = result.reduce((acc: { [key: string]: number }, item) => {
+            // Create an array of all dates in the range
+            const dates: Date[] = [];
+            const endDate = new Date();
+            let currentDate = new Date(endDate.getTime() - (TIME_RANGES[timeRange].days * 24 * 60 * 60 * 1000));
+            
+            while (currentDate <= endDate) {
+              dates.push(new Date(currentDate));
+              currentDate = new Date(currentDate.getTime() + (24 * 60 * 60 * 1000));
+            }
+
+            // Initialize all dates with zero values
+            dates.forEach(date => {
+              const dateKey = date.toLocaleDateString(undefined, { 
+                month: 'short', 
+                day: 'numeric',
+                year: 'numeric'
+              });
+              const displayKey = date.toLocaleDateString(undefined, { 
+                month: 'short', 
+                day: 'numeric'
+              });
+              formattedData[dateKey] = { value: 0, displayName: displayKey };
+            });
+
+            // Add actual values
+            result.forEach(item => {
               const timestamp = parseInt(item.timestamp) / 1000000;
               const date = new Date(timestamp * 1000); 
               const dateKey = date.toLocaleDateString(undefined, { 
@@ -89,37 +122,81 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
                 day: 'numeric',
                 year: 'numeric'
               });
+              const displayKey = date.toLocaleDateString(undefined, { 
+                month: 'short', 
+                day: 'numeric'
+              });
               
-              acc[dateKey] = (acc[dateKey] || 0) + Number(item.count);
-              return acc;
-            }, {});
+              formattedData[dateKey] = {
+                value: (formattedData[dateKey]?.value || 0) + Number(item.count),
+                displayName: displayKey
+              };
+            });
           }
 
-          // Convert aggregated data to array and sort by date
           const sortedData = Object.entries(formattedData)
-            .map(([name, value]) => ({ name, value }))
+            .map(([name, data]) => ({ 
+              name: data.displayName, 
+              value: data.value,
+              fullDate: name
+            }))
             .sort((a, b) => {
-              const dateA = new Date(a.name.split(' - ')[0]);
-              const dateB = new Date(b.name.split(' - ')[0]);
-              return dateA.getTime() - dateB.getTime();
+              const getDate = (name: string) => {
+                if (name.includes(' - ')) {
+                  const [startDate] = name.split(' - ');
+                  return new Date(startDate);
+                }
+                return new Date(name);
+              };
+              return getDate(a.fullDate).getTime() - getDate(b.fullDate).getTime();
             });
 
           setData(sortedData);
 
           // Calculate total rewards and percentage change
           if (result.length > 0) {
-            const total = result.reduce((acc, curr) => acc + Number(curr.count), 0);
+            const total = sortedData.reduce((acc, curr) => acc + curr.value, 0);
             setTotalRewards(total);
             
             if (sortedData.length > 1) {
-              const firstPoint = sortedData[0];
-              const lastPoint = sortedData[sortedData.length - 1];
-              const change = ((lastPoint.value - firstPoint.value) / firstPoint.value) * 100;
-              setPercentageChange(change);
+              const nonZeroData = sortedData.filter(point => point.value > 0);
+              
+              if (nonZeroData.length >= 2) {
+                if (timeRange === "7d") {
+                  // For 7-day view, use direct percentage change
+                  const firstValue = nonZeroData[0].value;
+                  const lastValue = nonZeroData[nonZeroData.length - 1].value;
+                  const percentageChange = ((lastValue - firstValue) / firstValue) * 100;
+                  setPercentageChange(isNaN(percentageChange) ? 0 : percentageChange);
+                } else {
+                  // For 30 and 90 day views, use linear regression
+                  const n = nonZeroData.length;
+                  const sumX = (n - 1) * n / 2;
+                  const sumY = nonZeroData.reduce((acc, point) => acc + point.value, 0);
+                  const sumXY = nonZeroData.reduce((acc, point, i) => acc + (i * point.value), 0);
+                  const sumX2 = (n - 1) * n * (2 * n - 1) / 6;
+
+                  const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+                  const firstValue = nonZeroData[0].value;
+                  const lastValue = firstValue + (slope * (n - 1));
+                  const percentageChange = ((lastValue - firstValue) / firstValue) * 100;
+                  
+                  setPercentageChange(isNaN(percentageChange) ? 0 : percentageChange);
+                }
+              } else {
+                setPercentageChange(0);
+              }
             } else {
               setPercentageChange(0);
             }
+          } else {
+            setTotalRewards(0);
+            setPercentageChange(0);
           }
+        } else {
+          setData([]);
+          setTotalRewards(0);
+          setPercentageChange(0);
         }
       } catch (error) {
         console.error('Error fetching total rewards data:', error);
@@ -227,6 +304,7 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
             <XAxis 
               dataKey="name"
               tick={{ fontSize: 12 }}
+              interval={timeRange === "90d" ? 3 : timeRange === "30d" ? 6 : 1} 
             />
             <YAxis 
               tick={{ fontSize: 12 }}
