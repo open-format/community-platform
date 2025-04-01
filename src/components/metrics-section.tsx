@@ -96,31 +96,33 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
           <div className="rounded-xl text-card-foreground shadow-sm border bg-card/40">
             <div className="p-6">
               {isLoadingRewards ? <ActivityCardSkeleton /> : <ActivityCard rewards={rewards || []} />}
-              <div className="flex items-center space-x-2 justify-center mt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setPage((old) => Math.max(old - 1, 0))}
-                  disabled={page === 0}
-                  className="px-4 py-2 text-sm font-medium border rounded-lg hover:bg-secondary"
-                >
-                  Previous
-                </Button>
+              {rewards && rewards.length > 0 && (page > 0 || rewards.length >= PAGE_SIZE) && (
+                <div className="flex items-center space-x-2 justify-center mt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setPage((old) => Math.max(old - 1, 0))}
+                    disabled={page === 0}
+                    className="px-4 py-2 text-sm font-medium border rounded-lg hover:bg-secondary"
+                  >
+                    Previous
+                  </Button>
 
-                <div className={buttonVariants({ variant: "outline" })}>{page + 1}</div>
+                  <div className={buttonVariants({ variant: "outline" })}>{page + 1}</div>
 
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    if (hasMore) {
-                      setPage((old) => old + 1);
-                    }
-                  }}
-                  disabled={!hasMore}
-                  className="px-4 py-2 text-sm font-medium border rounded-lg hover:bg-secondary"
-                >
-                  Next
-                </Button>
-              </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      if (hasMore) {
+                        setPage((old) => old + 1);
+                      }
+                    }}
+                    disabled={!hasMore}
+                    className="px-4 py-2 text-sm font-medium border rounded-lg hover:bg-secondary"
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
