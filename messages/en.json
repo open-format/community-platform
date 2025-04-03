@@ -172,12 +172,11 @@
       "token": "Token",
       "datePicker": {
         "pickDate": "Pick a Date",
-        "custom": "Custom",
-        "thisMonth": "This Month",
-        "lastMonth": "Last Month",
-        "threeMonths": "Three Months",
-        "allTime": "All time",
-        "lastWeek": "Last Week"
+        "today": "Today",
+        "last7Days": "Last 7 Days",
+        "last30Days": "Last 30 Days",
+        "last90Days": "Last 90 Days",
+        "filterByDate": "Filter by Date"
       }
     },
     "activity": {
@@ -298,7 +297,6 @@
         "parseError": "Row: {row}: {message}",
         "rewardError": "Reward #{row}: {message}",
         "tokenNotFound": "Token {tokenName} not found in current community {communityName}"
-
       },
       "fields": {
         "csvFile": {
