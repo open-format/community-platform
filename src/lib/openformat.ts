@@ -1,17 +1,17 @@
 "use server";
 
-import {type Chain, ChainName, getChain, getChainById} from "@/constants/chains";
+import { type Chain, ChainName, getChain, getChainById } from "@/constants/chains";
 import config from "@/constants/config";
-import {getCommunities, getCommunity} from "@/db/queries/communities";
+import { getCommunities, getCommunity } from "@/db/queries/communities";
 import axios from "axios";
-import {request} from "graphql-request";
-import {revalidatePath} from "next/cache";
-import {cookies} from "next/headers";
-import {cache} from "react";
-import type {Address} from "viem";
-import {getCurrentUser, getUserHandle} from "./privy";
-import { formatTokenAmount } from "./utils";
 import dayjs from "dayjs";
+import { request } from "graphql-request";
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { cache } from "react";
+import type { Address } from "viem";
+import { getCurrentUser, getUserHandle } from "./privy";
+import { formatTokenAmount } from "./utils";
 
 const apiClient = axios.create({
   baseURL: config.OPENFORMAT_API_URL,
@@ -28,7 +28,7 @@ export async function revalidate() {
 
 export async function getChainFromCommunityOrCookie(
   communityIdOrSlug?: string,
-  chain_id?: number
+  chain_id?: number,
 ): Promise<Chain | null> {
   let chain: Chain | null = null;
 
@@ -46,7 +46,9 @@ export async function getChainFromCommunityOrCookie(
   if (!chain) {
     const cookieStore = await cookies();
     const chainName = cookieStore.get("chainName");
-    chain = chainName ? getChain(chainName.value as ChainName) : getChain(ChainName.ARBITRUM_SEPOLIA);
+    chain = chainName
+      ? getChain(chainName.value as ChainName)
+      : getChain(ChainName.ARBITRUM_SEPOLIA);
   }
 
   return chain;
@@ -58,14 +60,14 @@ export async function fetchAllCommunities() {
 
     if (!chain) {
       console.log("No chain found for chainName:", chain);
-      return {data: [], error: "No chain found."};
+      return { data: [], error: "No chain found." };
     }
 
     const user = await getCurrentUser();
     const dbCommunities = await getCommunities();
 
     if (!user) {
-      return {data: [], error: "User not found."};
+      return { data: [], error: "User not found." };
     }
 
     const query = `
@@ -95,12 +97,12 @@ export async function fetchAllCommunities() {
         metadata: dbCommunities.find((dbComm) => dbComm.id === app.id || dbComm.slug === app.id),
       }));
 
-      return {data: matchedCommunities || [], error: null};
+      return { data: matchedCommunities || [], error: null };
     } catch {
-      return {data: [], error: "Failed to fetch onchain communities. Please try again."};
+      return { data: [], error: "Failed to fetch onchain communities. Please try again." };
     }
   } catch {
-    return {data: [], error: "Failed to fetch communities. Please try again later."};
+    return { data: [], error: "Failed to fetch communities. Please try again later." };
   }
 }
 
@@ -149,7 +151,7 @@ query ($app: ID!) {
         badges: { id: string }[];
         tokens: Token[];
       };
-    }>(chain.SUBGRAPH_URL, query, {app: communityFromDb.id});
+    }>(chain.SUBGRAPH_URL, query, { app: communityFromDb.id });
 
     const rewards = await fetchAllRewardsByCommunity(communityFromDb.id);
 
@@ -203,7 +205,64 @@ async function fetchAllRewardsByCommunity(communityId: string): Promise<Reward[]
 
   const data = await request<{
     rewards: Reward[];
-  }>(chain.SUBGRAPH_URL, query, {app: communityId});
+  }>(chain.SUBGRAPH_URL, query, { app: communityId });
+
+  return data.rewards;
+}
+
+export async function fetchPaginatedRewardsByCommunity(
+  communityId: string,
+  first: number,
+  skip: number,
+): Promise<Reward[] | null> {
+  const chain = await getChainFromCommunityOrCookie();
+
+  if (!chain) {
+    return null;
+  }
+
+  // @TODO: Handle pagination
+  const query = `
+ query ($first: Int, $skip: Int, $appId: String!) {
+  rewards(
+    where: {app: $appId}
+    first: $first
+    skip: $skip
+    orderBy: createdAt
+    orderDirection: desc
+  ) {
+    rewardId
+    createdAt
+    id
+    transactionHash
+    metadataURI
+    rewardType
+    token {
+      id
+      name
+      symbol
+      decimals
+    }
+    tokenAmount
+    badge {
+      id
+      name
+      metadataURI
+    }
+    badgeTokens {
+      tokenId
+    }
+    user {
+      id
+    }
+    createdAt
+  }
+}
+`;
+
+  const data = await request<{
+    rewards: Reward[];
+  }>(chain.SUBGRAPH_URL, query, { first, skip, appId: communityId });
 
   return data.rewards;
 }
@@ -298,7 +357,12 @@ query ($user: ID!, $community: String!) {
   };
 }
 
-export async function generateLeaderboard(slugOrId: string, tokenId?: string, startDate: string = "0", endDate: string = "99999999999999999999999999"): Promise<LeaderboardEntry[] | null> {
+export async function generateLeaderboard(
+  slugOrId: string,
+  tokenId?: string,
+  startDate: string = "0",
+  endDate: string = "99999999999999999999999999"
+): Promise<LeaderboardEntry[] | null> {
   const chain = await getChainFromCommunityOrCookie(slugOrId);
 
   if (!chain) {
@@ -330,7 +394,7 @@ export async function generateLeaderboard(slugOrId: string, tokenId?: string, st
             ? "turbo"
             : chain.apiChainName === ChainName.BASE
               ? "base"
-              : "arbitrum-sepolia"
+              : "arbitrum-sepolia",
     );
     const response = await apiClient.get(`/v1/leaderboard?${params}`);
 
@@ -340,12 +404,12 @@ export async function generateLeaderboard(slugOrId: string, tokenId?: string, st
         ...entry,
         handle: (await getUserHandle(entry.user as Address))?.username ?? "Anonymous",
         type: (await getUserHandle(entry.user as Address))?.type ?? "unknown",
-      }))
+      })),
     );
 
     return leaderboardWithHandles;
   } catch (error) {
-    return {error: "Failed to fetch leaderboard data. Please try again later."};
+    return { error: "Failed to fetch leaderboard data. Please try again later." };
   }
 }
 
@@ -377,8 +441,8 @@ export async function fundAccount() {
 
 export async function generateChallenge(address: string) {
   try {
-    const data = {public_address: address};
-    const response = await apiClient.post('/key/challenge', data);
+    const data = { public_address: address };
+    const response = await apiClient.post("/key/challenge", data);
 
     if (response.status === 200) {
       return response.data;
@@ -392,8 +456,8 @@ export async function generateChallenge(address: string) {
 
 export async function verifyChallenge(address: string, signature: string) {
   try {
-    const data = {public_address: address, signature: signature};
-    const response = await apiClient.post('/key/verify', data);
+    const data = { public_address: address, signature: signature };
+    const response = await apiClient.post("/key/verify", data);
 
     if (response.status === 200) {
       return response.data;
@@ -409,31 +473,30 @@ export async function getAllRewardsByCommunity(
   communityId: string,
   startTimestamp: number,
   endTimestamp: number,
-  tokenAddress: string|null,
-  rewardType: string|null
+  tokenAddress: string | null,
+  rewardType: string | null,
 ): Promise<string> {
-  
   const chain = await getChainFromCommunityOrCookie();
   if (!chain) {
-    throw new Error('Chain not found');
+    throw new Error("Chain not found");
   }
-  let last_reward_created_at: string|null = null;
+  let last_reward_created_at: string | null = null;
   let paginate = true;
-  const options = { 
-      appId:    communityId,
-      start:    startTimestamp.toString(),
-      end:      endTimestamp.toString(),
-      tokenId:  tokenAddress,
-    }
+  const options = {
+    appId: communityId,
+    start: startTimestamp.toString(),
+    end: endTimestamp.toString(),
+    tokenId: tokenAddress,
+  };
   const result: RewardListResponse[] = [];
   while (paginate) {
     const queryList = getRewardQuery(
       chain.subgraph_max_first,
       chain.subgraph_max_skip,
       tokenAddress != null && tokenAddress.length > 0,
-      rewardType === 'Badge',
-      rewardType === 'Token',
-      last_reward_created_at
+      rewardType === "Badge",
+      rewardType === "Token",
+      last_reward_created_at,
     );
 
     // Get next page
@@ -442,16 +505,18 @@ export async function getAllRewardsByCommunity(
     // Calculate the total number of elements and update last reward created_at
     let total_rewards = 0;
     for (let i = 0; i < SUBGRAPH_QUERY_PAGES; i++) {
-      if (page[`rewards_${i}`] )  { 
+      if (page[`rewards_${i}`]) {
         const len = page[`rewards_${i}`].length;
-        total_rewards += len;  
-        last_reward_created_at = len > 0 ? page[`rewards_${i}`].at(len-1)!.createdAt : last_reward_created_at; // Max reward createdAt in page
-      }      
+        total_rewards += len;
+        last_reward_created_at =
+          len > 0 ? page[`rewards_${i}`].at(len - 1)!.createdAt : last_reward_created_at; // Max reward createdAt in page
+      }
     }
-    // Check if we should keep paginating: 
+    // Check if we should keep paginating:
     //  we retrieved more elements than in max_skip || we retrieved max possible number of elements
-    paginate = (chain.subgraph_max_skip > 0 && total_rewards >= chain.subgraph_max_skip) // elems > max_skip
-      || (total_rewards == chain.subgraph_max_first * SUBGRAPH_QUERY_PAGES) // all pages are full
+    paginate =
+      (chain.subgraph_max_skip > 0 && total_rewards >= chain.subgraph_max_skip) || // elems > max_skip
+      total_rewards == chain.subgraph_max_first * SUBGRAPH_QUERY_PAGES; // all pages are full
   }
 
   const rewards: Reward[] = [];
@@ -459,43 +524,46 @@ export async function getAllRewardsByCommunity(
   // Rewards can come duplicated, we use this map to remove duplicated elements
   const rewardIds = new Map<string, boolean>();
 
-  result.forEach( board => {
-    for (let i:number = SUBGRAPH_QUERY_PAGES-1; i >= 0 ; i--) {
+  result.forEach((board) => {
+    for (let i: number = SUBGRAPH_QUERY_PAGES - 1; i >= 0; i--) {
       // Save only new rewards and keep record of them
       if (board[`rewards_${i}`]) {
-        rewards.push(...board[`rewards_${i}`].filter(b => !rewardIds.has(b.id)));
-        board[`rewards_${i}`].forEach( b => rewardIds.set(b.id, true) );
+        rewards.push(...board[`rewards_${i}`].filter((b) => !rewardIds.has(b.id)));
+        board[`rewards_${i}`].forEach((b) => rewardIds.set(b.id, true));
       }
     }
   });
 
   const headers = [
-    'transactionHash',
-    'createdAt',
-    'userAddress',
-    'tokenAddress',
-    'amount',
-    'rewardId',
+    "transactionHash",
+    "createdAt",
+    "userAddress",
+    "tokenAddress",
+    "amount",
+    "rewardId",
   ];
-  const rows = rewards.map( r => 
-    `${r.transactionHash}`
-    +`,${dayjs.unix(Number(r.createdAt)).toISOString()}`
-    +`,${r.user?.id ?? ""},${r.token?.id ?? r.badge?.id ?? ""}`
-    +`,${r.tokenAmount === "0" ? 
-        r.badgeTokens?.length 
-        : formatTokenAmount(BigInt(r.tokenAmount), r.token?.decimals)}`
-    +`,${r.rewardId}`
+  const rows = rewards.map(
+    (r) =>
+      `${r.transactionHash}` +
+      `,${dayjs.unix(Number(r.createdAt)).toISOString()}` +
+      `,${r.user?.id ?? ""},${r.token?.id ?? r.badge?.id ?? ""}` +
+      `,${
+        r.tokenAmount === "0"
+          ? r.badgeTokens?.length
+          : formatTokenAmount(BigInt(r.tokenAmount), r.token?.decimals)
+      }` +
+      `,${r.rewardId}`,
   );
-  return [headers.join(','), ...rows].join('\n');
+  return [headers.join(","), ...rows].join("\n");
 }
 
 function getRewardQuery(
-  max_first: number, 
+  max_first: number,
   max_skip: number,
   filterTokenAddress: boolean,
   filterIsBadge: boolean,
   filterIsToken: boolean,
-  last_reward_created_at: string|null|undefined = undefined,
+  last_reward_created_at: string | null | undefined = undefined,
 ): string {
   const pages = SUBGRAPH_QUERY_PAGES;
   let query = `
@@ -505,20 +573,20 @@ function getRewardQuery(
       $start: String!
       $end: String!
     ) {
-  `
+  `;
   for (let i = 0; i < pages; i++) {
     const current_skip = i * max_first;
-    if (max_skip > 0 && current_skip > max_skip) { 
+    if (max_skip > 0 && current_skip > max_skip) {
       // We can not ask for more elements in this query
       break;
     }
     query += `
       rewards_${i}: rewards(
         first: ${max_first}
-        skip: ${ current_skip }
+        skip: ${current_skip}
         where: {
           app_contains_nocase: $appId
-          createdAt_gte: ${ last_reward_created_at ?? "$start" }
+          createdAt_gte: ${last_reward_created_at ?? "$start"}
           createdAt_lte: $end
           ${filterTokenAddress && filterIsToken ? "token_contains_nocase: $tokenId" : ""}
           ${filterTokenAddress && filterIsBadge ? "badge_contains_nocase: $tokenId" : ""}
@@ -553,9 +621,9 @@ function getRewardQuery(
           }
           createdAt
       }
-    `
+    `;
   }
-  query += '}'
+  query += "}";
 
   return query;
 }
