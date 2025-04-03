@@ -67,6 +67,7 @@ export default function DatePickerWithPresets({ onDateChange }: DatePickerProps)
             <SelectItem value="0">{t("datePicker.today")}</SelectItem>
             <SelectItem value="6">{t("datePicker.last7Days")}</SelectItem>
             <SelectItem value="29">{t("datePicker.last30Days")}</SelectItem>
+            <SelectItem value="59">{t("datePicker.last60Days")}</SelectItem>
             <SelectItem value="89">{t("datePicker.last90Days")}</SelectItem>
           </SelectContent>
         </Select>
