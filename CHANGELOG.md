@@ -1,3 +1,10 @@
+## [0.16.1](https://github.com/open-format/community-platform/compare/v0.16.0...v0.16.1) (2025-04-03)
+
+
+### Bug Fixes
+
+* transform date.to from start of day to end ([27fec5d](https://github.com/open-format/community-platform/commit/27fec5d1f5ed1f1d2954b8c488df9c7accb5ac97))
+
 # [0.16.0](https://github.com/open-format/community-platform/compare/v0.15.0...v0.16.0) (2025-03-28)
 
 
