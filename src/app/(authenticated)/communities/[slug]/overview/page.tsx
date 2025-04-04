@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { fetchCommunity, generateLeaderboard } from "@/lib/openformat";
 import { getTranslations } from "next-intl/server";
+import RewardRecommendations from "@/app/(authenticated)/communities/[slug]/overview/components/RewardRecommendations";
 
 export default async function Overview({ params }: { params: Promise<{ slug: string }> }) {
   const t                           = await getTranslations("overview");
@@ -26,6 +27,21 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
   return (
     <div>
       <Shortcuts community={community} />
+      <Separator className="my-lg" />
+      <div className="grid">
+        <Card variant="borderless" className="h-full">
+          <CardHeader className="space-y-1 pb-4">
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-2xl font-bold tracking-tight">{t("rewardRecommendations.title")}</CardTitle>
+              <RefreshButton />
+            </div>
+            <CardDescription>{t("rewardRecommendations.description")}</CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <RewardRecommendations></RewardRecommendations>
+          </CardContent>
+        </Card>
+      </div>
       <Separator className="my-lg" />
       <div className="grid grid-cols-2 gap-4">
         <Card variant="borderless" className="h-full">
@@ -54,6 +70,9 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
 
         <ActivityCard community={community} />
       </div>
+      <Separator className="my-lg" />
+
+
     </div>
   );
 }

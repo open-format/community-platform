@@ -180,6 +180,16 @@
         "lastWeek": "Last Week"
       }
     },
+    "rewardRecommendations": {
+      "title": "Reward Recommendations",
+      "description": "Daily reward recommendations for Discord community members.",
+      "whatHappened": "What happened?",
+      "suggestedReward": "Suggested reward",
+      "reward": "Reward",
+      "reject": "Reject",
+      "openMenu": "Open menu",
+      "actions": "Actions"
+    },
     "activity": {
       "title": "Activity",
       "export": "Export",
