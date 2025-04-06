@@ -12,7 +12,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { ArrowUpDown, Loader2, MoreHorizontal } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -40,6 +39,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useConfetti } from "@/contexts/confetti-context";
+import { useTranslations } from "next-intl";
 
 
 const data: RewardRecommendation[] = [
@@ -107,6 +107,7 @@ const data: RewardRecommendation[] = [
 
 
 export default function RewardRecommendations() {
+  const t = useTranslations( "overview.rewardRecommendations" );
   const [sorting, setSorting] = useState<SortingState>( [] );
   const [isSubmitting, setIsSubmitting] = useState<boolean>( false );
   const [showRejectDialog, setShowRejectDialog] = useState<boolean>( false );
@@ -114,7 +115,7 @@ export default function RewardRecommendations() {
   const columns: ColumnDef<RewardRecommendation>[] = [
     {
       accessorKey: "contributorName",
-      header: "Contributor Name",
+      header: t( "whatHappened" ),
       cell: ({row}) => (
         <div>{row.getValue( "contributorName" )}</div>
       ),
@@ -128,7 +129,7 @@ export default function RewardRecommendations() {
               variant="ghost"
               onClick={() => column.toggleSorting( column.getIsSorted() === "asc" )}
             >
-              Points
+              {t( "suggestedReward" )}
               <ArrowUpDown/>
             </Button>
           </div>
@@ -147,20 +148,20 @@ export default function RewardRecommendations() {
             <Button
               onClick={() => navigator.clipboard.writeText( rewardRecommendation.id )}
             >
-              Reward
+              {t( "reward" )}
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
+                  <span className="sr-only">{t( "openMenu" )}</span>
                   <MoreHorizontal/>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel
                   onClick={handleFormSubmission}
-                >Actions</DropdownMenuLabel>
-                <DropdownMenuItem onClick={handleAlertDialogClose}>Reject</DropdownMenuItem>
+                >{t( "actions" )}</DropdownMenuLabel>
+                <DropdownMenuItem onClick={handleAlertDialogClose}>{t( "reject" )}</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -199,8 +200,8 @@ export default function RewardRecommendations() {
   }
 
   return (
-    <div className="w-full">
-      <div className="rounded-md border">
+    <div className="p-6">
+      <div className="rounded-md border w-full">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map( (headerGroup) => (
@@ -253,20 +254,17 @@ export default function RewardRecommendations() {
       <AlertDialog open={showRejectDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
-            </AlertDialogDescription>
+            <AlertDialogTitle>{t( "absolutelySure" )}</AlertDialogTitle>
+            <AlertDialogDescription>{t( "absolutelySureDescription" )}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleAlertDialogClose}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={handleAlertDialogClose}>{t( "cancel" )}</AlertDialogCancel>
             {isSubmitting ? (
               <AlertDialogAction disabled>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin"/> Deleting reward
+                <Loader2 className="mr-2 h-4 w-4 animate-spin"/> {t( "deletingRewardRecommendation" )}
               </AlertDialogAction>
             ) : (
-              <AlertDialogAction onClick={handleRewardRecommendationRejected}>Continue</AlertDialogAction>
+              <AlertDialogAction onClick={handleRewardRecommendationRejected}>{t( "continue" )}</AlertDialogAction>
             )}
           </AlertDialogFooter>
         </AlertDialogContent>

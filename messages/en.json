@@ -188,7 +188,12 @@
       "reward": "Reward",
       "reject": "Reject",
       "openMenu": "Open menu",
-      "actions": "Actions"
+      "actions": "Actions",
+      "continue": "Continue",
+      "cancel": "Cancel",
+      "absolutelySure": "Are you absolutely sure?",
+      "absolutelySureDescription": "This action cannot be undone. This will permanently delete reward recommendation from our servers.",
+      "deletingRewardRecommendation": "Deleting reward"
     },
     "activity": {
       "title": "Activity",
