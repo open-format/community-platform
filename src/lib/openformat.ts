@@ -559,3 +559,31 @@ function getRewardQuery(
 
   return query;
 }
+
+export async function getRewardRecommendations() {
+  try {
+    const response = await apiClient.get('/v1/pending_rewards');
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function rejectRewardRecommendation(reward_recommendation_id: string) {
+  try {
+    const response = await apiClient.delete(`/v1/pending_rewards/${reward_recommendation_id}`);
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    return null;
+  }
+}
