@@ -99,9 +99,11 @@ export default function LinkAccounts() {
               <div className="flex items-center gap-1.5 min-w-0">
                 {service.icon}
                 <span className="truncate">
-                  {service.linkedAccount 
-                    ? service.linkedAccount
-                    : t('connect', { service: service.id })}
+                  {service.linkedAccount ? (
+                    <span>{service.linkedAccount}</span>
+                  ) : (
+                    <span className="capitalize">{t("connect", { service: service.id })}</span>
+                  )}
                 </span>
               </div>
             </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import DatePickerWithPresets from "@/components/date-picker";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
@@ -20,17 +21,16 @@ import {
 import { generateLeaderboard } from "@/lib/openformat";
 import { cn, filterVisibleTokens } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
+import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import type { DateRange } from "react-day-picker";
 import Discord from "../../public/icons/discord.svg";
 import Github from "../../public/icons/github.svg";
 import Telegram from "../../public/icons/telegram.svg";
 import { Badge } from "./ui/badge";
 import { Skeleton } from "./ui/skeleton";
-import { DateRange } from "react-day-picker";
-import DatePickerWithPresets from "@/components/date-picker";
-import dayjs from 'dayjs';
 
 interface LeaderboardProps {
   data: LeaderboardEntry[] | null;
@@ -60,7 +60,7 @@ function LeaderboardHeader({
   metadata: any;
   selectedToken: { token: { id: string; name: string; symbol: string } };
 }) {
-  const t = useTranslations( "overview.leaderboard" );
+  const t = useTranslations("overview.leaderboard");
 
   return (
     <TableRow>
@@ -157,14 +157,14 @@ export default function Leaderboard({
   tokens,
   slug,
 }: LeaderboardProps) {
-  const {user} = usePrivy();
-  const t = useTranslations( "overview.leaderboard" );
-  const [localData, setLocalData] = useState<LeaderboardEntry[] | null>( data );
-  const [isLoading, setIsLoading] = useState( initialLoading );
-  const [date, setDate] = useState<DateRange | undefined>( {
+  const { user } = usePrivy();
+  const t = useTranslations("overview.leaderboard");
+  const [localData, setLocalData] = useState<LeaderboardEntry[] | null>(data);
+  const [isLoading, setIsLoading] = useState(initialLoading);
+  const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(new Date().setDate(new Date().getDate() - 7)),
     to: new Date(),
-  } );
+  });
 
   // Filter tokens before using them
   const visibleTokens = filterVisibleTokens(tokens, metadata?.hidden_tokens);
@@ -260,8 +260,8 @@ export default function Leaderboard({
     </Table>
   );
 
-  useEffect( () => {
-    if (date && date.from && date.to) {
+  useEffect(() => {
+    if (date?.from && date?.to) {
       handleTokenSelect(selectedTokenId);
     }
   }, [date]);
@@ -269,7 +269,7 @@ export default function Leaderboard({
   return (
     <Card variant="borderless" className="h-full">
       <CardHeader>
-        <div className="flex items-end justify-between mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-4 sm:mb-0 space-y-6 sm:space-y-0">
           <div className="space-y-2">
             <Label>{t("token")}</Label>
             <Select value={selectedTokenId} onValueChange={handleTokenSelect}>
@@ -285,8 +285,9 @@ export default function Leaderboard({
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <DatePickerWithPresets onDateChange={setDate}/>
+          <div className="flex flex-col space-y-4">
+            <Label>{t("datePicker.filterByDate")}</Label>
+            <DatePickerWithPresets onDateChange={setDate} />
           </div>
         </div>
       </CardHeader>
