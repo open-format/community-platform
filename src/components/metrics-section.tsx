@@ -46,7 +46,10 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
 
   return (
     <div className="space-y-8 pt-6">
-      <h2 className="text-2xl font-semibold tracking-tight">{t("title")}</h2>
+      <div className="flex items-center space-x-2">
+        <h2 className="text-2xl font-semibold tracking-tight">{t("title")}</h2>
+        <RefreshButton />
+      </div>
 
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -85,10 +88,7 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="flex items-center space-x-2">
-                <h2 className="text-2xl font-semibold tracking-tight">{t("activity.title")}</h2>
-                <RefreshButton />
-              </div>
+              <h2 className="text-2xl font-semibold tracking-tight">{t("activity.title")}</h2>
               <p className="text-sm text-muted-foreground">{t("activity.description")}</p>
             </div>
             <ActivityExportDialog community={community} />

@@ -32,8 +32,26 @@ export default function ActivityCard({
 
   if (!rewards || rewards.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 text-center">
-        <p className="text-muted-foreground">{t("noActivity")}</p>
+      <div className="space-y-4">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>{t("rewardIdentifier")}</TableHead>
+              <TableHead>{t("date")}</TableHead>
+              <TableHead>{t("user")}</TableHead>
+              <TableHead className="w-[50px]"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell colSpan={4}>
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <p className="text-muted-foreground">{t("noActivity")}</p>
+                </div>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
       </div>
     );
   }

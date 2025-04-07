@@ -1017,26 +1017,26 @@
   "metrics": {
     "title": "Community insight",
     "uniqueUsers": {
-      "description": "Daily unique users who received rewards.",
-      "title": "Unique Users",
+      "description": "The number of new users who have received rewards",
+      "title": "New Users",
       "total": "Total Users",
-      "noData": "No user data available",
-      "users": "users",
+      "noData": "No new users with rewards data available",
+      "users": "New users who have received rewards",
       "timeRanges": {
-        "7d": "Last week",
-        "30d": "Last month",
-        "90d": "Last 3 months"
+        "7d": "Last 7 days",
+        "30d": "Last 30 days",
+        "90d": "Last 90 days"
       }
     },
     "totalRewards": {
-      "title": "Total Rewards",
+      "title": "Rewards Issued",
       "noData": "No reward data available",
       "rewards": "rewards",
-      "description": "The running total of all tokens rewarded in the app over time, across all users and reward types.",
+      "description": "The total number of times users have been rewarded over a given time period, across all users and reward types.",
       "timeRanges": {
-        "7d": "Last week",
-        "30d": "Last month",
-        "90d": "Last 3 months"
+        "7d": "Last 7 days",
+        "30d": "Last 30 days",
+        "90d": "Last 90 days"
       }
     },
     "rewardDistribution": {

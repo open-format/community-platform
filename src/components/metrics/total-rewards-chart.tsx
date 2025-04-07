@@ -25,9 +25,9 @@ interface ChartData {
 }
 
 const TIME_RANGES = {
-  "7d": { days: 7, label: "Last week" },
-  "30d": { days: 30, label: "Last month" },
-  "90d": { days: 90, label: "Last 3 months" },
+  "7d": { days: 7, label: "Last 7 days" },
+  "30d": { days: 30, label: "Last 30 days" },
+  "90d": { days: 90, label: "Last 90 days" }
 } as const;
 
 type TimeRange = keyof typeof TIME_RANGES;
