@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ExternalLink, Sparkles, Clock } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-type ActionType = 'discord' | 'view-report' | 'command';
+type ActionType = 'discord' | 'view-report' | 'command';// command currently not used
 
 interface Action {
   title: string;
@@ -86,7 +86,6 @@ export function NextSteps() {
                   size="sm"
                   className="flex items-center gap-2"
                   onClick={() => {
-                    // Handle action based on type
                     switch (step.action?.type) {
                       case 'discord':
                         // Open Discord

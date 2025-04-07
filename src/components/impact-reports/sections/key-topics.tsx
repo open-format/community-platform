@@ -1,11 +1,13 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { KeyTopic } from "../types";
-import { ExternalLink } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { TopicItemComponent } from "./topic-item";
+import { ViewAllModal } from "./view-all-modal";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Hash } from "lucide-react";
 
 interface KeyTopicsProps {
   topics: KeyTopic[];
@@ -13,31 +15,59 @@ interface KeyTopicsProps {
 
 export function KeyTopics({ topics }: KeyTopicsProps) {
   const t = useTranslations("ImpactReports.topics");
-  
-  if (topics.length === 0) return null;
+  const [isViewAllOpen, setIsViewAllOpen] = useState(false);
 
-  const topFive = topics.slice(0, 5);
+  if (!topics.length) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Hash className="h-5 w-5" />
+            {t("title")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-lg border p-4 text-center">
+            {t("noData")}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Hash className="h-5 w-5" />
+          {t("title")}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {topFive.map((topic) => (
-            <TopicItemComponent key={topic.topic} topic={topic} />
-          ))}
-          {topics.length > 5 && (
-            <div className="pt-4">
-              <Button variant="outline" size="sm" className="w-full">
+          <div className="flex flex-col gap-4">
+            {topics.slice(0, 3).map((topic) => (
+              <TopicItemComponent key={topic.topic} topic={topic} />
+            ))}
+          </div>
+          {topics.length > 3 && (
+            <div className="flex justify-center">
+              <Button
+                variant="outline"
+                onClick={() => setIsViewAllOpen(true)}
+              >
                 {t("viewAll")}
-                <ExternalLink className="ml-2 h-4 w-4" />
               </Button>
             </div>
           )}
         </div>
       </CardContent>
+
+      <ViewAllModal
+        isOpen={isViewAllOpen}
+        onClose={() => setIsViewAllOpen(false)}
+        topics={topics}
+      />
     </Card>
   );
 } 

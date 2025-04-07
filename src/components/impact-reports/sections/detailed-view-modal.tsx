@@ -29,8 +29,12 @@ export function DetailedViewModal({
 }: DetailedViewModalProps) {
   const t = useTranslations(`ImpactReports.${translationKey}`);
 
+  const handleClose = () => {
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>

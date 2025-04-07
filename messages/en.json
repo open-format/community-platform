@@ -1040,11 +1040,13 @@
       "viewAll": "View All {type}"
     },
     "topics": {
-      "title": "Key Discussion Topics",
+      "title": "Key Topics",
+      "viewDetails": "View Details",
       "messageCount": "{count} messages",
-      "viewEvidence": "View evidence",
+      "evidenceCount": "{count} evidence links",
+      "noData": "No topics found",
       "viewAll": "View All Topics",
-      "viewDetails": "View topic details"
+      "viewEvidence": "View Evidence"
     },
     "contributors": {
       "title": "Top Contributors",
