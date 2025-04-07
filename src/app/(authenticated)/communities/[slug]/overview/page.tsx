@@ -37,7 +37,7 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
             </div>
             <CardDescription>{t("rewardRecommendations.description")}</CardDescription>
           </CardHeader>
-          <CardContent className="p-0">
+          <CardContent className="p-6">
             <RewardRecommendations></RewardRecommendations>
           </CardContent>
         </Card>

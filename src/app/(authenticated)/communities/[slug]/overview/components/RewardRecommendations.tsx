@@ -1,274 +1,86 @@
-"use client"
+"use client";
 
-import { startTransition, useState } from "react";
-import {
-  ColumnDef,
-  SortingState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-import { ArrowUpDown, Loader2, MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { useConfetti } from "@/contexts/confetti-context";
-import { useTranslations } from "next-intl";
-
-
-const data: RewardRecommendation[] = [
-  {
-    "id": "1a2b3c4d-5678-90ab-cdef-1234567890ab",
-    "communityId": "community_xyz",
-    "contributorName": "Jane Doe",
-    "walletAddress": "0x123abc456def789ghi012jkl345mno678pqr",
-    "platform": "discord",
-    "rewardId": "reward_001",
-    "points": 150,
-    "metadataUri": "ipfs://metadatauri123",
-    "status": "pending",
-    "createdAt": new Date( "2025-03-27T12:34:56Z" ),
-    "updatedAt": new Date( "2025-03-27T12:34:56Z" ),
-    "processedAt": null,
-    "error": null
-  },
-  {
-    "id": "9f8e7d6c-5432-10ba-fedc-9987654321ba",
-    "communityId": "community_abc",
-    "contributorName": "Pepe Vega",
-    "walletAddress": "0xabc987def654ghi321jkl012mno345pqr678",
-    "platform": "telegram",
-    "rewardId": "reward_002",
-    "points": 55,
-    "metadataUri": "ipfs://metadatauri456",
-    "status": "pending",
-    "createdAt": new Date( "2025-03-26T09:21:00Z" ),
-    "updatedAt": new Date( "2025-03-26T09:21:00Z" ),
-    "processedAt": null,
-    "error": null
-  },
-  {
-    "id": "9f8e7d6c-5432-10ba-fedc-0987654321ba",
-    "communityId": "community_abc",
-    "contributorName": "John Smith",
-    "walletAddress": "0xabc987def654ghi321jkl012mno345pqr678",
-    "platform": "telegram",
-    "rewardId": "reward_002",
-    "points": 75,
-    "metadataUri": "ipfs://metadatauri456",
-    "status": "pending",
-    "createdAt": new Date( "2025-03-26T09:21:00Z" ),
-    "updatedAt": new Date( "2025-03-26T09:21:00Z" ),
-    "processedAt": null,
-    "error": null
-  },
-  {
-    "id": "9f8e7d6c-5932-10ba-fedc-0987654321ba",
-    "communityId": "community_abc",
-    "contributorName": "Peter Pan",
-    "walletAddress": "0xabc987def654ghi321jkl012mno345pqr678",
-    "platform": "telegram",
-    "rewardId": "reward_002",
-    "points": 175,
-    "metadataUri": "ipfs://metadatauri456",
-    "status": "pending",
-    "createdAt": new Date( "2025-03-26T09:21:00Z" ),
-    "updatedAt": new Date( "2025-03-26T09:21:00Z" ),
-    "processedAt": null,
-    "error": null
-  },
-];
-
+import { useRecommendations } from "@/hooks/useRecommendations";
+import { useCallback, useState } from "react";
+import RecommendationsTable from "./RecommendationsTable";
+import RejectDialog from "./RejectDialog";
+import RewardDialog from "./RewardDialog";
 
 export default function RewardRecommendations() {
-  const t = useTranslations( "overview.rewardRecommendations" );
-  const [sorting, setSorting] = useState<SortingState>( [] );
-  const [isSubmitting, setIsSubmitting] = useState<boolean>( false );
-  const [showRejectDialog, setShowRejectDialog] = useState<boolean>( false );
-  const {triggerConfetti} = useConfetti();
-  const columns: ColumnDef<RewardRecommendation>[] = [
-    {
-      accessorKey: "contributorName",
-      header: t( "whatHappened" ),
-      cell: ({row}) => (
-        <div>{row.getValue( "contributorName" )}</div>
-      ),
-    },
-    {
-      accessorKey: "points",
-      header: ({column}) => {
-        return (
-          <div className="text-right">
-            <Button
-              variant="ghost"
-              onClick={() => column.toggleSorting( column.getIsSorted() === "asc" )}
-            >
-              {t( "suggestedReward" )}
-              <ArrowUpDown/>
-            </Button>
-          </div>
-        )
-      },
-      cell: ({row}) => <div className="lowercase text-right font-medium">{row.getValue( "points" )}</div>,
-    },
-    {
-      id: "actions",
-      enableHiding: false,
-      cell: ({row}) => {
-        const rewardRecommendation = row.original
+  // Component state for managing dialogs and selected recommendations
+  const [showRejectDialog, setShowRejectDialog] = useState<boolean>(false);
+  const [selectedRecommendation, setSelectedRecommendation] =
+    useState<RewardRecommendation | null>(null);
+  const [rejectingRecommendation, setRejectingRecommendation] =
+    useState<RewardRecommendation | null>(null);
+  const { recommendations, confirmRecommendation, isConfirming } =
+    useRecommendations();
 
-        return (
-          <div>
-            <Button
-              onClick={() => navigator.clipboard.writeText( rewardRecommendation.id )}
-            >
-              {t( "reward" )}
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">{t( "openMenu" )}</span>
-                  <MoreHorizontal/>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel
-                  onClick={handleFormSubmission}
-                >{t( "actions" )}</DropdownMenuLabel>
-                <DropdownMenuItem onClick={handleAlertDialogClose}>{t( "reject" )}</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+  const handleReject = (recommendation: RewardRecommendation) => {
+    setRejectingRecommendation(recommendation);
+    setShowRejectDialog(true);
+  };
 
-        )
-      },
-    },
-  ]
-
-  const table = useReactTable( {
-    data,
-    columns,
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      sorting,
-    },
-  } );
-
-  function handleFormSubmission() {
-    startTransition( async () => {
-      triggerConfetti();
-    } );
+  function handleRejectConfirm() {
+    // Here you would call your API to reject the recommendation
+    console.log("Rejecting recommendation:", rejectingRecommendation);
+    setRejectingRecommendation(null);
   }
 
-  function handleRewardRecommendationRejected() {
-    setIsSubmitting( true );
+  /**
+   * Function to open reward dialog
+   */
+  const openRewardDialog = useCallback(
+    (recommendation: RewardRecommendation) => {
+      setSelectedRecommendation(recommendation);
+    },
+    [setSelectedRecommendation]
+  );
 
-  }
+  /**
+   * Function to close reward dialog
+   */
+  const closeRewardDialog = useCallback(() => {
+    setSelectedRecommendation(null);
+  }, [setSelectedRecommendation]);
 
-  function handleAlertDialogClose() {
-    setShowRejectDialog( !showRejectDialog );
-  }
+  /**
+   * Function to confirm reward dialog
+   */
+  const confirmReward = useCallback(
+    (data: object) => {
+      console.log("Confirming reward:", {
+        ...selectedRecommendation,
+        ...data,
+      });
+      confirmRecommendation().then(() => {
+        setSelectedRecommendation(null);
+      });
+    },
+    [confirmRecommendation, selectedRecommendation]
+  );
 
   return (
-    <div className="p-6">
-      <div className="rounded-md border w-full">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map( (headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map( (header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                    </TableHead>
-                  )
-                } )}
-              </TableRow>
-            ) )}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map( (row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map( (cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ) )}
-                </TableRow>
-              ) )
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <AlertDialog open={showRejectDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t( "absolutelySure" )}</AlertDialogTitle>
-            <AlertDialogDescription>{t( "absolutelySureDescription" )}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleAlertDialogClose}>{t( "cancel" )}</AlertDialogCancel>
-            {isSubmitting ? (
-              <AlertDialogAction disabled>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin"/> {t( "deletingRewardRecommendation" )}
-              </AlertDialogAction>
-            ) : (
-              <AlertDialogAction onClick={handleRewardRecommendationRejected}>{t( "continue" )}</AlertDialogAction>
-            )}
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+    <div className="">
+      <RecommendationsTable
+        recommendations={recommendations}
+        onReward={openRewardDialog}
+        onReject={handleReject}
+      />
+      <RejectDialog
+        open={showRejectDialog}
+        onOpenChange={setShowRejectDialog}
+        onConfirm={handleRejectConfirm}
+      />
+
+      {selectedRecommendation && (
+        <RewardDialog
+          {...selectedRecommendation}
+          submitting={isConfirming}
+          onClose={closeRewardDialog}
+          onConfirm={confirmReward}
+        />
+      )}
     </div>
-  )
+  );
 }

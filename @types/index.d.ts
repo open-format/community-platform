@@ -212,6 +212,13 @@ type RewardListResponse = {
   [key: `rewards_${number}`]: Reward[];
 }
 
+type RewardUrlEvidence = {
+  title: string;
+  url: string;
+}
+
+type RewardEvidence = RewardUrlEvidence;
+
 type RewardRecommendation = {
   id: string,
   communityId: string,
@@ -226,4 +233,6 @@ type RewardRecommendation = {
   updatedAt: Date,
   processedAt: string | null,
   error: string | null,
+  impact: string,
+  evidence: Array<RewardEvidence>
 }
