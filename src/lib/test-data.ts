@@ -93,6 +93,46 @@ export const generateImpactReportTestData = (): ImpactReport => {
     {
       username: "content_creator",
       messageCount: 28
+    },
+    {
+      username: "blockchain_researcher",
+      messageCount: 25
+    },
+    {
+      username: "smart_contract_dev",
+      messageCount: 24
+    },
+    {
+      username: "web3_designer",
+      messageCount: 23
+    },
+    {
+      username: "community_advocate",
+      messageCount: 22
+    },
+    {
+      username: "protocol_engineer",
+      messageCount: 21
+    },
+    {
+      username: "dao_contributor",
+      messageCount: 20
+    },
+    {
+      username: "nft_artist",
+      messageCount: 19
+    },
+    {
+      username: "defi_analyst",
+      messageCount: 18
+    },
+    {
+      username: "crypto_educator",
+      messageCount: 17
+    },
+    {
+      username: "web3_consultant",
+      messageCount: 16
     }
   ];
 
@@ -154,6 +194,46 @@ export const generateImpactReportTestData = (): ImpactReport => {
       ],
       description: "Strategies for content creation, social media marketing, and community growth.",
       messageCount: 6
+    },
+    {
+      topic: "Smart Contract Security",
+      evidence: [
+        "https://discord.com/channels/856517297141317643/888806875347435590/1354901926466293820"
+      ],
+      description: "Discussions about smart contract auditing, security best practices, and vulnerability prevention.",
+      messageCount: 14
+    },
+    {
+      topic: "Layer 2 Solutions",
+      evidence: [
+        "https://discord.com/channels/856517297141317643/888806875347435590/1354901926466293821"
+      ],
+      description: "Analysis of various Layer 2 scaling solutions and their implementation.",
+      messageCount: 11
+    },
+    {
+      topic: "DAO Governance",
+      evidence: [
+        "https://discord.com/channels/856517297141317643/888806875347435590/1354901926466293822"
+      ],
+      description: "Discussions about decentralized governance models and voting mechanisms.",
+      messageCount: 13
+    },
+    {
+      topic: "Cross-chain Interoperability",
+      evidence: [
+        "https://discord.com/channels/856517297141317643/888806875347435590/1354901926466293823"
+      ],
+      description: "Exploring solutions for cross-chain communication and asset transfers.",
+      messageCount: 9
+    },
+    {
+      topic: "Zero Knowledge Proofs",
+      evidence: [
+        "https://discord.com/channels/856517297141317643/888806875347435590/1354901926466293824"
+      ],
+      description: "Technical discussions about ZK-proofs and their applications.",
+      messageCount: 8
     }
   ];
 
@@ -217,6 +297,14 @@ export const generateImpactReportTestData = (): ImpactReport => {
           "https://discord.com/channels/856517297141317643/888806875347435590/1354901926466293819"
         ],
         description: "Users expressing need for additional features and improvements."
+      },
+      {
+        title: "Integration Challenges",
+        users: ["smart_contract_dev", "protocol_engineer"],
+        evidence: [
+          "https://discord.com/channels/856517297141317643/888806875347435590/1354901926466293825"
+        ],
+        description: "Developers facing challenges with third-party integrations and API compatibility."
       }
     ]
   };

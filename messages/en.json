@@ -1025,7 +1025,7 @@
     "overview": {
       "totalMessages": "Total Messages",
       "activeChannels": "Active Channels",
-      "uniqueParticipants": "Unique Participants"
+      "uniqueParticipants": "Unique Users"
     },
     "sentiment": {
       "excited": {
@@ -1059,7 +1059,7 @@
       "dailyActivity": "Daily Activity",
       "channelBreakdown": "Channel Breakdown",
       "messages": "Messages",
-      "users": "Users"
+      "users": "Unique Users"
     },
     "nextSteps": {
       "title": "What should you do next?",

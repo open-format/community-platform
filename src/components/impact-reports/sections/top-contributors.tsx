@@ -17,8 +17,8 @@ function ContributorItemComponent({ contributor, rank }: { contributor: TopContr
   const t = useTranslations("ImpactReports.contributors");
 
   return (
-    <div className="p-4 rounded-lg border bg-card hover:bg-accent transition-colors">
-      <div className="flex items-center justify-between">
+    <div className="p-4 rounded-lg border bg-card hover:bg-accent transition-colors h-[104px] flex items-center">
+      <div className="flex items-center justify-between w-full">
         <div className="flex items-center gap-4">
           <ImpactReportAvatar username={contributor.username} rank={rank} />
           <div className="space-y-1">
@@ -29,15 +29,6 @@ function ContributorItemComponent({ contributor, rank }: { contributor: TopContr
             </div>
           </div>
         </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="h-8"
-          onClick={() => {}}
-        >
-          {t("viewDetails")}
-          <ExternalLink className="ml-2 h-4 w-4" />
-        </Button>
       </div>
     </div>
   );
@@ -57,7 +48,7 @@ export function TopContributors({ contributors }: TopContributorsProps) {
     evidence: [] 
   }));
 
-  const topFive = contributors.slice(0, 5);
+  const topThree = contributors.slice(0, 3);
 
   return (
     <Card>
@@ -70,7 +61,7 @@ export function TopContributors({ contributors }: TopContributorsProps) {
       <CardContent>
         <div className="space-y-4">
           <div className="flex flex-col gap-4">
-            {topFive.map((contributor, index) => (
+            {topThree.map((contributor, index) => (
               <ContributorItemComponent 
                 key={contributor.username} 
                 contributor={contributor} 
@@ -78,8 +69,8 @@ export function TopContributors({ contributors }: TopContributorsProps) {
               />
             ))}
           </div>
-          {contributors.length > 5 && (
-            <div className="flex justify-center">
+          {contributors.length > 3 && (
+            <div className="flex justify-center pt-[1px]">
               <Button
                 variant="outline"
                 onClick={() => setIsViewAllOpen(true)}

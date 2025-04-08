@@ -46,8 +46,8 @@ export function DetailedViewModal({
           {evidence && evidence.length > 0 && (
             <div className="space-y-2">
               <h4 className="text-sm font-medium">{t("viewEvidence")}</h4>
-              <div className="flex flex-wrap gap-2">
-                {evidence.map((link) => (
+              <div className="grid gap-2">
+                {evidence.map((link, index) => (
                   <Link
                     key={link}
                     href={link}
@@ -55,7 +55,7 @@ export function DetailedViewModal({
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
                   >
-                    {t("viewEvidence")}
+                    {`Evidence ${index + 1}`}
                     <ExternalLink className="h-3 w-3" />
                   </Link>
                 ))}

@@ -25,30 +25,34 @@ export function TopicItemComponent({ topic }: TopicItemProps) {
   };
 
   return (
-    <div className="space-y-3 p-4 rounded-lg border bg-card hover:bg-accent transition-colors">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Hash className="h-5 w-5 text-muted-foreground" />
-          <h4 className="font-medium">{topic.topic}</h4>
+    <div className="p-4 rounded-lg border bg-card hover:bg-accent transition-colors h-[104px]">
+      <div className="flex flex-col justify-between h-full">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Hash className="h-5 w-5 text-muted-foreground" />
+              <h4 className="font-medium">{topic.topic}</h4>
+            </div>
+            <Badge variant="secondary" className="flex items-center gap-1">
+              <MessageSquare className="h-3 w-3" />
+              {topic.messageCount}
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground line-clamp-1">{topic.description}</p>
         </div>
-        <Badge variant="secondary" className="flex items-center gap-1">
-          <MessageSquare className="h-3 w-3" />
-          {topic.messageCount}
-        </Badge>
-      </div>
-      <p className="text-sm text-muted-foreground line-clamp-2">{topic.description}</p>
-      <div className="flex justify-between items-center">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="h-8"
-          onClick={handleViewDetails}
-        >
-          {t("viewDetails")}
-          <ExternalLink className="ml-2 h-4 w-4" />
-        </Button>
-        <div className="text-xs text-muted-foreground">
-          {t("evidenceCount", { count: topic.evidence.length })}
+        <div className="flex justify-between items-center">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8"
+            onClick={handleViewDetails}
+          >
+            {t("viewDetails")}
+            <ExternalLink className="ml-2 h-4 w-4" />
+          </Button>
+          <div className="text-xs text-muted-foreground">
+            {t("evidenceCount", { count: topic.evidence.length })}
+          </div>
         </div>
       </div>
       <DetailedViewModal

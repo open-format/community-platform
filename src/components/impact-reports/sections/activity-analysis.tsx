@@ -84,7 +84,7 @@ export function ActivityAnalysis({ dailyActivity, channelBreakdown }: ActivityAn
                   yAxisId="right"
                   dataKey="uniqueUsers" 
                   name="Unique Users"
-                  fill="hsl(210, 100%, 50%)"
+                  fill="#FF6B00"
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>
@@ -147,7 +147,7 @@ export function ActivityAnalysis({ dailyActivity, channelBreakdown }: ActivityAn
                 <Bar 
                   dataKey="users" 
                   name="Unique Users"
-                  fill="hsl(210, 100%, 50%)"
+                  fill="#FF6B00"
                   radius={[0, 4, 4, 0]}
                 />
               </BarChart>

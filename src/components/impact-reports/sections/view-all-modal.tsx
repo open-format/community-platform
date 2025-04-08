@@ -63,7 +63,7 @@ export function ViewAllModal({ isOpen, onClose, topics }: ViewAllModalProps) {
           <DialogHeader>
             <DialogTitle>{t("title")}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto">
             <Table>
               <TableHeader>
                 <TableRow>
