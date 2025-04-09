@@ -1,6 +1,6 @@
 import { useConfetti } from "@/contexts/confetti-context";
 import { useEffect, useState } from "react";
-import { effect } from "zod";
+import { getRewardRecommendations, rejectRewardRecommendation, confirmRewardRecommendation } from "@/lib/openformat";
 
 const mockData: RewardRecommendation[] = [
   {
@@ -13,8 +13,8 @@ const mockData: RewardRecommendation[] = [
     points: 150,
     metadataUri: "ipfs://metadatauri123",
     status: "pending",
-    createdAt: new Date("2025-03-27T12:34:56Z"),
-    updatedAt: new Date("2025-03-27T12:34:56Z"),
+    createdAt: new Date( "2025-03-27T12:34:56Z" ),
+    updatedAt: new Date( "2025-03-27T12:34:56Z" ),
     processedAt: null,
     error: null,
     evidence: [
@@ -39,8 +39,8 @@ const mockData: RewardRecommendation[] = [
     points: 55,
     metadataUri: "ipfs://metadatauri456",
     status: "pending",
-    createdAt: new Date("2025-03-26T09:21:00Z"),
-    updatedAt: new Date("2025-03-26T09:21:00Z"),
+    createdAt: new Date( "2025-03-26T09:21:00Z" ),
+    updatedAt: new Date( "2025-03-26T09:21:00Z" ),
     processedAt: null,
     error: null,
     evidence: [
@@ -65,8 +65,8 @@ const mockData: RewardRecommendation[] = [
     points: 75,
     metadataUri: "ipfs://metadatauri456",
     status: "pending",
-    createdAt: new Date("2025-03-26T09:21:00Z"),
-    updatedAt: new Date("2025-03-26T09:21:00Z"),
+    createdAt: new Date( "2025-03-26T09:21:00Z" ),
+    updatedAt: new Date( "2025-03-26T09:21:00Z" ),
     processedAt: null,
     error: null,
     evidence: [
@@ -91,8 +91,8 @@ const mockData: RewardRecommendation[] = [
     points: 175,
     metadataUri: "ipfs://metadatauri456",
     status: "pending",
-    createdAt: new Date("2025-03-26T09:21:00Z"),
-    updatedAt: new Date("2025-03-26T09:21:00Z"),
+    createdAt: new Date( "2025-03-26T09:21:00Z" ),
+    updatedAt: new Date( "2025-03-26T09:21:00Z" ),
     processedAt: null,
     error: null,
     evidence: [
@@ -110,38 +110,68 @@ const mockData: RewardRecommendation[] = [
 ];
 
 export const useRecommendations = () => {
-  const { triggerConfetti } = useConfetti();
+  const {triggerConfetti} = useConfetti();
 
-  const [isConfirming, setIsConfirming] = useState(false);
+  const [isConfirming, setIsConfirming] = useState( false );
+  const [isRejecting, setIsRejecting] = useState( false );
   const [recommendations, setRecommendations] =
-    useState<RewardRecommendation[]>(mockData);
+    useState<RewardRecommendation[]>( mockData );
 
-  const rejectRecommendation = async () => {};
+  const rejectRecommendation = async (rewardRecommendation: RewardRecommendation | null) => {
+    setIsRejecting( true );
+    return new Promise( async (resolve, reject) => {
+      try {
+        if (rewardRecommendation?.id) {
+          const response = await rejectRewardRecommendation( rewardRecommendation.id );
 
-  const confirmRecommendation = async () => {
-    setIsConfirming(true);
-    // Simulate a POST request with a 3-second delay
-    return new Promise<void>((resolve) => {
-      console.log("Simulating POST request for reward confirmation...");
-
-      setTimeout(() => {
-        console.log("POST request completed successfully");
-        triggerConfetti();
-        resolve();
-      }, 3000);
-    }).finally(() => {
-      setIsConfirming(false);
-    });
+          if (response) {
+            resolve( true );
+          } else {
+            resolve( false );
+          }
+        }
+      } catch (e) {
+        reject( e );
+      }
+    } ).catch( err => {
+      console.log( err );
+      return false;
+    } ).finally( () => setIsRejecting( false ) );
   };
 
-  useEffect(() => {
-    // TODO: load recommendations from API
-  }, []);
+  const confirmRecommendation = async () => {
+    setIsConfirming( true );
+    // Simulate a POST request with a 3-second delay
+    return new Promise<void>( (resolve) => {
+      console.log( "Simulating POST request for reward confirmation..." );
+
+      setTimeout( () => {
+        console.log( "POST request completed successfully" );
+        triggerConfetti();
+        resolve();
+      }, 3000 );
+    } ).finally( () => {
+      setIsConfirming( false );
+    } );
+  };
+
+  useEffect( () => {
+    // TODO: uncomment load recommendations from API
+    // startTransition( async () => {
+    //   try {
+    //     const data = await getRewardRecommendations();
+    //     setRecommendations( data );
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    // } );
+  }, [] );
 
   return {
     recommendations,
     rejectRecommendation,
     confirmRecommendation,
     isConfirming,
+    isRejecting,
   };
 };

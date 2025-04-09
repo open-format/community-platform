@@ -225,7 +225,7 @@ export default function RecommendationsTable({
                 colSpan={columns.length}
                 className="h-24 text-center"
               >
-                {t("noResults")}
+                {t("noData")}
               </TableCell>
             </TableRow>
           )}

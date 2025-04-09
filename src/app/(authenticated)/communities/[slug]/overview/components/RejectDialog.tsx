@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import {
   AlertDialog,
@@ -18,48 +17,43 @@ interface RejectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
+  isRejecting: boolean;
 }
 
 export default function RejectDialog({
   open,
   onOpenChange,
   onConfirm,
+  isRejecting
 }: RejectDialogProps) {
-  const t = useTranslations("overview.rewardRecommendations");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const t = useTranslations( "overview.rewardRecommendations" );
 
   function handleConfirm() {
-    setIsSubmitting(true);
     // Here you would call your API to reject the recommendation
-    // For now, we'll just simulate a delay
-    setTimeout(() => {
-      setIsSubmitting(false);
-      onConfirm();
-      onOpenChange(false);
-    }, 1000);
+    onConfirm();
   }
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialog open={open}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t("absolutelySure")}</AlertDialogTitle>
+          <AlertDialogTitle>{t( "absolutelySure" )}</AlertDialogTitle>
           <AlertDialogDescription>
-            {t("absolutelySureDescription")}
+            {t( "absolutelySureDescription" )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => onOpenChange(false)}>
-            {t("cancel")}
+          <AlertDialogCancel disabled={isRejecting} onClick={() => onOpenChange( false )}>
+            {t( "cancel" )}
           </AlertDialogCancel>
-          {isSubmitting ? (
+          {isRejecting ? (
             <AlertDialogAction disabled>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
-              {t("deletingRewardRecommendation")}
+              <Loader2 className="mr-2 h-4 w-4 animate-spin"/>{" "}
+              {t( "deletingRewardRecommendation" )}
             </AlertDialogAction>
           ) : (
             <AlertDialogAction onClick={handleConfirm}>
-              {t("continue")}
+              {t( "continue" )}
             </AlertDialogAction>
           )}
         </AlertDialogFooter>

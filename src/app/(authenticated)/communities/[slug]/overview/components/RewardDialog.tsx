@@ -38,23 +38,25 @@ type RewardDialogProps = {
   contributorName: string;
   evidence: EvidenceItem[];
   impact: string;
-  suggestedAmount?: number;
+  points?: number;
   submitting?: boolean;
   onClose: () => void;
   onConfirm: (data: ConfirmReward) => void;
 };
 
 // Evidence Details Component
-function EvidenceDetails({ evidence }: { evidence: EvidenceItem[] }) {
+function EvidenceDetails({evidence}: { evidence: EvidenceItem[] }) {
+  const t = useTranslations( "overview.rewardRecommendations" );
+
   if (!evidence || evidence.length === 0) {
     return (
-      <p className="text-muted-foreground text-sm">No evidence provided</p>
+      <p className="text-muted-foreground text-sm">{t( "noEvidence" )}</p>
     );
   }
 
   return (
     <div className="space-y-2">
-      {evidence.map((item, index) => (
+      {evidence.map( (item, index) => (
         <Card key={index} className="bg-muted/50">
           <CardHeader className="p-3 pb-1">
             <CardTitle className="text-sm font-medium">{item.title}</CardTitle>
@@ -66,11 +68,11 @@ function EvidenceDetails({ evidence }: { evidence: EvidenceItem[] }) {
               rel="noopener noreferrer"
               className="text-xs text-blue-500 hover:underline flex items-center gap-1"
             >
-              View Evidence <ExternalLink className="h-3 w-3" />
+              {t( "viewEvidence" )} <ExternalLink className="h-3 w-3"/>
             </a>
           </CardFooter>
         </Card>
-      ))}
+      ) )}
     </div>
   );
 }
@@ -79,31 +81,31 @@ export default function RewardDialog({
   contributorName,
   evidence,
   impact,
-  suggestedAmount = 100,
+  points = 100,
   submitting,
   onClose,
   onConfirm,
 }: RewardDialogProps) {
-  const t = useTranslations("tokens.create");
+  const t = useTranslations( "overview.rewardRecommendations" );
 
-  const FormSchema = z.object({
+  const FormSchema = z.object( {
     contributorName: z
       .string()
-      .min(3, t("validation.nameRequired"))
-      .max(32, t("validation.nameMaxLength")),
+      .min( 3, t( "validation.nameRequired" ) )
+      .max( 32, t( "validation.nameMaxLength" ) ),
     amount: z.coerce
       .number()
-      .min(1, "Amount must be at least 1")
-      .default(suggestedAmount),
-  });
+      .min( 1, t( "validation.amountMin" ) )
+      .default( points ),
+  } );
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<z.infer<typeof FormSchema>>( {
+    resolver: zodResolver( FormSchema ),
     defaultValues: {
       contributorName,
-      amount: suggestedAmount,
+      amount: points,
     },
-  });
+  } );
 
   const onOpenChange = (opened: boolean) => {
     if (!opened) {
@@ -112,45 +114,43 @@ export default function RewardDialog({
   };
 
   function handleFormSubmission() {
-    onConfirm(form.getValues());
+    onConfirm( form.getValues() );
   }
 
   return (
     <Dialog open onOpenChange={onOpenChange}>
       <DialogTrigger className={buttonVariants()} onClick={onClose}>
-        {t("title")}
+        {t( "title" )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            Reward
-            {/* {t("title")} */}
+            {t( "reward" )}
           </DialogTitle>
           <DialogDescription>
-            Reward a community member for their contribution.
-            {/* {t("description")} */}
+            {t( "rewardDescription" )}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
             className="w-full space-y-4"
-            onSubmit={form.handleSubmit(handleFormSubmission)}
+            onSubmit={form.handleSubmit( handleFormSubmission )}
           >
             {/* Receiver Name  */}
             <FormField
               control={form.control}
               name="contributorName"
               disabled
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Receiver Name</FormLabel>
+                  <FormLabel>{t("receiverName")}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={t("fields.name.placeholder")}
+                      placeholder={t( "receiverName" )}
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage/>
                 </FormItem>
               )}
             />
@@ -158,42 +158,42 @@ export default function RewardDialog({
             <FormField
               control={form.control}
               name="amount"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Reward Amount</FormLabel>
+                  <FormLabel>{t( "rewardAmount" )}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
-                      placeholder="Enter reward amount"
+                      placeholder={t( "enterRewardAmount" )}
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage/>
                 </FormItem>
               )}
             />
 
             {/* Evidence Details */}
             <div className="space-y-2">
-              <h3 className="text-sm font-medium">Evidence</h3>
-              <EvidenceDetails evidence={evidence} />
+              <h3 className="text-sm font-medium">{t( "evidence" )}</h3>
+              <EvidenceDetails evidence={evidence}/>
             </div>
 
             {/* Impact Description */}
             {impact && (
               <div className="space-y-2">
-                <h3 className="text-sm font-medium">Impact</h3>
+                <h3 className="text-sm font-medium">{t( "impact" )}</h3>
                 <p className="text-sm text-muted-foreground">{impact}</p>
               </div>
             )}
             <div className="flex justify-between gap-2 pt-2">
               {submitting ? (
                 <Button disabled>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Confirming Reward...
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                  {t( "confirmingRewardRecommendation" )}
                 </Button>
               ) : (
-                <Button type="submit">Confirm Reward</Button>
+                <Button type="submit">{t( "confirmRewardRecommendation" )}</Button>
               )}
             </div>
           </form>
