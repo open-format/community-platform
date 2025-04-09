@@ -1,6 +1,6 @@
 "use client";
 
-import { KeyTopic } from "../types";
+import { KeyTopic, TopContributor } from "../types";
 import { ExternalLink, ArrowUpDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -15,45 +15,57 @@ import {
 } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DetailedViewModal } from "./detailed-view-modal";
+import { ImpactReportAvatar } from "./impact-report-avatar";
 
-interface ViewAllModalProps {
+type ColumnConfig<T> = {
+  key: keyof T | string;
+  title: string;
+  sortable?: boolean;
+  render?: (item: T) => React.ReactNode;
+};
+
+interface ViewAllModalProps<T extends KeyTopic | TopContributor> {
   isOpen: boolean;
   onClose: () => void;
-  topics: KeyTopic[];
+  items: T[];
+  type: "topics" | "contributors";
+  columns: ColumnConfig<T>[];
+  translationKey: string;
 }
 
-export function ViewAllModal({ isOpen, onClose, topics }: ViewAllModalProps) {
-  const t = useTranslations("ImpactReports.topics");
-  const [sortField, setSortField] = useState<keyof KeyTopic>("messageCount");
+export function ViewAllModal<T extends KeyTopic | TopContributor>({ 
+  isOpen, 
+  onClose, 
+  items,
+  type,
+  columns,
+  translationKey
+}: ViewAllModalProps<T>) {
+  const t = useTranslations(`ImpactReports.${translationKey}`);
+  const [sortField, setSortField] = useState<keyof T>("messageCount" as keyof T);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  const [selectedTopic, setSelectedTopic] = useState<KeyTopic | null>(null);
+  const [selectedItem, setSelectedItem] = useState<T | null>(null);
 
-  const sortedTopics = [...topics].sort((a, b) => {
-    if (sortField === "messageCount") {
-      return sortDirection === "asc" 
-        ? a.messageCount - b.messageCount 
-        : b.messageCount - a.messageCount;
+  const sortedItems = [...items].sort((a, b) => {
+    const aValue = a[sortField];
+    const bValue = b[sortField];
+    
+    if (typeof aValue === "number" && typeof bValue === "number") {
+      return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
     }
+    
     return sortDirection === "asc"
-      ? a.topic.localeCompare(b.topic)
-      : b.topic.localeCompare(a.topic);
+      ? String(aValue).localeCompare(String(bValue))
+      : String(bValue).localeCompare(String(aValue));
   });
 
-  const handleSort = (field: keyof KeyTopic) => {
+  const handleSort = (field: keyof T) => {
     if (field === sortField) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
       setSortDirection("desc");
     }
-  };
-
-  const handleViewDetails = (topic: KeyTopic) => {
-    setSelectedTopic(topic);
-  };
-
-  const handleCloseDetails = () => {
-    setSelectedTopic(null);
   };
 
   return (
@@ -67,45 +79,28 @@ export function ViewAllModal({ isOpen, onClose, topics }: ViewAllModalProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead 
-                    className="cursor-pointer" 
-                    onClick={() => handleSort("topic")}
-                  >
-                    <div className="flex items-center gap-1">
-                      {t("title")}
-                      <ArrowUpDown className="h-4 w-4" />
-                    </div>
-                  </TableHead>
-                  <TableHead 
-                    className="cursor-pointer" 
-                    onClick={() => handleSort("messageCount")}
-                  >
-                    <div className="flex items-center gap-1">
-                      {t("messageCount", { count: 0 })}
-                      <ArrowUpDown className="h-4 w-4" />
-                    </div>
-                  </TableHead>
-                  <TableHead>{t("evidenceCount", { count: 0 })}</TableHead>
-                  <TableHead>Actions</TableHead>
+                  {columns.map((column) => (
+                    <TableHead
+                      key={String(column.key)}
+                      className={column.sortable && typeof column.key === "string" ? "cursor-pointer" : undefined}
+                      onClick={column.sortable && typeof column.key === "string" ? () => handleSort(column.key as keyof T) : undefined}
+                    >
+                      <div className="flex items-center gap-1">
+                        {column.title}
+                        {column.sortable && <ArrowUpDown className="h-4 w-4" />}
+                      </div>
+                    </TableHead>
+                  ))}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sortedTopics.map((topic) => (
-                  <TableRow key={topic.topic}>
-                    <TableCell className="font-medium">{topic.topic}</TableCell>
-                    <TableCell>{topic.messageCount}</TableCell>
-                    <TableCell>{topic.evidence.length}</TableCell>
-                    <TableCell>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        className="h-8"
-                        onClick={() => handleViewDetails(topic)}
-                      >
-                        {t("viewDetails")}
-                        <ExternalLink className="ml-2 h-4 w-4" />
-                      </Button>
-                    </TableCell>
+                {sortedItems.map((item) => (
+                  <TableRow key={type === "topics" ? (item as KeyTopic).topic : (item as TopContributor).username}>
+                    {columns.map((column) => (
+                      <TableCell key={String(column.key)}>
+                        {column.render ? column.render(item) : String(item[column.key as keyof T])}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 ))}
               </TableBody>
@@ -114,14 +109,14 @@ export function ViewAllModal({ isOpen, onClose, topics }: ViewAllModalProps) {
         </DialogContent>
       </Dialog>
 
-      {selectedTopic && (
+      {selectedItem && type === "topics" && (
         <DetailedViewModal
-          isOpen={!!selectedTopic}
-          onClose={handleCloseDetails}
-          title={selectedTopic.topic}
-          description={selectedTopic.description}
-          evidence={selectedTopic.evidence}
-          translationKey="topics"
+          isOpen={!!selectedItem}
+          onClose={() => setSelectedItem(null)}
+          title={(selectedItem as KeyTopic).topic}
+          description={(selectedItem as KeyTopic).description}
+          evidence={(selectedItem as KeyTopic).evidence}
+          translationKey={translationKey}
         />
       )}
     </>

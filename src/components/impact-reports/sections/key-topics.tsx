@@ -7,7 +7,8 @@ import { useState } from "react";
 import { TopicItemComponent } from "./topic-item";
 import { ViewAllModal } from "./view-all-modal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Hash } from "lucide-react";
+import { Hash, MessageSquare, ExternalLink } from "lucide-react";
+import { DetailedViewModal } from "./detailed-view-modal";
 
 interface KeyTopicsProps {
   topics: KeyTopic[];
@@ -16,6 +17,7 @@ interface KeyTopicsProps {
 export function KeyTopics({ topics }: KeyTopicsProps) {
   const t = useTranslations("ImpactReports.topics");
   const [isViewAllOpen, setIsViewAllOpen] = useState(false);
+  const [selectedTopic, setSelectedTopic] = useState<KeyTopic | null>(null);
 
   if (!topics.length) {
     return (
@@ -34,6 +36,53 @@ export function KeyTopics({ topics }: KeyTopicsProps) {
       </Card>
     );
   }
+
+  const columns = [
+    {
+      key: "topic" as const,
+      title: t("title"),
+      sortable: true,
+      render: (topic: KeyTopic) => (
+        <div className="flex items-center gap-2">
+          <Hash className="h-4 w-4 text-muted-foreground" />
+          <span className="font-medium">{topic.topic}</span>
+        </div>
+      )
+    },
+    {
+      key: "messageCount" as const,
+      title: t("messageCount", { count: undefined }),
+      sortable: true,
+      render: (topic: KeyTopic) => (
+        <div className="flex items-center gap-2">
+          <MessageSquare className="h-4 w-4 text-muted-foreground" />
+          <span>{topic.messageCount}</span>
+        </div>
+      )
+    },
+    {
+      key: "evidence" as const,
+      title: t("evidenceCount", { count: undefined }),
+      render: (topic: KeyTopic) => (
+        <span>{t("evidenceCount", { count: topic.evidence.length })}</span>
+      )
+    },
+    {
+      key: "actions" as const,
+      title: "",
+      render: (topic: KeyTopic) => (
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className="h-8"
+          onClick={() => setSelectedTopic(topic)}
+        >
+          {t("viewDetails")}
+          <ExternalLink className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    }
+  ];
 
   return (
     <Card>
@@ -66,8 +115,22 @@ export function KeyTopics({ topics }: KeyTopicsProps) {
       <ViewAllModal
         isOpen={isViewAllOpen}
         onClose={() => setIsViewAllOpen(false)}
-        topics={topics}
+        items={topics}
+        type="topics"
+        columns={columns}
+        translationKey="topics"
       />
+
+      {selectedTopic && (
+        <DetailedViewModal
+          isOpen={!!selectedTopic}
+          onClose={() => setSelectedTopic(null)}
+          title={selectedTopic.topic}
+          description={selectedTopic.description}
+          evidence={selectedTopic.evidence}
+          translationKey="topics"
+        />
+      )}
     </Card>
   );
 } 

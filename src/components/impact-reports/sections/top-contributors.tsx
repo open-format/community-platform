@@ -40,13 +40,33 @@ export function TopContributors({ contributors }: TopContributorsProps) {
   
   if (contributors.length === 0) return null;
 
-  // Convert contributors to format expected by ViewAllModal
-  const contributorsForModal = contributors.map(contributor => ({
-    topic: contributor.username,
-    messageCount: contributor.messageCount,
-    description: t("messageCount", { count: contributor.messageCount }),
-    evidence: [] 
-  }));
+  const columns = [
+    {
+      key: "username" as const,
+      title: t("title"),
+      sortable: true,
+      render: (contributor: TopContributor) => (
+        <div className="flex items-center gap-4">
+          <ImpactReportAvatar 
+            username={contributor.username} 
+            rank={contributors.findIndex(c => c.username === contributor.username) + 1} 
+          />
+          <span className="font-medium">{contributor.username}</span>
+        </div>
+      )
+    },
+    {
+      key: "messageCount" as const,
+      title: t("messageCount", { count: undefined }),
+      sortable: true,
+      render: (contributor: TopContributor) => (
+        <div className="flex items-center gap-2">
+          <MessageSquare className="h-4 w-4 text-muted-foreground" />
+          <span>{t("messageCount", { count: contributor.messageCount })}</span>
+        </div>
+      )
+    }
+  ];
 
   const topThree = contributors.slice(0, 3);
 
@@ -85,7 +105,10 @@ export function TopContributors({ contributors }: TopContributorsProps) {
       <ViewAllModal
         isOpen={isViewAllOpen}
         onClose={() => setIsViewAllOpen(false)}
-        topics={contributorsForModal}
+        items={contributors}
+        type="contributors"
+        columns={columns}
+        translationKey="contributors"
       />
     </Card>
   );
