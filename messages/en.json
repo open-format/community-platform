@@ -1016,6 +1016,7 @@
     }
   },
   "ImpactReports": {
+    "title": "Your Impact Report",
     "loading": "Loading impact report...",
     "noData": "No impact report data available",
     "errors": {
