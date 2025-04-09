@@ -38,6 +38,7 @@ export default async function Layout({
           <ActiveLink href="tokens">{t('tokens')}</ActiveLink>
           <ActiveLink href="badges">{t('badges')}</ActiveLink>
           <ActiveLink href="agents">{t('agents')}</ActiveLink>
+          <ActiveLink href="impact-reports">Impact Reports</ActiveLink>
         </div>
       </nav>
       <main className="m-lg">{children}</main>
