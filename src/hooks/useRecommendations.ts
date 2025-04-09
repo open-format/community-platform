@@ -1,6 +1,11 @@
 import { useConfetti } from "@/contexts/confetti-context";
 import { useEffect, useState } from "react";
-import { getRewardRecommendations, rejectRewardRecommendation, confirmRewardRecommendation } from "@/lib/openformat";
+import {
+  getRewardRecommendations,
+  rejectRewardRecommendation,
+  editRewardRecommendation,
+  acceptRewardRecommendation
+} from "@/lib/openformat";
 
 const mockData: RewardRecommendation[] = [
   {

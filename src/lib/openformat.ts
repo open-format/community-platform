@@ -574,12 +574,26 @@ export async function getRewardRecommendations() {
   }
 }
 
-export async function confirmRewardRecommendation(reward_recommendation_id: string, amount: number) {
+export async function editRewardRecommendation(reward_recommendation_id: string, amount: number) {
   try {
     const data = {
       amount: amount,
     };
     const response = await apiClient.put( `/v1/pending_rewards/${reward_recommendation_id}`, data );
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function acceptRewardRecommendation(reward_recommendation_id: string) {
+  try {
+    const response = await apiClient.post( `/v1/rewards/${reward_recommendation_id}/accept`);
 
     if (response.status === 200) {
       return response.data;
