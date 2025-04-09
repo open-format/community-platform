@@ -181,19 +181,37 @@
       }
     },
     "rewardRecommendations": {
-      "title": "Reward Recommendations",
-      "description": "Daily reward recommendations for Discord community members.",
-      "whatHappened": "What happened?",
-      "suggestedReward": "Suggested reward",
-      "reward": "Reward",
-      "reject": "Reject",
-      "openMenu": "Open menu",
-      "actions": "Actions",
-      "continue": "Continue",
-      "cancel": "Cancel",
       "absolutelySure": "Are you absolutely sure?",
       "absolutelySureDescription": "This action cannot be undone. This will permanently delete reward recommendation from our servers.",
-      "deletingRewardRecommendation": "Deleting reward"
+      "actions": "Actions",
+      "cancel": "Cancel",
+      "confirmRewardRecommendation": "Confirm Reward",
+      "confirmingRewardRecommendation": "Confirming Reward...",
+      "continue": "Continue",
+      "deletingRewardRecommendation": "Rejecting reward",
+      "description": "Daily reward recommendations for Discord community members.",
+      "enterRewardAmount": "Enter reward amount",
+      "errorRejectingRewardRecommendation": "Error during rejecting reward. Please try again.",
+      "evidence": "Evidence",
+      "impact": "Impact",
+      "noData": "No reward recommendations data available",
+      "noEvidence": "No evidence provided",
+      "openMenu": "Open menu",
+      "receiverName": "Receiver Name",
+      "reject": "Reject",
+      "reward": "Reward",
+      "rewardAmount": "Reward Amount",
+      "rewardDescription": "Reward a community member for their contribution",
+      "successConfirmingRewardRecommendation": "Confirmed reward successfully",
+      "suggestedReward": "Suggested reward",
+      "title": "Reward Recommendations",
+      "validation": {
+        "amountMin": "Amount must be at least 1",
+        "nameRequired": "Contributor name required",
+        "nameMaxLength": "Contributor name exceeds characters limit"
+      },
+      "viewEvidence": "View Evidence",
+      "whatHappened": "What happened?"
     },
     "activity": {
       "title": "Activity",
@@ -313,7 +331,6 @@
         "parseError": "Row: {row}: {message}",
         "rewardError": "Reward #{row}: {message}",
         "tokenNotFound": "Token {tokenName} not found in current community {communityName}"
-
       },
       "fields": {
         "csvFile": {
