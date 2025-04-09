@@ -298,7 +298,6 @@
         "parseError": "Row: {row}: {message}",
         "rewardError": "Reward #{row}: {message}",
         "tokenNotFound": "Token {tokenName} not found in current community {communityName}"
-
       },
       "fields": {
         "csvFile": {
@@ -1020,7 +1019,7 @@
     "loading": "Loading impact report...",
     "noData": "No impact report data available",
     "errors": {
-      "loadFailed": "Failed to load impact report",
+      "loadFailed": "Failed to load impact report, please check the report ID and try again.",
       "error": "Error: {error}"
     },
     "overview": {
