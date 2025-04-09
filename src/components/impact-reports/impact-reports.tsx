@@ -1,17 +1,16 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { ImpactReport, ImpactReportsProps } from "./types";
+import { generateImpactReportTestData } from "@/lib/test-data";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { ActivityAnalysis } from "./sections/activity-analysis";
-import { TopContributors } from "./sections/top-contributors";
 import { KeyTopics } from "./sections/key-topics";
-import { SentimentAnalysis } from "./sections/sentiment-analysis";
 import { NextSteps } from "./sections/next-steps";
-import { useTranslations } from "next-intl";
-import { generateImpactReportTestData } from "@/lib/test-data";
+import { SentimentAnalysis } from "./sections/sentiment-analysis";
+import { TopContributors } from "./sections/top-contributors";
 
-export function ImpactReports({ communityId, agentId }: ImpactReportsProps) {
+export default function ImpactReports({ communityId, agentId }: ImpactReportsProps) {
   const t = useTranslations("ImpactReports");
   const [report, setReport] = useState<ImpactReport | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,7 +51,9 @@ export function ImpactReports({ communityId, agentId }: ImpactReportsProps) {
         <Card>
           <CardContent className="pt-6">
             <div className="space-y-1">
-              <h3 className="text-sm font-medium text-muted-foreground">{t("overview.totalMessages")}</h3>
+              <h3 className="text-sm font-medium text-muted-foreground">
+                {t("overview.totalMessages")}
+              </h3>
               <p className="text-2xl font-bold">{report.overview.totalMessages}</p>
             </div>
           </CardContent>
@@ -60,7 +61,9 @@ export function ImpactReports({ communityId, agentId }: ImpactReportsProps) {
         <Card>
           <CardContent className="pt-6">
             <div className="space-y-1">
-              <h3 className="text-sm font-medium text-muted-foreground">{t("overview.activeChannels")}</h3>
+              <h3 className="text-sm font-medium text-muted-foreground">
+                {t("overview.activeChannels")}
+              </h3>
               <p className="text-2xl font-bold">{report.overview.activeChannels}</p>
             </div>
           </CardContent>
@@ -68,14 +71,16 @@ export function ImpactReports({ communityId, agentId }: ImpactReportsProps) {
         <Card>
           <CardContent className="pt-6">
             <div className="space-y-1">
-              <h3 className="text-sm font-medium text-muted-foreground">{t("overview.uniqueParticipants")}</h3>
+              <h3 className="text-sm font-medium text-muted-foreground">
+                {t("overview.uniqueParticipants")}
+              </h3>
               <p className="text-2xl font-bold">{report.overview.uniqueUsers}</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <ActivityAnalysis 
+      <ActivityAnalysis
         dailyActivity={report.dailyActivity}
         channelBreakdown={report.channelBreakdown}
       />
@@ -89,4 +94,4 @@ export function ImpactReports({ communityId, agentId }: ImpactReportsProps) {
       <NextSteps />
     </div>
   );
-} 
+}
