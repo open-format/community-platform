@@ -1,3 +1,17 @@
+# [0.17.0](https://github.com/open-format/community-platform/compare/v0.16.1...v0.17.0) (2025-04-10)
+
+
+### Bug Fixes
+
+* **pagination:** update import statement for ButtonProps to use type syntax ([5fb61db](https://github.com/open-format/community-platform/commit/5fb61dbc8ed86e21ca76e61952e9b920ae42e70d))
+* resolved pagination visibility for activity-card when rewards < 5 ([7dd3c20](https://github.com/open-format/community-platform/commit/7dd3c201b6b7c7b028cf2bec2cc278d7d119f1e6))
+
+
+### Features
+
+* added new feedback features. refresh button moved but not implemented ([e1d20b2](https://github.com/open-format/community-platform/commit/e1d20b2c498ce4bfa6b94d4664dec70f2c73314d))
+* fixed unique user display direction. Passdown of rewards data to reward-list and pie chart. adjusted id list styling and pagination ([4610a2c](https://github.com/open-format/community-platform/commit/4610a2c9a501cb84fd21a8b4b5387a7c96f5410c))
+
 ## [0.16.1](https://github.com/open-format/community-platform/compare/v0.16.0...v0.16.1) (2025-04-03)
 
 
