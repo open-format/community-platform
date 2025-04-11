@@ -183,7 +183,7 @@ type RewardBadgeParams = {
   amount: number;
   metadata: string;
   activityType: string;
-}
+};
 
 type RewardTokenMintParams = {
   actionType: "mint-token";
@@ -194,7 +194,7 @@ type RewardTokenMintParams = {
   amount: number;
   metadata: string;
   activityType: string;
-}
+};
 
 type RewardTokenTransferParams = {
   actionType: "transfer-token";
@@ -206,10 +206,73 @@ type RewardTokenTransferParams = {
   amount: number;
   metadata: string;
   activityType: string;
-}
+};
 
 type RewardListResponse = {
   [key: `rewards_${number}`]: Reward[];
+};
+
+interface DailyActivity {
+  date: string;
+  uniqueUsers: number;
+  messageCount: number;
+}
+
+interface ChannelBreakdown {
+  channelName: string;
+  uniqueUsers: number;
+  messageCount: number;
+}
+
+interface Overview {
+  uniqueUsers: number;
+  totalMessages: number;
+  activeChannels: number;
+}
+
+interface KeyTopic {
+  topic: string;
+  evidence: string[];
+  description: string;
+  messageCount: number;
+}
+
+interface SentimentItem {
+  title: string;
+  users: string[];
+  evidence: string[];
+  description: string;
+}
+
+interface UserSentiment {
+  excitement: SentimentItem[];
+  frustrations: SentimentItem[];
+}
+
+interface TopContributor {
+  username: string;
+  messageCount: number;
+}
+
+interface ImpactReport {
+  endDate: number;
+  overview: Overview;
+  keyTopics: KeyTopic[];
+  startDate: number;
+  summaryId: string;
+  timestamp: number;
+  platformId: string;
+  messageCount: number;
+  dailyActivity: DailyActivity[];
+  userSentiment: UserSentiment;
+  topContributors: TopContributor[];
+  uniqueUserCount: number;
+  channelBreakdown: ChannelBreakdown[];
+}
+
+interface ImpactReportsProps {
+  communityId: string;
+  agentId?: string;
 }
 
 type RewardUrlEvidence = {
