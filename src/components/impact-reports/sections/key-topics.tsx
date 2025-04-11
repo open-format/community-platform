@@ -7,7 +7,7 @@ import { useState } from "react";
 import { TopicItemComponent } from "./topic-item";
 import { ViewAllModal } from "./view-all-modal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Hash, MessageSquare, ExternalLink } from "lucide-react";
+import { Hash, MessageSquare, Eye } from "lucide-react";
 import { DetailedViewModal } from "./detailed-view-modal";
 
 interface KeyTopicsProps {
@@ -73,12 +73,11 @@ export function KeyTopics({ topics }: KeyTopicsProps) {
       render: (topic: KeyTopic) => (
         <Button 
           variant="ghost" 
-          size="sm"
-          className="h-8"
+          size="icon"
+          className="h-8 w-8"
           onClick={() => setSelectedTopic(topic)}
         >
-          {t("viewDetails")}
-          <ExternalLink className="ml-2 h-4 w-4" />
+          <Eye className="h-4 w-4" />
         </Button>
       )
     }

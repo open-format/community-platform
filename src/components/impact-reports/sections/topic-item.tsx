@@ -1,7 +1,7 @@
 "use client";
 
 import { KeyTopic } from "../types";
-import { ExternalLink, MessageSquare, Hash } from "lucide-react";
+import { Eye, MessageSquare, Hash } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +32,14 @@ export function TopicItemComponent({ topic }: TopicItemProps) {
             <div className="flex items-center gap-2">
               <Hash className="h-5 w-5 text-muted-foreground" />
               <h4 className="font-medium">{topic.topic}</h4>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="h-8 w-8"
+                onClick={handleViewDetails}
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
             </div>
             <Badge variant="secondary" className="flex items-center gap-1">
               <MessageSquare className="h-3 w-3" />
@@ -40,16 +48,7 @@ export function TopicItemComponent({ topic }: TopicItemProps) {
           </div>
           <p className="text-sm text-muted-foreground line-clamp-1">{topic.description}</p>
         </div>
-        <div className="flex justify-between items-center">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="h-8"
-            onClick={handleViewDetails}
-          >
-            {t("viewDetails")}
-            <ExternalLink className="ml-2 h-4 w-4" />
-          </Button>
+        <div className="flex justify-end items-center">
           <div className="text-xs text-muted-foreground">
             {t("evidenceCount", { count: topic.evidence.length })}
           </div>
