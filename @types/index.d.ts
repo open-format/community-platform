@@ -150,6 +150,8 @@ type BatchRewardEntry = {
   token: string;
   userAddress?: string | null | undefined;
   tokenAddress?: string | null | undefined;
+  userAddress?: string | null | undefined;
+  tokenAddress?: string | null | undefined;
   amount: number;
   actionType: string;
   rewardId: string;
@@ -157,11 +159,13 @@ type BatchRewardEntry = {
 
 type BatchRewardSettings = {
   header: boolean;
+  header: boolean;
   delimiter: string | null | undefined;
   multicall: boolean;
 };
 
 type BatchRewardProgressInfo = {
+  total: number;
   total: number;
   failed: number;
   success: number;
@@ -169,6 +173,8 @@ type BatchRewardProgressInfo = {
 
 type BatchRewardEntryResult = {
   success: boolean;
+  transactionHash: string | null | undefined;
+  errorMessage: string | null | undefined;
   transactionHash: string | null | undefined;
   errorMessage: string | null | undefined;
   entry: BatchRewardEntry;
@@ -184,6 +190,7 @@ type RewardBadgeParams = {
   metadata: string;
   activityType: string;
 };
+};
 
 type RewardTokenMintParams = {
   actionType: "mint-token";
@@ -194,6 +201,7 @@ type RewardTokenMintParams = {
   amount: number;
   metadata: string;
   activityType: string;
+};
 };
 
 type RewardTokenTransferParams = {
@@ -207,7 +215,71 @@ type RewardTokenTransferParams = {
   metadata: string;
   activityType: string;
 };
+};
 
 type RewardListResponse = {
   [key: `rewards_${number}`]: Reward[];
 };
+
+interface DailyActivity {
+  date: string;
+  uniqueUsers: number;
+  messageCount: number;
+}
+
+interface ChannelBreakdown {
+  channelName: string;
+  uniqueUsers: number;
+  messageCount: number;
+}
+
+interface Overview {
+  uniqueUsers: number;
+  totalMessages: number;
+  activeChannels: number;
+}
+
+interface KeyTopic {
+  topic: string;
+  evidence: string[];
+  description: string;
+  messageCount: number;
+}
+
+interface SentimentItem {
+  title: string;
+  users: string[];
+  evidence: string[];
+  description: string;
+}
+
+interface UserSentiment {
+  excitement: SentimentItem[];
+  frustrations: SentimentItem[];
+}
+
+interface TopContributor {
+  username: string;
+  messageCount: number;
+}
+
+interface ImpactReport {
+  endDate: number;
+  overview: Overview;
+  keyTopics: KeyTopic[];
+  startDate: number;
+  summaryId: string;
+  timestamp: number;
+  platformId: string;
+  messageCount: number;
+  dailyActivity: DailyActivity[];
+  userSentiment: UserSentiment;
+  topContributors: TopContributor[];
+  uniqueUserCount: number;
+  channelBreakdown: ChannelBreakdown[];
+}
+
+interface ImpactReportsProps {
+  communityId: string;
+  agentId?: string;
+}

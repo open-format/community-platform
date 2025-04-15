@@ -1069,5 +1069,84 @@
         "viewTransaction": "View transaction"
       }
     }
+  },
+  "ImpactReports": {
+    "title": "Your Impact Report",
+    "loading": "Loading impact report...",
+    "noData": "No impact report data available",
+    "errors": {
+      "loadFailed": "Failed to load impact report, please check the report ID and try again.",
+      "error": "Error: {error}"
+    },
+    "overview": {
+      "totalMessages": "Total Messages",
+      "activeChannels": "Active Channels",
+      "uniqueParticipants": "Unique Users"
+    },
+    "sentiment": {
+      "excited": {
+        "title": "What are users excited about?"
+      },
+      "frustrated": {
+        "title": "What are users frustrated about?"
+      },
+      "userCount": "{count} user{count, plural, one {} other {s}}",
+      "viewEvidence": "View evidence",
+      "viewDetails": "View detailed analysis",
+      "viewAll": "View All {type}"
+    },
+    "topics": {
+      "title": "Key Topics",
+      "viewDetails": "View Details",
+      "messageCount": "{count} messages",
+      "evidenceCount": "{count} evidence links",
+      "noData": "No topics found",
+      "viewAll": "View All Topics",
+      "viewEvidence": "View Evidence"
+    },
+    "contributors": {
+      "title": "Top Contributors",
+      "messageCount": "{count} messages",
+      "viewAll": "View All Contributors",
+      "viewDetails": "View contributor details"
+    },
+    "activity": {
+      "title": "Activity Analysis",
+      "dailyActivity": "Daily Activity",
+      "channelBreakdown": "Channel Breakdown",
+      "messages": "Messages",
+      "users": "Unique Users"
+    },
+    "nextSteps": {
+      "title": "What should you do next?",
+      "comingSoon": "Coming soon",
+      "priority": {
+        "high": "High Priority",
+        "medium": "Medium Priority",
+        "low": "Low Priority"
+      },
+      "viewEvidence": "View evidence",
+      "actions": {
+        "discord": {
+          "title": "Chat to your agent in discord",
+          "description": "Find out more about what has been happening",
+          "button": "Open Discord"
+        },
+        "view-report": {
+          "title": "View report",
+          "description": "Get a summary of your community every week",
+          "button": "View report"
+        },
+        "command": {
+          "title": "Reward users directly in discord",
+          "description": "Use / commands to reward users",
+          "button": "Send rewards"
+        },
+        "comingSoon": {
+          "title": "Set up automated rewards",
+          "description": "Get reward suggestions based on the past activity"
+        }
+      }
+    }
   }
 }
