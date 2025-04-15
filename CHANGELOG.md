@@ -1,3 +1,22 @@
+# [0.19.0](https://github.com/open-format/community-platform/compare/v0.18.0...v0.19.0) (2025-04-15)
+
+
+### Bug Fixes
+
+* added missing recharts module ([af5c952](https://github.com/open-format/community-platform/commit/af5c9526fad6eb3f0a409bb506523672f1aa53ef))
+* fixed chart colours, list layouts and test data ([746c86d](https://github.com/open-format/community-platform/commit/746c86d3fa49fcad0d5a20f4cbeb6de43cf1392a))
+
+
+### Features
+
+* added conditional rendering for impact report tab with next_public_use_test_data env variable ([e48e456](https://github.com/open-format/community-platform/commit/e48e45697b96a08fd489b828a49867e7e1481bdd))
+* added impact report generation through platform url ([203a4c1](https://github.com/open-format/community-platform/commit/203a4c13df11686aca147677a941e2d835085180))
+* added more in depth functionality to viewing metrics and sentiments ([7f31782](https://github.com/open-format/community-platform/commit/7f317821e4739f40af21b19f40c47201bcb4bda4))
+* altered graph axis layout. added truncation to long channels and updated view all button to eye ([b05ce18](https://github.com/open-format/community-platform/commit/b05ce187b2210cc3453b3ca7d75b6101e5f64037))
+* enhance impact report functionality with new data structures and improved error handling ([70c5b8e](https://github.com/open-format/community-platform/commit/70c5b8e4957088c1aec5c35898787d925308eb6a))
+* implemented base component and section layout ([3a8175e](https://github.com/open-format/community-platform/commit/3a8175ee41131967a95c53b9899b9260dd2d8e23))
+* improved viewAll modal to be unique for top contributors and key topics ([8ff02cc](https://github.com/open-format/community-platform/commit/8ff02ccf752ef85579ffca5d4a064f90caee4241))
+
 # [0.18.0](https://github.com/open-format/community-platform/compare/v0.17.0...v0.18.0) (2025-04-15)
 
 
