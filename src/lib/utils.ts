@@ -187,8 +187,13 @@ export function getAddress(user: User | null): Address {
   return address;
 }
 
-export function filterVisibleTokens(tokens: Token[], hiddenTokens: string[] = []) {
-  return tokens.filter(token => !hiddenTokens.includes(token.token.id));
+export function filterVisibleTokens(tokens: Token[] | null | undefined, hiddenTokens: string[] | null | undefined = []) {
+  if (!tokens) return [];
+  const safeHiddenTokens = hiddenTokens || [];
+  return tokens.filter(token => {
+    if (!token?.token?.id) return false;
+    return !safeHiddenTokens.includes(token.token.id);
+  });
 }
 
 export function formatTokenAmount(

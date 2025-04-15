@@ -8,10 +8,43 @@ import dayjs from "dayjs";
 import { request } from "graphql-request";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { cache } from "react";
 import type { Address } from "viem";
 import { getCurrentUser, getUserHandle } from "./privy";
 import { formatTokenAmount } from "./utils";
+
+interface Token {
+  id: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+}
+
+interface Badge {
+  id: string;
+  name: string;
+  metadataURI: string;
+}
+
+interface CollectedBadge {
+  badge: {
+    id: string;
+    metadataURI: string;
+  };
+  tokenId: string;
+}
+
+interface LeaderboardEntry {
+  user: Address;
+  points: number;
+  rank: number;
+  handle?: string;
+  type?: string;
+}
+
+interface LeaderboardResponse {
+  data: LeaderboardEntry[];
+  error?: string;
+}
 
 const apiClient = axios.create({
   baseURL: config.OPENFORMAT_API_URL,
@@ -35,7 +68,6 @@ export async function revalidate() {
 
 export async function getChainFromCommunityOrCookie(
   communityIdOrSlug?: string,
-  chain_id?: number,
 ): Promise<Chain | null> {
   let chain: Chain | null = null;
 
@@ -44,10 +76,6 @@ export async function getChainFromCommunityOrCookie(
     if (community?.chain_id) {
       chain = getChainById(community.chain_id);
     }
-  }
-
-  if (!chain && chain_id) {
-    chain = getChainById(chain_id);
   }
 
   if (!chain) {
@@ -113,43 +141,43 @@ export async function fetchAllCommunities() {
   }
 }
 
-export const fetchCommunity = cache(async (slugOrId: string) => {
-  const communityFromDb = await getCommunity(slugOrId);
-
-  const chain = await getChainFromCommunityOrCookie(slugOrId);
-
-  if (!communityFromDb) {
-    return null;
-  }
-
-  const query = `
-query ($app: ID!) {
-  app(id: $app) {
-    id
-    name
-    owner {
-      id
-    }
-    badges(orderBy: createdAt, orderDirection: desc) {
-      id
-      name
-      metadataURI
-      totalAwarded
-    }
-    tokens {
-      id
-      token {
-        id
-        tokenType
-        name
-        symbol
-        createdAt
-      }
-    }
-  }
-}
-  `;
+export async function fetchCommunity(communityIdOrSlug: string) {
   try {
+    const communityFromDb = await getCommunity(communityIdOrSlug);
+    const chain = await getChainFromCommunityOrCookie();
+
+    if (!communityFromDb || !chain) {
+      return null;
+    }
+
+    const query = `
+      query ($app: ID!) {
+        app(id: $app) {
+          id
+          name
+          owner {
+            id
+          }
+          badges(orderBy: createdAt, orderDirection: desc) {
+            id
+            name
+            metadataURI
+            totalAwarded
+          }
+          tokens {
+            id
+            token {
+              id
+              tokenType
+              name
+              symbol
+              createdAt
+            }
+          }
+        }
+      }
+    `;
+
     const data = await request<{
       app: {
         id: string;
@@ -167,12 +195,11 @@ query ($app: ID!) {
       rewards,
       metadata: communityFromDb,
     };
-    // @TODO: Create a generic error handler for subgraph requests
   } catch (error) {
     console.error(error);
     return null;
   }
-});
+}
 
 async function fetchAllRewardsByCommunity(communityId: string): Promise<Reward[] | null> {
   const chain = await getChainFromCommunityOrCookie();
@@ -217,6 +244,63 @@ async function fetchAllRewardsByCommunity(communityId: string): Promise<Reward[]
   return data.rewards;
 }
 
+export async function fetchPaginatedRewardsByCommunity(
+  communityId: string,
+  first: number,
+  skip: number,
+): Promise<Reward[] | null> {
+  const chain = await getChainFromCommunityOrCookie();
+
+  if (!chain) {
+    return null;
+  }
+
+  // @TODO: Handle pagination
+  const query = `
+ query ($first: Int, $skip: Int, $appId: String!) {
+  rewards(
+    where: {app: $appId}
+    first: $first
+    skip: $skip
+    orderBy: createdAt
+    orderDirection: desc
+  ) {
+    rewardId
+    createdAt
+    id
+    transactionHash
+    metadataURI
+    rewardType
+    token {
+      id
+      name
+      symbol
+      decimals
+    }
+    tokenAmount
+    badge {
+      id
+      name
+      metadataURI
+    }
+    badgeTokens {
+      tokenId
+    }
+    user {
+      id
+    }
+    createdAt
+  }
+}
+`;
+
+  const data = await request<{
+    rewards: Reward[];
+  }>(chain.SUBGRAPH_URL, query, { first, skip, appId: communityId });
+
+  return data.rewards;
+}
+
 export async function fetchUserProfile(slug: string) {
   const currentUser = await getCurrentUser();
   const community = await getCommunity(slug);
@@ -227,84 +311,103 @@ export async function fetchUserProfile(slug: string) {
   }
 
   const query = `
-query ($user: ID!, $community: String!) {
-  user(id: $user) {
-    tokenBalances(where: {token_: {app: $community}}) {
-      balance
-      token {
-        id
-        app {
+    query ($user: ID!, $community: String!) {
+      user(id: $user) {
+        tokenBalances(where: {token_: {app: $community}}) {
+          balance
+          token {
+            id
+            app {
+              id
+            }
+          }
+        }
+        collectedBadges(where: {badge_: {app: $community}}) {
+          badge {
+            id
+            metadataURI
+          }
+          tokenId
+        }
+        rewards(
+          where: {user: $user, app: $community}
+          orderBy: createdAt
+          orderDirection: desc
+          first: 10
+        ) {
           id
+          transactionHash
+          metadataURI
+          rewardId
+          rewardType
+          token {
+            id
+            name
+            symbol
+          }
+          tokenAmount
+          badge {
+            name
+            metadataURI
+          }
+          badgeTokens {
+            tokenId
+          }
+          createdAt
+        }
+        badges(where: {app: $community}) {
+          id
+          name
+          metadataURI
         }
       }
     }
-    collectedBadges(where: {badge_: {app: $community}}) {
-      badge {
-        id
-        metadataURI
-      }
-      tokenId
-    }
-  }
-  rewards(
-    where: {user: $user, app: $community}
-    orderBy: createdAt
-    orderDirection: desc
-    first: 10
-  ) {
-    id
-    transactionHash
-    metadataURI
-    rewardId
-    rewardType
-    token {
-      id
-      name
-      symbol
-    }
-    tokenAmount
-    badge {
-      name
-      metadataURI
-    }
-    badgeTokens {
-      tokenId
-    }
-    createdAt
-  }
-  badges(where: {app: $community}) {
-  id
-    name
-    metadataURI
-  }
-}
   `;
 
-  const data = await request<{
-    user: UserProfile;
-    rewards: Reward[];
-    badges: Badge[];
-  }>(chain.SUBGRAPH_URL, query, {
-    user: currentUser.wallet_address.toLowerCase(),
-    community: community.id.toLowerCase(),
-  });
+  try {
+    const data = await request<{
+      user: {
+        id: string;
+        tokenBalances: {
+          balance: string;
+          token: {
+            id: string;
+            app: {
+              id: string;
+            };
+          };
+        }[];
+        collectedBadges: CollectedBadge[];
+        rewards: Reward[];
+        badges: Badge[];
+      };
+    }>(chain.SUBGRAPH_URL, query, {
+      user: currentUser.wallet_address.toLowerCase(),
+      community: community.id.toLowerCase(),
+    });
 
-  const userCollectedBadges = data?.user?.collectedBadges.reduce((acc, collected) => {
-    acc.set(collected.badge.id, collected.tokenId);
-    return acc;
-  }, new Map<string, string>());
+    const userCollectedBadges = new Map<string, string>();
+    if (data?.user?.collectedBadges) {
+      for (const collected of data.user.collectedBadges) {
+        userCollectedBadges.set(collected.badge.id, collected.tokenId);
+      }
+    }
 
-  const badgesWithCollectedStatus: BadgeWithCollectedStatus[] = data.badges.map((badge) => ({
-    ...badge,
-    isCollected: userCollectedBadges.has(badge.id),
-    tokenId: userCollectedBadges.get(badge.id) || null,
-  }));
+    const badgesWithCollectedStatus = data.user.badges.map((badge) => ({
+      ...badge,
+      isCollected: userCollectedBadges.has(badge.id),
+      tokenId: userCollectedBadges.get(badge.id) || null,
+    }));
 
-  return {
-    ...data.user,
-    rewards: data.rewards,
-    badges: badgesWithCollectedStatus,
-  };
+    return {
+      ...data.user,
+      rewards: data.user.rewards,
+      badges: badgesWithCollectedStatus,
+    };
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }
 
 export async function generateLeaderboard(
@@ -312,28 +415,27 @@ export async function generateLeaderboard(
   tokenId?: string,
   startDate: string = "0",
   endDate: string = "99999999999999999999999999",
-): Promise<LeaderboardEntry[] | null> {
+): Promise<LeaderboardResponse> {
   const chain = await getChainFromCommunityOrCookie(slugOrId);
 
   if (!chain) {
-    return null;
+    return { data: [], error: "Chain not found" };
   }
 
   try {
     const communityFromDb = await getCommunity(slugOrId);
 
     if (!communityFromDb) {
-      return null;
+      return { data: [], error: "Community not found" };
     }
 
-    const selectedTokenId = tokenId || communityFromDb.token_to_display;
+    const selectedTokenId = tokenId || communityFromDb.token_to_display || "";
 
     const params = new URLSearchParams();
     params.set("app_id", communityFromDb.id);
     params.set("token_id", selectedTokenId);
     params.set("start", startDate);
     params.set("end", endDate);
-    // @TODO: Make this dynamic
     params.set(
       "chain",
       chain.apiChainName === ChainName.MATCHAIN
@@ -346,20 +448,22 @@ export async function generateLeaderboard(
               ? "base"
               : "arbitrum-sepolia",
     );
+
     const response = await apiClient.get(`/v1/leaderboard?${params}`);
 
     // Fetch social handles for each user in the leaderboard
     const leaderboardWithHandles = await Promise.all(
-      response.data.data.map(async (entry) => ({
+      response.data.data.map(async (entry: LeaderboardEntry) => ({
         ...entry,
-        handle: (await getUserHandle(entry.user as Address))?.username ?? "Anonymous",
-        type: (await getUserHandle(entry.user as Address))?.type ?? "unknown",
+        handle: (await getUserHandle(entry.user))?.username ?? "Anonymous",
+        type: (await getUserHandle(entry.user))?.type ?? "unknown",
       })),
     );
 
-    return leaderboardWithHandles;
+    return { data: leaderboardWithHandles };
   } catch (error) {
-    return { error: "Failed to fetch leaderboard data. Please try again later." };
+    console.error("Failed to fetch leaderboard data:", error);
+    return { data: [], error: "Failed to fetch leaderboard data" };
   }
 }
 
