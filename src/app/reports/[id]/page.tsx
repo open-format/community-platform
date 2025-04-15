@@ -1,6 +1,5 @@
 import { ActivityAnalysis } from "@/components/impact-reports/sections/activity-analysis";
 import { KeyTopics } from "@/components/impact-reports/sections/key-topics";
-import { NextSteps } from "@/components/impact-reports/sections/next-steps";
 import { SentimentAnalysis } from "@/components/impact-reports/sections/sentiment-analysis";
 import { TopContributors } from "@/components/impact-reports/sections/top-contributors";
 import { Card, CardContent } from "@/components/ui/card";
@@ -71,7 +70,6 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
       </div>
 
       {report.userSentiment && <SentimentAnalysis sentiment={report.userSentiment} />}
-      <NextSteps />
     </div>
   );
 }

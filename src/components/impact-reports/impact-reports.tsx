@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { ActivityAnalysis } from "./sections/activity-analysis";
 import { KeyTopics } from "./sections/key-topics";
-import { NextSteps } from "./sections/next-steps";
 import { SentimentAnalysis } from "./sections/sentiment-analysis";
 import { TopContributors } from "./sections/top-contributors";
 
@@ -91,7 +90,6 @@ export default function ImpactReports({ communityId, agentId }: ImpactReportsPro
       </div>
 
       <SentimentAnalysis sentiment={report.userSentiment} />
-      <NextSteps />
     </div>
   );
 }
