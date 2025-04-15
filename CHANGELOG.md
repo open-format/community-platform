@@ -1,3 +1,10 @@
+# [0.18.0](https://github.com/open-format/community-platform/compare/v0.17.0...v0.18.0) (2025-04-15)
+
+
+### Features
+
+* updated subgraph url and resolved new community hidden token bug ([dd737c8](https://github.com/open-format/community-platform/commit/dd737c86f804e77646631b660863da07a5dec56a))
+
 # [0.17.0](https://github.com/open-format/community-platform/compare/v0.16.1...v0.17.0) (2025-04-10)
 
 
