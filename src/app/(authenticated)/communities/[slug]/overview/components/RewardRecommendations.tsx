@@ -1,102 +1,86 @@
 "use client";
 
-import { useRecommendations } from "@/hooks/useRecommendations";
-import { useCallback, useState } from "react";
-import RecommendationsTable from "./RecommendationsTable";
-import RejectDialog from "./RejectDialog";
-import RewardDialog from "./RewardDialog";
-import { toast } from "sonner";
+import { deleteRewardRecommendation } from "@/lib/openformat";
 import { useTranslations } from "next-intl";
+import { startTransition, useState } from "react";
+import { toast } from "sonner";
+import type { RewardRecommendation } from "./columns";
+import RecommendationsTable from "./recommendations-table";
 
-export default function RewardRecommendations() {
-  // Component state for managing dialogs and selected recommendations
-  const t = useTranslations( "overview.rewardRecommendations" );
-  const [showRejectDialog, setShowRejectDialog] = useState<boolean>( false );
-  const [selectedRecommendation, setSelectedRecommendation] =
-    useState<RewardRecommendation | null>( null );
-  const [rejectingRecommendation, setRejectingRecommendation] =
-    useState<RewardRecommendation | null>( null );
-  const {recommendations, confirmRecommendation, isConfirming, rejectRecommendation, isRejecting} =
-    useRecommendations();
+export default function RewardRecommendations({
+  community,
+  rewardRecommendations,
+}: {
+  community: Community;
+  rewardRecommendations: RewardRecommendation[];
+}) {
+  const t = useTranslations("overview.rewardRecommendations");
+  const [recommendations, setRecommendations] = useState(rewardRecommendations);
+  const [isPending, setIsPending] = useState(false);
 
-  const handleReject = (recommendation: RewardRecommendation) => {
-    setRejectingRecommendation( recommendation );
-    setShowRejectDialog( true );
+  const handleReward = async (recommendation: RewardRecommendation) => {
+    // TODO: Implement reward functionality
+    console.log("Reward recommendation:", recommendation);
   };
 
-  async function handleRejectConfirm() {
-    // Here you would call your API to reject the recommendation
-    const response = await rejectRecommendation( rejectingRecommendation );
+  const handleReject = async (recommendation: RewardRecommendation) => {
+    try {
+      setIsPending(true);
+      const response = await deleteRewardRecommendation(recommendation.id);
 
-    if (response) {
-      setShowRejectDialog( false );
-      toast.success( t( "successConfirmingRewardRecommendation" ), {
+      if (response) {
+        // Optimistically update the UI
+        setRecommendations((prev) => prev.filter((rec) => rec.id !== recommendation.id));
+
+        toast.success(t("successRejectingRewardRecommendation"), {
+          duration: 5000,
+        });
+      } else {
+        throw new Error("Failed to reject recommendation");
+      }
+    } catch (error) {
+      toast.error(t("errorRejectingRewardRecommendation"), {
         duration: 5000,
-        dismissible: true,
-      } );
-    } else {
-      toast.error( t( "errorRejectingRewardRecommendation" ), {
-        duration: 5000,
-        dismissible: true,
-      } );
+      });
+      console.error("Error rejecting recommendation:", error);
+    } finally {
+      setIsPending(false);
     }
+  };
+
+  function deleteRecommendation(recommendation: RewardRecommendation) {
+    startTransition(async () => {
+      try {
+        const response = await deleteRewardRecommendation(recommendation.id);
+        if (response) {
+          setRecommendations((prev) => prev.filter((rec) => rec.id !== recommendation.id));
+        } else {
+          throw new Error("Failed to delete recommendation");
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          toast.error(error.message, {
+            duration: 5000,
+          });
+        } else {
+          toast.error(t("errorRejectingRewardRecommendation"), {
+            duration: 5000,
+          });
+        }
+      }
+    });
   }
 
-  /**
-   * Function to open reward dialog
-   */
-  const openRewardDialog = useCallback(
-    (recommendation: RewardRecommendation) => {
-      setSelectedRecommendation( recommendation );
-    },
-    [setSelectedRecommendation]
-  );
-
-  /**
-   * Function to close reward dialog
-   */
-  const closeRewardDialog = useCallback( () => {
-    setSelectedRecommendation( null );
-  }, [setSelectedRecommendation] );
-
-  /**
-   * Function to confirm reward dialog
-   */
-  const confirmReward = useCallback(
-    (data: object) => {
-      console.log( "Confirming reward:", {
-        ...selectedRecommendation,
-        ...data,
-      } );
-      confirmRecommendation().then( () => {
-        setSelectedRecommendation( null );
-      } );
-    },
-    [confirmRecommendation, selectedRecommendation]
-  );
-
   return (
-    <div className="">
+    <div className="space-y-4">
       <RecommendationsTable
+        community={community}
         recommendations={recommendations}
-        onReward={openRewardDialog}
+        deleteRecommendation={deleteRecommendation}
+        onReward={handleReward}
         onReject={handleReject}
+        isLoading={isPending}
       />
-      <RejectDialog
-        open={showRejectDialog}
-        onOpenChange={setShowRejectDialog}
-        onConfirm={handleRejectConfirm}
-        isRejecting={isRejecting}
-      />
-
-      {selectedRecommendation && (
-        <RewardDialog
-          {...selectedRecommendation}
-          submitting={isConfirming}
-          onClose={closeRewardDialog}
-          onConfirm={confirmReward}
-        />
-      )}
     </div>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,23 +9,23 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 interface RejectDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
-  isRejecting: boolean;
+  children: React.ReactNode;
 }
 
-export default function RejectDialog({
-  open,
-  onOpenChange,
-  onConfirm,
-  isRejecting
-}: RejectDialogProps) {
-  const t = useTranslations( "overview.rewardRecommendations" );
+export default function RejectDialog({ onConfirm, children }: RejectDialogProps) {
+  const t = useTranslations("overview.rewardRecommendations");
+  const [open, setOpen] = useState(false);
+
+  function toggle() {
+    setOpen(!open);
+  }
 
   function handleConfirm() {
     // Here you would call your API to reject the recommendation
@@ -34,28 +33,16 @@ export default function RejectDialog({
   }
 
   return (
-    <AlertDialog open={open}>
+    <AlertDialog open={open} onOpenChange={toggle}>
+      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t( "absolutelySure" )}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {t( "absolutelySureDescription" )}
-          </AlertDialogDescription>
+          <AlertDialogTitle>{t("absolutelySure")}</AlertDialogTitle>
+          <AlertDialogDescription>{t("absolutelySureDescription")}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isRejecting} onClick={() => onOpenChange( false )}>
-            {t( "cancel" )}
-          </AlertDialogCancel>
-          {isRejecting ? (
-            <AlertDialogAction disabled>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin"/>{" "}
-              {t( "deletingRewardRecommendation" )}
-            </AlertDialogAction>
-          ) : (
-            <AlertDialogAction onClick={handleConfirm}>
-              {t( "continue" )}
-            </AlertDialogAction>
-          )}
+          <AlertDialogCancel onClick={toggle}>{t("cancel")}</AlertDialogCancel>
+          <AlertDialogAction onClick={handleConfirm}>{t("continue")}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

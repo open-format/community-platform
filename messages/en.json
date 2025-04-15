@@ -185,9 +185,8 @@
       "absolutelySureDescription": "This action cannot be undone. This will permanently delete reward recommendation from our servers.",
       "actions": "Actions",
       "cancel": "Cancel",
-      "confirmRewardRecommendation": "Confirm Reward",
-      "confirmingRewardRecommendation": "Confirming Reward...",
       "continue": "Continue",
+      "createdAt": "Created at",
       "deletingRewardRecommendation": "Rejecting reward",
       "description": "Daily reward recommendations for Discord community members.",
       "enterRewardAmount": "Enter reward amount",
@@ -197,18 +196,42 @@
       "noData": "No reward recommendations data available",
       "noEvidence": "No evidence provided",
       "openMenu": "Open menu",
-      "receiverName": "Receiver Name",
       "reject": "Reject",
       "reward": "Reward",
       "rewardAmount": "Reward Amount",
       "rewardDescription": "Reward a community member for their contribution",
+      "form": {
+        "confirmRewardRecommendation": "Confirm Reward",
+        "confirmingRewardRecommendation": "Confirming Reward...",
+        "token": {
+          "label": "Token",
+          "placeholder": "Select token"
+        },
+        "receiverName": {
+          "label": "Receiver Name",
+          "placeholder": "Enter receiver name"
+        },
+        "rewardAmount": {
+          "label": "Reward Amount",
+          "placeholder": "Enter reward amount"
+        },
+        "evidence": {
+          "label": "Evidence"
+        },
+        "impact": {
+          "label": "Impact"
+        }
+      },
       "successConfirmingRewardRecommendation": "Confirmed reward successfully",
+      "successRejectingRewardRecommendation": "Rejected reward successfully",
       "suggestedReward": "Suggested reward",
       "title": "Reward Recommendations",
       "validation": {
         "amountMin": "Amount must be at least 1",
         "nameRequired": "Contributor name required",
-        "nameMaxLength": "Contributor name exceeds characters limit"
+        "nameMaxLength": "Contributor name exceeds characters limit",
+        "tokenAddressRequired": "Token address is required",
+        "invalidAddress": "Invalid address"
       },
       "viewEvidence": "View Evidence",
       "whatHappened": "What happened?"

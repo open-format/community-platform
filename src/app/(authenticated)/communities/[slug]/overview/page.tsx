@@ -1,18 +1,19 @@
+import RewardRecommendations from "@/app/(authenticated)/communities/[slug]/overview/components/RewardRecommendations";
 import ActivityCard from "@/components/activity-card";
 import Leaderboard from "@/components/leaderboard";
 import RefreshButton from "@/components/refresh-button";
 import Shortcuts from "@/components/shortcuts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { fetchCommunity, generateLeaderboard } from "@/lib/openformat";
+import { fetchCommunity, generateLeaderboard, getRewardRecommendations } from "@/lib/openformat";
 import { getTranslations } from "next-intl/server";
-import RewardRecommendations from "@/app/(authenticated)/communities/[slug]/overview/components/RewardRecommendations";
 
 export default async function Overview({ params }: { params: Promise<{ slug: string }> }) {
-  const t                           = await getTranslations("overview");
-  const slug                        = (await params).slug as `0x${string}`;
-  const community                   = await fetchCommunity(slug);
-  const leaderboard                 = await generateLeaderboard(slug, community.metadata.token_to_display);
+  const t = await getTranslations("overview");
+  const slug = (await params).slug as `0x${string}`;
+  const community = await fetchCommunity(slug);
+  const leaderboard = await generateLeaderboard(slug, community?.metadata.token_to_display);
+  const rewardRecommendations = await getRewardRecommendations(community?.id ?? "");
 
   if (!community) {
     return (
@@ -32,13 +33,19 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
         <Card variant="borderless" className="h-full">
           <CardHeader className="space-y-1 pb-4">
             <div className="flex items-center gap-2">
-              <CardTitle className="text-2xl font-bold tracking-tight">{t("rewardRecommendations.title")}</CardTitle>
+              <CardTitle className="text-2xl font-bold tracking-tight">
+                {t("rewardRecommendations.title")}
+              </CardTitle>
               <RefreshButton />
+              {/* <FetchNewRecommendations communityId={community.id} /> */}
             </div>
             <CardDescription>{t("rewardRecommendations.description")}</CardDescription>
           </CardHeader>
           <CardContent className="p-6">
-            <RewardRecommendations></RewardRecommendations>
+            <RewardRecommendations
+              community={community}
+              rewardRecommendations={rewardRecommendations}
+            />
           </CardContent>
         </Card>
       </div>
@@ -47,7 +54,9 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
         <Card variant="borderless" className="h-full">
           <CardHeader className="space-y-1 pb-4">
             <div className="flex items-center gap-2">
-              <CardTitle className="text-2xl font-bold tracking-tight">{t("leaderboard.title")}</CardTitle>
+              <CardTitle className="text-2xl font-bold tracking-tight">
+                {t("leaderboard.title")}
+              </CardTitle>
               <RefreshButton />
             </div>
             <CardDescription>{t("leaderboard.description")}</CardDescription>
@@ -71,8 +80,6 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
         <ActivityCard community={community} />
       </div>
       <Separator className="my-lg" />
-
-
     </div>
   );
 }
