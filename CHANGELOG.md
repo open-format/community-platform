@@ -1,3 +1,10 @@
+## [0.19.1](https://github.com/open-format/community-platform/compare/v0.19.0...v0.19.1) (2025-04-16)
+
+
+### Bug Fixes
+
+* added internal avatar to component ([7968087](https://github.com/open-format/community-platform/commit/7968087f9d0625faa3c58eff225dab77b61557ad))
+
 # [0.19.0](https://github.com/open-format/community-platform/compare/v0.18.0...v0.19.0) (2025-04-15)
 
 
