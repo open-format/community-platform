@@ -15,9 +15,9 @@ const sizeClasses = {
   lg: "h-12 w-12"
 };
 
-function Avatar({ className, children }: { className?: string; children: React.ReactNode }) {
+function Avatar({ size = "md", className, children }: { size?: "sm" | "md" | "lg"; className?: string; children: React.ReactNode }) {
   return (
-    <div className={cn("relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full", className)}>
+    <div className={cn("relative flex shrink-0 overflow-hidden rounded-full", sizeClasses[size], className)}>
       {children}
     </div>
   );
