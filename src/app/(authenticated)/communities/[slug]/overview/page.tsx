@@ -1,6 +1,7 @@
 import RewardRecommendations from "@/app/(authenticated)/communities/[slug]/overview/components/RewardRecommendations";
 import ActivityCard from "@/components/activity-card";
 import Leaderboard from "@/components/leaderboard";
+import MetricsSection from "@/components/metrics-section";
 import RefreshButton from "@/components/refresh-button";
 import Shortcuts from "@/components/shortcuts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,8 +27,8 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
   }
 
   return (
-    <div>
-      <Shortcuts community={community} />
+    <div className="space-y-6">
+      <MetricsSection community={community} />
       <Separator className="my-lg" />
       <div className="grid">
         <Card variant="borderless" className="h-full">
@@ -78,8 +79,12 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
         </Card>
 
         <ActivityCard community={community} />
+        <div>
+          <h2 className="text-2xl font-semibold tracking-tight mb-6">Configure your community</h2>
+          <Shortcuts community={community} />
+        </div>
+        <Separator className="my-lg" />
       </div>
-      <Separator className="my-lg" />
     </div>
   );
 }

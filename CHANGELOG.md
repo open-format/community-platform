@@ -1,3 +1,50 @@
+## [0.19.1](https://github.com/open-format/community-platform/compare/v0.19.0...v0.19.1) (2025-04-16)
+
+
+### Bug Fixes
+
+* added internal avatar to component ([7968087](https://github.com/open-format/community-platform/commit/7968087f9d0625faa3c58eff225dab77b61557ad))
+
+# [0.19.0](https://github.com/open-format/community-platform/compare/v0.18.0...v0.19.0) (2025-04-15)
+
+
+### Bug Fixes
+
+* added missing recharts module ([af5c952](https://github.com/open-format/community-platform/commit/af5c9526fad6eb3f0a409bb506523672f1aa53ef))
+* fixed chart colours, list layouts and test data ([746c86d](https://github.com/open-format/community-platform/commit/746c86d3fa49fcad0d5a20f4cbeb6de43cf1392a))
+
+
+### Features
+
+* added conditional rendering for impact report tab with next_public_use_test_data env variable ([e48e456](https://github.com/open-format/community-platform/commit/e48e45697b96a08fd489b828a49867e7e1481bdd))
+* added impact report generation through platform url ([203a4c1](https://github.com/open-format/community-platform/commit/203a4c13df11686aca147677a941e2d835085180))
+* added more in depth functionality to viewing metrics and sentiments ([7f31782](https://github.com/open-format/community-platform/commit/7f317821e4739f40af21b19f40c47201bcb4bda4))
+* altered graph axis layout. added truncation to long channels and updated view all button to eye ([b05ce18](https://github.com/open-format/community-platform/commit/b05ce187b2210cc3453b3ca7d75b6101e5f64037))
+* enhance impact report functionality with new data structures and improved error handling ([70c5b8e](https://github.com/open-format/community-platform/commit/70c5b8e4957088c1aec5c35898787d925308eb6a))
+* implemented base component and section layout ([3a8175e](https://github.com/open-format/community-platform/commit/3a8175ee41131967a95c53b9899b9260dd2d8e23))
+* improved viewAll modal to be unique for top contributors and key topics ([8ff02cc](https://github.com/open-format/community-platform/commit/8ff02ccf752ef85579ffca5d4a064f90caee4241))
+
+# [0.18.0](https://github.com/open-format/community-platform/compare/v0.17.0...v0.18.0) (2025-04-15)
+
+
+### Features
+
+* updated subgraph url and resolved new community hidden token bug ([dd737c8](https://github.com/open-format/community-platform/commit/dd737c86f804e77646631b660863da07a5dec56a))
+
+# [0.17.0](https://github.com/open-format/community-platform/compare/v0.16.1...v0.17.0) (2025-04-10)
+
+
+### Bug Fixes
+
+* **pagination:** update import statement for ButtonProps to use type syntax ([5fb61db](https://github.com/open-format/community-platform/commit/5fb61dbc8ed86e21ca76e61952e9b920ae42e70d))
+* resolved pagination visibility for activity-card when rewards < 5 ([7dd3c20](https://github.com/open-format/community-platform/commit/7dd3c201b6b7c7b028cf2bec2cc278d7d119f1e6))
+
+
+### Features
+
+* added new feedback features. refresh button moved but not implemented ([e1d20b2](https://github.com/open-format/community-platform/commit/e1d20b2c498ce4bfa6b94d4664dec70f2c73314d))
+* fixed unique user display direction. Passdown of rewards data to reward-list and pie chart. adjusted id list styling and pagination ([4610a2c](https://github.com/open-format/community-platform/commit/4610a2c9a501cb84fd21a8b4b5387a7c96f5410c))
+
 ## [0.16.1](https://github.com/open-format/community-platform/compare/v0.16.0...v0.16.1) (2025-04-03)
 
 

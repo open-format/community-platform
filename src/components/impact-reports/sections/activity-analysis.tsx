@@ -36,14 +36,9 @@ export function ActivityAnalysis({ dailyActivity, channelBreakdown }: ActivityAn
                   dataKey="date" 
                   tickFormatter={(date) => new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                   tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  interval={1}
                 />
                 <YAxis 
-                  yAxisId="left"
-                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                />
-                <YAxis 
-                  yAxisId="right"
-                  orientation="right"
                   tick={{ fill: 'hsl(var(--muted-foreground))' }}
                 />
                 <Tooltip 
@@ -74,14 +69,12 @@ export function ActivityAnalysis({ dailyActivity, channelBreakdown }: ActivityAn
                 />
                 <Legend />
                 <Bar 
-                  yAxisId="left"
                   dataKey="messageCount" 
                   name="Messages"
                   fill="hsl(var(--primary))"
                   radius={[4, 4, 0, 0]}
                 />
                 <Bar 
-                  yAxisId="right"
                   dataKey="uniqueUsers" 
                   name="Unique Users"
                   fill="#FF6B00"
@@ -108,8 +101,14 @@ export function ActivityAnalysis({ dailyActivity, channelBreakdown }: ActivityAn
                 <YAxis 
                   dataKey="name" 
                   type="category" 
-                  width={150}
-                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  width={180}
+                  tick={{ 
+                    fill: 'hsl(var(--muted-foreground))',
+                    fontSize: 14,
+                  }}
+                  tickFormatter={(value) => {
+                    return value.length > 20 ? value.substring(0, 17) + '...' : value;
+                  }}
                 />
                 <Tooltip 
                   content={({ active, payload, label }) => {

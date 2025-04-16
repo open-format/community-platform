@@ -50,7 +50,7 @@ export const chains: Record<ChainName, Chain> = {
   arbitrumSepolia: {
     APP_FACTORY_ADDRESS: "0x19781Af95cA4E113D5D1412452225D11A84ce992",
     SUBGRAPH_URL:
-      "https://subgraph.satsuma-prod.com/7238a0e24f3c/openformat--330570/open-format-arbitrum-sepolia/version/v0.1.1/api",
+      "https://subgraph.satsuma-prod.com/7238a0e24f3c/openformat--330570/open-format-arbitrum-sepolia/version/v0.2.0/api",
     BLOCK_EXPLORER_URL: "https://sepolia.arbiscan.io",
     ...arbitrumSepolia,
     apiChainName: "arbitrum-sepolia",
@@ -91,7 +91,7 @@ export const chains: Record<ChainName, Chain> = {
   },
   matchain: {
     APP_FACTORY_ADDRESS: "0xf1811D1D6D9a718312c3c9466D8c4a2601f973e7",
-    SUBGRAPH_URL: "http://20.84.160.190:8000/subgraphs/name/open-format-matchain",
+    SUBGRAPH_URL: "http://34.45.39.186:8000/subgraphs/id/QmZa1CpWzSWiVTftZGMrFbyboHgW49j56h22vCd5fdmgVU",
     BLOCK_EXPLORER_URL: "https://matchscan.io/",
     apiChainName: "matchain",
     ...matchain,

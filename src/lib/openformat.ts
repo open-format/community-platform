@@ -13,6 +13,27 @@ import type { Address } from "viem";
 import { getCurrentUser, getUserHandle } from "./privy";
 import { formatTokenAmount } from "./utils";
 
+interface Token {
+  id: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+}
+
+interface Badge {
+  id: string;
+  name: string;
+  metadataURI: string;
+}
+
+interface LeaderboardEntry {
+  user: Address;
+  points: number;
+  rank: number;
+  handle?: string;
+  type?: string;
+}
+
 const apiClient = axios.create({
   baseURL: config.OPENFORMAT_API_URL,
   headers: {
@@ -167,7 +188,6 @@ query ($app: ID!) {
       rewards,
       metadata: communityFromDb,
     };
-    // @TODO: Create a generic error handler for subgraph requests
   } catch (error) {
     console.error(error);
     return null;
@@ -213,6 +233,63 @@ async function fetchAllRewardsByCommunity(communityId: string): Promise<Reward[]
   const data = await request<{
     rewards: Reward[];
   }>(chain.SUBGRAPH_URL, query, { app: communityId });
+
+  return data.rewards;
+}
+
+export async function fetchPaginatedRewardsByCommunity(
+  communityId: string,
+  first: number,
+  skip: number,
+): Promise<Reward[] | null> {
+  const chain = await getChainFromCommunityOrCookie();
+
+  if (!chain) {
+    return null;
+  }
+
+  // @TODO: Handle pagination
+  const query = `
+ query ($first: Int, $skip: Int, $appId: String!) {
+  rewards(
+    where: {app: $appId}
+    first: $first
+    skip: $skip
+    orderBy: createdAt
+    orderDirection: desc
+  ) {
+    rewardId
+    createdAt
+    id
+    transactionHash
+    metadataURI
+    rewardType
+    token {
+      id
+      name
+      symbol
+      decimals
+    }
+    tokenAmount
+    badge {
+      id
+      name
+      metadataURI
+    }
+    badgeTokens {
+      tokenId
+    }
+    user {
+      id
+    }
+    createdAt
+  }
+}
+`;
+
+  const data = await request<{
+    rewards: Reward[];
+  }>(chain.SUBGRAPH_URL, query, { first, skip, appId: communityId });
 
   return data.rewards;
 }
@@ -316,24 +393,23 @@ export async function generateLeaderboard(
   const chain = await getChainFromCommunityOrCookie(slugOrId);
 
   if (!chain) {
-    return null;
+    return { data: [], error: "Chain not found" };
   }
 
   try {
     const communityFromDb = await getCommunity(slugOrId);
 
     if (!communityFromDb) {
-      return null;
+      return { data: [], error: "Community not found" };
     }
 
-    const selectedTokenId = tokenId || communityFromDb.token_to_display;
+    const selectedTokenId = tokenId || communityFromDb.token_to_display || "";
 
     const params = new URLSearchParams();
     params.set("app_id", communityFromDb.id);
     params.set("token_id", selectedTokenId);
     params.set("start", startDate);
     params.set("end", endDate);
-    // @TODO: Make this dynamic
     params.set(
       "chain",
       chain.apiChainName === ChainName.MATCHAIN
@@ -346,20 +422,22 @@ export async function generateLeaderboard(
               ? "base"
               : "arbitrum-sepolia",
     );
+
     const response = await apiClient.get(`/v1/leaderboard?${params}`);
 
     // Fetch social handles for each user in the leaderboard
     const leaderboardWithHandles = await Promise.all(
-      response.data.data.map(async (entry) => ({
+      response.data.data.map(async (entry: LeaderboardEntry) => ({
         ...entry,
-        handle: (await getUserHandle(entry.user as Address))?.username ?? "Anonymous",
-        type: (await getUserHandle(entry.user as Address))?.type ?? "unknown",
+        handle: (await getUserHandle(entry.user))?.username ?? "Anonymous",
+        type: (await getUserHandle(entry.user))?.type ?? "unknown",
       })),
     );
 
     return leaderboardWithHandles;
   } catch (error) {
-    return { error: "Failed to fetch leaderboard data. Please try again later." };
+    console.error("Failed to fetch leaderboard data:", error);
+    return { data: [], error: "Failed to fetch leaderboard data" };
   }
 }
 

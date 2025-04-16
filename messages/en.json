@@ -365,7 +365,7 @@
         "uploading": "Uploading...",
         "upload": "Upload",
         "abort": "Stop Rewards",
-        "reward": "Proccess Rewards",
+        "reward": "Process Rewards",
         "rewarding": "Rewarding..."
       },
       "toast": {
@@ -379,7 +379,7 @@
       }
     },
     "progress": {
-      "title": "Proccessing Rewards",
+      "title": "Processing Rewards",
       "success": "Successful: {success}",
       "failed": "Failed: {failed}",
       "total": "Total: {total}"
@@ -1067,6 +1067,62 @@
           "communityIdFailed": "Failed to get community id",
           "generic": "Failed to create community. Please try again."
         }
+      }
+    }
+  },
+  "metrics": {
+    "title": "Community insight",
+    "uniqueUsers": {
+      "description": "The number of new users who have received rewards",
+      "title": "New Users",
+      "total": "Total Users",
+      "noData": "No new users with rewards data available",
+      "users": "New users who have received rewards",
+      "timeRanges": {
+        "7d": "Last 7 days",
+        "30d": "Last 30 days",
+        "90d": "Last 90 days"
+      }
+    },
+    "totalRewards": {
+      "title": "Rewards Issued",
+      "noData": "No reward data available",
+      "rewards": "rewards",
+      "description": "The total number of times users have been rewarded over a given time period, across all users and reward types.",
+      "timeRanges": {
+        "7d": "Last 7 days",
+        "30d": "Last 30 days",
+        "90d": "Last 90 days"
+      }
+    },
+    "rewardDistribution": {
+      "description": "Proportion of rewards by type. Size indicates relative distribution.",
+      "title": "Reward Distribution",
+      "noData": "No distribution data available",
+      "rewards": "Rewards",
+      "rank": "Rank",
+      "rewardId": "Reward Identifier",
+      "totalCount": "Total Count"
+    },
+    "rewards": {
+      "title": "Rewards",
+      "description": "A list of all rewards in this community.",
+      "rank": "Rank",
+      "rewardId": "Reward ID",
+      "totalCount": "Total Count",
+      "noData": "No rewards data available"
+    },
+    "activity": {
+      "title": "Activity",
+      "description": "A list of the most recent rewards in this community.",
+      "rewardIdentifier": "Reward Identifier",
+      "date": "Date",
+      "user": "User",
+      "noActivity": "No activity yet",
+      "showMore": "Show more",
+      "showLess": "Show less",
+      "ariaLabels": {
+        "viewTransaction": "View transaction"
       }
     }
   },

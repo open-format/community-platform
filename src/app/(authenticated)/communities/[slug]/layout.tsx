@@ -1,9 +1,8 @@
-import { createCommunity } from "@/db";
-import { fetchCommunity, getChainFromCommunityOrCookie } from "@/lib/openformat";
-import { getTranslations } from 'next-intl/server';
-import Link from "next/link";
-import type React from "react";
 import ActiveLink from "@/components/active-link";
+import { fetchCommunity } from "@/lib/openformat";
+import { getTranslations } from "next-intl/server";
+import { createCommunity } from "@/db";
+import { getChainFromCommunityOrCookie } from "@/lib/openformat";
 
 async function handleCommunityCreation(slug: `0x${string}`) {
   const chain = await getChainFromCommunityOrCookie(slug);
@@ -38,7 +37,9 @@ export default async function Layout({
           <ActiveLink href="tokens">{t('tokens')}</ActiveLink>
           <ActiveLink href="badges">{t('badges')}</ActiveLink>
           <ActiveLink href="agents">{t('agents')}</ActiveLink>
-          <ActiveLink href="impact-reports">Impact Reports</ActiveLink>
+          {process.env.NEXT_PUBLIC_USE_TEST_DATA === 'true' && (
+            <ActiveLink href="impact-reports">Impact Reports</ActiveLink>
+          )}
         </div>
       </nav>
       <main className="m-lg">{children}</main>
