@@ -460,6 +460,11 @@
     }
   },
   "shortcuts": {
+    "inviteDiscordBot": {
+      "title": "Invite agent to Discord",
+      "description": "Deploy our agent into your communities Discord server to start receiving impact reports and reward recomendations.",
+      "invite": "Invite"
+    },
     "configureCommunity": {
       "title": "Configure and share community page",
       "description": "Configure your community page and share it with your members.",
