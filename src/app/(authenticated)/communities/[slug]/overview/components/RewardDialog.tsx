@@ -20,7 +20,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input, inputVariants } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { handleViemError } from "@/helpers/errors";
 import { addressSplitter } from "@/lib/utils";
@@ -96,7 +97,6 @@ export default function RewardDialog({
   }
 
   const FormSchema = z.object({
-    contributorName: z.string(),
     amount: z.coerce.number().min(1, t("validation.amountMin")).default(recommendation.points),
     tokenAddress: z.string().min(1, t("validation.tokenAddressRequired")),
   });
@@ -181,41 +181,26 @@ export default function RewardDialog({
       <DialogTrigger className={buttonVariants()} onClick={toggle}>
         {children}
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-xl">
         <DialogHeader>
           <DialogTitle>{t("reward")}</DialogTitle>
           <DialogDescription>{t("rewardDescription")}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form className="w-full space-y-4" onSubmit={form.handleSubmit(handleFormSubmission)}>
+          <form
+            className="w-full space-y-4 overflow-y-auto max-h-[calc(85vh-120px)]"
+            onSubmit={form.handleSubmit(handleFormSubmission)}
+          >
             {/* Receiver Name  */}
-            <FormField
-              control={form.control}
-              name="contributorName"
-              render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel>{t("form.receiverName.label")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("form.receiverName.placeholder")}
-                      value={`${recommendation.contributor_name} (${addressSplitter(recommendation.wallet_address)})`}
-                      onChange={() => {
-                        // Keep only the wallet address part as the actual form value
-                        field.onChange(field.value);
-                      }}
-                      readOnly
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <Label>{t("form.receiverName.label")}</Label>
+            <div className={inputVariants({ variant: "disabled" })}>
+              {`${recommendation.contributor_name} (${addressSplitter(recommendation.wallet_address)})`}
+            </div>
             {/* Evidence Details */}
             <div className="space-y-2">
               <h3 className="text-sm font-medium">{t("form.evidence.label")}</h3>
               <EvidenceDetails evidence={recommendation.evidence} />
             </div>
-
             {/* Impact Description */}
             {recommendation.impact && (
               <div className="space-y-2">
@@ -223,6 +208,39 @@ export default function RewardDialog({
                 <p className="text-sm text-muted-foreground">{recommendation.impact}</p>
               </div>
             )}
+
+            {/* Recommendation Context */}
+            {recommendation.metadata_uri && (
+              <div className="space-y-2">
+                <Label>Recommendation Context</Label>
+                <div className="space-y-3 rounded-lg border border-border p-4">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        This context will be stored on-chain to help improve future reward
+                        recommendations and maintain transparency.
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0"
+                      type="button"
+                      onClick={() =>
+                        window.open(
+                          recommendation.metadata_uri?.replace("ipfs://", "https://ipfs.io/ipfs/"),
+                          "_blank",
+                        )
+                      }
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      View Details
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <Separator className="my-lg" />
             {/* Reward Amount */}
             <FormField
@@ -242,7 +260,6 @@ export default function RewardDialog({
                 </FormItem>
               )}
             />
-            {/* Token Selector */}
 
             {/* Token and Action Type */}
             <div>
