@@ -1,7 +1,7 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface ImpactReportAvatarProps {
   username: string;
@@ -14,6 +14,26 @@ const sizeClasses = {
   md: "h-10 w-10",
   lg: "h-12 w-12"
 };
+
+function Avatar({ size = "md", className, children }: { size?: "sm" | "md" | "lg"; className?: string; children: React.ReactNode }) {
+  return (
+    <div className={cn("relative flex shrink-0 overflow-hidden rounded-full", sizeClasses[size], className)}>
+      {children}
+    </div>
+  );
+}
+
+function AvatarImage({ src, alt }: { src: string; alt: string }) {
+  return <img src={src} alt={alt} className="aspect-square h-full w-full" />;
+}
+
+function AvatarFallback({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex h-full w-full items-center justify-center rounded-full bg-muted">
+      {children}
+    </div>
+  );
+}
 
 export function ImpactReportAvatar({ username, rank, size = "md" }: ImpactReportAvatarProps) {
   const initials = username
