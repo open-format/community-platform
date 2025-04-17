@@ -223,12 +223,12 @@
         },
         "toast": {
           "processing": "Processing reward...",
-          "success": "Reward successfully sent",
+          "success": "Reward successfully sent for {summary}.",
           "error": "Error sending reward"
         }
       },
       "successConfirmingRewardRecommendation": "Confirmed reward successfully",
-      "successRejectingRewardRecommendation": "Rejected reward successfully",
+      "successRejectingRewardRecommendation": "Rejected reward recommendation: {summary}.",
       "suggestedReward": "Suggested reward",
       "platform": "Platform",
       "title": "Reward Recommendations",

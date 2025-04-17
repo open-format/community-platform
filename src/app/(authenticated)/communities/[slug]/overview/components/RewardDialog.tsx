@@ -155,13 +155,12 @@ export default function RewardDialog({
             });
 
             await waitForTransactionReceipt(config, { hash });
-            toast.success(t("form.toast.tokensSuccess"), { id: toastId });
+            toast.success(t("form.toast.success", { summary: recommendation.summary }), {
+              id: toastId,
+            });
 
             form.reset();
           }
-
-          // After successful transaction
-          toast.dismiss(toastId);
 
           deleteRecommendation();
         } catch (error) {

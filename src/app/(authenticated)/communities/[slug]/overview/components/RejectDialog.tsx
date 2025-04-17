@@ -28,7 +28,6 @@ export default function RejectDialog({ onConfirm, children }: RejectDialogProps)
   }
 
   function handleConfirm() {
-    // Here you would call your API to reject the recommendation
     onConfirm();
   }
 

@@ -32,9 +32,15 @@ export default function RewardRecommendations({
         // Optimistically update the UI
         setRecommendations((prev) => prev.filter((rec) => rec.id !== recommendation.id));
 
-        toast.success(t("successRejectingRewardRecommendation"), {
-          duration: 5000,
-        });
+        toast.success(
+          t("successRejectingRewardRecommendation", {
+            name: recommendation.contributor_name,
+            summary: recommendation.summary,
+          }),
+          {
+            duration: 5000,
+          },
+        );
       } else {
         throw new Error("Failed to reject recommendation");
       }
