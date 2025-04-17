@@ -476,7 +476,8 @@
     "inviteDiscordBot": {
       "title": "Add Community Copilot",
       "description": "Start reward recomendations based on your community members' contributions in Discord.",
-      "invite": "🚀 Add Copilot to Discord"
+      "invite": "Add Copilot to Discord",
+      "docs": "View Docs"
     },
     "configureCommunity": {
       "title": "Configure and share community page",

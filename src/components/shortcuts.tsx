@@ -1,5 +1,6 @@
 "use client";
 
+import config from "@/constants/config";
 import { CopyIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -39,6 +40,14 @@ export default function Onboarding({ community }: OnboardingProps) {
               href={process.env.NEXT_PUBLIC_DISCORD_BOT_OAUTH || ""}
             >
               {t("inviteDiscordBot.invite")}
+            </Link>
+            <Link
+              className={buttonVariants({ variant: "outline" })}
+              target="_blank"
+              rel="noopener noreferrer"
+              href={config.DISCORD_BOT_GUIDE_URL}
+            >
+              {t("inviteDiscordBot.docs")}
             </Link>
           </CardFooter>
         </Card>
