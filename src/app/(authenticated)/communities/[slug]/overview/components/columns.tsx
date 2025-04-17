@@ -61,6 +61,14 @@ export const columns = (
     },
   },
   {
+    accessorKey: "platform",
+    header: t("platform"),
+    cell: ({ row }) => {
+      const platform = row.getValue("platform") as string;
+      return <div className="font-medium capitalize">{platform}</div>;
+    },
+  },
+  {
     accessorKey: "created_at",
     header: ({ column }) => {
       return (

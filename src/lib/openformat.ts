@@ -657,28 +657,18 @@ function getRewardQuery(
 }
 
 export async function getRewardRecommendations(communityId: string) {
-  const platformId = "932238833146277958";
   try {
-    const response = await agentApiClient.get(
-      `/rewards/recommendations?platform_id=${platformId}`,
-      {
-        headers: {
-          "X-Community-ID": communityId,
-        },
+    const response = await agentApiClient.get("/rewards/recommendations", {
+      headers: {
+        "X-Community-ID": communityId,
       },
-    );
+    });
 
     if (response.status === 200) {
       return response.data.rewards;
     }
     return null;
   } catch (error) {
-    console.error("Full error object:", error);
-    if (axios.isAxiosError(error)) {
-      console.error("Axios error details:", {
-        data: error.response?.data,
-      });
-    }
     return { error: "Failed to fetch rewards recommendations data. Please try again later." };
   }
 }

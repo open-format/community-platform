@@ -45,12 +45,7 @@ export default function RecommendationsTable({
               deleteRecommendation={() => deleteRecommendation(recommendation)}
               onConfirm={() => onReward(recommendation)}
             >
-              <Button
-                className="hover:bg-primary/90 text-primary-foreground rounded-full px-6 py-0 h-8 text-sm font-medium"
-                disabled={isLoading}
-              >
-                {t("reward")}
-              </Button>
+              {t("reward")}
             </RewardDialog>
             <RejectDialog onConfirm={() => onReject(recommendation)}>
               <Button

@@ -34,8 +34,8 @@ export type Chain = {
     maxPriorityFeePerGas: bigint;
   };
   testnet: boolean;
-  subgraph_max_first: number,
-  subgraph_max_skip: number,
+  subgraph_max_first: number;
+  subgraph_max_skip: number;
 };
 
 export enum ChainName {
@@ -50,13 +50,13 @@ export const chains: Record<ChainName, Chain> = {
   arbitrumSepolia: {
     APP_FACTORY_ADDRESS: "0x19781Af95cA4E113D5D1412452225D11A84ce992",
     SUBGRAPH_URL:
-      "https://subgraph.satsuma-prod.com/7238a0e24f3c/openformat--330570/open-format-arbitrum-sepolia/version/v0.2.0/api",
+      "https://api.studio.thegraph.com/query/82634/open-format-arbitrum-sepolia/version/latest",
     BLOCK_EXPLORER_URL: "https://sepolia.arbiscan.io",
     ...arbitrumSepolia,
     apiChainName: "arbitrum-sepolia",
     testnet: true,
     subgraph_max_first: 1000,
-    subgraph_max_skip: 5000,  
+    subgraph_max_skip: 5000,
   },
   aurora: {
     APP_FACTORY_ADDRESS: "0x2eBF7f4572c218217ca01CE2883E3EfF93626a8E",
@@ -66,18 +66,19 @@ export const chains: Record<ChainName, Chain> = {
     ...aurora,
     testnet: false,
     subgraph_max_first: 1000,
-    subgraph_max_skip: 5000,  
+    subgraph_max_skip: 5000,
   },
   turbo: {
     APP_FACTORY_ADDRESS: "0x7e405FbA4c29B8B05B5ecF97bA664729C34803B8",
     // @TODO: Update to production subgraph when ready
-    SUBGRAPH_URL: "https://openformat-turbo-graph-node-staging.fly.dev/subgraphs/name/open-format-local",
+    SUBGRAPH_URL:
+      "https://openformat-turbo-graph-node-staging.fly.dev/subgraphs/name/open-format-local",
     BLOCK_EXPLORER_URL: "https://explorer.turbo.aurora.dev",
     apiChainName: "turbo",
     ...turboChain,
     testnet: false,
     subgraph_max_first: 1000,
-    subgraph_max_skip: -1,  
+    subgraph_max_skip: -1,
   },
   base: {
     APP_FACTORY_ADDRESS: "0x2d6f1620b263Ce71862Fa95f6fEAbB6A366478cC",
@@ -87,17 +88,18 @@ export const chains: Record<ChainName, Chain> = {
     ...base,
     testnet: false,
     subgraph_max_first: 1000,
-    subgraph_max_skip: 5000,  
+    subgraph_max_skip: 5000,
   },
   matchain: {
     APP_FACTORY_ADDRESS: "0xf1811D1D6D9a718312c3c9466D8c4a2601f973e7",
-    SUBGRAPH_URL: "http://34.45.39.186:8000/subgraphs/id/QmZa1CpWzSWiVTftZGMrFbyboHgW49j56h22vCd5fdmgVU",
+    SUBGRAPH_URL:
+      "http://34.45.39.186:8000/subgraphs/id/QmZa1CpWzSWiVTftZGMrFbyboHgW49j56h22vCd5fdmgVU",
     BLOCK_EXPLORER_URL: "https://matchscan.io/",
     apiChainName: "matchain",
     ...matchain,
     testnet: false,
     subgraph_max_first: 1000,
-    subgraph_max_skip: 5000,  
+    subgraph_max_skip: 5000,
   },
 };
 

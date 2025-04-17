@@ -220,11 +220,17 @@
         },
         "impact": {
           "label": "Impact"
+        },
+        "toast": {
+          "processing": "Processing reward...",
+          "success": "Reward successfully sent",
+          "error": "Error sending reward"
         }
       },
       "successConfirmingRewardRecommendation": "Confirmed reward successfully",
       "successRejectingRewardRecommendation": "Rejected reward successfully",
       "suggestedReward": "Suggested reward",
+      "platform": "Platform",
       "title": "Reward Recommendations",
       "validation": {
         "amountMin": "Amount must be at least 1",
@@ -333,7 +339,14 @@
       "viewActivity": "View in Activity",
       "viewTransaction": "View Transaction"
     },
-    "title": "Rewards",
+    "recommendations": {
+      "title": "Reward Recommendations",
+      "description": "Review and process AI-generated reward recommendations for your community members' contributions"
+    },
+    "sendReward": {
+      "title": "Send a reward",
+      "description": "Manually reward your community members"
+    },
     "notFound": "Community not found"
   },
   "batchRewards": {
@@ -461,9 +474,9 @@
   },
   "shortcuts": {
     "inviteDiscordBot": {
-      "title": "Invite agent to Discord",
-      "description": "Deploy our agent into your communities Discord server to start receiving impact reports and reward recomendations.",
-      "invite": "Invite"
+      "title": "Add Community Copilot",
+      "description": "Start reward recomendations based on your community members' contributions in Discord.",
+      "invite": "🚀 Add Copilot to Discord"
     },
     "configureCommunity": {
       "title": "Configure and share community page",
@@ -479,9 +492,9 @@
       "createTokens": "Create tokens"
     },
     "rewardCommunity": {
-      "title": "Reward your community",
-      "description": "Reward your community for their contributions.",
-      "sendReward": "Send reward"
+      "title": "Manage Reward Recommendations",
+      "description": "Review and process AI-generated reward recommendations for your community members' contributions.",
+      "sendReward": "View Recommendations"
     }
   },
   "dialogs": {

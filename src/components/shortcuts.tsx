@@ -42,6 +42,23 @@ export default function Onboarding({ community }: OnboardingProps) {
             </Link>
           </CardFooter>
         </Card>
+        {/* Send your first reward */}
+        <Card className="flex flex-col justify-between">
+          <CardHeader>
+            <CardTitle>{t("rewardCommunity.title")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>{t("rewardCommunity.description")}</p>
+          </CardContent>
+          <CardFooter className="flex space-x-2">
+            <Link
+              className={buttonVariants()}
+              href={`/communities/${community?.metadata?.slug}/rewards`}
+            >
+              {t("rewardCommunity.sendReward")}
+            </Link>
+          </CardFooter>
+        </Card>
         {/* Configure and share community page */}
         <Card className="flex flex-col justify-between">
           <CardHeader>
@@ -86,24 +103,6 @@ export default function Onboarding({ community }: OnboardingProps) {
               href={`/communities/${community?.metadata?.slug}/tokens`}
             >
               {t("createBadgesTokens.createTokens")}
-            </Link>
-          </CardFooter>
-        </Card>
-
-        {/* 3. Send your first reward */}
-        <Card className="flex flex-col justify-between">
-          <CardHeader>
-            <CardTitle>{t("rewardCommunity.title")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>{t("rewardCommunity.description")}</p>
-          </CardContent>
-          <CardFooter className="flex space-x-2">
-            <Link
-              className={buttonVariants()}
-              href={`/communities/${community?.metadata?.slug}/rewards`}
-            >
-              {t("rewardCommunity.sendReward")}
             </Link>
           </CardFooter>
         </Card>
