@@ -1,14 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 
 export default function LoadingRewards() {
-  const t = useTranslations('rewards');
-  
+  const t = useTranslations("rewards");
+
   return (
     <Card variant="borderless">
       <CardHeader>
-        <CardTitle>{t('title')}</CardTitle>
+        <CardTitle>{t("recommendations.title")}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
