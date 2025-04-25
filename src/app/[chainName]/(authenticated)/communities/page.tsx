@@ -3,15 +3,34 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import CreateCommunityDialog from "@/dialogs/create-community-dialog";
 import CreateCommunityForm from "@/forms/create-community-form";
-import { fetchAllCommunities, getChainFromCommunityOrCookie } from "@/lib/openformat";
+import { fetchAllCommunities } from "@/lib/openformat";
 import { addressSplitter } from "@/lib/utils";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import { chains, type ChainName } from "@/constants/chains";
 
-export default async function Communities() {
+export default async function Communities({
+  params,
+}: {
+  params: { chainName: string };
+}) {
   const t = await getTranslations("communities");
-  const { data: communities, error } = await fetchAllCommunities();
-  const chain = await getChainFromCommunityOrCookie();
+  const chain = chains[params.chainName as ChainName];
+  
+  if (!chain) {
+    return (
+      <div className="flex flex-col items-center justify-center">
+        <Card>
+          <CardHeader>
+            <CardTitle>Invalid Chain</CardTitle>
+            <CardDescription>The selected chain is not supported.</CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+  const { data: communities, error } = await fetchAllCommunities(params.chainName);
 
   if (error) {
     return (
@@ -53,14 +72,14 @@ export default async function Communities() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl">
         {communities.map((community) => (
-          <Link key={community.id} href={`/communities/${community.id}/overview`} prefetch={true}>
+          <Link key={community.id} href={`/${params.chainName}/communities/${community.id}`} prefetch={true}>
             <Card>
               <CardHeader>
                 <CardTitle>{community.name}</CardTitle>
                 <CardDescription>{community.metadata?.description}</CardDescription>
               </CardHeader>
               <CardFooter className="flex justify-between">
-                <p className="text-sm text-gray-500 font-semibold">{chain?.name}</p>
+                <p className="text-sm text-gray-500 font-semibold">{chain.name}</p>
                 <Badge>{addressSplitter(community.id)}</Badge>
               </CardFooter>
             </Card>

@@ -1,7 +1,6 @@
 "use client";
 
 import CommunitySelector from "@/components/community-selector";
-import NetworkSelector from "@/components/network-selector";
 import Profile from "@/components/profile-header";
 import {
   Breadcrumb,
@@ -13,7 +12,7 @@ import {
 import Image from "next/image";
 import {redirect} from "next/navigation";
 import {useTranslations} from "next-intl";
-import OFLogo from "../../../../public/images/of-logo.png";
+import OFLogo from "../../../../../public/images/of-logo.png";
 
 export default function CommunitiesLayout({
                                             children,
@@ -55,12 +54,6 @@ export default function CommunitiesLayout({
           </Breadcrumb>
         </div>
         <div className="flex items-center space-x-2">
-          <NetworkSelector
-            callback={() => {
-              redirect("/communities");
-            }}
-            hideIfNotSet
-          />
           <Profile
             logoutAction={handleLogout}
           />

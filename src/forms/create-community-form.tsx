@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl';
 
 import { appFactoryAbi } from "@/abis/AppFactory";
 import { erc20FactoryAbi } from "@/abis/ERC20FactoryFacet";
-import NetworkSelector from "@/components/network-selector";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -201,25 +200,6 @@ export default function CreateCommunityForm() {
             </FormItem>
           )}
         />
-
-        {/* Network Selector */}
-        <FormItem>
-          <FormLabel>{t('fields.network.label')}</FormLabel>
-          <FormControl>
-            <NetworkSelector
-              onValueChange={(chainName) => {
-                form.setValue("chainName", chainName as ChainName);
-                form.trigger("chainName");
-
-                const currentName = form.getValues("name");
-                if (currentName) {
-                  simulateCreateCommunity(currentName);
-                }
-              }}
-            />
-          </FormControl>
-          <FormDescription>{t('fields.network.description')}</FormDescription>
-        </FormItem>
 
         {/* Create Points */}
         <FormField
