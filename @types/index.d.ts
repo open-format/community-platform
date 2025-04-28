@@ -283,3 +283,28 @@ interface ImpactReportsProps {
   communityId: string;
   agentId?: string;
 }
+
+type RewardUrlEvidence = {
+  title: string;
+  url: string;
+};
+
+type RewardEvidence = RewardUrlEvidence;
+
+type RewardRecommendation = {
+  id: string;
+  communityId: string;
+  contributor_name: string;
+  wallet_address: string;
+  platform: "discord" | "telegram" | "github" | "unknown";
+  reward_id: string;
+  points: number;
+  metadata_uri: string;
+  status: "pending" | "telegram" | "rejected" | "unknown";
+  created_at: Date;
+  updatedAt: Date;
+  processedAt: string | null;
+  error: string | null;
+  impact: string;
+  evidence: Array<RewardEvidence>;
+};
