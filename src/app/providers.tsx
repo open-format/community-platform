@@ -10,7 +10,7 @@ import { arbitrumSepolia, aurora, base, matchain } from "viem/chains";
 import { http } from "wagmi";
 import { NextIntlClientProvider } from 'next-intl';
 
-const chainConfig = createConfig({
+export const chainConfig = createConfig({
   chains: [arbitrumSepolia, aurora, turboChain, base, matchain],
   transports: {
     [arbitrumSepolia.id]: http(),
