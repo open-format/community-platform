@@ -55,6 +55,8 @@ export default function AuthenticatedLayout({ children }: { children: ReactNode 
         // Wait for chain switch to complete
         await new Promise(resolve => setTimeout(resolve, 1000));
         console.log("Chain switch completed");
+        // Redirect to communities page after successful switch
+        router.push(`/${currentChainName}/communities`);
       } catch (error) {
         console.error("Chain switch error:", error);
         toast.error(`Failed to switch to ${targetChain.name}. Please try again.`);
@@ -85,22 +87,7 @@ export default function AuthenticatedLayout({ children }: { children: ReactNode 
 
   return (
     <UserProvider value={{ user }}>
-      <ChainSwitcher 
-        onChainMismatch={() => {
-          console.log("=== Chain Switcher Mismatch Debug ===");
-          console.log("Current chain ID:", chainId);
-          const walletChainName = Object.entries(chains).find(
-            ([_, chain]) => chain.id === chainId
-          )?.[0] as ChainName | undefined;
-          console.log("Wallet chain name:", walletChainName);
-          console.log("Current chain name:", currentChainName);
-
-          if (walletChainName && walletChainName !== currentChainName) {
-            console.log("Redirecting to:", `/${walletChainName}/communities`);
-            router.push(`/${walletChainName}/communities`);
-          }
-        }}
-      />
+      <ChainSwitcher />
       <div className="flex-1">{children}</div>
     </UserProvider>
   );

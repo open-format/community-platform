@@ -10,9 +10,10 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Image from "next/image";
-import {redirect} from "next/navigation";
-import {useTranslations} from "next-intl";
+import { redirect } from "next/navigation";
+import { useTranslations } from "next-intl";
 import OFLogo from "../../../../../public/images/of-logo.png";
+import { useParams } from "next/navigation";
 
 export default function CommunitiesLayout({
                                             children,
@@ -20,6 +21,8 @@ export default function CommunitiesLayout({
   children: React.ReactNode;
 }) {
   const t = useTranslations("layout");
+  const params = useParams();
+  const chainName = params?.chainName as string;
 
   function handleLogout() {
     redirect("/logout");
@@ -42,7 +45,7 @@ export default function CommunitiesLayout({
               </BreadcrumbItem>
               <BreadcrumbSeparator/>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/communities">
+                <BreadcrumbLink href={`/${chainName}/communities`}>
                   {t("communities")}
                 </BreadcrumbLink>
               </BreadcrumbItem>

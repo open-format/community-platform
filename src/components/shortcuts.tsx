@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useTranslations } from 'next-intl';
 import { Button, buttonVariants } from "./ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
+import { useParams } from "next/navigation";
 
 interface OnboardingProps {
   community: Community;
@@ -13,10 +14,12 @@ interface OnboardingProps {
 
 export default function Onboarding({ community }: OnboardingProps) {
   const t = useTranslations('shortcuts');
+  const params = useParams();
+  const chainName = params?.chainName as string;
 
   function copyInviteLink() {
     const baseUrl = window.location.origin;
-    const inviteLink = `${baseUrl}/${community?.metadata?.slug}`;
+    const inviteLink = `${baseUrl}/${chainName}/${community?.metadata?.slug}`;
     navigator.clipboard.writeText(inviteLink);
     toast.success(t('configureCommunity.inviteCopied'));
   }
@@ -32,7 +35,7 @@ export default function Onboarding({ community }: OnboardingProps) {
             <p>{t('configureCommunity.description')}</p>
           </CardContent>
           <CardFooter className="flex space-x-2">
-            <Link className={buttonVariants()} href={`/communities/${community?.metadata?.slug}/settings`}>
+            <Link className={buttonVariants()} href={`/${chainName}/communities/${community?.metadata?.slug}/settings`}>
               {t('configureCommunity.configure')}
             </Link>
             {community?.metadata?.slug && (
@@ -53,10 +56,10 @@ export default function Onboarding({ community }: OnboardingProps) {
             <p>{t('createBadgesTokens.description')}</p>
           </CardContent>
           <CardFooter className="flex space-x-2">
-            <Link className={buttonVariants()} href={`/communities/${community?.metadata?.slug}/badges`}>
+            <Link className={buttonVariants()} href={`/${chainName}/communities/${community?.metadata?.slug}/badges`}>
               {t('createBadgesTokens.createBadges')}
             </Link>
-            <Link className={buttonVariants()} href={`/communities/${community?.metadata?.slug}/tokens`}>
+            <Link className={buttonVariants()} href={`/${chainName}/communities/${community?.metadata?.slug}/tokens`}>
               {t('createBadgesTokens.createTokens')}
             </Link>
           </CardFooter>
@@ -71,7 +74,7 @@ export default function Onboarding({ community }: OnboardingProps) {
             <p>{t('rewardCommunity.description')}</p>
           </CardContent>
           <CardFooter className="flex space-x-2">
-            <Link className={buttonVariants()} href={`/communities/${community?.metadata?.slug}/rewards`}>
+            <Link className={buttonVariants()} href={`/${chainName}/communities/${community?.metadata?.slug}/rewards`}>
               {t('rewardCommunity.sendReward')}
             </Link>
           </CardFooter>

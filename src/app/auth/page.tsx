@@ -3,7 +3,7 @@
 import { fundAccount } from "@/lib/openformat";
 import { useLogin, useModalStatus, usePrivy } from "@privy-io/react-auth";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useTranslations } from 'next-intl';
 
@@ -13,13 +13,15 @@ export default function Auth() {
   const disableLogin = !ready || (ready && authenticated);
   const { isOpen } = useModalStatus();
   const router = useRouter();
+  const params = useParams();
+  const chainName = params?.chainName as string;
 
   useLogin({
     onComplete: async ({ user, isNewUser }) => {
       if (isNewUser && user.wallet?.address) {
         await fundAccount();
       }
-      router.push("/communities");
+      router.push(`/${chainName}/communities`);
     },
   });
 

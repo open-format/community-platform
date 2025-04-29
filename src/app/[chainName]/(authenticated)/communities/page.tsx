@@ -9,13 +9,14 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { chains, type ChainName } from "@/constants/chains";
 
-export default async function Communities({
-  params,
-}: {
-  params: { chainName: string };
-}) {
+interface PageProps {
+  params: Promise<{ chainName: string }>;
+}
+
+export default async function Communities({ params }: PageProps) {
+  const { chainName } = await params;
   const t = await getTranslations("communities");
-  const chain = chains[params.chainName as ChainName];
+  const chain = chains[chainName as ChainName];
   
   if (!chain) {
     return (
@@ -30,7 +31,7 @@ export default async function Communities({
     );
   }
 
-  const { data: communities, error } = await fetchAllCommunities(params.chainName);
+  const { data: communities, error } = await fetchAllCommunities(chainName);
 
   if (error) {
     return (
@@ -72,7 +73,7 @@ export default async function Communities({
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl">
         {communities.map((community) => (
-          <Link key={community.id} href={`/${params.chainName}/communities/${community.id}`} prefetch={true}>
+          <Link key={community.id} href={`/${chainName}/communities/${community.id}`} prefetch={true}>
             <Card>
               <CardHeader>
                 <CardTitle>{community.name}</CardTitle>

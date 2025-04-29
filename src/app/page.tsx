@@ -4,22 +4,24 @@ import { chains, type ChainName } from "@/constants/chains";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ExternalLink } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { useChainId, useSwitchChain } from "wagmi";
+import { usePrivy } from "@privy-io/react-auth";
+import { useEffect, useState } from "react";
 
 export default function ChainSelectionPage() {
   const router = useRouter();
-  const chainId = useChainId();
-  const { switchChain } = useSwitchChain();
+  const { login, ready, authenticated } = usePrivy();
+  const [selectedChain, setSelectedChain] = useState<ChainName | null>(null);
+
+  useEffect(() => {
+    if (ready && authenticated && selectedChain) {
+      router.push(`/${selectedChain}/communities`);
+    }
+  }, [ready, authenticated, selectedChain, router]);
 
   const handleChainSelect = async (chainName: ChainName, chain: typeof chains[ChainName]) => {
-    if (chainId !== chain.id) {
-      try {
-        await switchChain({ chainId: chain.id });
-        router.push(`/${chainName}/communities`);
-      } catch (error) {
-        toast.error(`Failed to switch to ${chain.name}. Please try again.`);
-      }
+    if (!authenticated) {
+      setSelectedChain(chainName);
+      await login();
     } else {
       router.push(`/${chainName}/communities`);
     }
