@@ -472,6 +472,7 @@
     "exportWallet": "Export Wallet",
     "logout": "Logout",
     "login": "Login",
+    "switchChain": "Switch Chain",
     "apiKey": {
       "apiKey": "API Key",
       "apiKeyCopied": "API Key copied to clipboard",
@@ -1148,5 +1149,13 @@
         }
       }
     }
+  },
+  "chainSelection": {
+    "title": "Select a Blockchain",
+    "mainnet": "Mainnet",
+    "testnet": "Testnet",
+    "chainId": "Chain ID: {id}",
+    "blockExplorer": "Block Explorer:",
+    "switchingChain": "Switching chain to: {chainId}"
   }
 }

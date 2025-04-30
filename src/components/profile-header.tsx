@@ -1,11 +1,11 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import {usePathname} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import {Avatar} from "@/components/ui/avatar";
 import {addressSplitter, getAddress} from "@/lib/utils";
 import {usePrivy} from "@privy-io/react-auth";
-import {CopyIcon, ExternalLink, KeySquare, LogOut} from "lucide-react";
+import {CopyIcon, ExternalLink, KeySquare, LogOut, Network} from "lucide-react";
 import {useTranslations} from "next-intl";
 import {toast} from "sonner";
 import {Button} from "./ui/button";
@@ -30,6 +30,7 @@ export default function Profile({
   const {generateNewApiKey, apiKey, copyApiKeyToClipboard} = useApiKey();
   const [showCreateApiKey, setShowCreateApiKey] = useState<boolean>(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   function copyAddress() {
     navigator.clipboard.writeText(address || "");
@@ -74,6 +75,11 @@ export default function Profile({
         <DropdownMenuItem onClick={copyAddress} className="font-bold">
           <span>{addressSplitter(address || "")}</span>
           <CopyIcon className="ml-auto"/>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator/>
+        <DropdownMenuItem onClick={() => router.push("/")} className="font-bold">
+          <span>{t("switchChain")}</span>
+          <Network className="ml-auto"/>
         </DropdownMenuItem>
         <DropdownMenuSeparator/>
         {exportEnabled && (

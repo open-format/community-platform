@@ -8,7 +8,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Allow access to auth and API routes
-  if (pathname.startsWith("/auth") || pathname.startsWith("/api")) {
+  if (pathname.startsWith("/auth") || pathname.startsWith("/api") || pathname.startsWith("/logout")) {
     return NextResponse.next();
   }
 
@@ -33,9 +33,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // If user is not logged in, redirect to auth
+  // If user is not logged in, redirect to home
   if (!user) {
-    return NextResponse.redirect(new URL("/auth", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();
