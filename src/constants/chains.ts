@@ -22,6 +22,27 @@ export const turboChain: ViemChain = {
   },
 };
 
+export const openFormatChain = {
+  id: 1313161576,
+  name: "OpenFormat",
+  nativeCurrency: {
+    name: "ETH",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc-0x4e454168.aurora-cloud.dev"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "TurboChain Explorer",
+      url: "https://explorer.turbo.aurora.dev",
+    },
+  },
+};
+
 export type Chain = {
   APP_FACTORY_ADDRESS: Address;
   SUBGRAPH_URL: string;
@@ -44,9 +65,20 @@ export enum ChainName {
   TURBO = "turbo",
   BASE = "base",
   MATCHAIN = "matchain",
+  OPENFORMAT = "openFormat",
 }
 
 export const chains: Record<ChainName, Chain> = {
+  openFormat: {
+    APP_FACTORY_ADDRESS: "0x20A9FB49618a10fD7ea79C82ac4e6D9345CB4C97",
+    SUBGRAPH_URL: "https://openformat-graph-node.fly.dev/subgraphs/name/open-format-openformat",
+    BLOCK_EXPLORER_URL: "https://explorer.0x4e454168.aurora-cloud.dev",
+    ...openFormatChain,
+    apiChainName: "openformat",
+    subgraph_max_first: 1000,
+    subgraph_max_skip: 5000,
+    testnet: false,
+  },
   arbitrumSepolia: {
     APP_FACTORY_ADDRESS: "0x19781Af95cA4E113D5D1412452225D11A84ce992",
     SUBGRAPH_URL:
