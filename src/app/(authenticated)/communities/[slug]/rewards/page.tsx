@@ -1,5 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import BatchRewardsForm from "@/forms/batch-rewards-form";
 import RewardsForm from "@/forms/rewards-form";
 import { fetchCommunity, getRewardRecommendations } from "@/lib/openformat";
 import { getTranslations } from "next-intl/server";
@@ -28,6 +29,13 @@ export default async function Rewards({ params }: { params: Promise<{ slug: stri
             rewardRecommendations={rewardRecommendations}
           />
         </CardContent>
+      </Card>
+      <Separator className="my-lg" />
+      <Card variant="borderless">
+        <CardHeader>
+          <CardTitle>{t('batchRewards')}</CardTitle>
+        </CardHeader>
+        <BatchRewardsForm community={community} />
       </Card>
       <Separator className="my-lg" />
       <Card variant="borderless">
