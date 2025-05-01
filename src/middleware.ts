@@ -7,8 +7,6 @@ export async function middleware(request: NextRequest) {
   const user = await getCurrentUser();
   const pathname = request.nextUrl.pathname;
 
-  console.log("pathname", pathname);
-
   if (pathname === "/auth") {
     if (user) {
       return NextResponse.redirect(new URL("/", request.url));
