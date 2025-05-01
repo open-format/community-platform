@@ -10,25 +10,6 @@ export default function LoadingRewards() {
     <div>
       <Card variant="borderless">
         <CardHeader>
-          <CardTitle>{t('batchRewards')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {/* File Field */}
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-            {/* Process Button */}
-            <Skeleton className="h-10 w-full" />
-            {/* Settings Button */}
-            <Skeleton className="h-10 w-full" />
-          </div>
-        </CardContent>
-      </Card>
-      <Separator className="my-lg" />
-      <Card variant="borderless">
-        <CardHeader>
           <CardTitle>{t("recommendations.title")}</CardTitle>
         </CardHeader>
         <CardContent>
@@ -77,7 +58,25 @@ export default function LoadingRewards() {
           </div>
         </CardContent>
       </Card>
+      <Separator className="my-lg" />
+      <Card variant="borderless">
+        <CardHeader>
+          <CardTitle>{t('batchRewards')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {/* File Field */}
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+            {/* Process Button */}
+            <Skeleton className="h-10 w-full" />
+            {/* Settings Button */}
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </CardContent>
+      </Card>
     </div>
-
   );
 }

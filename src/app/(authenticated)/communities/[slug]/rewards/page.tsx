@@ -20,13 +20,6 @@ export default async function Rewards({ params }: { params: Promise<{ slug: stri
     <div>
       <Card variant="borderless">
         <CardHeader>
-          <CardTitle>{t('batchRewards')}</CardTitle>
-        </CardHeader>
-        <BatchRewardsForm community={community} />
-      </Card>
-      <Separator className="my-lg" />
-      <Card variant="borderless">
-        <CardHeader>
           <CardTitle>{t("recommendations.title")}</CardTitle>
           <CardDescription>{t("recommendations.description")}</CardDescription>
         </CardHeader>
@@ -36,6 +29,13 @@ export default async function Rewards({ params }: { params: Promise<{ slug: stri
             rewardRecommendations={rewardRecommendations}
           />
         </CardContent>
+      </Card>
+      <Separator className="my-lg" />
+      <Card variant="borderless">
+        <CardHeader>
+          <CardTitle>{t('batchRewards')}</CardTitle>
+        </CardHeader>
+        <BatchRewardsForm community={community} />
       </Card>
       <Separator className="my-lg" />
       <Card variant="borderless">
