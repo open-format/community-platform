@@ -5,9 +5,9 @@ import { useLogin, useModalStatus, usePrivy } from "@privy-io/react-auth";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 
-export default function Auth() {
+function AuthContent() {
   const { login, ready, authenticated } = usePrivy();
   const t = useTranslations("auth");
   const disableLogin = !ready || (ready && authenticated);
@@ -42,5 +42,13 @@ export default function Auth() {
         <Loader2 className="mr-2 h-12 w-12 animate-spin" />
       </div>
     </div>
+  );
+}
+
+export default function Auth() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AuthContent />
+    </Suspense>
   );
 }
