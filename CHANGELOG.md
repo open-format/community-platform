@@ -1,3 +1,10 @@
+# [0.21.0](https://github.com/open-format/community-platform/compare/v0.20.0...v0.21.0) (2025-05-01)
+
+
+### Features
+
+* add new image assets and update metadata for improved branding ([a03cc55](https://github.com/open-format/community-platform/commit/a03cc55f5ee867838f3c3bc8209e8bd7332e8b24))
+
 # [0.20.0](https://github.com/open-format/community-platform/compare/v0.19.1...v0.20.0) (2025-04-28)
 
 
