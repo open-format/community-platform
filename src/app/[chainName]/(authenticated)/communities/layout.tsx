@@ -9,15 +9,14 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import Image from "next/image";
-import { redirect } from "next/navigation";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { redirect, useParams } from "next/navigation";
 import OFLogo from "../../../../../public/images/of-logo.png";
-import { useParams } from "next/navigation";
 
 export default function CommunitiesLayout({
-                                            children,
-                                          }: {
+  children,
+}: {
   children: React.ReactNode;
 }) {
   const t = useTranslations("layout");
@@ -35,31 +34,23 @@ export default function CommunitiesLayout({
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <Image
-                  src={OFLogo}
-                  alt={t("logo")}
-                  width={48}
-                  height={48}
-                  className="rounded-md"
-                />
+                <Image src={OFLogo} alt={t("logo")} width={48} height={48} className="rounded-md" />
               </BreadcrumbItem>
-              <BreadcrumbSeparator/>
+              <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink href={`/${chainName}/communities`}>
                   {t("communities")}
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator/>
+              <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <CommunitySelector/>
+                <CommunitySelector />
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         </div>
         <div className="flex items-center space-x-2">
-          <Profile
-            logoutAction={handleLogout}
-          />
+          <Profile logoutAction={handleLogout} />
         </div>
       </nav>
       <div className="m-lg">{children}</div>

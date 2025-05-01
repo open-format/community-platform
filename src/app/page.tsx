@@ -1,33 +1,30 @@
 "use client";
 
-import { chains, type ChainName } from "@/constants/chains";
+import Profile from "@/components/profile-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { type ChainName, chains } from "@/constants/chains";
+import { usePrivy } from "@privy-io/react-auth";
 import { ExternalLink } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { usePrivy, useLogin } from "@privy-io/react-auth";
-import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 export default function ChainSelectionPage() {
   const router = useRouter();
-  const { ready, authenticated } = usePrivy();
-  const { login } = useLogin();
-  const [selectedChain, setSelectedChain] = useState<ChainName | null>(null);
+  const { authenticated } = usePrivy();
+
   const t = useTranslations("chainSelection");
 
-  useEffect(() => {
-    if (ready && authenticated && selectedChain) {
-      router.push(`/${selectedChain}/communities`);
-    }
-  }, [ready, authenticated, selectedChain, router]);
-
-  const handleChainSelect = async (chainName: ChainName, chain: typeof chains[ChainName]) => {
+  const handleChainSelect = async (chainName: ChainName) => {
     if (!authenticated) {
-      setSelectedChain(chainName);
-      await login();
+      const redirectUrl = encodeURIComponent(`/${chainName}/communities`);
+      router.push(`/auth?redirect=${redirectUrl}`);
     } else {
       router.push(`/${chainName}/communities`);
     }
+  };
+
+  const handleLogout = () => {
+    router.replace("/logout");
   };
 
   const testnetChains = Object.entries(chains).filter(([_, chain]) => chain.testnet);
@@ -35,17 +32,20 @@ export default function ChainSelectionPage() {
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8">{t("title")}</h1>
-      
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold mb-8">{t("title")}</h1>
+        {authenticated && <Profile logoutAction={handleLogout} />}
+      </div>
+
       <div className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">{t("mainnet")}</h2>
         <div className="space-y-4">
           {mainnetChains.map(([chainName, chain]) => (
-            <ChainCard 
-              key={chainName} 
-              chainName={chainName as ChainName} 
+            <ChainCard
+              key={chainName}
+              chainName={chainName as ChainName}
               chain={chain}
-              onSelect={() => handleChainSelect(chainName as ChainName, chain)}
+              onSelect={() => handleChainSelect(chainName as ChainName)}
             />
           ))}
         </div>
@@ -55,11 +55,11 @@ export default function ChainSelectionPage() {
         <h2 className="text-2xl font-semibold mb-4">{t("testnet")}</h2>
         <div className="space-y-4">
           {testnetChains.map(([chainName, chain]) => (
-            <ChainCard 
-              key={chainName} 
-              chainName={chainName as ChainName} 
+            <ChainCard
+              key={chainName}
+              chainName={chainName as ChainName}
               chain={chain}
-              onSelect={() => handleChainSelect(chainName as ChainName, chain)}
+              onSelect={() => handleChainSelect(chainName as ChainName)}
             />
           ))}
         </div>
@@ -68,17 +68,17 @@ export default function ChainSelectionPage() {
   );
 }
 
-function ChainCard({ 
-  chainName, 
+function ChainCard({
+  chainName,
   chain,
-  onSelect 
-}: { 
-  chainName: ChainName; 
-  chain: typeof chains[ChainName];
+  onSelect,
+}: {
+  chainName: ChainName;
+  chain: (typeof chains)[ChainName];
   onSelect: () => void;
 }) {
   const t = useTranslations("chainSelection");
-  
+
   return (
     <div onClick={onSelect}>
       <Card className="hover:bg-accent transition-colors cursor-pointer">
@@ -92,9 +92,7 @@ function ChainCard({
         <CardContent>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>{t("blockExplorer")}</span>
-            <span className="text-primary">
-              {chain.BLOCK_EXPLORER_URL}
-            </span>
+            <span className="text-primary">{chain.BLOCK_EXPLORER_URL}</span>
           </div>
         </CardContent>
       </Card>

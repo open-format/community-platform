@@ -1,8 +1,7 @@
 import ActiveLink from "@/components/active-link";
-import { fetchCommunity } from "@/lib/openformat";
-import { getTranslations } from "next-intl/server";
 import { createCommunity } from "@/db";
-import { getChainFromCommunityOrCookie } from "@/lib/openformat";
+import { fetchCommunity, getChainFromCommunityOrCookie } from "@/lib/openformat";
+import { getTranslations } from "next-intl/server";
 
 async function handleCommunityCreation(slug: `0x${string}`, t: any) {
   const chain = await getChainFromCommunityOrCookie(slug);
@@ -18,13 +17,11 @@ export default async function Layout({
   children: React.ReactNode;
   params: Promise<{ slug: string }>;
 }) {
-  const t = await getTranslations('navigation.menu');
+  const t = await getTranslations("navigation.menu");
   const slug = (await params).slug as `0x${string}`;
   const community = await fetchCommunity(slug);
 
-  console.log("[CommunityLayout] Community:", community);
   if (!community) {
-    console.log("[CommunityLayout] Community not found, creating new community");
     await handleCommunityCreation(slug, t);
   }
 
@@ -32,15 +29,15 @@ export default async function Layout({
     <div>
       <nav className="border-b border-gray-200 flex flex-col px-4 -m-lg">
         <div className="flex">
-          <ActiveLink href="overview">{t('overview')}</ActiveLink>
-          <ActiveLink href="settings">{t('settings')}</ActiveLink>
-          <ActiveLink href="rewards">{t('rewards')}</ActiveLink>
-          <ActiveLink href="batch-rewards">{t('batchRewards')}</ActiveLink>
-          <ActiveLink href="tokens">{t('tokens')}</ActiveLink>
-          <ActiveLink href="badges">{t('badges')}</ActiveLink>
-          <ActiveLink href="agents">{t('agents')}</ActiveLink>
-          {process.env.NEXT_PUBLIC_USE_TEST_DATA === 'true' && (
-            <ActiveLink href="impact-reports">{t('impactReports')}</ActiveLink>
+          <ActiveLink href="overview">{t("overview")}</ActiveLink>
+          <ActiveLink href="settings">{t("settings")}</ActiveLink>
+          <ActiveLink href="rewards">{t("rewards")}</ActiveLink>
+          <ActiveLink href="batch-rewards">{t("batchRewards")}</ActiveLink>
+          <ActiveLink href="tokens">{t("tokens")}</ActiveLink>
+          <ActiveLink href="badges">{t("badges")}</ActiveLink>
+          <ActiveLink href="agents">{t("agents")}</ActiveLink>
+          {process.env.NEXT_PUBLIC_USE_TEST_DATA === "true" && (
+            <ActiveLink href="impact-reports">{t("impactReports")}</ActiveLink>
           )}
         </div>
       </nav>

@@ -6,9 +6,9 @@ import { ConfettiProvider } from "@/contexts/confetti-context";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { WagmiProvider, createConfig } from "@privy-io/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { NextIntlClientProvider } from "next-intl";
 import { arbitrumSepolia, aurora, base, matchain } from "viem/chains";
 import { http } from "wagmi";
-import { NextIntlClientProvider } from 'next-intl';
 
 export const chainConfig = createConfig({
   chains: [arbitrumSepolia, aurora, turboChain, base, matchain],
@@ -22,11 +22,11 @@ export const chainConfig = createConfig({
 });
 const queryClient = new QueryClient();
 
-export default function Providers({ 
-  children, 
+export default function Providers({
+  children,
   messages,
-  locale 
-}: { 
+  locale,
+}: {
   children: React.ReactNode;
   messages: any;
   locale: string;
@@ -42,7 +42,6 @@ export default function Providers({
           },
           // @TODO: Issue with embedded wallets on Aurora and turboChain - awaiting Privy support
           supportedChains: [arbitrumSepolia, aurora, turboChain, base, matchain],
-          defaultChain: arbitrumSepolia,
 
           appearance: {
             walletChainType: "ethereum-only",

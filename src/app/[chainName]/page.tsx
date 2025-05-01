@@ -1,4 +1,6 @@
+import { redirect } from "next/navigation";
 
-export default function ChainPage() {
-  return null;
-} 
+export default async function ChainPage({ params }: { params: Promise<{ chainName: string }> }) {
+  const chainName = (await params).chainName;
+  redirect(`/${chainName}/communities`);
+}
