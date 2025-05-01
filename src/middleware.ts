@@ -1,41 +1,35 @@
 import { getCurrentUser } from "@/lib/privy";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { chains, type ChainName } from "@/constants/chains";
+import { chains } from "./constants/chains";
 
 export async function middleware(request: NextRequest) {
   const user = await getCurrentUser();
   const pathname = request.nextUrl.pathname;
 
-  // Allow access to auth and API routes
-  if (pathname.startsWith("/auth") || pathname.startsWith("/api") || pathname.startsWith("/logout")) {
+  // If on auth page
+  if (pathname === "/auth") {
+    // If user is logged in, redirect to home
+    if (user) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    // If not logged in, allow access to auth page
     return NextResponse.next();
   }
 
-  // Handle chain selection page (home)
-  if (pathname === "/") {
-    return NextResponse.next();
-  }
-
-  // Check if the path starts with a chain name
+  // For chain routes
   const chainName = pathname.split("/")[1];
-  
-  // If it's not a chain path, continue
-  if (!chainName || chainName === "chain" || chainName === "api" || chainName === "auth") {
-    return NextResponse.next();
-  }
+  if (chainName) {
+    // Check if chain exists
+    const chainExists = Object.keys(chains).includes(chainName);
+    if (!chainExists) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
 
-  // Check if the chain exists
-  const chainExists = Object.keys(chains).includes(chainName);
-
-  // If chain doesn't exist, redirect to home
-  if (!chainExists) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
-  // If user is not logged in, redirect to home
-  if (!user) {
-    return NextResponse.redirect(new URL("/", request.url));
+    // Require authentication for chain routes
+    if (!user) {
+      return NextResponse.redirect(new URL("/auth", request.url));
+    }
   }
 
   return NextResponse.next();
@@ -43,7 +37,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Match all paths except static files and images
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    // Match auth page
+    "/auth",
+    // Match chain routes but exclude static files, api routes, and _next
+    // "/((?!_next/static|_next/image|favicon.ico|api/).*)",
   ],
 };

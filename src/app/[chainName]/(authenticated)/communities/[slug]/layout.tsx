@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { createCommunity } from "@/db";
 import { getChainFromCommunityOrCookie } from "@/lib/openformat";
 
-async function handleCommunityCreation(slug: `0x${string}`) {
+async function handleCommunityCreation(slug: `0x${string}`, t: any) {
   const chain = await getChainFromCommunityOrCookie(slug);
   if (chain?.id) {
     await createCommunity(slug, "New Community", chain.id);
@@ -22,8 +22,10 @@ export default async function Layout({
   const slug = (await params).slug as `0x${string}`;
   const community = await fetchCommunity(slug);
 
+  console.log("[CommunityLayout] Community:", community);
   if (!community) {
-    await handleCommunityCreation(slug);
+    console.log("[CommunityLayout] Community not found, creating new community");
+    await handleCommunityCreation(slug, t);
   }
 
   return (
@@ -38,7 +40,7 @@ export default async function Layout({
           <ActiveLink href="badges">{t('badges')}</ActiveLink>
           <ActiveLink href="agents">{t('agents')}</ActiveLink>
           {process.env.NEXT_PUBLIC_USE_TEST_DATA === 'true' && (
-            <ActiveLink href="impact-reports">Impact Reports</ActiveLink>
+            <ActiveLink href="impact-reports">{t('impactReports')}</ActiveLink>
           )}
         </div>
       </nav>

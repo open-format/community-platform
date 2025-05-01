@@ -58,7 +58,8 @@
       "batchRewards": "Batch Rewards",
       "tokens": "Tokens",
       "badges": "Badges",
-      "agents": "Community Agents"
+      "agents": "Community Agents",
+      "impactReports": "Impact Reports"
     },
     "breadcrumbs": {
       "communities": "Communities",
@@ -101,7 +102,8 @@
       "button": "Create Community",
       "title": "Create Community",
       "description": "Create a new community to start rewarding your community members."
-    }
+    },
+    "newCommunity": "New Community"
   },
   "communitySettings": {
     "title": "Community Page",
@@ -646,6 +648,9 @@
         "updating": "Updating Badge..."
       },
       "error": "Failed to update badge"
+    },
+    "ariaLabels": {
+      "viewBadge": "View badge details"
     }
   },
   "community": {
