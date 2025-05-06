@@ -19,7 +19,7 @@ export default function Onboarding({ community }: OnboardingProps) {
 
   function copyInviteLink() {
     const baseUrl = window.location.origin;
-    const inviteLink = `${baseUrl}/${chainName}/${community?.metadata?.slug}`;
+    const inviteLink = `${baseUrl}/${chainName}/communities/${community?.metadata?.slug}`;
     navigator.clipboard.writeText(inviteLink);
     toast.success(t('configureCommunity.inviteCopied'));
   }
