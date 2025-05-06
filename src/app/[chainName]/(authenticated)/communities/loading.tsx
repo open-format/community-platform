@@ -1,18 +1,11 @@
 "use client";
 
-import { Card, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { usePathname } from "next/navigation";
 import { useTranslations } from 'next-intl';
 
 export default function Loading() {
-  const pathname = usePathname();
   const t = useTranslations('communities');
-
-  // Only show loading state if we're exactly on /communities
-  if (pathname !== "/communities") {
-    return null;
-  }
 
   return (
     <div className="space-y-lg">
@@ -22,16 +15,22 @@ export default function Loading() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-xl">
         {Array.from({ length: 6 }).map((_, i) => (
-          <Card key={i}>
+          <Card key={i} className="flex flex-col justify-between">
             <CardHeader>
-              <Skeleton className="h-6 w-3/4 mb-2" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-2/3 mt-2" />
+              <CardTitle>
+                <Skeleton className="h-6 w-[180px]" />
+              </CardTitle>
+              <CardDescription>
+                <Skeleton className="h-4 w-[140px]" />
+              </CardDescription>
             </CardHeader>
-            <CardFooter className="flex justify-between">
-              <Skeleton className="h-4 w-32" />
-              <Skeleton className="h-6 w-24" />
-            </CardFooter>
+            <CardContent>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-[80%]" />
+                <Skeleton className="h-4 w-[60%]" />
+              </div>
+            </CardContent>
           </Card>
         ))}
       </div>
