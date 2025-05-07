@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useTranslations } from 'next-intl';
-import { useParams, useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 import { appFactoryAbi } from "@/abis/AppFactory";
 import { erc20FactoryAbi } from "@/abis/ERC20FactoryFacet";

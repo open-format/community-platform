@@ -182,6 +182,68 @@
         "filterByDate": "Filter by Date"
       }
     },
+    "rewardRecommendations": {
+      "absolutelySure": "Are you absolutely sure?",
+      "absolutelySureDescription": "This action cannot be undone. This will permanently delete reward recommendation from our servers.",
+      "actions": "Actions",
+      "cancel": "Cancel",
+      "continue": "Continue",
+      "createdAt": "Created at",
+      "deletingRewardRecommendation": "Rejecting reward",
+      "description": "Daily reward recommendations for Discord community members.",
+      "enterRewardAmount": "Enter reward amount",
+      "errorRejectingRewardRecommendation": "Error during rejecting reward. Please try again.",
+      "evidence": "Evidence",
+      "impact": "Impact",
+      "noData": "No reward recommendations data available",
+      "noEvidence": "No evidence provided",
+      "openMenu": "Open menu",
+      "reject": "Reject",
+      "reward": "Reward",
+      "rewardAmount": "Reward Amount",
+      "rewardDescription": "Reward a community member for their contribution",
+      "form": {
+        "confirmRewardRecommendation": "Confirm Reward",
+        "confirmingRewardRecommendation": "Confirming Reward...",
+        "token": {
+          "label": "Token",
+          "placeholder": "Select token"
+        },
+        "receiverName": {
+          "label": "Receiver Name",
+          "placeholder": "Enter receiver name"
+        },
+        "rewardAmount": {
+          "label": "Reward Amount",
+          "placeholder": "Enter reward amount"
+        },
+        "evidence": {
+          "label": "Evidence"
+        },
+        "impact": {
+          "label": "Impact"
+        },
+        "toast": {
+          "processing": "Processing reward...",
+          "success": "Reward successfully sent for {summary}.",
+          "error": "Error sending reward"
+        }
+      },
+      "successConfirmingRewardRecommendation": "Confirmed reward successfully",
+      "successRejectingRewardRecommendation": "Rejected reward recommendation: {summary}.",
+      "suggestedReward": "Suggested reward",
+      "platform": "Platform",
+      "title": "Reward Recommendations",
+      "validation": {
+        "amountMin": "Amount must be at least 1",
+        "nameRequired": "Contributor name required",
+        "nameMaxLength": "Contributor name exceeds characters limit",
+        "tokenAddressRequired": "Token address is required",
+        "invalidAddress": "Invalid address"
+      },
+      "viewEvidence": "View Evidence",
+      "whatHappened": "What happened?"
+    },
     "activity": {
       "title": "Activity",
       "export": "Export",
@@ -279,7 +341,14 @@
       "viewActivity": "View in Activity",
       "viewTransaction": "View Transaction"
     },
-    "title": "Rewards",
+    "recommendations": {
+      "title": "Reward Recommendations",
+      "description": "Review and process AI-generated reward recommendations for your community members' contributions"
+    },
+    "sendReward": {
+      "title": "Send a reward",
+      "description": "Manually reward your community members"
+    },
     "notFound": "Community not found"
   },
   "batchRewards": {
@@ -406,6 +475,12 @@
     }
   },
   "shortcuts": {
+    "inviteDiscordBot": {
+      "title": "Add Community Copilot",
+      "description": "Start reward recomendations based on your community members' contributions in Discord.",
+      "invite": "Add Copilot to Discord",
+      "docs": "View Docs"
+    },
     "configureCommunity": {
       "title": "Configure and share community page",
       "description": "Configure your community page and share it with your members.",
@@ -420,9 +495,9 @@
       "createTokens": "Create tokens"
     },
     "rewardCommunity": {
-      "title": "Reward your community",
-      "description": "Reward your community for their contributions.",
-      "sendReward": "Send reward"
+      "title": "Manage Reward Recommendations",
+      "description": "Review and process AI-generated reward recommendations for your community members' contributions.",
+      "sendReward": "View Recommendations"
     }
   },
   "dialogs": {

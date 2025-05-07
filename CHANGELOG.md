@@ -1,3 +1,17 @@
+# [0.20.0](https://github.com/open-format/community-platform/compare/v0.19.1...v0.20.0) (2025-04-28)
+
+
+### Features
+
+* Add Discord bot invitation card to shortcuts component ([d7ea778](https://github.com/open-format/community-platform/commit/d7ea7789fe4a17807025e04098eed084b4cc452c))
+* add documentation link for Discord bot invitation ([eb0340f](https://github.com/open-format/community-platform/commit/eb0340f0a14ee1f59f59fe3db04853b583d29004))
+* enhance reward recommendations and community overview ([6f4e5bf](https://github.com/open-format/community-platform/commit/6f4e5bf2c0cf6f2bb20edd33a26a40e128a5c16d))
+* enhance toast messages for reward actions ([90777fc](https://github.com/open-format/community-platform/commit/90777fc56e89274360b39091a35b97fcb8f00ad9))
+* Implement Reward Recommendation Dashboard ([9cecba0](https://github.com/open-format/community-platform/commit/9cecba0cad3761ec511c959c7dcd1f614db5847d))
+* Implement Reward Recommendation Dashboard ([35a3dd3](https://github.com/open-format/community-platform/commit/35a3dd394363966fd4d3f7c2c6f7a764f4a51e8b))
+* Implement Reward Recommendation Dashboard ([7b12e08](https://github.com/open-format/community-platform/commit/7b12e08e3aa41a31a1638938d91d0f20e385bdeb))
+* Implement Reward Recommendation Dashboard ([88c8219](https://github.com/open-format/community-platform/commit/88c8219e526297de9ba80c009485d0661976fcb9))
+
 ## [0.19.1](https://github.com/open-format/community-platform/compare/v0.19.0...v0.19.1) (2025-04-16)
 
 

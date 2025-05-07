@@ -1,6 +1,5 @@
 import MetricsSection from "@/components/metrics-section";
 import Shortcuts from "@/components/shortcuts";
-import { Separator } from "@/components/ui/separator";
 import { fetchCommunity } from "@/lib/openformat";
 import { getTranslations } from "next-intl/server";
 
@@ -21,12 +20,10 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
 
   return (
     <div className="space-y-6">
-      <MetricsSection community={community} />
-      <Separator className="my-lg" />
       <div>
-        <h2 className="text-2xl font-semibold tracking-tight mb-6">Configure your community</h2>
         <Shortcuts community={community} />
       </div>
+      <MetricsSection community={community} />
     </div>
   );
 }

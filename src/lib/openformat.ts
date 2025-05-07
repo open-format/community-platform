@@ -391,9 +391,9 @@ query ($user: ID!, $community: String!) {
 export async function generateLeaderboard(
   slugOrId: string,
   tokenId?: string,
-  startDate: string = "0",
-  endDate: string = "99999999999999999999999999",
-): Promise<LeaderboardResponse> {
+  startDate = "0",
+  endDate = "99999999999999999999999999",
+): Promise<LeaderboardEntry[] | null> {
   const chain = await getChainFromCommunityOrCookie(slugOrId);
 
   if (!chain) {
@@ -546,7 +546,7 @@ export async function getAllRewardsByCommunity(
     //  we retrieved more elements than in max_skip || we retrieved max possible number of elements
     paginate =
       (chain.subgraph_max_skip > 0 && total_rewards >= chain.subgraph_max_skip) || // elems > max_skip
-      total_rewards == chain.subgraph_max_first * SUBGRAPH_QUERY_PAGES; // all pages are full
+      total_rewards === chain.subgraph_max_first * SUBGRAPH_QUERY_PAGES; // all pages are full
   }
 
   const rewards: Reward[] = [];
@@ -559,7 +559,9 @@ export async function getAllRewardsByCommunity(
       // Save only new rewards and keep record of them
       if (board[`rewards_${i}`]) {
         rewards.push(...board[`rewards_${i}`].filter((b) => !rewardIds.has(b.id)));
-        board[`rewards_${i}`].forEach((b) => rewardIds.set(b.id, true));
+        for (const b of board[`rewards_${i}`]) {
+          rewardIds.set(b.id, true);
+        }
       }
     }
   }
@@ -656,6 +658,122 @@ function getRewardQuery(
   query += "}";
 
   return query;
+}
+
+export async function getRewardRecommendations(communityId: string) {
+  try {
+    const response = await agentApiClient.get("/rewards/recommendations", {
+      headers: {
+        "X-Community-ID": communityId,
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data.rewards;
+    }
+    return null;
+  } catch (error) {
+    return { error: "Failed to fetch rewards recommendations data. Please try again later." };
+  }
+}
+
+export async function editRewardRecommendation(reward_recommendation_id: string, amount: number) {
+  try {
+    const data = {
+      amount: amount,
+    };
+    const response = await apiClient.put(`/v1/pending_rewards/${reward_recommendation_id}`, data);
+
+    console.log("response", response.data.data);
+
+    if (response.status === 200) {
+      return response.data;
+    }
+    return null;
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function acceptRewardRecommendation(reward_recommendation_id: string) {
+  try {
+    const response = await apiClient.post(`/v1/rewards/${reward_recommendation_id}/accept`);
+
+    if (response.status === 200) {
+      return response.data;
+    }
+    return null;
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function deleteRewardRecommendation(reward_recommendation_id: string) {
+  try {
+    const response = await agentApiClient.delete(
+      `/rewards/recommendations/${reward_recommendation_id}`,
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    }
+    return null;
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function generateRewardRecommendations(communityId: string) {
+  console.log("communityId", communityId);
+  const platformId = "932238833146277958";
+  try {
+    const response = await agentApiClient.post(
+      "/rewards/recommendations",
+      {
+        platform_id: platformId,
+        start_date: "2025-03-01T00:00:00.000Z",
+        end_date: "2025-05-01T00:00:00.000Z",
+      },
+      {
+        headers: {
+          "X-Community-ID": communityId,
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data.rewards;
+    }
+    return null;
+  } catch (error) {
+    console.error("Full error object:", error);
+    if (axios.isAxiosError(error)) {
+      console.error("Axios error details:", {
+        data: error.response?.data,
+      });
+    }
+    return { error: "Failed to fetch rewards recommendations data. Please try again later." };
+  }
+}
+
+// get status of job for reward/recommendations
+export async function getRewardRecommendationJobStatus(jobId: string) {
+  try {
+    const response = await agentApiClient.get(`/rewards/recommendations/status/${jobId}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    if (axios.isAxiosError(error)) {
+      return {
+        status: error.response?.status,
+        message: error.response?.data.message,
+      };
+    }
+    return {
+      status: 500,
+      message: "Failed to fetch reward recommendation job status. Please try again later.",
+    };
+  }
 }
 
 export async function fetchReport(id: string) {

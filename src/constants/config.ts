@@ -10,7 +10,8 @@ const config = {
   ACCOUNT_BALANCE_SERVICE_AUTH_TOKEN: process.env.ACCOUNT_BALANCE_SERVICE_AUTH_TOKEN,
   ACCOUNT_BALANCE_AMOUNT: process.env.ACCOUNT_BALANCE_AMOUNT,
   COMMUNITY_AGENT_AUTH_TOKEN: process.env.COMMUNITY_AGENT_AUTH_TOKEN,
-  COMMUNITY_AGENT_API_URL: process.env.COMMUNITY_AGENT_API_URL
+  COMMUNITY_AGENT_API_URL: process.env.COMMUNITY_AGENT_API_URL,
+  DISCORD_BOT_GUIDE_URL: "https://openformat.notion.site/discord-copilot-guide",
 } as const;
 
 export default config;

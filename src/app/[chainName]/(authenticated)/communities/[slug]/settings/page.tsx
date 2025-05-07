@@ -28,7 +28,7 @@ export default async function CommunitySettings({ params }: { params: Promise<{ 
           </div>
           <Link
             className={cn(buttonVariants(), "mx-24")}
-            href={`/${chainName}/communities/${community?.metadata?.slug}`}
+            href={`/${chainName}/${community?.metadata?.slug}`}
             target="_blank"
             rel="noopener noreferrer"
           >
