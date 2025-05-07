@@ -15,10 +15,10 @@ export default async function Layout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ slug: string }>;
+  params: Promise<{ chainName: string; slug: string }>;
 }) {
   const t = await getTranslations("navigation.menu");
-  const slug = (await params).slug as `0x${string}`;
+  const { chainName, slug } = await params;
   const community = await fetchCommunity(slug);
 
   if (!community) {
