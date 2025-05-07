@@ -1,7 +1,6 @@
 "use client";
 
 import CommunitySelector from "@/components/community-selector";
-import NetworkSelector from "@/components/network-selector";
 import Profile from "@/components/profile-header";
 import {
   Breadcrumb,
@@ -10,17 +9,19 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
-import {redirect} from "next/navigation";
-import {useTranslations} from "next-intl";
-import OFLogo from "../../../../public/images/of-logo.png";
+import { redirect, useParams } from "next/navigation";
+import OFLogo from "../../../../../public/images/of-logo.png";
 
 export default function CommunitiesLayout({
-                                            children,
-                                          }: {
+  children,
+}: {
   children: React.ReactNode;
 }) {
   const t = useTranslations("layout");
+  const params = useParams();
+  const chainName = params?.chainName as string;
 
   function handleLogout() {
     redirect("/logout");
@@ -33,37 +34,23 @@ export default function CommunitiesLayout({
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <Image
-                  src={OFLogo}
-                  alt={t("logo")}
-                  width={48}
-                  height={48}
-                  className="rounded-md"
-                />
+                <Image src={OFLogo} alt={t("logo")} width={48} height={48} className="rounded-md" />
               </BreadcrumbItem>
-              <BreadcrumbSeparator/>
+              <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/communities">
+                <BreadcrumbLink href={`/${chainName}/communities`}>
                   {t("communities")}
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator/>
+              <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <CommunitySelector/>
+                <CommunitySelector />
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         </div>
         <div className="flex items-center space-x-2">
-          <NetworkSelector
-            callback={() => {
-              redirect("/communities");
-            }}
-            hideIfNotSet
-          />
-          <Profile
-            logoutAction={handleLogout}
-          />
+          <Profile logoutAction={handleLogout} />
         </div>
       </nav>
       <div className="m-lg">{children}</div>

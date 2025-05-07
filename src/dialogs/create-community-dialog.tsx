@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import CreateCommunityForm from "@/forms/create-community-form";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface CreateCommunityDialogProps {
@@ -21,6 +21,8 @@ interface CreateCommunityDialogProps {
 export default function CreateCommunityDialog({ defaultOpen = false }: CreateCommunityDialogProps) {
   const [isOpen, setIsOpen] = useState<boolean>(defaultOpen);
   const router = useRouter();
+  const params = useParams();
+  const chainName = params?.chainName as string;
   const t = useTranslations("communities.create");
 
   function toggle() {
@@ -28,7 +30,7 @@ export default function CreateCommunityDialog({ defaultOpen = false }: CreateCom
   }
 
   function handleSuccess(communityId: string) {
-    router.push(`/communities/${communityId}/overview`);
+    router.push(`/${chainName}/communities/${communityId}/overview`);
   }
 
   return (

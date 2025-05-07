@@ -58,7 +58,8 @@
       "batchRewards": "Batch Rewards",
       "tokens": "Tokens",
       "badges": "Badges",
-      "agents": "Community Agents"
+      "agents": "Community Agents",
+      "impactReports": "Impact Reports"
     },
     "breadcrumbs": {
       "communities": "Communities",
@@ -101,7 +102,8 @@
       "button": "Create Community",
       "title": "Create Community",
       "description": "Create a new community to start rewarding your community members."
-    }
+    },
+    "newCommunity": "New Community"
   },
   "communitySettings": {
     "title": "Community Page",
@@ -547,6 +549,7 @@
     "exportWallet": "Export Wallet",
     "logout": "Logout",
     "login": "Login",
+    "switchChain": "Switch Chain",
     "apiKey": {
       "apiKey": "API Key",
       "apiKeyCopied": "API Key copied to clipboard",
@@ -720,6 +723,9 @@
         "updating": "Updating Badge..."
       },
       "error": "Failed to update badge"
+    },
+    "ariaLabels": {
+      "viewBadge": "View badge details"
     }
   },
   "community": {
@@ -1223,5 +1229,13 @@
         }
       }
     }
+  },
+  "chainSelection": {
+    "title": "Select a Blockchain",
+    "mainnet": "Mainnet",
+    "testnet": "Testnet",
+    "chainId": "Chain ID: {id}",
+    "blockExplorer": "Block Explorer:",
+    "switchingChain": "Switching chain to: {chainId}"
   }
 }

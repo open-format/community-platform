@@ -3,23 +3,27 @@
 import { fundAccount } from "@/lib/openformat";
 import { useLogin, useModalStatus, usePrivy } from "@privy-io/react-auth";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect } from "react";
 
-export default function Auth() {
+function AuthContent() {
   const { login, ready, authenticated } = usePrivy();
-  const t = useTranslations('auth');
+  const t = useTranslations("auth");
   const disableLogin = !ready || (ready && authenticated);
   const { isOpen } = useModalStatus();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/";
 
   useLogin({
     onComplete: async ({ user, isNewUser }) => {
       if (isNewUser && user.wallet?.address) {
         await fundAccount();
       }
-      router.push("/communities");
+
+      const decodedRedirect = decodeURIComponent(redirect);
+      router.push(decodedRedirect);
     },
   });
 
@@ -32,11 +36,19 @@ export default function Auth() {
   return (
     <div>
       <div className="text-center text-sm text-gray-500 bg-foreground/10 p-4 font-semibold">
-        {t('notice')}
+        {t("notice")}
       </div>
       <div className="flex items-center justify-center h-screen">
         <Loader2 className="mr-2 h-12 w-12 animate-spin" />
       </div>
     </div>
+  );
+}
+
+export default function Auth() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AuthContent />
+    </Suspense>
   );
 }

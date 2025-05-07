@@ -11,11 +11,18 @@ export default function Logout() {
   const t = useTranslations('auth.logout');
 
   useEffect(() => {
-    logout();
-    setTimeout(() => {
-      router.push("/auth");
-    }, 1000);
-  }, [logout]);
+    const handleLogout = async () => {
+      try {
+        await logout();
+      } catch (error) {
+        console.error(t('error', { error: String(error) }));
+      } finally {
+        router.push("/");
+      }
+    };
+
+    handleLogout();
+  }, [logout, router, t]);
 
   return (
     <div className="text-center min-h-[100vh] flex flex-col items-center justify-center p-12 rounded-lg bg-background text-foreground space-y-8">

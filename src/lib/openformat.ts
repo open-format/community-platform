@@ -82,12 +82,16 @@ export async function getChainFromCommunityOrCookie(
   return chain;
 }
 
-export async function fetchAllCommunities() {
+export async function fetchAllCommunities(chainName?: string) {
   try {
-    const chain = await getChainFromCommunityOrCookie();
+    let chain: Chain | null = null;
+    
+    if (chainName) {
+      chain = getChain(chainName as ChainName);
+    }
 
     if (!chain) {
-      console.log("No chain found for chainName:", chain);
+      console.log("No chain found for chainName:", chainName);
       return { data: [], error: "No chain found." };
     }
 

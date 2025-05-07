@@ -13,6 +13,7 @@ import { addressSplitter, desanitizeString, timeAgo } from "@/lib/utils";
 import { CoinsIcon, ExternalLinkIcon, TrophyIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { Skeleton } from "./ui/skeleton";
 
 export default function ActivityCard({
@@ -22,6 +23,8 @@ export default function ActivityCard({
 }) {
   const t = useTranslations("metrics.activity");
   const chain = useCurrentChain();
+  const params = useParams();
+  const chainName = params?.chainName as string;
 
   function getIcon(reward: Reward) {
     if (reward.badgeTokens.length > 0) {
@@ -32,26 +35,8 @@ export default function ActivityCard({
 
   if (!rewards || rewards.length === 0) {
     return (
-      <div className="space-y-4">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t("rewardIdentifier")}</TableHead>
-              <TableHead>{t("date")}</TableHead>
-              <TableHead>{t("user")}</TableHead>
-              <TableHead className="w-[50px]"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow>
-              <TableCell colSpan={4}>
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <p className="text-muted-foreground">{t("noActivity")}</p>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+      <div className="flex flex-col items-center justify-center py-8 text-center">
+        <p className="text-muted-foreground">{t("noActivity")}</p>
       </div>
     );
   }

@@ -14,6 +14,7 @@ import {Skeleton} from "./ui/skeleton";
 import {useCurrentChain} from "@/hooks/useCurrentChain";
 import {CopyIcon, ExternalLinkIcon} from "lucide-react";
 import {toast} from "sonner";
+import {useParams} from "next/navigation";
 
 export default function BadgeGrid({badges, communityId}: { badges: Badge[] | undefined; communityId: string }) {
   const t = useTranslations('badges');
@@ -53,6 +54,7 @@ function Item({badge, metadataURI, communityId}: { badge: Badge; metadataURI: st
   const [image, setImage] = useState<string | null>(null);
   const t = useTranslations('badges');
   const chain = useCurrentChain();
+  const params = useParams();
 
   useEffect(() => {
     async function fetchMetadata() {
@@ -93,7 +95,7 @@ function Item({badge, metadataURI, communityId}: { badge: Badge; metadataURI: st
             </CardDescription>
             <CardDescription>{metadata.description}</CardDescription>
             <div className="flex gap-2">
-              <Link className={buttonVariants()} href={`/communities/${communityId}/rewards`}>
+              <Link className={buttonVariants()} href={`/${params.chainName}/communities/${communityId}/rewards`}>
                 {t('rewardBadge')}
               </Link>
               <UpdateBadgeForm badge={badge} metadata={metadata}/>

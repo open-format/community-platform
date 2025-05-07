@@ -4,15 +4,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useTranslations } from 'next-intl';
+import { useRouter, useParams } from "next/navigation";
 
 import { appFactoryAbi } from "@/abis/AppFactory";
 import { erc20FactoryAbi } from "@/abis/ERC20FactoryFacet";
-import NetworkSelector from "@/components/network-selector";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import type { ChainName } from "@/constants/chains";
 import { useConfetti } from "@/contexts/confetti-context";
 import { createCommunity, updateCommunity } from "@/db/queries/communities";
 import { getEventLog } from "@/helpers/contract";
@@ -23,13 +22,16 @@ import { cn, getAddress } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
 import { simulateContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
 import { toast } from "sonner";
 import { type Address, BaseError, parseEther, stringToHex } from "viem";
 import { useConfig } from "wagmi";
 
-export default function CreateCommunityForm() {
+interface CreateCommunityFormProps {
+  onSuccess?: (communityId: string) => void;
+}
+
+export default function CreateCommunityForm({ onSuccess }: CreateCommunityFormProps) {
   const t = useTranslations('createCommunity.form');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { triggerConfetti } = useConfetti();
@@ -37,6 +39,8 @@ export default function CreateCommunityForm() {
   const { user } = usePrivy();
   const address = getAddress(user);
   const router = useRouter();
+  const params = useParams();
+  const chainName = params?.chainName as string;
   const chain = useCurrentChain();
 
   const FormSchema = z.object({
@@ -166,7 +170,7 @@ export default function CreateCommunityForm() {
         }
 
         if (communityId) {
-          router.push(`/communities/${communityId}`);
+          router.push(`/${chainName}/communities/${communityId}`);
         }
       }
     });
@@ -201,25 +205,6 @@ export default function CreateCommunityForm() {
             </FormItem>
           )}
         />
-
-        {/* Network Selector */}
-        <FormItem>
-          <FormLabel>{t('fields.network.label')}</FormLabel>
-          <FormControl>
-            <NetworkSelector
-              onValueChange={(chainName) => {
-                form.setValue("chainName", chainName as ChainName);
-                form.trigger("chainName");
-
-                const currentName = form.getValues("name");
-                if (currentName) {
-                  simulateCreateCommunity(currentName);
-                }
-              }}
-            />
-          </FormControl>
-          <FormDescription>{t('fields.network.description')}</FormDescription>
-        </FormItem>
 
         {/* Create Points */}
         <FormField

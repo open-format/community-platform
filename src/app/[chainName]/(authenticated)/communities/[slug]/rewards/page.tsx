@@ -3,7 +3,7 @@ import { Separator } from "@/components/ui/separator";
 import RewardsForm from "@/forms/rewards-form";
 import { fetchCommunity, getRewardRecommendations } from "@/lib/openformat";
 import { getTranslations } from "next-intl/server";
-import RewardRecommendations from "../overview/components/RewardRecommendations";
+import RewardRecommendations from "@/app/(authenticated)/communities/[slug]/overview/components/RewardRecommendations";
 
 export default async function Rewards({ params }: { params: Promise<{ slug: string }> }) {
   const t = await getTranslations("rewards");

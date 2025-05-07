@@ -7,9 +7,9 @@ import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { getTranslations } from 'next-intl/server';
 
-export default async function CommunitySettings({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CommunitySettings({ params }: { params: Promise<{ slug: string; chainName: string }> }) {
   const t = await getTranslations('settings');
-  const slug = (await params).slug;
+  const { slug, chainName } = await params;
   const community = await fetchCommunity(slug);
   const leaderboard = await generateLeaderboard(slug);
   const profile = await fetchUserProfile(slug);
@@ -28,7 +28,7 @@ export default async function CommunitySettings({ params }: { params: Promise<{ 
           </div>
           <Link
             className={cn(buttonVariants(), "mx-24")}
-            href={`/${community?.metadata?.slug}`}
+            href={`/${chainName}/${community?.metadata?.slug}`}
             target="_blank"
             rel="noopener noreferrer"
           >

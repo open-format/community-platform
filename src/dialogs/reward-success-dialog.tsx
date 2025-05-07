@@ -11,6 +11,7 @@ import { useCurrentChain } from "@/hooks/useCurrentChain";
 import { ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from 'next-intl';
+import { useParams } from "next/navigation";
 
 interface RewardSuccessDialogProps {
   open: boolean;
@@ -26,6 +27,8 @@ export default function RewardSuccessDialog({
   communityId,
 }: RewardSuccessDialogProps) {
   const chain = useCurrentChain();
+  const params = useParams();
+  const chainName = params?.chainName as string;
   const t = useTranslations('rewards.success');
   
   return (
@@ -36,7 +39,7 @@ export default function RewardSuccessDialog({
         </DialogHeader>
         <DialogDescription className="space-y-4">{t('description')}</DialogDescription>
         <DialogFooter>
-          <Link href={`/communities/${communityId}/overview`} className={buttonVariants()}>
+          <Link href={`/${chainName}/communities/${communityId}/overview`} className={buttonVariants()}>
             {t('viewActivity')}
           </Link>
           {chain?.BLOCK_EXPLORER_URL && transactionHash && (
