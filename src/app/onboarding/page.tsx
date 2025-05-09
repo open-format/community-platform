@@ -4,16 +4,8 @@
 
 import React, { useState } from "react";
 import IntegrationsStep from "./integrations-step";
+import ExampleSnapshotStep from "./example-snapshot-step";
 
-function ExampleSnapshotStep({ onNext }: { onNext: () => void }) {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-2xl mb-4">Example Community Snapshot</h1>
-      <p className="mb-4">[Placeholder for example report step]</p>
-      <button className="btn" onClick={onNext}>Continue</button>
-    </div>
-  );
-}
 
 function CompleteStep() {
   return (

@@ -1243,6 +1243,14 @@
       "imInterested": "I'm Interested",
       "continue": "Continue",
       "error": "Error connecting Discord"
+    },
+    "exampleSnapshot": {
+      "title": "Community Snapshot Example",
+      "intro": "Here's an example of the insights and reports you'll see after connecting your platforms.",
+      "loading": "Loading example report...",
+      "unavailable": "Example report currently unavailable.",
+      "continue": "Continue",
+      "reportTitle": "Impact Report"
     }
   }
 }
