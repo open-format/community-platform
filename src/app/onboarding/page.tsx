@@ -2,47 +2,43 @@
 
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { usePrivy } from "@privy-io/react-auth";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import posthog from "posthog-js";
-import { useEffect } from "react";
+import React, { useState } from "react";
+import IntegrationsStep from "./integrations-step";
 
-export default function DiscordConnectPage() {
-  const searchParams = useSearchParams();
-  const success = searchParams.get("success");
-  const error = searchParams.get("error");
+function ExampleSnapshotStep({ onNext }: { onNext: () => void }) {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <h1 className="text-2xl mb-4">Example Community Snapshot</h1>
+      <p className="mb-4">[Placeholder for example report step]</p>
+      <button className="btn" onClick={onNext}>Continue</button>
+    </div>
+  );
+}
 
-  const { user } = usePrivy();
+function CompleteStep() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <h1 className="text-2xl mb-4">Setup Complete!</h1>
+      <p className="mb-4">[Placeholder for completion message]</p>
+      <a href="/communities" className="btn">Go to Community Dashboard</a>
+    </div>
+  );
+}
 
-  if (success) {
-    useEffect(() => {
-      posthog.capture("discord_connect_success", {
-        user_id: user?.id,
-      });
-    }, [user?.id]);
-    return (
-      <div className="flex h-screen flex-col items-center justify-center">
-        <h1 className="text-2xl mb-4">Success</h1>
-      </div>
-    );
-  }
+const steps = [
+  { label: "Example Snapshot", component: ExampleSnapshotStep },
+  { label: "Integrations", component: IntegrationsStep },
+  { label: "Complete", component: CompleteStep },
+];
 
-  if (error) {
-    return (
-      <div className="flex h-screen flex-col items-center justify-center">
-        <h1 className="text-2xl mb-4">Error</h1>
-      </div>
-    );
-  }
+export default function OnboardingFlow() {
+  const [step, setStep] = useState(0);
+  const StepComponent = steps[step].component;
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center">
-      <h1 className="text-2xl mb-4">Connect Discord</h1>
-      <Link href="/api/discord/start">
-        <Button>Connect Discord!</Button>
-      </Link>
+    <div>
+      {/* Stepper UI can be added here if desired */}
+      <StepComponent onNext={() => setStep(step + 1)} />
     </div>
   );
 }

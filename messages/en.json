@@ -1223,5 +1223,26 @@
         }
       }
     }
+  },
+  "onboarding": {
+    "integrations": {
+      "interestRegistered": "Interest registered",
+      "introTitle": "Connect Your Platforms",
+      "intro": "Connect your community platforms to unlock insights and automations. The Community Agent analyzes your Discord, Telegram, and more to surface valuable contributions and trends.",
+      "discord": "Discord",
+      "telegram": "Telegram",
+      "github": "GitHub",
+      "dune": "Dune",
+      "discordDesc": "Connect your community's Discord to unlock insights.",
+      "telegramDescComingSoon": "Telegram integration coming soon.",
+      "githubDescComingSoon": "GitHub integration coming soon.",
+      "duneDescComingSoon": "Dune integration coming soon.",
+      "connect": "Connect",
+      "connected": "Connected",
+      "comingSoon": "Coming Soon",
+      "imInterested": "I'm Interested",
+      "continue": "Continue",
+      "error": "Error connecting Discord"
+    }
   }
 }
