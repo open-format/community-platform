@@ -31,7 +31,7 @@ export default function DiscordConnectPage() {
     <div className="flex h-screen flex-col items-center justify-center">
       <h1 className="text-2xl mb-4">Connect Discord</h1>
       <Link href="/api/discord/start">
-        <Button>Connect Discord</Button>
+        <Button>Connect Discord!</Button>
       </Link>
     </div>
   );
