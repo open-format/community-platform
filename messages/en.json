@@ -32,7 +32,13 @@
       "title": "Bye Friend! 👋😢",
       "description": "Hope to see you again soon!"
     },
-    "loading": "Loading authentication"
+    "loading": "Loading authentication",
+    "connectTitle": "Sign in to your account",
+    "connectDescription": "Choose a login method below.",
+    "connectWallet": "Connect Wallet",
+    "connectDiscord": "Login with Discord",
+    "connectGithub": "Login with GitHub",
+    "connectEmail": "Login with Email"
   },
   "validation": {
     "required": "This field is required",
