@@ -45,8 +45,12 @@ export default function IntegrationsClient({ discordConnected }: { discordConnec
   useEffect(() => {
     if (error) {
       toast.error(t("onboarding.integrations.error"));
+      router.replace("/onboarding/integrations");
     }
-  }, [error, t]);
+    if (success) {
+      router.replace("/onboarding/integrations");
+    }
+  }, [error, success, t, router]);
 
   const handleContinue = () => {
     router.push("/onboarding/complete");

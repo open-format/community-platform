@@ -9,12 +9,12 @@ export async function GET(req: NextRequest) {
   const storedState = req.cookies.get("discord_state")?.value;
 
   if (!code || !guildId || state !== storedState) {
-    return NextResponse.redirect(new URL("/onboarding?error=true", req.url));
+    return NextResponse.redirect(new URL("/onboarding/integrations?error=true", req.url));
   }
 
   console.log("YAY!", guildId);
 
-  const res = NextResponse.redirect(new URL("/onboarding?success=true", req.url));
+  const res = NextResponse.redirect(new URL("/onboarding/integrations?success=true", req.url));
   res.cookies.set("discord_state", "", { maxAge: 0, path: "/" }); // clear cookie
   return res;
 }
