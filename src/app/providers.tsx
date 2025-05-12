@@ -1,32 +1,33 @@
 "use client";
 
-import { turboChain } from "@/constants/chains";
+import { openFormatChain, turboChain } from "@/constants/chains";
 import config from "@/constants/config";
 import { ConfettiProvider } from "@/contexts/confetti-context";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { WagmiProvider, createConfig } from "@privy-io/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { NextIntlClientProvider } from "next-intl";
 import { arbitrumSepolia, aurora, base, matchain } from "viem/chains";
 import { http } from "wagmi";
-import { NextIntlClientProvider } from 'next-intl';
 
 const chainConfig = createConfig({
-  chains: [arbitrumSepolia, aurora, turboChain, base, matchain],
+  chains: [arbitrumSepolia, aurora, turboChain, base, matchain, openFormatChain],
   transports: {
     [arbitrumSepolia.id]: http(),
     [aurora.id]: http(),
     [turboChain.id]: http(),
     [base.id]: http(),
     [matchain.id]: http(),
+    [openFormatChain.id]: http(),
   },
 });
 const queryClient = new QueryClient();
 
-export default function Providers({ 
-  children, 
+export default function Providers({
+  children,
   messages,
-  locale 
-}: { 
+  locale,
+}: {
   children: React.ReactNode;
   messages: any;
   locale: string;
@@ -41,8 +42,8 @@ export default function Providers({
             createOnLogin: "all-users",
           },
           // @TODO: Issue with embedded wallets on Aurora and turboChain - awaiting Privy support
-          supportedChains: [arbitrumSepolia, aurora, turboChain, base, matchain],
-          defaultChain: arbitrumSepolia,
+          supportedChains: [arbitrumSepolia, aurora, turboChain, base, matchain, openFormatChain],
+          defaultChain: openFormatChain,
 
           appearance: {
             walletChainType: "ethereum-only",
