@@ -30,7 +30,7 @@ export const turboChain: ViemChain = {
 
 export const openFormatChain: ViemChain = {
 	id: 1313161576,
-	name: "OpenFormat",
+	name: "Open Format",
 	nativeCurrency: {
 		name: "ETH",
 		symbol: "ETH",
