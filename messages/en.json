@@ -1251,6 +1251,13 @@
       "unavailable": "Example report currently unavailable.",
       "continue": "Continue",
       "reportTitle": "Impact Report"
+    },
+    "complete": {
+      "title": "Setup Complete!",
+      "intro": "Your community platform is ready to go.",
+      "successTitle": "Welcome to Your Community Platform",
+      "successMessage": "Your community platform is now set up and ready to use. You can start exploring insights, managing rewards, and growing your community.",
+      "continue": "Go to Dashboard"
     }
   }
 }
