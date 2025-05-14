@@ -56,6 +56,10 @@ type Community = {
   tokens: Token[];
   missions: Mission[];
   badges: Badge[];
+  platformConnections: {
+    platformId: string;
+    platformType: string;
+  }[];
   metadata: {
     title: string;
     description: string;
