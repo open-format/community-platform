@@ -81,7 +81,7 @@ export const chains: Record<ChainName, Chain> = {
 			"https://openformat-graph-node.fly.dev/subgraphs/name/open-format-openformat",
 		BLOCK_EXPLORER_URL: "https://explorer.0x4e454168.aurora-cloud.dev",
 		...openFormatChain,
-		apiChainName: "openformat",
+		apiChainName: "open-format",
 		subgraph_max_first: 1000,
 		subgraph_max_skip: 5000,
 		testnet: false,
