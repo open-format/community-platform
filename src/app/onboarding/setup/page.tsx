@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import SetupClient from "./setup-client";
+import { Suspense } from "react";
 
 export default async function SetupPage() {
   const t = await getTranslations("onboarding.setup");
@@ -9,7 +10,9 @@ export default async function SetupPage() {
       <div className="w-full max-w-2xl space-y-8">
         <h1 className="text-2xl font-bold mb-2">{t("title")}</h1>
         <p className="text-muted-foreground mb-4">{t("description")}</p>
-        <SetupClient />
+        <Suspense fallback={<div>Loading setup...</div>}>
+          <SetupClient />
+        </Suspense>
       </div>
     </div>
   );
