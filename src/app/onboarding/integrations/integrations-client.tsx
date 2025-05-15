@@ -6,9 +6,10 @@ import { useTranslations } from "next-intl";
 import { Disc, MessageCircle, Github, Database } from "lucide-react";
 import posthog from "posthog-js";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { usePollingJob } from "@/hooks/useJobStatus";
 
 const platforms = [
   {
@@ -16,104 +17,166 @@ const platforms = [
     icon: <Disc className="h-6 w-6" />,
     comingSoon: false,
     connectUrl: "/api/discord/start",
+    titleKey: "discord",
+    descriptionKey: "discordDesc"
   },
   {
     key: "telegram",
     icon: <MessageCircle className="h-6 w-6" />,
     comingSoon: true,
+    titleKey: "telegram",
+    descriptionKey: "telegramDescComingSoon"
   },
   {
     key: "github",
     icon: <Github className="h-6 w-6" />,
     comingSoon: true,
+    titleKey: "github",
+    descriptionKey: "githubDescComingSoon"
   },
   {
     key: "dune",
     icon: <Database className="h-6 w-6" />,
     comingSoon: true,
+    titleKey: "dune",
+    descriptionKey: "duneDescComingSoon"
   },
 ];
 
-export default function IntegrationsClient({ discordConnected }: { discordConnected: boolean }) {
-  const t = useTranslations();
+interface JobResponse {
+  jobId: string;
+  status: string;
+  error?: string;
+}
+
+export default function IntegrationsClient({ 
+  discordConnected,
+  communityId 
+}: { 
+  discordConnected: boolean;
+  communityId?: string;
+}) {
+  const t = useTranslations("onboarding.integrations");
   const router = useRouter();
-  const [interestedPlatforms, setInterestedPlatforms] = useState<string[]>([]);
   const searchParams = useSearchParams();
-  const success = searchParams.get("success");
+  const guildId = searchParams.get("guildId");
   const error = searchParams.get("error");
+  const [reportJobId, setReportJobId] = useState<string | null>(null);
+  const [recommendationsJobId, setRecommendationsJobId] = useState<string | null>(null);
+  const jobsStartedRef = useRef(false);
+  const [interested, setInterested] = useState<Record<string, boolean>>({});
+
+  // Report generation job
+  const {
+    startJob: startReportJob,
+    startJobAsync: startReportJobAsync,
+    status: reportStatus,
+    isLoading: isReportLoading,
+  } = usePollingJob({
+    startJobEndpoint: "/api/onboarding/start-report-job",
+    statusEndpoint: (jobId) => `/api/onboarding/report-job-status?jobId=${jobId}`,
+  });
+
+  // Reward recommendations job
+  const {
+    startJob: startRecommendationsJob,
+    startJobAsync: startRecommendationsJobAsync,
+    status: recommendationsStatus,
+    isLoading: isRecommendationsLoading,
+  } = usePollingJob({
+    startJobEndpoint: "/api/onboarding/start-recommendations-job",
+    statusEndpoint: (jobId) => `/api/onboarding/recommendations-job-status?jobId=${jobId}`,
+  });
+
+  const startJobs = useCallback(async () => {
+    if (!communityId || jobsStartedRef.current) {
+      return;
+    }
+    try {
+      jobsStartedRef.current = true;
+      const [reportResponse, recommendationsResponse] = await Promise.all([
+        startReportJobAsync({ platformId: guildId || "", communityId }),
+        startRecommendationsJobAsync({ platformId: guildId || "", communityId })
+      ]);
+      if (reportResponse?.jobId) {
+        setReportJobId(reportResponse.jobId);
+      }
+      const recJobId = recommendationsResponse?.jobId || recommendationsResponse?.job_id;
+      if (recJobId) {
+        setRecommendationsJobId(recJobId);
+      }
+    } catch (error) {
+      console.error("Failed to start jobs:", error);
+      toast.error(t("errors.jobStartFailed"));
+      jobsStartedRef.current = false;
+    }
+  }, [communityId, startReportJobAsync, startRecommendationsJobAsync, t, guildId]);
+
+  useEffect(() => {
+    if (discordConnected && communityId && !jobsStartedRef.current) {
+      startJobs();
+    }
+  }, [discordConnected, communityId, startJobs]);
 
   useEffect(() => {
     if (error) {
-      toast.error(t("onboarding.integrations.error"));
-      router.replace("/onboarding/integrations");
+      toast.error(t("error"));
     }
-    if (success) {
-      router.replace("/onboarding/integrations");
-    }
-  }, [error, success, t, router]);
-
-  const handleContinue = () => {
-    router.push("/onboarding/complete");
-  };
+  }, [error, t]);
 
   return (
     <div>
       <div className="grid gap-4 md:grid-cols-2">
         {platforms.map((platform) => (
           <Card key={platform.key} className="rounded-lg border bg-card text-card-foreground shadow-sm">
-            <CardHeader className="flex flex-row items-center gap-4 p-6 pb-0">
-              <div className="rounded-full bg-muted p-2">{platform.icon}</div>
-              <div>
-                <CardTitle className="font-semibold tracking-tight text-lg">{t(`onboarding.integrations.${platform.key}`)}</CardTitle>
-                <CardDescription className="text-sm text-muted-foreground">
-                  {platform.comingSoon
-                    ? t(`onboarding.integrations.${platform.key}DescComingSoon`)
-                    : t(`onboarding.integrations.${platform.key}Desc`, { platform: t(`onboarding.integrations.${platform.key}`) })}
-                </CardDescription>
-              </div>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                {platform.icon}
+                {t(platform.titleKey)}
+              </CardTitle>
+              <CardDescription>
+                {t(platform.descriptionKey)}
+              </CardDescription>
             </CardHeader>
-            <CardFooter className="flex items-center p-6 pt-0">
-              {platform.key === "discord" ? (
-                success || discordConnected ? (
-                  <Button className="w-full" disabled>
-                    {t("onboarding.integrations.connected")}
-                  </Button>
-                ) : (
-                  <Link href={platform.connectUrl!} className="w-full">
-                    <Button className="w-full">
-                      {t("onboarding.integrations.connect")}
-                    </Button>
-                  </Link>
-                )
-              ) : platform.comingSoon ? (
+            <CardFooter>
+              {platform.comingSoon ? (
                 <Button
-                  variant={interestedPlatforms.includes(platform.key) ? undefined : "outline"}
-                  className={`w-full ${interestedPlatforms.includes(platform.key) ? "bg-green-500 text-white hover:bg-green-600" : ""}`}
-                  disabled={interestedPlatforms.includes(platform.key)}
+                  className={`w-full ${interested[platform.key] ? "bg-green-500 hover:bg-green-600 text-white" : ""}`}
+                  disabled={!!interested[platform.key]}
                   onClick={() => {
-                    posthog.capture("platform_interested", { platform: platform.key });
-                    setInterestedPlatforms((prev) => [...prev, platform.key]);
+                    posthog?.capture?.(`im_interested_${platform.key}`);
+                    setInterested((prev) => ({ ...prev, [platform.key]: true }));
                   }}
                 >
-                  {interestedPlatforms.includes(platform.key)
-                    ? t("onboarding.integrations.interestRegistered")
-                    : t("onboarding.integrations.imInterested")}
+                  {interested[platform.key] ? t("interested") : t("imInterested")}
                 </Button>
               ) : (
-                discordConnected ? (
-                  <Button className="w-full" disabled>
-                    {t("onboarding.integrations.connected")}
-                  </Button>
+                platform.key === "discord" ? (
+                  discordConnected ? (
+                    <Button className="w-full bg-green-500 hover:bg-green-600 text-white" disabled>
+                      {t("connected")}
+                    </Button>
+                  ) : (
+                    <Link href={platform.connectUrl!} className="w-full">
+                      <Button
+                        className="w-full"
+                        onClick={() => {
+                          posthog?.capture?.("discord_connect_initiated");
+                        }}
+                      >
+                        {t("connect")}
+                      </Button>
+                    </Link>
+                  )
                 ) : (
                   <Link href={platform.connectUrl!} className="w-full">
                     <Button
                       className="w-full"
                       onClick={() => {
-                        posthog.capture("discord_connect_initiated");
-                        // Optionally setDiscordConnected(true) after successful connection
+                        posthog?.capture?.(`connect_initiated_${platform.key}`);
                       }}
                     >
-                      {t("onboarding.integrations.connect")}
+                      {t("connect")}
                     </Button>
                   </Link>
                 )
@@ -122,11 +185,15 @@ export default function IntegrationsClient({ discordConnected }: { discordConnec
           </Card>
         ))}
       </div>
-      <div className="flex justify-end mt-8">
-        <Button onClick={handleContinue}>
-          {t("onboarding.integrations.continue")}
-        </Button>
-      </div>
+      {reportJobId && recommendationsJobId && (
+        <div className="mt-6 flex justify-end">
+          <Button 
+            onClick={() => router.push(`/onboarding/setup?guildId=${guildId}&reportJobId=${reportJobId}&recommendationsJobId=${recommendationsJobId}`)}
+          >
+            {t("continue")}
+          </Button>
+        </div>
+      )}
     </div>
   );
 } 

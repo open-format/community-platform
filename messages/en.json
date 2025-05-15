@@ -1241,8 +1241,14 @@
       "connected": "Connected",
       "comingSoon": "Coming Soon",
       "imInterested": "I'm Interested",
+      "interested": "Interest Registered",
       "continue": "Continue",
-      "error": "Error connecting Discord"
+      "error": "Error connecting Discord",
+      "loading": "Loading integrations...",
+      "errors": {
+        "jobStartFailed": "Failed to start community analysis. Please try again.",
+        "missingParameters": "Missing required parameters. Please try connecting again."
+      }
     },
     "exampleSnapshot": {
       "title": "Community Snapshot Example",
@@ -1258,6 +1264,32 @@
       "successTitle": "Welcome to Your Community Platform",
       "successMessage": "Your community platform is now set up and ready to use. You can start exploring insights, managing rewards, and growing your community.",
       "continue": "Go to Dashboard"
+    },
+    "setup": {
+      "title": "Setting Up Your Community",
+      "description": "We're preparing your community platform with initial reports and recommendations. This may take a few moments.",
+      "report": {
+        "title": "Impact Report Generation",
+        "description": "Analyzing your community's activity to generate insights and recommendations."
+      },
+      "recommendations": {
+        "title": "Reward Recommendations",
+        "description": "Processing community contributions to suggest appropriate rewards."
+      },
+      "status": {
+        "idle": "Waiting to start",
+        "pending": "Pending",
+        "processing": "Processing",
+        "completed": "Complete",
+        "failed": "Failed",
+        "unknown": "Unknown"
+      },
+      "errors": {
+        "missingCommunityId": "Missing community ID. Please try connecting again.",
+        "setupFailed": "Failed to complete setup. Please try again."
+      },
+      "continue": "Continue to Dashboard",
+      "retry": "Retry Setup"
     }
   }
 }

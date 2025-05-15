@@ -14,7 +14,9 @@ export async function GET(req: NextRequest) {
 
   console.log("YAY!", guildId);
 
-  const res = NextResponse.redirect(new URL("/onboarding/integrations?success=true", req.url));
+  const res = NextResponse.redirect(
+    new URL(`/onboarding/integrations?guildId=${guildId}`, req.url)
+  );
   res.cookies.set("discord_state", "", { maxAge: 0, path: "/" }); // clear cookie
   return res;
 }
