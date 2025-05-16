@@ -1,7 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import { Disc, MessageCircle, Github, Database } from "lucide-react";
 import posthog from "posthog-js";
@@ -95,8 +93,8 @@ export default function IntegrationsClient({
     try {
       jobsStartedRef.current = true;
       const [reportResponse, recommendationsResponse] = await Promise.all([
-        startReportJobAsync({ platformId: guildId || "", communityId }),
-        startRecommendationsJobAsync({ platformId: guildId || "", communityId })
+        startReportJobAsync?.({ platformId: guildId || "", communityId }),
+        startRecommendationsJobAsync?.({ platformId: guildId || "", communityId })
       ]);
       if (reportResponse?.jobId) {
         setReportJobId(reportResponse.jobId);
@@ -126,72 +124,88 @@ export default function IntegrationsClient({
 
   return (
     <div>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2">
         {platforms.map((platform) => (
-          <Card key={platform.key} className="rounded-lg border bg-card text-card-foreground shadow-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                {platform.icon}
-                {t(platform.titleKey)}
-              </CardTitle>
-              <CardDescription>
+          <div
+            key={platform.key}
+            className={
+              `rounded-xl border border-zinc-800 bg-[#18181b] shadow-sm p-6 flex flex-col justify-between min-h-[180px] relative transition-colors duration-200` +
+              (platform.comingSoon ? ' opacity-80' : '')
+            }
+          >
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <span className="text-2xl">
+                  {platform.icon}
+                </span>
+                <span className="font-bold text-lg text-white">{t(platform.titleKey)}</span>
+                {platform.key === "dune" && (
+                  <span className="ml-2 px-2 py-0.5 rounded bg-zinc-700 text-xs text-gray-300 font-semibold">Coming Soon</span>
+                )}
+              </div>
+              <div className="text-gray-400 text-sm mb-6">
                 {t(platform.descriptionKey)}
-              </CardDescription>
-            </CardHeader>
-            <CardFooter>
+              </div>
+            </div>
+            <div>
               {platform.comingSoon ? (
-                <Button
-                  className={`w-full ${interested[platform.key] ? "bg-green-500 hover:bg-green-600 text-white" : ""}`}
+                <button
+                  className={`w-full rounded-lg font-semibold py-2 px-4 border transition-colors duration-150
+                    ${interested[platform.key]
+                      ? "bg-green-500 text-white border-green-600 cursor-not-allowed"
+                      : "bg-zinc-800 text-gray-400 border-zinc-700 hover:bg-zinc-700"}
+                  `}
                   disabled={!!interested[platform.key]}
                   onClick={() => {
-                    posthog?.capture?.(`im_interested_${platform.key}`);
+                    posthog?.capture && posthog.capture(`im_interested_${platform.key}`);
                     setInterested((prev) => ({ ...prev, [platform.key]: true }));
                   }}
                 >
                   {interested[platform.key] ? t("interested") : t("imInterested")}
-                </Button>
+                </button>
               ) : (
                 platform.key === "discord" ? (
                   discordConnected ? (
-                    <Button className="w-full bg-green-500 hover:bg-green-600 text-white" disabled>
+                    <button className="w-full rounded-lg bg-green-500 text-white font-semibold py-2 px-4 border border-green-600 cursor-not-allowed" disabled>
                       {t("connected")}
-                    </Button>
+                    </button>
                   ) : (
                     <Link href={platform.connectUrl!} className="w-full">
-                      <Button
-                        className="w-full"
+                      <button
+                        className="w-full rounded-lg bg-zinc-800 text-gray-200 font-semibold py-2 px-4 border border-zinc-700 hover:bg-zinc-700 transition-colors duration-150"
                         onClick={() => {
-                          posthog?.capture?.("discord_connect_initiated");
+                          posthog?.capture && posthog.capture("discord_connect_initiated");
                         }}
                       >
                         {t("connect")}
-                      </Button>
+                      </button>
                     </Link>
                   )
                 ) : (
                   <Link href={platform.connectUrl!} className="w-full">
-                    <Button
-                      className="w-full"
+                    <button
+                      className="w-full rounded-lg bg-zinc-800 text-gray-200 font-semibold py-2 px-4 border border-zinc-700 hover:bg-zinc-700 transition-colors duration-150"
                       onClick={() => {
-                        posthog?.capture?.(`connect_initiated_${platform.key}`);
+                        posthog?.capture && posthog.capture(`connect_initiated_${platform.key}`);
                       }}
                     >
                       {t("connect")}
-                    </Button>
+                    </button>
                   </Link>
                 )
               )}
-            </CardFooter>
-          </Card>
+            </div>
+          </div>
         ))}
       </div>
       {reportJobId && recommendationsJobId && (
         <div className="mt-6 flex justify-end">
-          <Button 
+          <button 
+            className="rounded-lg bg-yellow-400 text-black font-semibold py-2 px-6 shadow hover:bg-yellow-300 transition-colors duration-150"
             onClick={() => router.push(`/onboarding/setup?guildId=${guildId}&reportJobId=${reportJobId}&recommendationsJobId=${recommendationsJobId}`)}
           >
             {t("continue")}
-          </Button>
+          </button>
         </div>
       )}
     </div>
