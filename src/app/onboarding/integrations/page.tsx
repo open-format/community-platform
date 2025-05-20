@@ -2,45 +2,39 @@ import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import IntegrationsClient from "./integrations-client";
 import { agentApiClient } from "@/lib/openformat";
-import { redirect } from "next/navigation";
 import { Info } from "lucide-react";
-import Link from "next/link";
 
-async function waitForCommunity(guildId: string, maxRetries = 10): Promise<string | undefined> {
-  for (let i = 0; i < maxRetries; i++) {
+const MAX_COMMUNITY_POLL_ATTEMPTS = 10;
+const POLL_INTERVAL = 2000; // 2 seconds
+
+async function waitForCommunity(guildId: string): Promise<string | null> {
+  for (let attempt = 0; attempt < MAX_COMMUNITY_POLL_ATTEMPTS; attempt++) {
     try {
-      console.log(`Attempt ${i + 1} to fetch community for guild:`, {
-        guildId,
-        url: `/communities/${guildId}`,
-        fullUrl: `${agentApiClient.defaults.baseURL}/communities/${guildId}`
-      });
-      
       const response = await agentApiClient.get(`/communities/${guildId}`);
-      console.log("Community fetch response:", {
-        status: response.status,
-        data: response.data
-      });
-      
       if (response.data?.id) {
         return response.data.id;
       }
-    } catch (error: unknown) {
-      console.error(`Attempt ${i + 1} failed to fetch community:`, {
-        error,
-        message: error instanceof Error ? error.message : 'Unknown error',
-        response: error instanceof Error && 'response' in error ? {
-          status: (error as any).response?.status,
-          data: (error as any).response?.data
-        } : null
-      });
-
-      if (error instanceof Error && 'response' in error && (error as any).response?.status !== 404) {
-        throw error;
-      }
-      await new Promise(resolve => setTimeout(resolve, 2000));
+    } catch (error) {
+      console.error(`[API] Community poll attempt ${attempt + 1}/${MAX_COMMUNITY_POLL_ATTEMPTS} failed:`, error);
+    }
+    if (attempt < MAX_COMMUNITY_POLL_ATTEMPTS - 1) {
+      await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL));
     }
   }
-  return undefined;
+  return null;
+}
+
+async function assignRole(guildId: string): Promise<boolean> {
+  try {
+    await agentApiClient.post(`/discord/roles/assign`, {
+      guild_id: guildId,
+      role_type: "admin"
+    });
+    return true;
+  } catch (error) {
+    console.error("[API] Role assignment failed:", error);
+    return false;
+  }
 }
 
 export default async function PlatformsPage({
@@ -53,13 +47,27 @@ export default async function PlatformsPage({
   const guildId = params.guildId as string | undefined;
   const discordConnected = !!guildId;
 
+  let roleAssignmentStatus: 'success' | 'error' | 'pending' = 'pending';
   let communityId: string | undefined;
+  
   if (guildId) {
     try {
-      communityId = await waitForCommunity(guildId);
-    } catch (error) {
-      console.error("Failed to fetch community after retries:", error);
-      redirect("/onboarding/start");
+      const communityIdResult = await waitForCommunity(guildId);
+      if (!communityIdResult) {
+        throw new Error("Failed to get community ID after max attempts");
+      }
+      communityId = communityIdResult;
+
+      // const roleAssigned = await assignRole(guildId);
+      const roleAssigned = true;
+      if (!roleAssigned) {
+        throw new Error("Failed to assign role");
+      }
+
+      roleAssignmentStatus = 'success';
+    } catch (error: any) {
+      console.error("[API] Error:", error.response?.data || error.message);
+      roleAssignmentStatus = 'error';
     }
   }
 
@@ -96,6 +104,7 @@ export default async function PlatformsPage({
           <IntegrationsClient 
             discordConnected={discordConnected} 
             communityId={communityId}
+            roleAssignmentStatus={roleAssignmentStatus}
           />
         </Suspense>
       </div>

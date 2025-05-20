@@ -12,8 +12,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL("/onboarding/integrations?error=true", req.url));
   }
 
-  console.log("YAY!", guildId);
-
   const res = NextResponse.redirect(
     new URL(`/onboarding/integrations?guildId=${guildId}`, req.url)
   );

@@ -126,6 +126,18 @@ export default function SetupClient() {
     }
   };
 
+  const handleRetry = (jobType: 'report' | 'recommendations') => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (jobType === 'report') {
+      params.delete('reportJobId');
+      localStorage.removeItem('reportJobId');
+    } else {
+      params.delete('recommendationsJobId');
+      localStorage.removeItem('recommendationsJobId');
+    }
+    router.push(`/onboarding/integrations?${params.toString()}`);
+  };
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col items-center mb-4">
@@ -145,8 +157,18 @@ export default function SetupClient() {
             <div className="flex-1">
               <div className="font-semibold text-white mb-0.5">{step.title}</div>
               <div className="text-gray-400 text-sm mb-1">{step.description}</div>
-              <div className="text-xs text-gray-500">
-                {step.isJob ? getStatusText(step.status as JobStatus) : (step.status === "completed" ? "Completed" : "In progress")}
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-gray-500">
+                  {step.isJob ? getStatusText(step.status as JobStatus) : (step.status === "completed" ? "Completed" : "In progress")}
+                </div>
+                {step.isJob && step.status === "failed" && (
+                  <button
+                    onClick={() => handleRetry(step.key === "insights" ? "recommendations" : "report")}
+                    className="text-xs text-yellow-400 hover:text-yellow-300"
+                  >
+                    {t("retry")}
+                  </button>
+                )}
               </div>
             </div>
           </div>

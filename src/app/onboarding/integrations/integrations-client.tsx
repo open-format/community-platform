@@ -42,17 +42,20 @@ const platforms = [
 ];
 
 interface JobResponse {
-  jobId: string;
+  jobId?: string;
+  job_id?: string;
   status: string;
   error?: string;
 }
 
 export default function IntegrationsClient({ 
   discordConnected,
-  communityId 
+  communityId,
+  roleAssignmentStatus
 }: { 
   discordConnected: boolean;
   communityId?: string;
+  roleAssignmentStatus: 'success' | 'error' | 'pending';
 }) {
   const t = useTranslations("onboarding.integrations");
   const router = useRouter();
@@ -87,28 +90,27 @@ export default function IntegrationsClient({
   });
 
   const startJobs = useCallback(async () => {
-    if (!communityId || jobsStartedRef.current) {
+    if (!communityId || !guildId || jobsStartedRef.current) {
       return;
     }
     try {
       jobsStartedRef.current = true;
       const [reportResponse, recommendationsResponse] = await Promise.all([
-        startReportJobAsync?.({ platformId: guildId || "", communityId }),
-        startRecommendationsJobAsync?.({ platformId: guildId || "", communityId })
+        startReportJobAsync?.({ platformId: guildId }),
+        startRecommendationsJobAsync?.({ platformId: guildId, communityId })
       ]);
       if (reportResponse?.jobId) {
         setReportJobId(reportResponse.jobId);
       }
-      const recJobId = recommendationsResponse?.jobId || recommendationsResponse?.job_id;
-      if (recJobId) {
-        setRecommendationsJobId(recJobId);
+      if (recommendationsResponse?.job_id) {
+        setRecommendationsJobId(recommendationsResponse.job_id);
       }
     } catch (error) {
       console.error("Failed to start jobs:", error);
       toast.error(t("errors.jobStartFailed"));
       jobsStartedRef.current = false;
     }
-  }, [communityId, startReportJobAsync, startRecommendationsJobAsync, t, guildId]);
+  }, [communityId, guildId, startReportJobAsync, startRecommendationsJobAsync, t]);
 
   useEffect(() => {
     if (discordConnected && communityId && !jobsStartedRef.current) {
@@ -121,6 +123,10 @@ export default function IntegrationsClient({
       toast.error(t("error"));
     }
   }, [error, t]);
+
+  const handleRetry = () => {
+    router.push('/onboarding/integrations');
+  };
 
   return (
     <div>
@@ -198,13 +204,26 @@ export default function IntegrationsClient({
           </div>
         ))}
       </div>
-      {reportJobId && recommendationsJobId && (
+      {reportJobId && recommendationsJobId && roleAssignmentStatus === 'success' && (
         <div className="mt-6 flex justify-end">
           <button 
             className="rounded-lg bg-yellow-400 text-black font-semibold py-2 px-6 shadow hover:bg-yellow-300 transition-colors duration-150"
             onClick={() => router.push(`/onboarding/setup?guildId=${guildId}&reportJobId=${reportJobId}&recommendationsJobId=${recommendationsJobId}`)}
           >
             {t("continue")}
+          </button>
+        </div>
+      )}
+      {roleAssignmentStatus === 'error' && (
+        <div className="mt-6 flex flex-col items-end gap-4">
+          <div className="text-red-400 text-sm">
+            {("role assignment failed")}
+          </div>
+          <button 
+            className="rounded-lg bg-zinc-800 text-white font-semibold py-2 px-6 border border-zinc-700 hover:bg-zinc-700 transition-colors duration-150"
+            onClick={handleRetry}
+          >
+            {("retryConnection")}
           </button>
         </div>
       )}
