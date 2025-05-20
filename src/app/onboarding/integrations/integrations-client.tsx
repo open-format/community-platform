@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Disc, MessageCircle, Github, Database } from "lucide-react";
+import { Disc, MessageCircle, Github, Database, Loader2 } from "lucide-react";
 import posthog from "posthog-js";
 import Link from "next/link";
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -67,24 +67,12 @@ export default function IntegrationsClient({
   const jobsStartedRef = useRef(false);
   const [interested, setInterested] = useState<Record<string, boolean>>({});
 
-  // Report generation job
-  const {
-    startJob: startReportJob,
-    startJobAsync: startReportJobAsync,
-    status: reportStatus,
-    isLoading: isReportLoading,
-  } = usePollingJob({
+  const { startJobAsync: startReportJobAsync } = usePollingJob({
     startJobEndpoint: "/api/onboarding/start-report-job",
     statusEndpoint: (jobId) => `/api/onboarding/report-job-status?jobId=${jobId}`,
   });
 
-  // Reward recommendations job
-  const {
-    startJob: startRecommendationsJob,
-    startJobAsync: startRecommendationsJobAsync,
-    status: recommendationsStatus,
-    isLoading: isRecommendationsLoading,
-  } = usePollingJob({
+  const { startJobAsync: startRecommendationsJobAsync } = usePollingJob({
     startJobEndpoint: "/api/onboarding/start-recommendations-job",
     statusEndpoint: (jobId) => `/api/onboarding/recommendations-job-status?jobId=${jobId}`,
   });
@@ -127,6 +115,9 @@ export default function IntegrationsClient({
   const handleRetry = () => {
     router.push('/onboarding/integrations');
   };
+
+  // Loading state is true only while we're waiting for job IDs and role assignment
+  const isLoading = discordConnected && (roleAssignmentStatus === 'pending' || !reportJobId || !recommendationsJobId);
 
   return (
     <div>
@@ -204,16 +195,31 @@ export default function IntegrationsClient({
           </div>
         ))}
       </div>
-      {reportJobId && recommendationsJobId && roleAssignmentStatus === 'success' && (
+      
+      {/* Show continue button only after connection */}
+      {discordConnected && (
         <div className="mt-6 flex justify-end">
           <button 
-            className="rounded-lg bg-yellow-400 text-black font-semibold py-2 px-6 shadow hover:bg-yellow-300 transition-colors duration-150"
+            className={`rounded-lg font-semibold py-2 px-6 shadow transition-colors duration-150 ${
+              isLoading 
+                ? "bg-zinc-800 text-gray-400 cursor-not-allowed" 
+                : "bg-yellow-400 text-black hover:bg-yellow-300"
+            }`}
             onClick={() => router.push(`/onboarding/setup?guildId=${guildId}&reportJobId=${reportJobId}&recommendationsJobId=${recommendationsJobId}`)}
+            disabled={isLoading}
           >
-            {t("continue")}
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {("starting")}
+              </div>
+            ) : (
+              t("continue")
+            )}
           </button>
         </div>
       )}
+
       {roleAssignmentStatus === 'error' && (
         <div className="mt-6 flex flex-col items-end gap-4">
           <div className="text-red-400 text-sm">

@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import IntegrationsClient from "./integrations-client";
 import { agentApiClient } from "@/lib/openformat";
-import { Info } from "lucide-react";
+import { Info, Loader2 } from "lucide-react";
 
 const MAX_COMMUNITY_POLL_ATTEMPTS = 10;
 const POLL_INTERVAL = 2000; // 2 seconds
@@ -35,6 +35,30 @@ async function assignRole(guildId: string): Promise<boolean> {
     console.error("[API] Role assignment failed:", error);
     return false;
   }
+}
+
+function LoadingSkeleton() {
+  return (
+    <div>
+      <div className="grid gap-6 md:grid-cols-2">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="rounded-xl border border-zinc-800 bg-[#18181b] shadow-sm p-6 flex flex-col justify-between min-h-[180px]"
+          >
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="h-6 w-6 bg-zinc-800 rounded animate-pulse" />
+                <div className="h-6 w-24 bg-zinc-800 rounded animate-pulse" />
+              </div>
+              <div className="h-4 w-48 bg-zinc-800 rounded animate-pulse mb-6" />
+            </div>
+            <div className="h-10 w-full bg-zinc-800 rounded animate-pulse" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default async function PlatformsPage({
@@ -100,7 +124,7 @@ export default async function PlatformsPage({
             <li>Provide recommendations for rewarding top contributors</li>
           </ul>
         </div>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<LoadingSkeleton />}>
           <IntegrationsClient 
             discordConnected={discordConnected} 
             communityId={communityId}

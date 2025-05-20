@@ -60,6 +60,10 @@ export default function SetupClient() {
 
   const isComplete = reportStatus === "completed" && recommendationsStatus === "completed";
 
+  // Add loading state for continue button
+  const isContinueLoading = (reportStatus === "pending" || reportStatus === "processing" || 
+                           recommendationsStatus === "pending" || recommendationsStatus === "processing");
+
   // Step data for rendering
   const steps = [
     {
@@ -191,8 +195,16 @@ export default function SetupClient() {
             <Button 
               className="rounded-lg bg-yellow-400 text-black font-semibold py-2 px-6 shadow hover:bg-yellow-300 transition-colors duration-150"
               onClick={() => router.push("/dashboard")}
+              disabled={isContinueLoading}
             >
-              {t("continue")}
+              {isContinueLoading ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {t("loading")}
+                </div>
+              ) : (
+                t("continue")
+              )}
             </Button>
           </div>
         </>
