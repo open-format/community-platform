@@ -1,26 +1,16 @@
 "use client";
 
-import { fundAccount } from "@/lib/openformat";
 import { useLogin, usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
 import { Mail, Disc, Github, Send } from "lucide-react";
 import axios from "axios";
+import { useState } from "react";
 
 export function PrivyLogin() {
-  const { ready, authenticated, user } = usePrivy();
+  const { ready, logout} = usePrivy();
   const { login: openLoginModal } = useLogin();
   const router = useRouter();
-  const [hasCheckedInitialAuth, setHasCheckedInitialAuth] = useState(false);
-  const isInitialLoad = useRef(true);
-
-  useEffect(() => {
-    if (ready && authenticated && !hasCheckedInitialAuth && isInitialLoad.current) {
-      setHasCheckedInitialAuth(true);
-      router.push("/communities");
-    }
-    isInitialLoad.current = false;
-  }, [ready, authenticated, router, hasCheckedInitialAuth]);
+  const [error, setError] = useState("");
 
   useLogin({
     onComplete: async ({ user, isNewUser }) => {
@@ -29,15 +19,15 @@ export function PrivyLogin() {
           const response = await axios.post('/api/v1/users', {
             did: user.id,
           });
-          
-          await fundAccount();
+          router.push("/onboarding")
         } catch (error) {
+            console.log(error);
           if (axios.isAxiosError(error)) {
-            throw error;
+            setError("An error occurred while creating your account. Please try again.");
+            return logout();
           }
         }
       }
-      
       router.push("/communities");
     },
   });
@@ -54,6 +44,7 @@ export function PrivyLogin() {
     <div className="flex flex-1 items-center justify-center bg-black px-4 py-16 min-h-screen">
       <div className="w-full max-w-md bg-zinc-900 rounded-xl shadow-lg p-8 flex flex-col items-center">
         <h2 className="text-xl font-bold mb-6">Log in or sign up</h2>
+        {error && <div className="text-red-500 mb-4">{error}</div>}
         <div className="w-full flex flex-col gap-3">
           <button
             className="flex items-center gap-2 bg-zinc-800 rounded-lg px-4 py-2 hover:bg-zinc-700 transition"
