@@ -1,0 +1,93 @@
+"use client";
+
+import { fundAccount } from "@/lib/openformat";
+import { useLogin, usePrivy } from "@privy-io/react-auth";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { Mail, Disc, Github, Send } from "lucide-react";
+import axios from "axios";
+
+export function PrivyLogin() {
+  const { ready, authenticated, user } = usePrivy();
+  const { login: openLoginModal } = useLogin();
+  const router = useRouter();
+  const [hasCheckedInitialAuth, setHasCheckedInitialAuth] = useState(false);
+  const isInitialLoad = useRef(true);
+
+  useEffect(() => {
+    if (ready && authenticated && !hasCheckedInitialAuth && isInitialLoad.current) {
+      setHasCheckedInitialAuth(true);
+      router.push("/communities");
+    }
+    isInitialLoad.current = false;
+  }, [ready, authenticated, router, hasCheckedInitialAuth]);
+
+  useLogin({
+    onComplete: async ({ user, isNewUser }) => {
+      if (isNewUser && user.wallet?.address) {
+        try {
+          const response = await axios.post('/api/v1/users', {
+            did: user.id,
+          });
+          
+          await fundAccount();
+        } catch (error) {
+          if (axios.isAxiosError(error)) {
+            throw error;
+          }
+        }
+      }
+      
+      router.push("/communities");
+    },
+  });
+
+  if (!ready) {
+    return (
+      <div className="flex flex-1 items-center justify-center bg-black px-4 py-16 min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-1 items-center justify-center bg-black px-4 py-16 min-h-screen">
+      <div className="w-full max-w-md bg-zinc-900 rounded-xl shadow-lg p-8 flex flex-col items-center">
+        <h2 className="text-xl font-bold mb-6">Log in or sign up</h2>
+        <div className="w-full flex flex-col gap-3">
+          <button
+            className="flex items-center gap-2 bg-zinc-800 rounded-lg px-4 py-2 hover:bg-zinc-700 transition"
+            onClick={() => openLoginModal({ loginMethods: ['email'] })}
+          >
+            <Mail className="h-5 w-5 text-gray-400" /> Email
+          </button>
+          <button
+            className="flex items-center gap-2 bg-zinc-800 rounded-lg px-4 py-2 hover:bg-zinc-700 transition"
+            onClick={() => openLoginModal({ loginMethods: ['discord'] })}
+          >
+            <Disc className="h-5 w-5 text-indigo-400" /> Discord
+          </button>
+          <button
+            className="flex items-center gap-2 bg-zinc-800 rounded-lg px-4 py-2 hover:bg-zinc-700 transition"
+            onClick={() => openLoginModal({ loginMethods: ['github'] })}
+          >
+            <Github className="h-5 w-5 text-gray-300" /> GitHub
+          </button>
+          <button
+            className="flex items-center gap-2 bg-zinc-800 rounded-lg px-4 py-2 hover:bg-zinc-700 transition"
+            onClick={() => openLoginModal({ loginMethods: ['telegram'] })}
+          >
+            <Send className="h-5 w-5 text-blue-400" /> Telegram
+          </button>
+          <button
+            className="flex items-center gap-2 bg-zinc-800 rounded-lg px-4 py-2 hover:bg-zinc-700 transition"
+            onClick={() => openLoginModal({ loginMethods: ['wallet'] })}
+          >
+            <span className="h-5 w-5 inline-block bg-gradient-to-tr from-indigo-400 to-purple-400 rounded-full" /> Continue with a wallet
+          </button>
+        </div>
+        <div className="mt-8 text-xs text-gray-500 flex items-center gap-1">Protected by <span className="font-bold">● privy</span></div>
+      </div>
+    </div>
+  );
+} 
