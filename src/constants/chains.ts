@@ -72,7 +72,7 @@ export const chains: Record<ChainName, Chain> = {
     APP_FACTORY_ADDRESS: "0x7e405FbA4c29B8B05B5ecF97bA664729C34803B8",
     // @TODO: Update to production subgraph when ready
     SUBGRAPH_URL:
-      "https://openformat-turbo-graph-node-staging.fly.dev/subgraphs/name/open-format-local",
+      "https://openformat-graph-node-staging.fly.dev/subgraphs/name/open-format-turbo",
     BLOCK_EXPLORER_URL: "https://explorer.turbo.aurora.dev",
     apiChainName: "turbo",
     ...turboChain,
