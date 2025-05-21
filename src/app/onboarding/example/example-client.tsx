@@ -1,12 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { ActivityAnalysis } from "@/components/impact-reports/sections/activity-analysis";
-import { TopContributors } from "@/components/impact-reports/sections/top-contributors";
 import { KeyTopics } from "@/components/impact-reports/sections/key-topics";
 import { SentimentAnalysis } from "@/components/impact-reports/sections/sentiment-analysis";
+import { TopContributors } from "@/components/impact-reports/sections/top-contributors";
 import { Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function ExampleSnapshotClient({ report }: { report: any }) {
@@ -20,20 +20,26 @@ export default function ExampleSnapshotClient({ report }: { report: any }) {
       description: "Key metrics about your community at a glance.",
       content: (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
-          <div className="rounded-xl border border-zinc-800 p-8 flex flex-col items-center shadow-sm bg-zinc-800">
+          <div className="rounded-xl border border-zinc-800 p-8 flex flex-col items-center shadow-sm">
             <Sparkles className="h-6 w-6 text-yellow-400 mb-2" />
             <span className="text-sm text-gray-400 mb-1">Total Messages</span>
-            <span className="text-4xl font-extrabold text-white">{report.overview.totalMessages}</span>
+            <span className="text-4xl font-extrabold text-white">
+              {report.overview.totalMessages}
+            </span>
           </div>
-          <div className="rounded-xl border border-zinc-800 p-8 flex flex-col items-center shadow-sm bg-zinc-800">
+          <div className="rounded-xl border border-zinc-800 p-8 flex flex-col items-center shadow-sm ">
             <Sparkles className="h-6 w-6 text-yellow-400 mb-2" />
             <span className="text-sm text-gray-400 mb-1">Active Channels</span>
-            <span className="text-4xl font-extrabold text-white">{report.overview.activeChannels}</span>
+            <span className="text-4xl font-extrabold text-white">
+              {report.overview.activeChannels}
+            </span>
           </div>
-          <div className="rounded-xl border border-zinc-800 p-8 flex flex-col items-center shadow-sm bg-zinc-800">
+          <div className="rounded-xl border border-zinc-800 p-8 flex flex-col items-center shadow-sm">
             <Sparkles className="h-6 w-6 text-yellow-400 mb-2" />
             <span className="text-sm text-gray-400 mb-1">Unique Participants</span>
-            <span className="text-4xl font-extrabold text-white">{report.overview.uniqueUsers}</span>
+            <span className="text-4xl font-extrabold text-white">
+              {report.overview.uniqueUsers}
+            </span>
           </div>
         </div>
       ),
@@ -43,7 +49,10 @@ export default function ExampleSnapshotClient({ report }: { report: any }) {
       description: "See how your community engages over time and across channels.",
       content: (
         <div className="rounded-xl border border-zinc-800 shadow-sm p-6 w-full bg-zinc-800">
-          <ActivityAnalysis dailyActivity={report.dailyActivity} channelBreakdown={report.channelBreakdown} />
+          <ActivityAnalysis
+            dailyActivity={report.dailyActivity}
+            channelBreakdown={report.channelBreakdown}
+          />
         </div>
       ),
     },
@@ -113,4 +122,4 @@ export default function ExampleSnapshotClient({ report }: { report: any }) {
       </div>
     </div>
   );
-} 
+}

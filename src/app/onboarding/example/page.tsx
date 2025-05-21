@@ -14,7 +14,7 @@ export default async function ExampleSnapshotPage() {
   const report = await getExampleReport();
 
   return (
-    <div className="onboarding-dark flex flex-col items-center justify-center min-h-screen px-4 bg-[#111010]">
+    <div className="flex flex-col items-center justify-center min-h-screen px-4">
       <div className="w-full max-w-4xl mx-auto">
         <header className="text-center mb-10 mt-8">
           <h1 className="text-3xl font-bold text-white mb-3">Community Snapshot Example</h1>

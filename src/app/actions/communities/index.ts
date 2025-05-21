@@ -22,6 +22,7 @@ export default async function getCommunities(): Promise<CommunitiesResponse> {
     const response = await agentApiClient.get("/communities?limit=100", {
       headers: { "x-user-id": currentUser.id },
     });
+
     return {
       communities: response.data.data,
       error: null,

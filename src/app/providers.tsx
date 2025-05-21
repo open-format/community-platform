@@ -13,6 +13,7 @@ import { Suspense, useEffect } from "react";
 import { arbitrumSepolia, aurora, base, matchain } from "viem/chains";
 import { http } from "wagmi";
 
+import { ThemeProvider } from "@/components/theme-provider";
 import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
 
@@ -38,33 +39,40 @@ export default function Providers({
   locale: string;
 }) {
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
-      <PrivyProvider
-        appId={config.NEXT_PUBLIC_PRIVY_APP_ID as string}
-        config={{
-          // Create embedded wallets for users who don't have a wallet
-          embeddedWallets: {
-            createOnLogin: "all-users",
-          },
-          // @TODO: Issue with embedded wallets on Aurora and turboChain - awaiting Privy support
-          supportedChains: [arbitrumSepolia, aurora, turboChain, base, matchain],
-          defaultChain: arbitrumSepolia,
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="light"
+      disableTransitionOnChange
+      forcedTheme="dark"
+    >
+      <NextIntlClientProvider locale={locale} messages={messages}>
+        <PrivyProvider
+          appId={config.NEXT_PUBLIC_PRIVY_APP_ID as string}
+          config={{
+            // Create embedded wallets for users who don't have a wallet
+            embeddedWallets: {
+              createOnLogin: "all-users",
+            },
+            // @TODO: Issue with embedded wallets on Aurora and turboChain - awaiting Privy support
+            supportedChains: [arbitrumSepolia, aurora, turboChain, base, matchain],
+            defaultChain: arbitrumSepolia,
 
-          appearance: {
-            walletChainType: "ethereum-only",
-            walletList: ["metamask", "wallet_connect", "rainbow", "rabby_wallet"],
-          },
-        }}
-      >
-        <QueryClientProvider client={queryClient}>
-          <WagmiProvider config={chainConfig}>
-            <PostHogProvider>
-              <ConfettiProvider>{children}</ConfettiProvider>
-            </PostHogProvider>
-          </WagmiProvider>
-        </QueryClientProvider>
-      </PrivyProvider>
-    </NextIntlClientProvider>
+            appearance: {
+              walletChainType: "ethereum-only",
+              walletList: ["metamask", "wallet_connect", "rainbow", "rabby_wallet"],
+            },
+          }}
+        >
+          <QueryClientProvider client={queryClient}>
+            <WagmiProvider config={chainConfig}>
+              <PostHogProvider>
+                <ConfettiProvider>{children}</ConfettiProvider>
+              </PostHogProvider>
+            </WagmiProvider>
+          </QueryClientProvider>
+        </PrivyProvider>
+      </NextIntlClientProvider>
+    </ThemeProvider>
   );
 }
 

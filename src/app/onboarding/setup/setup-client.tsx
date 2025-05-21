@@ -14,13 +14,14 @@ export default function SetupClient() {
   const t = useTranslations("onboarding.setup");
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   const [reportJobId, setReportJobId] = useState<string | null>(null);
   const [recommendationsJobId, setRecommendationsJobId] = useState<string | null>(null);
 
   useEffect(() => {
     const reportId = searchParams.get("reportJobId") || localStorage.getItem("reportJobId");
-    const recId = searchParams.get("recommendationsJobId") || localStorage.getItem("recommendationsJobId");
+    const recId =
+      searchParams.get("recommendationsJobId") || localStorage.getItem("recommendationsJobId");
     setReportJobId(reportId);
     setRecommendationsJobId(recId);
     if (reportId) localStorage.setItem("reportJobId", reportId);
@@ -29,9 +30,9 @@ export default function SetupClient() {
 
   // Report generation job status
   const {
-    status: reportStatus, 
+    status: reportStatus,
     isLoading: isReportLoading,
-    message: reportMessage 
+    message: reportMessage,
   } = usePollingJob({
     statusEndpoint: (jobId) => `/api/onboarding/report-job-status?jobId=${jobId}`,
     initialJobId: reportJobId || undefined,
@@ -39,14 +40,14 @@ export default function SetupClient() {
       if (status === "failed") {
         toast.error(message || t("errors.reportFailed"));
       }
-    }
+    },
   });
 
   // Reward recommendations job status
-  const { 
-    status: recommendationsStatus, 
+  const {
+    status: recommendationsStatus,
     isLoading: isRecommendationsLoading,
-    message: recommendationsMessage 
+    message: recommendationsMessage,
   } = usePollingJob({
     statusEndpoint: (jobId) => `/api/onboarding/recommendations-job-status?jobId=${jobId}`,
     initialJobId: recommendationsJobId || undefined,
@@ -54,28 +55,31 @@ export default function SetupClient() {
       if (status === "failed") {
         toast.error(message || t("errors.recommendationsFailed"));
       }
-    }
+    },
   });
 
   const isComplete = reportStatus === "completed" && recommendationsStatus === "completed";
 
   // Add loading state for continue button
-  const isContinueLoading = (reportStatus === "pending" || reportStatus === "processing" || 
-                           recommendationsStatus === "pending" || recommendationsStatus === "processing");
+  const isContinueLoading =
+    reportStatus === "pending" ||
+    reportStatus === "processing" ||
+    recommendationsStatus === "pending" ||
+    recommendationsStatus === "processing";
 
   // Step data for rendering
   const steps = [
     {
       key: "platforms",
-      icon: <Users className="h-6 w-6" />, 
+      icon: <Users className="h-6 w-6" />,
       title: "Connecting community platforms",
       description: "Successfully connected to your community platforms.",
-      status: "completed" as JobStatus, 
+      status: "completed" as JobStatus,
       isJob: false,
     },
     {
       key: "insights",
-      icon: <FileText className="h-6 w-6" />, 
+      icon: <FileText className="h-6 w-6" />,
       title: "Generating initial insights",
       description: "Initial community insights generated and ready to view.",
       status: recommendationsStatus as JobStatus,
@@ -83,7 +87,7 @@ export default function SetupClient() {
     },
     {
       key: "analytics",
-      icon: <BarChart2 className="h-6 w-6" />, 
+      icon: <BarChart2 className="h-6 w-6" />,
       title: "Setting up analytics",
       description: "Analytics engine configured to track community engagement.",
       status: reportStatus as JobStatus,
@@ -129,14 +133,14 @@ export default function SetupClient() {
     }
   };
 
-  const handleRetry = (jobType: 'report' | 'recommendations') => {
+  const handleRetry = (jobType: "report" | "recommendations") => {
     const params = new URLSearchParams(searchParams.toString());
-    if (jobType === 'report') {
-      params.delete('reportJobId');
-      localStorage.removeItem('reportJobId');
+    if (jobType === "report") {
+      params.delete("reportJobId");
+      localStorage.removeItem("reportJobId");
     } else {
-      params.delete('recommendationsJobId');
-      localStorage.removeItem('recommendationsJobId');
+      params.delete("recommendationsJobId");
+      localStorage.removeItem("recommendationsJobId");
     }
     router.push(`/onboarding/integrations?${params.toString()}`);
   };
@@ -146,27 +150,33 @@ export default function SetupClient() {
       <div className="flex flex-col items-center mb-4">
         <CheckCircle className="h-12 w-12 text-yellow-400 mb-2" />
         <h2 className="text-2xl font-bold text-white mb-1">Deployment Complete!</h2>
-        <p className="text-gray-400 text-center max-w-md">Your community agent is now active and collecting insights.</p>
+        <p className="text-gray-400 text-center max-w-md">
+          Your community agent is now active and collecting insights.
+        </p>
       </div>
       <div className="flex flex-col gap-4">
         {steps.map((step, idx) => (
           <div
             key={step.key}
-            className={`flex items-start gap-4 rounded-xl border border-zinc-800 bg-[#18181b] px-5 py-4 ${step.status === "completed" ? "opacity-100" : step.status === "failed" ? "border-red-500" : "opacity-90"}`}
+            className={`flex items-start gap-4 rounded-xl border border-zinc-800 px-5 py-4 ${step.status === "completed" ? "opacity-100" : step.status === "failed" ? "border-red-500" : "opacity-90"}`}
           >
-            <div className="flex-shrink-0 mt-1">
-              {getStatusIcon(step.status as JobStatus)}
-            </div>
+            <div className="flex-shrink-0 mt-1">{getStatusIcon(step.status as JobStatus)}</div>
             <div className="flex-1">
               <div className="font-semibold text-white mb-0.5">{step.title}</div>
               <div className="text-gray-400 text-sm mb-1">{step.description}</div>
               <div className="flex items-center justify-between">
                 <div className="text-xs text-gray-500">
-                  {step.isJob ? getStatusText(step.status as JobStatus) : (step.status === "completed" ? "Completed" : "In progress")}
+                  {step.isJob
+                    ? getStatusText(step.status as JobStatus)
+                    : step.status === "completed"
+                      ? "Completed"
+                      : "In progress"}
                 </div>
                 {step.isJob && step.status === "failed" && (
                   <button
-                    onClick={() => handleRetry(step.key === "insights" ? "recommendations" : "report")}
+                    onClick={() =>
+                      handleRetry(step.key === "insights" ? "recommendations" : "report")
+                    }
                     className="text-xs text-yellow-400 hover:text-yellow-300"
                   >
                     {t("retry")}
@@ -191,7 +201,7 @@ export default function SetupClient() {
             </ul>
           </div>
           <div className="flex justify-end mt-6">
-            <Button 
+            <Button
               className="rounded-lg bg-yellow-400 text-black font-semibold py-2 px-6 shadow hover:bg-yellow-300 transition-colors duration-150"
               onClick={() => router.push("/communities")}
               disabled={isContinueLoading}
@@ -210,4 +220,4 @@ export default function SetupClient() {
       )}
     </div>
   );
-} 
+}
