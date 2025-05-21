@@ -1,7 +1,7 @@
+import { Info } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import IntegrationsClient from "./integrations-client";
-import { Info } from "lucide-react";
 
 function LoadingSkeleton() {
   return (
@@ -10,7 +10,7 @@ function LoadingSkeleton() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="rounded-xl border border-zinc-800 bg-[#18181b] shadow-sm p-6 flex flex-col justify-between min-h-[180px]"
+            className="rounded-xl border border-zinc-800 shadow-sm p-6 flex flex-col justify-between min-h-[180px]"
           >
             <div>
               <div className="flex items-center gap-3 mb-2">
@@ -39,7 +39,7 @@ export default async function PlatformsPage({
   const discordConnected = !!guildId;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-[#111010]">
+    <div className="flex flex-col items-center justify-center min-h-screen px-4">
       {/* Progress Bar */}
       <div className="w-full max-w-2xl flex items-center gap-4 mb-8 mt-8">
         <div className="flex-1 flex gap-0">
@@ -68,12 +68,9 @@ export default async function PlatformsPage({
           </ul>
         </div>
         <Suspense fallback={<LoadingSkeleton />}>
-          <IntegrationsClient 
-            discordConnected={discordConnected}
-            communityId={communityId}
-          />
+          <IntegrationsClient discordConnected={discordConnected} communityId={communityId} />
         </Suspense>
       </div>
     </div>
   );
-} 
+}

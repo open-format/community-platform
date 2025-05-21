@@ -1,7 +1,6 @@
-import { getTranslations } from "next-intl/server";
-import SetupClient from "./setup-client";
-import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
+import { Suspense } from "react";
+import SetupClient from "./setup-client";
 
 function LoadingSkeleton() {
   return (
@@ -13,7 +12,10 @@ function LoadingSkeleton() {
       </div>
       <div className="flex flex-col gap-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="flex items-start gap-4 rounded-xl border border-zinc-800 bg-[#18181b] px-5 py-4">
+          <div
+            key={i}
+            className="flex items-start gap-4 rounded-xl border border-zinc-800  px-5 py-4"
+          >
             <div className="h-5 w-5 bg-zinc-800 rounded animate-pulse" />
             <div className="flex-1">
               <div className="h-5 w-32 bg-zinc-800 rounded animate-pulse mb-2" />
@@ -28,7 +30,7 @@ function LoadingSkeleton() {
 
 export default async function SetupPage() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-[#111010]">
+    <div className="flex flex-col items-center justify-center min-h-screen px-4">
       {/* Progress Bar */}
       <div className="w-full max-w-2xl flex items-center gap-4 mb-8 mt-8">
         <div className="flex-1 flex gap-0">
@@ -44,4 +46,4 @@ export default async function SetupPage() {
       </div>
     </div>
   );
-} 
+}
