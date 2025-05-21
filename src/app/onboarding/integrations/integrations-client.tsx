@@ -2,17 +2,16 @@
 
 import { useTranslations } from "next-intl";
 import { Disc, MessageCircle, Github, Database, Loader2 } from "lucide-react";
-import posthog from "posthog-js";
-import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { usePollingJob } from "@/hooks/useJobStatus";
+import PlatformCard from "./platform-card";
 
 const platforms = [
   {
     key: "discord",
-    icon: <Disc className="h-6 w-6" />,
+    icon: Disc,
     comingSoon: false,
     connectUrl: "/api/discord/start",
     titleKey: "discord",
@@ -20,42 +19,33 @@ const platforms = [
   },
   {
     key: "telegram",
-    icon: <MessageCircle className="h-6 w-6" />,
+    icon: MessageCircle,
     comingSoon: true,
     titleKey: "telegram",
     descriptionKey: "telegramDescComingSoon"
   },
   {
     key: "github",
-    icon: <Github className="h-6 w-6" />,
+    icon: Github,
     comingSoon: true,
     titleKey: "github",
     descriptionKey: "githubDescComingSoon"
   },
   {
     key: "dune",
-    icon: <Database className="h-6 w-6" />,
+    icon: Database,
     comingSoon: true,
     titleKey: "dune",
     descriptionKey: "duneDescComingSoon"
   },
 ];
 
-interface JobResponse {
-  jobId?: string;
-  job_id?: string;
-  status: string;
-  error?: string;
-}
-
 export default function IntegrationsClient({ 
   discordConnected,
   communityId,
-  roleAssignmentStatus
 }: { 
   discordConnected: boolean;
   communityId?: string;
-  roleAssignmentStatus: 'success' | 'error' | 'pending';
 }) {
   const t = useTranslations("onboarding.integrations");
   const router = useRouter();
@@ -65,7 +55,6 @@ export default function IntegrationsClient({
   const [reportJobId, setReportJobId] = useState<string | null>(null);
   const [recommendationsJobId, setRecommendationsJobId] = useState<string | null>(null);
   const jobsStartedRef = useRef(false);
-  const [interested, setInterested] = useState<Record<string, boolean>>({});
 
   const { startJobAsync: startReportJobAsync } = usePollingJob({
     startJobEndpoint: "/api/onboarding/start-report-job",
@@ -116,83 +105,22 @@ export default function IntegrationsClient({
     router.push('/onboarding/integrations');
   };
 
-  // Loading state is true only while we're waiting for job IDs and role assignment
-  const isLoading = discordConnected && (roleAssignmentStatus === 'pending' || !reportJobId || !recommendationsJobId);
+  // Loading state is true only while we're waiting for job IDs
+  const isLoading = discordConnected && (!reportJobId || !recommendationsJobId);
 
   return (
     <div>
       <div className="grid gap-6 md:grid-cols-2">
         {platforms.map((platform) => (
-          <div
+          <PlatformCard
             key={platform.key}
-            className={
-              `rounded-xl border border-zinc-800 bg-[#18181b] shadow-sm p-6 flex flex-col justify-between min-h-[180px] relative transition-colors duration-200` +
-              (platform.comingSoon ? ' opacity-80' : '')
-            }
-          >
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-2xl">
-                  {platform.icon}
-                </span>
-                <span className="font-bold text-lg text-white">{t(platform.titleKey)}</span>
-                {platform.key === "dune" && (
-                  <span className="ml-2 px-2 py-0.5 rounded bg-zinc-700 text-xs text-gray-300 font-semibold">Coming Soon</span>
-                )}
-              </div>
-              <div className="text-gray-400 text-sm mb-6">
-                {t(platform.descriptionKey)}
-              </div>
-            </div>
-            <div>
-              {platform.comingSoon ? (
-                <button
-                  className={`w-full rounded-lg font-semibold py-2 px-4 border transition-colors duration-150
-                    ${interested[platform.key]
-                      ? "bg-green-500 text-white border-green-600 cursor-not-allowed"
-                      : "bg-zinc-800 text-gray-400 border-zinc-700 hover:bg-zinc-700"}
-                  `}
-                  disabled={!!interested[platform.key]}
-                  onClick={() => {
-                    posthog?.capture && posthog.capture(`im_interested_${platform.key}`);
-                    setInterested((prev) => ({ ...prev, [platform.key]: true }));
-                  }}
-                >
-                  {interested[platform.key] ? t("interested") : t("imInterested")}
-                </button>
-              ) : (
-                platform.key === "discord" ? (
-                  discordConnected ? (
-                    <button className="w-full rounded-lg bg-green-500 text-white font-semibold py-2 px-4 border border-green-600 cursor-not-allowed" disabled>
-                      {t("connected")}
-                    </button>
-                  ) : (
-                    <Link href={platform.connectUrl!} className="w-full">
-                      <button
-                        className="w-full rounded-lg bg-zinc-800 text-gray-200 font-semibold py-2 px-4 border border-zinc-700 hover:bg-zinc-700 transition-colors duration-150"
-                        onClick={() => {
-                          posthog?.capture && posthog.capture("discord_connect_initiated");
-                        }}
-                      >
-                        {t("connect")}
-                      </button>
-                    </Link>
-                  )
-                ) : (
-                  <Link href={platform.connectUrl!} className="w-full">
-                    <button
-                      className="w-full rounded-lg bg-zinc-800 text-gray-200 font-semibold py-2 px-4 border border-zinc-700 hover:bg-zinc-700 transition-colors duration-150"
-                      onClick={() => {
-                        posthog?.capture && posthog.capture(`connect_initiated_${platform.key}`);
-                      }}
-                    >
-                      {t("connect")}
-                    </button>
-                  </Link>
-                )
-              )}
-            </div>
-          </div>
+            icon={platform.icon}
+            comingSoon={platform.comingSoon}
+            connectUrl={platform.connectUrl}
+            titleKey={platform.titleKey}
+            descriptionKey={platform.descriptionKey}
+            discordConnected={platform.key === "discord" ? discordConnected : undefined}
+          />
         ))}
       </div>
       
@@ -211,7 +139,7 @@ export default function IntegrationsClient({
             {isLoading ? (
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                {("starting")}
+                {t("starting")}
               </div>
             ) : (
               t("continue")
@@ -220,16 +148,16 @@ export default function IntegrationsClient({
         </div>
       )}
 
-      {roleAssignmentStatus === 'error' && (
+      {error && (
         <div className="mt-6 flex flex-col items-end gap-4">
           <div className="text-red-400 text-sm">
-            {("role assignment failed")}
+            {t("error")}
           </div>
           <button 
             className="rounded-lg bg-zinc-800 text-white font-semibold py-2 px-6 border border-zinc-700 hover:bg-zinc-700 transition-colors duration-150"
             onClick={handleRetry}
           >
-            {("retryConnection")}
+            {t("retryConnection")}
           </button>
         </div>
       )}

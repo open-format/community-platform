@@ -14,7 +14,6 @@ export default function SetupClient() {
   const t = useTranslations("onboarding.setup");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const guildId = searchParams.get("guildId");
   
   const [reportJobId, setReportJobId] = useState<string | null>(null);
   const [recommendationsJobId, setRecommendationsJobId] = useState<string | null>(null);

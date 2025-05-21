@@ -1,41 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import IntegrationsClient from "./integrations-client";
-import { agentApiClient } from "@/lib/openformat";
-import { Info, Loader2 } from "lucide-react";
-
-const MAX_COMMUNITY_POLL_ATTEMPTS = 10;
-const POLL_INTERVAL = 2000; // 2 seconds
-
-async function waitForCommunity(guildId: string): Promise<string | null> {
-  for (let attempt = 0; attempt < MAX_COMMUNITY_POLL_ATTEMPTS; attempt++) {
-    try {
-      const response = await agentApiClient.get(`/communities/${guildId}`);
-      if (response.data?.id) {
-        return response.data.id;
-      }
-    } catch (error) {
-      console.error(`[API] Community poll attempt ${attempt + 1}/${MAX_COMMUNITY_POLL_ATTEMPTS} failed:`, error);
-    }
-    if (attempt < MAX_COMMUNITY_POLL_ATTEMPTS - 1) {
-      await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL));
-    }
-  }
-  return null;
-}
-
-async function assignRole(guildId: string): Promise<boolean> {
-  try {
-    await agentApiClient.post(`/discord/roles/assign`, {
-      guild_id: guildId,
-      role_type: "admin"
-    });
-    return true;
-  } catch (error) {
-    console.error("[API] Role assignment failed:", error);
-    return false;
-  }
-}
+import { Info } from "lucide-react";
 
 function LoadingSkeleton() {
   return (
@@ -69,31 +35,8 @@ export default async function PlatformsPage({
   const t = await getTranslations("onboarding");
   const params = await searchParams;
   const guildId = params.guildId as string | undefined;
+  const communityId = params.communityId as string | undefined;
   const discordConnected = !!guildId;
-
-  let roleAssignmentStatus: 'success' | 'error' | 'pending' = 'pending';
-  let communityId: string | undefined;
-  
-  if (guildId) {
-    try {
-      const communityIdResult = await waitForCommunity(guildId);
-      if (!communityIdResult) {
-        throw new Error("Failed to get community ID after max attempts");
-      }
-      communityId = communityIdResult;
-
-      // const roleAssigned = await assignRole(guildId);
-      const roleAssigned = true;
-      if (!roleAssigned) {
-        throw new Error("Failed to assign role");
-      }
-
-      roleAssignmentStatus = 'success';
-    } catch (error: any) {
-      console.error("[API] Error:", error.response?.data || error.message);
-      roleAssignmentStatus = 'error';
-    }
-  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-[#111010]">
@@ -126,9 +69,8 @@ export default async function PlatformsPage({
         </div>
         <Suspense fallback={<LoadingSkeleton />}>
           <IntegrationsClient 
-            discordConnected={discordConnected} 
+            discordConnected={discordConnected}
             communityId={communityId}
-            roleAssignmentStatus={roleAssignmentStatus}
           />
         </Suspense>
       </div>

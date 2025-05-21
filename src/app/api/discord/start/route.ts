@@ -4,8 +4,21 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { randomBytes } from "node:crypto";
 
-export async function GET() {
-  const state = randomBytes(16).toString("hex");
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const did = searchParams.get("did");
+  
+  if (!did) {
+    return NextResponse.json({ error: "Missing Privy DID" }, { status: 400 });
+  }
+
+  // Create a state object that includes both the random state and the DID
+  const stateObj = {
+    state: randomBytes(16).toString("hex"),
+    did
+  };
+  
+  const state = Buffer.from(JSON.stringify(stateObj)).toString("base64");
   const headersList = await headers();
   const host = headersList.get("host") || "localhost:3000";
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
