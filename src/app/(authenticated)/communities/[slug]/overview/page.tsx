@@ -1,8 +1,8 @@
 import { getCommunity } from "@/app/actions/communities/get";
 import Shortcuts from "@/components/shortcuts";
 
+import ImpactReports from "@/components/impact-reports/impact-reports";
 import { getTranslations } from "next-intl/server";
-import RewardRecommendations from "./components/reward-recommendations";
 
 export default async function Overview({ params }: { params: Promise<{ slug: string }> }) {
   const t = await getTranslations("overview");
@@ -21,7 +21,7 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
 
   return (
     <div className="space-y-6">
-      <RewardRecommendations community={community} />
+      <ImpactReports snapshot={community.snapshot.metadata} />
       <div>
         <Shortcuts community={community} />
       </div>

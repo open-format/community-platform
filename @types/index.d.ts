@@ -285,11 +285,6 @@ interface ImpactReport {
   channelBreakdown: ChannelBreakdown[];
 }
 
-interface ImpactReportsProps {
-  communityId: string;
-  agentId?: string;
-}
-
 type RewardUrlEvidence = {
   title: string;
   url: string;
