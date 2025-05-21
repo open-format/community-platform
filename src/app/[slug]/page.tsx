@@ -6,23 +6,24 @@ import CommunityProfile from "@/components/community-profile";
 import Leaderboard from "@/components/leaderboard";
 import Tiers from "@/components/tiers";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { fetchCommunity, fetchUserProfile, generateLeaderboard } from "@/lib/openformat";
+import { fetchUserProfile, generateLeaderboard } from "@/lib/openformat";
 import { cn } from "@/lib/utils";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { formatEther } from "viem";
+import { getCommunity } from "../actions/communities/get";
 
 export default async function CommunityPage({ params }: { params: Promise<{ slug: string }> }) {
   const t = await getTranslations("community");
   const slug = (await params).slug;
-  const community = await fetchCommunity(slug);
-  const leaderboard = await generateLeaderboard(slug, community.metadata.token_to_display);
+  const community = await getCommunity(slug);
+  const leaderboard = await generateLeaderboard(community);
   const profile = await fetchUserProfile(slug);
 
   const currentPoints = profile?.tokenBalances?.find(
     (token) =>
       token.token.id === community?.metadata.token_to_display &&
-      !community?.metadata.hidden_tokens?.includes(token.token.id)
+      !community?.metadata.hidden_tokens?.includes(token.token.id),
   )?.balance;
 
   if (!community) {
@@ -46,17 +47,23 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
     <div
       className={cn(
         "max-w-prose mx-auto space-y-4 p-5 rounded-xl bg-background sticky top-0 ",
-        community?.metadata?.dark_mode ? "dark" : "light"
+        community?.metadata?.dark_mode ? "dark" : "light",
       )}
     >
       {/* Community Profile */}
       <CommunityProfile />
 
       {/* Community Banner */}
-      <CommunityBanner banner_url={community.metadata.banner_url} accent_color={community.metadata.accent_color} />
+      <CommunityBanner
+        banner_url={community.metadata.banner_url}
+        accent_color={community.metadata.accent_color}
+      />
 
       {/* Community Info */}
-      <CommunityInfo title={community?.metadata?.title} description={community?.metadata?.description} />
+      <CommunityInfo
+        title={community?.metadata?.title}
+        description={community?.metadata?.description}
+      />
 
       {/* Tiers */}
       {community.metadata.tiers && community.metadata.tiers.length > 0 && currentPoints && (
@@ -82,14 +89,8 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
         <TabsContent value="leaderboard">
           <Leaderboard
             data={leaderboard || []}
-            metadata={{
-              ...community.metadata,
-              user_label: community?.metadata?.user_label,
-              token_label: community?.metadata?.token_label,
-              token_to_display: community?.metadata?.token_to_display,
-            }}
-            showSocialHandles={community?.metadata?.show_social_handles}
-            tokens={community.tokens}
+            community={community}
+            tokens={community.onchainData.tokens}
             slug={slug}
           />
         </TabsContent>

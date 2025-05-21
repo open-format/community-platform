@@ -6,16 +6,30 @@ import { startTransition } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { updateCommunity } from "@/app/actions/communities/update";
 import CommunityPreview from "@/components/community-preview";
 import TokenSelector from "@/components/token-selector";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import type { Chain } from "@/constants/chains";
-import { isSlugAvailable, updateCommunity } from "@/db/queries/communities";
+import { isSlugAvailable } from "@/db/queries/communities";
 import { revalidate } from "@/lib/openformat";
 import { filterVisibleTokens } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
@@ -41,10 +55,10 @@ export default function CommunitySettingsForm({
       .max(2000, t("validation.descriptionMax"))
       .optional()
       .or(z.literal("")),
-    accent_color: z.string().min(3),
-    user_label: z.string().min(3),
-    dark_mode: z.boolean().default(false),
-    token_to_display: z.string().min(3),
+    accentColor: z.string().min(3),
+    userLabel: z.string().min(3),
+    darkMode: z.boolean().default(false),
+    tokenToDisplay: z.string().min(3),
     slug: z
       .string()
       .min(1, t("validation.slugRequired"))
@@ -53,15 +67,15 @@ export default function CommunitySettingsForm({
           .toLowerCase()
           .replace(/[^a-z0-9-_]/g, "-")
           .replace(/-+/g, "-")
-          .replace(/^-|-$/g, "")
+          .replace(/^-|-$/g, ""),
       ),
-    banner_url: z
+    bannerUrl: z
       .string()
       .optional()
       .refine((val) => {
         return !val || (val.startsWith("http") && val.match(/\.(jpg|jpeg|png|gif|webp)$/i));
       }, t("validation.invalidImageUrl")),
-    show_social_handles: z.boolean().default(false),
+    showSocialHandles: z.boolean().default(false),
     tiers: z.array(
       z.object({
         name: z.string().min(1, t("validation.nameRequired")),
@@ -71,10 +85,12 @@ export default function CommunitySettingsForm({
             invalid_type_error: t("validation.pointsRequired"),
           })
           .min(0, t("validation.pointsMin")),
-        color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, t("validation.invalidColorHex")),
+        color: z
+          .string()
+          .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, t("validation.invalidColorHex")),
         tier_id: z.string().optional(),
         community_id: z.string().optional(),
-      })
+      }),
     ),
   });
 
@@ -84,17 +100,17 @@ export default function CommunitySettingsForm({
     resolver: zodResolver(FormSchema),
     mode: "onBlur",
     defaultValues: {
-      title: community.metadata?.title ?? "",
-      description: community.metadata?.description ?? "",
-      accent_color: community.metadata?.accent_color ?? "#6366F1",
-      user_label: community.metadata?.user_label ?? t("sections.language.fields.userLabel.defaultValue"),
-      slug: community.metadata?.slug ?? "",
-      dark_mode: community.metadata?.dark_mode ?? false,
-      banner_url: community.metadata?.banner_url ?? "",
-      token_to_display: community.metadata.token_to_display ?? community.tokens[0]?.id,
-      show_social_handles: community.metadata?.show_social_handles ?? false,
+      title: community.name ?? "",
+      description: community.description ?? "",
+      accentColor: community.accentColor ?? "#6366F1",
+      userLabel: community.userLabel ?? t("sections.language.fields.userLabel.defaultValue"),
+      slug: community.slug ?? "",
+      darkMode: community.darkMode ?? false,
+      bannerUrl: community.bannerUrl ?? "",
+      tokenToDisplay: community.tokenToDisplay ?? community.onchainData?.tokens[0]?.id,
+      showSocialHandles: community.showSocialHandles ?? false,
       tiers:
-        community.metadata?.tiers?.map((tier) => ({
+        community.tiers?.map((tier) => ({
           name: tier.name,
           points_required: tier.points_required,
           color: tier.color,
@@ -119,15 +135,12 @@ export default function CommunitySettingsForm({
         // Track deleted tiers
         const originalTierIds = new Set(community.metadata?.tiers?.map((tier) => tier.id) || []);
         const currentTierIds = new Set(
-          data.tiers.map((tier) => tier.tier_id).filter((id): id is string => id !== undefined)
+          data.tiers.map((tier) => tier.tier_id).filter((id): id is string => id !== undefined),
         );
 
         const deletedTierIds = Array.from(originalTierIds).filter((id) => !currentTierIds.has(id));
 
-        await updateCommunity(community.id, {
-          ...data,
-          deletedTierIds,
-        });
+        await updateCommunity(community.id, data);
 
         toast.success(t("messages.updateSuccess"));
         await revalidate();
@@ -165,7 +178,9 @@ export default function CommunitySettingsForm({
                           />
                         </FormControl>
                         <FormMessage />
-                        <FormDescription>{t("sections.general.fields.name.description")}</FormDescription>
+                        <FormDescription>
+                          {t("sections.general.fields.name.description")}
+                        </FormDescription>
                       </FormItem>
                     )}
                   />
@@ -186,7 +201,9 @@ export default function CommunitySettingsForm({
                           />
                         </FormControl>
                         <FormMessage />
-                        <FormDescription>{t("sections.general.fields.description.description")}</FormDescription>
+                        <FormDescription>
+                          {t("sections.general.fields.description.description")}
+                        </FormDescription>
                       </FormItem>
                     )}
                   />
@@ -211,15 +228,21 @@ export default function CommunitySettingsForm({
                               field.onChange(transformed);
 
                               // Only check availability if there's a value and it's different from current
-                              if (transformed && transformed !== community.metadata.slug) {
-                                const isAvailable = await isSlugAvailable(transformed, community.id);
+                              if (transformed && transformed !== community.slug) {
+                                const isAvailable = await isSlugAvailable(
+                                  transformed,
+                                  community.id,
+                                );
                                 if (!isAvailable) {
                                   form.setError("slug", {
                                     message: t("messages.slugTaken"),
                                   });
                                 }
                                 // Only clear errors if we're checking availability
-                                else if (form.getFieldState("slug").error?.message === t("messages.slugTaken")) {
+                                else if (
+                                  form.getFieldState("slug").error?.message ===
+                                  t("messages.slugTaken")
+                                ) {
                                   form.clearErrors("slug");
                                 }
                               }
@@ -227,7 +250,9 @@ export default function CommunitySettingsForm({
                           />
                         </FormControl>
                         <FormMessage />
-                        <FormDescription>{t("sections.general.fields.slug.description")}</FormDescription>
+                        <FormDescription>
+                          {t("sections.general.fields.slug.description")}
+                        </FormDescription>
                       </FormItem>
                     )}
                   />
@@ -239,7 +264,7 @@ export default function CommunitySettingsForm({
                 <AccordionContent className="space-y-4">
                   <FormField
                     control={form.control}
-                    name="dark_mode"
+                    name="darkMode"
                     render={({ field }) => (
                       <FormItem className="flex flex-col space-y-4">
                         <FormLabel>{t("sections.appearance.fields.darkMode.label")}</FormLabel>
@@ -247,14 +272,16 @@ export default function CommunitySettingsForm({
                           <Switch checked={field.value} onCheckedChange={field.onChange} />
                         </FormControl>
                         <FormMessage />
-                        <FormDescription>{t("sections.appearance.fields.darkMode.description")}</FormDescription>
+                        <FormDescription>
+                          {t("sections.appearance.fields.darkMode.description")}
+                        </FormDescription>
                       </FormItem>
                     )}
                   />
 
                   <FormField
                     control={form.control}
-                    name="accent_color"
+                    name="accentColor"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t("sections.appearance.fields.accentColor.label")}</FormLabel>
@@ -271,14 +298,16 @@ export default function CommunitySettingsForm({
                           />
                         </FormControl>
                         <FormMessage />
-                        <FormDescription>{t("sections.appearance.fields.accentColor.description")}</FormDescription>
+                        <FormDescription>
+                          {t("sections.appearance.fields.accentColor.description")}
+                        </FormDescription>
                       </FormItem>
                     )}
                   />
 
                   <FormField
                     control={form.control}
-                    name="banner_url"
+                    name="bannerUrl"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t("sections.appearance.fields.bannerImage.label")}</FormLabel>
@@ -308,21 +337,25 @@ export default function CommunitySettingsForm({
                           />
                         </FormControl>
                         <FormMessage />
-                        <FormDescription>{t("sections.appearance.fields.bannerImage.description")}</FormDescription>
+                        <FormDescription>
+                          {t("sections.appearance.fields.bannerImage.description")}
+                        </FormDescription>
                       </FormItem>
                     )}
                   />
 
                   <FormField
                     control={form.control}
-                    name="show_social_handles"
+                    name="showSocialHandles"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
                           <FormLabel className="text-base">
                             {t("sections.appearance.fields.socialHandles.label")}
                           </FormLabel>
-                          <FormDescription>{t("sections.appearance.fields.socialHandles.description")}</FormDescription>
+                          <FormDescription>
+                            {t("sections.appearance.fields.socialHandles.description")}
+                          </FormDescription>
                         </div>
                         <FormControl>
                           <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -338,7 +371,7 @@ export default function CommunitySettingsForm({
                 <AccordionContent className="space-y-4">
                   <FormField
                     control={form.control}
-                    name="user_label"
+                    name="userLabel"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t("sections.language.fields.userLabel.label")}</FormLabel>
@@ -346,7 +379,9 @@ export default function CommunitySettingsForm({
                           <Input {...field} />
                         </FormControl>
                         <FormMessage />
-                        <FormDescription>{t("sections.language.fields.userLabel.description")}</FormDescription>
+                        <FormDescription>
+                          {t("sections.language.fields.userLabel.description")}
+                        </FormDescription>
                       </FormItem>
                     )}
                   />
@@ -365,7 +400,7 @@ export default function CommunitySettingsForm({
                               const values = form.getValues("tiers");
                               const currentName = values[index].name.toLowerCase();
                               const duplicateExists = values.some(
-                                (tier, i) => i !== index && tier.name.toLowerCase() === currentName
+                                (tier, i) => i !== index && tier.name.toLowerCase() === currentName,
                               );
 
                               if (duplicateExists) {
@@ -403,7 +438,11 @@ export default function CommunitySettingsForm({
                       </div>
 
                       <div className="flex flex-col">
-                        <Input {...form.register(`tiers.${index}.color`)} type="color" className="w-20" />
+                        <Input
+                          {...form.register(`tiers.${index}.color`)}
+                          type="color"
+                          className="w-20"
+                        />
                         {form.formState.errors.tiers?.[index]?.color?.message && (
                           <span className="text-sm text-destructive mt-1">
                             {form.formState.errors.tiers[index]?.color?.message}
@@ -439,17 +478,20 @@ export default function CommunitySettingsForm({
                   {/* Token */}
                   <FormField
                     control={form.control}
-                    name="token_to_display"
+                    name="tokenToDisplay"
                     render={({ field }) => (
                       <FormItem className="flex flex-col gap-2">
                         <FormDescription>{t("sections.tokens.description")}</FormDescription>
                         <FormControl>
                           <TokenSelector
-                            tokens={filterVisibleTokens(community.tokens, community.metadata.hidden_tokens)}
+                            tokens={filterVisibleTokens(
+                              community.onchainData?.tokens,
+                              community.hiddenTokens,
+                            )}
                             badges={[]}
                             value={field.value}
                             onChange={field.onChange}
-                            defaultValue={form.getValues("token_to_display")}
+                            defaultValue={form.getValues("tokenToDisplay")}
                           />
                         </FormControl>
                         <FormMessage />

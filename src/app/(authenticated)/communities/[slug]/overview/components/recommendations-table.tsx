@@ -28,7 +28,7 @@ export default function RecommendationsTable({
   isLoading = false,
 }: RecommendationsTableProps) {
   const t = useTranslations("overview.rewardRecommendations");
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([{ id: "created_at", desc: true }]);
 
   const tableColumns = [
     ...columns(t),
