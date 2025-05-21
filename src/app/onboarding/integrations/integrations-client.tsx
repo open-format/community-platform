@@ -1,20 +1,17 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
-import { Disc, MessageCircle, Github, Database } from "lucide-react";
-import posthog from "posthog-js";
-import Link from "next/link";
+import { Disc, MessageCircle, Github, Database, Loader2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { usePollingJob } from "@/hooks/useJobStatus";
+import PlatformCard from "./platform-card";
 
 const platforms = [
   {
     key: "discord",
-    icon: <Disc className="h-6 w-6" />,
+    icon: Disc,
     comingSoon: false,
     connectUrl: "/api/discord/start",
     titleKey: "discord",
@@ -22,36 +19,30 @@ const platforms = [
   },
   {
     key: "telegram",
-    icon: <MessageCircle className="h-6 w-6" />,
+    icon: MessageCircle,
     comingSoon: true,
     titleKey: "telegram",
     descriptionKey: "telegramDescComingSoon"
   },
   {
     key: "github",
-    icon: <Github className="h-6 w-6" />,
+    icon: Github,
     comingSoon: true,
     titleKey: "github",
     descriptionKey: "githubDescComingSoon"
   },
   {
     key: "dune",
-    icon: <Database className="h-6 w-6" />,
+    icon: Database,
     comingSoon: true,
     titleKey: "dune",
     descriptionKey: "duneDescComingSoon"
   },
 ];
 
-interface JobResponse {
-  jobId: string;
-  status: string;
-  error?: string;
-}
-
 export default function IntegrationsClient({ 
   discordConnected,
-  communityId 
+  communityId,
 }: { 
   discordConnected: boolean;
   communityId?: string;
@@ -64,53 +55,39 @@ export default function IntegrationsClient({
   const [reportJobId, setReportJobId] = useState<string | null>(null);
   const [recommendationsJobId, setRecommendationsJobId] = useState<string | null>(null);
   const jobsStartedRef = useRef(false);
-  const [interested, setInterested] = useState<Record<string, boolean>>({});
 
-  // Report generation job
-  const {
-    startJob: startReportJob,
-    startJobAsync: startReportJobAsync,
-    status: reportStatus,
-    isLoading: isReportLoading,
-  } = usePollingJob({
+  const { startJobAsync: startReportJobAsync } = usePollingJob({
     startJobEndpoint: "/api/onboarding/start-report-job",
     statusEndpoint: (jobId) => `/api/onboarding/report-job-status?jobId=${jobId}`,
   });
 
-  // Reward recommendations job
-  const {
-    startJob: startRecommendationsJob,
-    startJobAsync: startRecommendationsJobAsync,
-    status: recommendationsStatus,
-    isLoading: isRecommendationsLoading,
-  } = usePollingJob({
+  const { startJobAsync: startRecommendationsJobAsync } = usePollingJob({
     startJobEndpoint: "/api/onboarding/start-recommendations-job",
     statusEndpoint: (jobId) => `/api/onboarding/recommendations-job-status?jobId=${jobId}`,
   });
 
   const startJobs = useCallback(async () => {
-    if (!communityId || jobsStartedRef.current) {
+    if (!communityId || !guildId || jobsStartedRef.current) {
       return;
     }
     try {
       jobsStartedRef.current = true;
       const [reportResponse, recommendationsResponse] = await Promise.all([
-        startReportJobAsync({ platformId: guildId || "", communityId }),
-        startRecommendationsJobAsync({ platformId: guildId || "", communityId })
+        startReportJobAsync?.({ platformId: guildId }),
+        startRecommendationsJobAsync?.({ platformId: guildId, communityId })
       ]);
       if (reportResponse?.jobId) {
         setReportJobId(reportResponse.jobId);
       }
-      const recJobId = recommendationsResponse?.jobId || recommendationsResponse?.job_id;
-      if (recJobId) {
-        setRecommendationsJobId(recJobId);
+      if (recommendationsResponse?.job_id) {
+        setRecommendationsJobId(recommendationsResponse.job_id);
       }
     } catch (error) {
       console.error("Failed to start jobs:", error);
       toast.error(t("errors.jobStartFailed"));
       jobsStartedRef.current = false;
     }
-  }, [communityId, startReportJobAsync, startRecommendationsJobAsync, t, guildId]);
+  }, [communityId, guildId, startReportJobAsync, startRecommendationsJobAsync, t]);
 
   useEffect(() => {
     if (discordConnected && communityId && !jobsStartedRef.current) {
@@ -124,74 +101,64 @@ export default function IntegrationsClient({
     }
   }, [error, t]);
 
+  const handleRetry = () => {
+    router.push('/onboarding/integrations');
+  };
+
+  // Loading state is true only while we're waiting for job IDs
+  const isLoading = discordConnected && (!reportJobId || !recommendationsJobId);
+
   return (
     <div>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2">
         {platforms.map((platform) => (
-          <Card key={platform.key} className="rounded-lg border bg-card text-card-foreground shadow-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                {platform.icon}
-                {t(platform.titleKey)}
-              </CardTitle>
-              <CardDescription>
-                {t(platform.descriptionKey)}
-              </CardDescription>
-            </CardHeader>
-            <CardFooter>
-              {platform.comingSoon ? (
-                <Button
-                  className={`w-full ${interested[platform.key] ? "bg-green-500 hover:bg-green-600 text-white" : ""}`}
-                  disabled={!!interested[platform.key]}
-                  onClick={() => {
-                    posthog?.capture?.(`im_interested_${platform.key}`);
-                    setInterested((prev) => ({ ...prev, [platform.key]: true }));
-                  }}
-                >
-                  {interested[platform.key] ? t("interested") : t("imInterested")}
-                </Button>
-              ) : (
-                platform.key === "discord" ? (
-                  discordConnected ? (
-                    <Button className="w-full bg-green-500 hover:bg-green-600 text-white" disabled>
-                      {t("connected")}
-                    </Button>
-                  ) : (
-                    <Link href={platform.connectUrl!} className="w-full">
-                      <Button
-                        className="w-full"
-                        onClick={() => {
-                          posthog?.capture?.("discord_connect_initiated");
-                        }}
-                      >
-                        {t("connect")}
-                      </Button>
-                    </Link>
-                  )
-                ) : (
-                  <Link href={platform.connectUrl!} className="w-full">
-                    <Button
-                      className="w-full"
-                      onClick={() => {
-                        posthog?.capture?.(`connect_initiated_${platform.key}`);
-                      }}
-                    >
-                      {t("connect")}
-                    </Button>
-                  </Link>
-                )
-              )}
-            </CardFooter>
-          </Card>
+          <PlatformCard
+            key={platform.key}
+            icon={platform.icon}
+            comingSoon={platform.comingSoon}
+            connectUrl={platform.connectUrl}
+            titleKey={platform.titleKey}
+            descriptionKey={platform.descriptionKey}
+            discordConnected={platform.key === "discord" ? discordConnected : undefined}
+          />
         ))}
       </div>
-      {reportJobId && recommendationsJobId && (
+      
+      {/* Show continue button only after connection */}
+      {discordConnected && (
         <div className="mt-6 flex justify-end">
-          <Button 
+          <button 
+            className={`rounded-lg font-semibold py-2 px-6 shadow transition-colors duration-150 ${
+              isLoading 
+                ? "bg-zinc-800 text-gray-400 cursor-not-allowed" 
+                : "bg-yellow-400 text-black hover:bg-yellow-300"
+            }`}
             onClick={() => router.push(`/onboarding/setup?guildId=${guildId}&reportJobId=${reportJobId}&recommendationsJobId=${recommendationsJobId}`)}
+            disabled={isLoading}
           >
-            {t("continue")}
-          </Button>
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {t("starting")}
+              </div>
+            ) : (
+              t("continue")
+            )}
+          </button>
+        </div>
+      )}
+
+      {error && (
+        <div className="mt-6 flex flex-col items-end gap-4">
+          <div className="text-red-400 text-sm">
+            {t("error")}
+          </div>
+          <button 
+            className="rounded-lg bg-zinc-800 text-white font-semibold py-2 px-6 border border-zinc-700 hover:bg-zinc-700 transition-colors duration-150"
+            onClick={handleRetry}
+          >
+            {t("retryConnection")}
+          </button>
         </div>
       )}
     </div>
