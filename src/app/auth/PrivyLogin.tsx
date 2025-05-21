@@ -1,6 +1,5 @@
 "use client";
 
-import { agentApiClient } from "@/lib/api";
 import { useLogin, usePrivy } from "@privy-io/react-auth";
 import axios from "axios";
 import { Disc, Github, Mail, Send } from "lucide-react";
@@ -8,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function PrivyLogin() {
-  const { ready, logout} = usePrivy();
+  const { ready, logout } = usePrivy();
   const { login: openLoginModal } = useLogin();
   const router = useRouter();
   const [error, setError] = useState("");
@@ -17,12 +16,13 @@ export function PrivyLogin() {
     onComplete: async ({ user, isNewUser }) => {
       if (user.wallet?.address && isNewUser) {
         try {
-          await agentApiClient.post('/users', {
+          await axios.post("/api/users/create", {
             did: user.id,
           });
+
           return router.push("/onboarding");
         } catch (error) {
-            console.log(error);
+          console.log(error);
           if (axios.isAxiosError(error)) {
             setError("An error occurred while creating your account. Please try again.");
             return logout();
@@ -49,37 +49,40 @@ export function PrivyLogin() {
         <div className="w-full flex flex-col gap-3">
           <button
             className="flex items-center gap-2 bg-zinc-800 rounded-lg px-4 py-2 hover:bg-zinc-700 transition"
-            onClick={() => openLoginModal({ loginMethods: ['email'] })}
+            onClick={() => openLoginModal({ loginMethods: ["email"] })}
           >
             <Mail className="h-5 w-5 text-gray-400" /> Email
           </button>
           <button
             className="flex items-center gap-2 bg-zinc-800 rounded-lg px-4 py-2 hover:bg-zinc-700 transition"
-            onClick={() => openLoginModal({ loginMethods: ['discord'] })}
+            onClick={() => openLoginModal({ loginMethods: ["discord"] })}
           >
             <Disc className="h-5 w-5 text-indigo-400" /> Discord
           </button>
           <button
             className="flex items-center gap-2 bg-zinc-800 rounded-lg px-4 py-2 hover:bg-zinc-700 transition"
-            onClick={() => openLoginModal({ loginMethods: ['github'] })}
+            onClick={() => openLoginModal({ loginMethods: ["github"] })}
           >
             <Github className="h-5 w-5 text-gray-300" /> GitHub
           </button>
           <button
             className="flex items-center gap-2 bg-zinc-800 rounded-lg px-4 py-2 hover:bg-zinc-700 transition"
-            onClick={() => openLoginModal({ loginMethods: ['telegram'] })}
+            onClick={() => openLoginModal({ loginMethods: ["telegram"] })}
           >
             <Send className="h-5 w-5 text-blue-400" /> Telegram
           </button>
           <button
             className="flex items-center gap-2 bg-zinc-800 rounded-lg px-4 py-2 hover:bg-zinc-700 transition"
-            onClick={() => openLoginModal({ loginMethods: ['wallet'] })}
+            onClick={() => openLoginModal({ loginMethods: ["wallet"] })}
           >
-            <span className="h-5 w-5 inline-block bg-gradient-to-tr from-indigo-400 to-purple-400 rounded-full" /> Continue with a wallet
+            <span className="h-5 w-5 inline-block bg-gradient-to-tr from-indigo-400 to-purple-400 rounded-full" />{" "}
+            Continue with a wallet
           </button>
         </div>
-        <div className="mt-8 text-xs text-gray-500 flex items-center gap-1">Protected by <span className="font-bold">● privy</span></div>
+        <div className="mt-8 text-xs text-gray-500 flex items-center gap-1">
+          Protected by <span className="font-bold">● privy</span>
+        </div>
       </div>
     </div>
   );
-} 
+}
