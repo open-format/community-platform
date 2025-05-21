@@ -1,9 +1,10 @@
 "use client";
 
+import { agentApiClient } from "@/lib/api";
 import { useLogin, usePrivy } from "@privy-io/react-auth";
-import { useRouter } from "next/navigation";
-import { Mail, Disc, Github, Send } from "lucide-react";
 import axios from "axios";
+import { Disc, Github, Mail, Send } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function PrivyLogin() {
@@ -14,12 +15,12 @@ export function PrivyLogin() {
 
   useLogin({
     onComplete: async ({ user, isNewUser }) => {
-      if (isNewUser && user.wallet?.address) {
+      if (user.wallet?.address && isNewUser) {
         try {
-          const response = await axios.post('/api/v1/users', {
+          await agentApiClient.post('/users', {
             did: user.id,
           });
-          router.push("/onboarding")
+          return router.push("/onboarding");
         } catch (error) {
             console.log(error);
           if (axios.isAxiosError(error)) {
@@ -28,7 +29,7 @@ export function PrivyLogin() {
           }
         }
       }
-      router.push("/communities");
+      return router.push("/communities");
     },
   });
 

@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { usePollingJob } from "@/hooks/useJobStatus";
+import { AlertCircle, BarChart2, CheckCircle, FileText, Loader2, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { AlertCircle, CheckCircle, Loader2, BarChart2, Users, FileText, Check } from "lucide-react";
 
 type JobStatus = "idle" | "pending" | "processing" | "completed" | "failed";
 
@@ -28,7 +28,7 @@ export default function SetupClient() {
   }, [searchParams]);
 
   // Report generation job status
-  const { 
+  const {
     status: reportStatus, 
     isLoading: isReportLoading,
     message: reportMessage 
@@ -193,7 +193,7 @@ export default function SetupClient() {
           <div className="flex justify-end mt-6">
             <Button 
               className="rounded-lg bg-yellow-400 text-black font-semibold py-2 px-6 shadow hover:bg-yellow-300 transition-colors duration-150"
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push("/communities")}
               disabled={isContinueLoading}
             >
               {isContinueLoading ? (
