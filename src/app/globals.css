@@ -90,3 +90,165 @@ body {
   backdrop-filter: none;
   filter: none;
 }
+
+.onboarding-dark .bg-card,
+.onboarding-dark .bg-white,
+.onboarding-dark .Card,
+.onboarding-dark .CardContent,
+.onboarding-dark .bg-neutral-100,
+.onboarding-dark .bg-gray-100 {
+  background-color: #18181b !important;
+  color: #fff !important;
+}
+.onboarding-dark .text-muted-foreground,
+.onboarding-dark .text-gray-900,
+.onboarding-dark .text-black,
+.onboarding-dark .text-neutral-900 {
+  color: #d1d5db !important;
+}
+.onboarding-dark .border,
+.onboarding-dark .border-gray-200,
+.onboarding-dark .border-neutral-200 {
+  border-color: #27272a !important;
+}
+.onboarding-dark .text-primary {
+  color: #fff !important;
+}
+.onboarding-dark .bg-accent {
+  background-color: #232326 !important;
+}
+.onboarding-dark .bg-background {
+  background-color: #18181b !important;
+}
+.onboarding-dark .bg-muted {
+  background-color: #232326 !important;
+}
+.onboarding-dark .text-accent-foreground {
+  color: #fff !important;
+}
+.onboarding-dark .text-secondary-foreground {
+  color: #fff !important;
+}
+.onboarding-dark .bg-secondary {
+  background-color: #232326 !important;
+}
+.onboarding-dark .bg-popover {
+  background-color: #232326 !important;
+}
+.onboarding-dark .text-popover-foreground {
+  color: #fff !important;
+}
+
+/* Chart SVG text and axes */
+.onboarding-dark svg text,
+.onboarding-dark .recharts-legend-item-text {
+  fill: #fff !important;
+  color: #fff !important;
+}
+
+/* Modals/dialogs */
+.onboarding-dark .DialogContent,
+.onboarding-dark .dialog-content,
+.onboarding-dark .modal,
+.onboarding-dark .modal-content {
+  background-color: #18181b !important;
+  color: #fff !important;
+  border-color: #27272a !important;
+}
+.onboarding-dark .DialogTitle,
+.onboarding-dark .DialogHeader,
+.onboarding-dark .DialogDescription {
+  color: #fff !important;
+}
+.onboarding-dark .DialogClose {
+  color: #fff !important;
+}
+
+/* Remove nested card color contrast issues */
+.onboarding-dark .bg-zinc-800,
+.onboarding-dark .bg-zinc-900 {
+  background-color: #18181b !important;
+  color: #fff !important;
+}
+
+/* Chart styles for onboarding */
+.onboarding-dark .recharts-wrapper,
+.onboarding-dark .recharts-surface,
+.onboarding-dark .recharts-layer {
+  background-color: transparent !important;
+}
+
+.onboarding-dark .recharts-cartesian-grid-horizontal line,
+.onboarding-dark .recharts-cartesian-grid-vertical line {
+  stroke: #27272a !important;
+}
+
+.onboarding-dark .recharts-cartesian-axis line {
+  stroke: #27272a !important;
+}
+
+.onboarding-dark .recharts-cartesian-axis-tick-value,
+.onboarding-dark .recharts-legend-item-text {
+  fill: #d1d5db !important;
+  color: #d1d5db !important;
+}
+
+.onboarding-dark .recharts-tooltip-wrapper {
+  background-color: #18181b !important;
+  border: 1px solid #27272a !important;
+  border-radius: 0.5rem !important;
+}
+
+.onboarding-dark .recharts-tooltip-label {
+  color: #d1d5db !important;
+}
+
+.onboarding-dark .recharts-bar-rectangle {
+  transition: opacity 0.2s ease;
+}
+
+.onboarding-dark .recharts-bar-rectangle:hover {
+  opacity: 0.8;
+}
+
+/* Remove nested box look from charts */
+.onboarding-dark .Card,
+.onboarding-dark .CardContent,
+.onboarding-dark .CardHeader {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.onboarding-dark .CardTitle {
+  color: #fff !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 1rem !important;
+}
+
+/* Chart container styles */
+.onboarding-dark .chart-container {
+  background-color: #18181b !important;
+  border: 1px solid #27272a !important;
+  border-radius: 0.75rem !important;
+  padding: 1rem !important;
+}
+
+/* Onboarding dark theme: enforce consistent backgrounds and borders for all onboarding cards, charts, contributors, and topics */
+.onboarding-dark .bg-zinc-800,
+.onboarding-dark .bg-zinc-900,
+.onboarding-dark .Card,
+.onboarding-dark .CardContent,
+.onboarding-dark .CardHeader,
+.onboarding-dark .chart-container {
+  background-color: #18181b !important;
+  color: #fff !important;
+  border: 1px solid #27272a !important;
+}
+.onboarding-dark .border-zinc-800 {
+  border-color: #27272a !important;
+}
+.onboarding-dark .text-white {
+  color: #fff !important;
+}

@@ -34,14 +34,14 @@ interface LeaderboardEntry {
   type?: string;
 }
 
-const apiClient = axios.create({
+export const apiClient = axios.create({
   baseURL: config.OPENFORMAT_API_URL,
   headers: {
     "x-api-key": config.OPENFORMAT_API_KEY,
   },
 });
 
-const agentApiClient = axios.create({
+export const agentApiClient = axios.create({
   baseURL: config.COMMUNITY_AGENT_API_URL,
   headers: {
     Authorization: `Bearer ${config.COMMUNITY_AGENT_AUTH_TOKEN}`,
@@ -719,9 +719,7 @@ export async function deleteRewardRecommendation(reward_recommendation_id: strin
   }
 }
 
-export async function generateRewardRecommendations(communityId: string) {
-  console.log("communityId", communityId);
-  const platformId = "932238833146277958";
+export async function generateRewardRecommendations(communityId: string, platformId: string) {
   try {
     const response = await agentApiClient.post(
       "/rewards/recommendations",
@@ -738,7 +736,7 @@ export async function generateRewardRecommendations(communityId: string) {
     );
 
     if (response.status === 200) {
-      return response.data.rewards;
+      return response.data;
     }
     return null;
   } catch (error) {

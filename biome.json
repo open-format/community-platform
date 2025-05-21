@@ -20,6 +20,6 @@
     "enabled": true
   },
   "files": {
-    "ignore": ["**/node_modules/**", "**/dist/**", "**/build/**", "**/.next/**"]
+    "ignore": ["**/node_modules/**", "**/dist/**", "**/build/**", "**/.next/**", "**/drizzle/**"]
   }
 }

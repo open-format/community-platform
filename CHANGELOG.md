@@ -1,3 +1,19 @@
+# [0.22.0](https://github.com/open-format/community-platform/compare/v0.21.0...v0.22.0) (2025-05-14)
+
+
+### Bug Fixes
+
+* update button text for Discord connection page ([5d28e5f](https://github.com/open-format/community-platform/commit/5d28e5f85dbf49be3ca95ba9dd43faff6ef34b02))
+* update subgraph URL for arbitrumSepolia chain configuration ([e1460ee](https://github.com/open-format/community-platform/commit/e1460ee89dd8aec813a91418e18ccccdad6927c7))
+
+
+### Features
+
+* add Discord OAuth2 callback and start routes ([79a60a9](https://github.com/open-format/community-platform/commit/79a60a9f04bb6c10c50a96c49e2ed3fbd235a004))
+* add example snapshot step to onboarding process ([b4ef62b](https://github.com/open-format/community-platform/commit/b4ef62b96c1cac411bbc9ef693e23d6bcf05092c))
+* add onboarding integrations step for community platforms ([1a677a8](https://github.com/open-format/community-platform/commit/1a677a8e95180fc1c3f8457e3466d64dc8934b18))
+* integrate PostHog for analytics tracking ([7d96385](https://github.com/open-format/community-platform/commit/7d963857f6d5185420c3d028f6f84a7a38a6d077))
+
 # [0.21.0](https://github.com/open-format/community-platform/compare/v0.20.0...v0.21.0) (2025-05-01)
 
 
