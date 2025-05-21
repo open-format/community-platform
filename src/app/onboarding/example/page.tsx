@@ -19,7 +19,8 @@ export default async function ExampleSnapshotPage() {
         <header className="text-center mb-10 mt-8">
           <h1 className="text-3xl font-bold text-white mb-3">Community Snapshot Example</h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Here's an example of the insights and reports you'll see after connecting your platforms.
+            Here's an example of the insights and reports you'll see after connecting your
+            platforms.
           </p>
         </header>
         <main>
@@ -28,4 +29,4 @@ export default async function ExampleSnapshotPage() {
       </div>
     </div>
   );
-} 
+}

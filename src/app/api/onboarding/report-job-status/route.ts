@@ -8,7 +8,6 @@ export async function GET(req: NextRequest) {
   }
   try {
     const response = await agentApiClient.get(`/reports/impact/status/${jobId}`);
-    console.log("Report job status response:", response.data);
     return NextResponse.json(response.data);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

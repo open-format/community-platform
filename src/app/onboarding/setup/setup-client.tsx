@@ -14,7 +14,6 @@ export default function SetupClient() {
   const t = useTranslations("onboarding.setup");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const guildId = searchParams.get("guildId");
   
   const [reportJobId, setReportJobId] = useState<string | null>(null);
   const [recommendationsJobId, setRecommendationsJobId] = useState<string | null>(null);
@@ -59,6 +58,10 @@ export default function SetupClient() {
   });
 
   const isComplete = reportStatus === "completed" && recommendationsStatus === "completed";
+
+  // Add loading state for continue button
+  const isContinueLoading = (reportStatus === "pending" || reportStatus === "processing" || 
+                           recommendationsStatus === "pending" || recommendationsStatus === "processing");
 
   // Step data for rendering
   const steps = [
@@ -126,6 +129,18 @@ export default function SetupClient() {
     }
   };
 
+  const handleRetry = (jobType: 'report' | 'recommendations') => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (jobType === 'report') {
+      params.delete('reportJobId');
+      localStorage.removeItem('reportJobId');
+    } else {
+      params.delete('recommendationsJobId');
+      localStorage.removeItem('recommendationsJobId');
+    }
+    router.push(`/onboarding/integrations?${params.toString()}`);
+  };
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col items-center mb-4">
@@ -145,8 +160,18 @@ export default function SetupClient() {
             <div className="flex-1">
               <div className="font-semibold text-white mb-0.5">{step.title}</div>
               <div className="text-gray-400 text-sm mb-1">{step.description}</div>
-              <div className="text-xs text-gray-500">
-                {step.isJob ? getStatusText(step.status as JobStatus) : (step.status === "completed" ? "Completed" : "In progress")}
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-gray-500">
+                  {step.isJob ? getStatusText(step.status as JobStatus) : (step.status === "completed" ? "Completed" : "In progress")}
+                </div>
+                {step.isJob && step.status === "failed" && (
+                  <button
+                    onClick={() => handleRetry(step.key === "insights" ? "recommendations" : "report")}
+                    className="text-xs text-yellow-400 hover:text-yellow-300"
+                  >
+                    {t("retry")}
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -169,8 +194,16 @@ export default function SetupClient() {
             <Button 
               className="rounded-lg bg-yellow-400 text-black font-semibold py-2 px-6 shadow hover:bg-yellow-300 transition-colors duration-150"
               onClick={() => router.push("/dashboard")}
+              disabled={isContinueLoading}
             >
-              {t("continue")}
+              {isContinueLoading ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {t("loading")}
+                </div>
+              ) : (
+                t("continue")
+              )}
             </Button>
           </div>
         </>

@@ -8,6 +8,7 @@ type JobStatus = "idle" | "pending" | "processing" | "running" | "completed" | "
 
 interface JobResponse {
   jobId?: string;
+  job_id?: string;  // For recommendations job
   status: JobStatus;
   error?: string;
   message?: string;
@@ -28,7 +29,7 @@ export function usePollingJob({
 }: UsePollingJobOptions) {
   const [jobId, setJobId] = useState<string | undefined>(initialJobId);
   
-  const startMutation = useMutation<JobResponse, Error, { platformId: string; communityId: string }>({
+  const startMutation = useMutation<JobResponse, Error, { platformId: string; communityId?: string }>({
     mutationFn: async ({ platformId, communityId }) => {
       if (!startJobEndpoint) {
         throw new Error("Start job endpoint not provided");
@@ -36,7 +37,7 @@ export function usePollingJob({
       const response = await fetch(startJobEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ platformId, communityId }),
+        body: JSON.stringify(communityId ? { platformId, communityId } : { platformId }),
       });
       if (!response.ok) {
         const errorText = await response.text();
@@ -44,7 +45,7 @@ export function usePollingJob({
         throw new Error("Failed to start job");
       }
       const data = await response.json();
-      setJobId(data.jobId);  // Update jobId when job starts
+      setJobId(data.jobId || data.job_id);
       return data as JobResponse;
     },
     onError: (error) => {

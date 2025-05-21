@@ -1,46 +1,30 @@
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import IntegrationsClient from "./integrations-client";
-import { agentApiClient } from "@/lib/openformat";
-import { redirect } from "next/navigation";
 import { Info } from "lucide-react";
-import Link from "next/link";
 
-async function waitForCommunity(guildId: string, maxRetries = 10): Promise<string | undefined> {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      console.log(`Attempt ${i + 1} to fetch community for guild:`, {
-        guildId,
-        url: `/communities/${guildId}`,
-        fullUrl: `${agentApiClient.defaults.baseURL}/communities/${guildId}`
-      });
-      
-      const response = await agentApiClient.get(`/communities/${guildId}`);
-      console.log("Community fetch response:", {
-        status: response.status,
-        data: response.data
-      });
-      
-      if (response.data?.id) {
-        return response.data.id;
-      }
-    } catch (error: unknown) {
-      console.error(`Attempt ${i + 1} failed to fetch community:`, {
-        error,
-        message: error instanceof Error ? error.message : 'Unknown error',
-        response: error instanceof Error && 'response' in error ? {
-          status: (error as any).response?.status,
-          data: (error as any).response?.data
-        } : null
-      });
-
-      if (error instanceof Error && 'response' in error && (error as any).response?.status !== 404) {
-        throw error;
-      }
-      await new Promise(resolve => setTimeout(resolve, 2000));
-    }
-  }
-  return undefined;
+function LoadingSkeleton() {
+  return (
+    <div>
+      <div className="grid gap-6 md:grid-cols-2">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="rounded-xl border border-zinc-800 bg-[#18181b] shadow-sm p-6 flex flex-col justify-between min-h-[180px]"
+          >
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="h-6 w-6 bg-zinc-800 rounded animate-pulse" />
+                <div className="h-6 w-24 bg-zinc-800 rounded animate-pulse" />
+              </div>
+              <div className="h-4 w-48 bg-zinc-800 rounded animate-pulse mb-6" />
+            </div>
+            <div className="h-10 w-full bg-zinc-800 rounded animate-pulse" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default async function PlatformsPage({
@@ -51,17 +35,8 @@ export default async function PlatformsPage({
   const t = await getTranslations("onboarding");
   const params = await searchParams;
   const guildId = params.guildId as string | undefined;
+  const communityId = params.communityId as string | undefined;
   const discordConnected = !!guildId;
-
-  let communityId: string | undefined;
-  if (guildId) {
-    try {
-      communityId = await waitForCommunity(guildId);
-    } catch (error) {
-      console.error("Failed to fetch community after retries:", error);
-      redirect("/onboarding/start");
-    }
-  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-[#111010]">
@@ -92,9 +67,9 @@ export default async function PlatformsPage({
             <li>Provide recommendations for rewarding top contributors</li>
           </ul>
         </div>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<LoadingSkeleton />}>
           <IntegrationsClient 
-            discordConnected={discordConnected} 
+            discordConnected={discordConnected}
             communityId={communityId}
           />
         </Suspense>
