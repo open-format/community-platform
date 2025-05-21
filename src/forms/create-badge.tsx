@@ -6,7 +6,14 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 
@@ -82,10 +89,17 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
       const metadataURI = await uploadMetadata(metadata);
 
       const transactionHash = await writeContract(config, {
-        address: community.id,
+        address: community.communityContractAddress,
         abi: badgeFactoryAbi,
         functionName: "createERC721WithTokenURI",
-        args: [data.name, "BADGE", metadataURI, address as `0x${string}`, 1000, stringToHex("Badge", { size: 32 })],
+        args: [
+          data.name,
+          "BADGE",
+          metadataURI,
+          address as `0x${string}`,
+          1000,
+          stringToHex("Badge", { size: 32 }),
+        ],
       });
 
       await waitForTransactionReceipt(config, { hash: transactionHash });

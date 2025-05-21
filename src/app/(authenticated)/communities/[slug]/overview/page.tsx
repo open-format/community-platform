@@ -1,12 +1,13 @@
-import MetricsSection from "@/components/metrics-section";
+import { getCommunity } from "@/app/actions/communities/get";
 import Shortcuts from "@/components/shortcuts";
-import { fetchCommunity } from "@/lib/openformat";
+
 import { getTranslations } from "next-intl/server";
+import RewardRecommendations from "./components/reward-recommendations";
 
 export default async function Overview({ params }: { params: Promise<{ slug: string }> }) {
   const t = await getTranslations("overview");
   const slug = (await params).slug as `0x${string}`;
-  const community = await fetchCommunity(slug);
+  const community = await getCommunity(slug);
 
   if (!community) {
     return (
@@ -20,10 +21,10 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
 
   return (
     <div className="space-y-6">
+      <RewardRecommendations community={community} />
       <div>
         <Shortcuts community={community} />
       </div>
-      <MetricsSection community={community} />
     </div>
   );
 }

@@ -18,13 +18,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { generateLeaderboard } from "@/lib/openformat";
+import { useLeaderboard } from "@/hooks/useLeaderboard";
 import { cn, filterVisibleTokens } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
 import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { DateRange } from "react-day-picker";
 import Discord from "../../public/icons/discord.svg";
 import Github from "../../public/icons/github.svg";
@@ -36,12 +36,7 @@ interface LeaderboardProps {
   data: LeaderboardEntry[] | null;
   isLoading?: boolean;
   showSocialHandles?: boolean;
-  metadata?: {
-    user_label: string;
-    token_label: string;
-    token_to_display?: string;
-    hidden_tokens?: string[];
-  };
+  community: Community;
   tokens: {
     token: {
       id: string;
@@ -65,7 +60,7 @@ function LeaderboardHeader({
   return (
     <TableRow>
       <TableHead>{t("rank")}</TableHead>
-      <TableHead>{metadata?.user_label ?? t("user")}</TableHead>
+      <TableHead>{metadata.user_label ?? t("user")}</TableHead>
       <TableHead className="text-right capitalize whitespace-nowrap">
         {selectedToken?.token
           ? `${selectedToken.token.name} (${selectedToken.token.symbol})`
@@ -149,64 +144,47 @@ const EmptyState = ({ metadata }: Pick<LeaderboardProps, "metadata">) => {
   );
 };
 
-export default function Leaderboard({
-  data,
-  metadata,
-  isLoading: initialLoading = false,
-  showSocialHandles = false,
-  tokens,
-  slug,
-}: LeaderboardProps) {
+export default function Leaderboard({ community }: LeaderboardProps) {
   const { user } = usePrivy();
   const t = useTranslations("overview.leaderboard");
-  const [localData, setLocalData] = useState<LeaderboardEntry[] | null>(data);
-  const [isLoading, setIsLoading] = useState(initialLoading);
+
+  // State for token and date
+  const visibleTokens = filterVisibleTokens(
+    community?.onchainData?.tokens,
+    community?.hiddenTokens,
+  );
+  const [selectedTokenId, setSelectedTokenId] = useState(
+    community.tokenToDisplay || visibleTokens?.[0]?.token.id || "",
+  );
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(new Date().setDate(new Date().getDate() - 7)),
     to: new Date(),
   });
 
-  // Filter tokens before using them
-  const visibleTokens = filterVisibleTokens(tokens, metadata?.hidden_tokens);
+  // Convert date to unix string for the hook
+  const startDate = date?.from ? dayjs(date.from).unix().toString() : "";
+  const endDate = date?.to ? dayjs(date.to).unix().toString() : "";
 
-  const [selectedTokenId, setSelectedTokenId] = useState<string>(
-    metadata?.token_to_display || visibleTokens?.[0]?.token.id || "",
+  const { data: leaderboardData, isLoading } = useLeaderboard(
+    community,
+    selectedTokenId,
+    startDate,
+    endDate,
   );
 
-  useEffect(() => {
-    if (visibleTokens?.length > 0) {
-      const defaultTokenId = metadata?.token_to_display || visibleTokens[0].token.id;
-      setSelectedTokenId(defaultTokenId);
-      handleTokenSelect(defaultTokenId);
-    }
-  }, []);
-
-  const handleTokenSelect = async (tokenId: string) => {
-    setIsLoading(true);
-    try {
-      const startDate = dayjs(date?.from).unix().toString();
-      const endDate = dayjs(date?.to).unix().toString();
-      const newData = await generateLeaderboard(slug, tokenId, startDate, endDate);
-      setLocalData(newData);
-      setSelectedTokenId(tokenId);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const selectedToken = tokens?.find((t) => t.token.id === selectedTokenId);
+  const selectedToken = community?.onchainData?.tokens?.find((t) => t.token.id === selectedTokenId);
 
   const content = isLoading ? (
     <LeaderboardSkeleton />
-  ) : !localData || localData.length === 0 || localData?.error ? (
-    <EmptyState metadata={metadata} />
+  ) : !leaderboardData || leaderboardData.length === 0 ? (
+    <EmptyState metadata={community} />
   ) : (
     <Table className="w-full">
       <TableHeader>
-        <LeaderboardHeader metadata={metadata} selectedToken={selectedToken} />
+        <LeaderboardHeader metadata={community} selectedToken={selectedToken} />
       </TableHeader>
       <TableBody>
-        {localData
+        {leaderboardData
           ?.filter((e) => e.xp_rewarded > "0.001")
           ?.map((entry, index) => {
             const position = index + 1;
@@ -214,7 +192,7 @@ export default function Leaderboard({
               user?.wallet?.address &&
               entry.user.toLowerCase() === user?.wallet?.address.toLowerCase();
             const SocialIcon =
-              showSocialHandles &&
+              community?.showSocialHandles &&
               (entry.type === "discord"
                 ? Discord
                 : entry.type === "telegram"
@@ -243,7 +221,9 @@ export default function Leaderboard({
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs">{showSocialHandles ? entry.handle : entry.user}</span>
+                    <span className="text-xs">
+                      {community?.showSocialHandles ? entry.handle : entry.user}
+                    </span>
                     {SocialIcon && (
                       <div className="bg-white rounded-full p-1">
                         <Image src={SocialIcon} alt={entry.type} width={16} height={16} />
@@ -260,19 +240,13 @@ export default function Leaderboard({
     </Table>
   );
 
-  useEffect(() => {
-    if (date?.from && date?.to) {
-      handleTokenSelect(selectedTokenId);
-    }
-  }, [date]);
-
   return (
     <Card variant="borderless" className="h-full">
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-4 sm:mb-0 space-y-6 sm:space-y-0">
           <div className="space-y-2">
             <Label>{t("token")}</Label>
-            <Select value={selectedTokenId} onValueChange={handleTokenSelect}>
+            <Select value={selectedTokenId} onValueChange={setSelectedTokenId}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder={t("selectToken")} />
               </SelectTrigger>

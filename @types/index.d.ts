@@ -50,27 +50,36 @@ type Mission = {
 type Community = {
   id: Address;
   name: string;
-  owner: {
-    id: Address;
-  };
-  tokens: Token[];
   missions: Mission[];
-  badges: Badge[];
-  metadata: {
-    title: string;
-    description: string;
-    accent_color: string;
-    token_label: string;
-    user_label: string;
-    participant_label: string;
-    slug: string;
-    banner_url: string;
-    token_to_display: `0x${string}`;
-    show_social_handles: boolean;
-    dark_mode: boolean;
+  platformConnections: {
+    platformId: string;
+    platformType: string;
+  }[];
+  onchainData: {
+    id: Address;
+    name: string;
+    badges: Badge[];
+    tokens: Token[];
+    owner: {
+      id: Address;
+    };
   };
+  communityContractAddress: Address;
+  communityContractChainId: Chain;
+  description: string;
+  title: string;
+  accentColor: string;
+  tokenLabel: string;
+  userLabel: string;
+  participantLabel: string;
+  slug: string;
+  bannerUrl: string;
+  tokenToDisplay: `0x${string}`;
+  showSocialHandles: boolean;
+  darkMode: boolean;
   tiers: Tier[];
   rewards?: Reward[] | null;
+  hiddenTokens: Address[];
 };
 
 type Token = {
@@ -190,7 +199,6 @@ type RewardBadgeParams = {
   metadata: string;
   activityType: string;
 };
-};
 
 type RewardTokenMintParams = {
   actionType: "mint-token";
@@ -201,7 +209,6 @@ type RewardTokenMintParams = {
   amount: number;
   metadata: string;
   activityType: string;
-};
 };
 
 type RewardTokenTransferParams = {
@@ -214,7 +221,6 @@ type RewardTokenTransferParams = {
   amount: number;
   metadata: string;
   activityType: string;
-};
 };
 
 type RewardListResponse = {
