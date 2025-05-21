@@ -1,3 +1,5 @@
+"use server";
+
 import { agentApiClient } from "@/lib/api";
 import { isAxiosError } from "axios";
 

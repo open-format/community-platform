@@ -1,4 +1,7 @@
+"use server";
+
 import { agentApiClient } from "@/lib/api";
+import { getCurrentUser } from "@/lib/privy";
 import { isAxiosError } from "axios";
 
 type CommunitiesResponse = {
@@ -7,8 +10,18 @@ type CommunitiesResponse = {
 };
 
 export default async function getCommunities(): Promise<CommunitiesResponse> {
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    return {
+      communities: [],
+      error: "Unauthorized access to communities",
+    };
+  }
   try {
-    const response = await agentApiClient.get("/communities?limit=100");
+    const response = await agentApiClient.get("/communities?limit=100", {
+      headers: { "x-user-id": currentUser.id },
+    });
     return {
       communities: response.data.data,
       error: null,
