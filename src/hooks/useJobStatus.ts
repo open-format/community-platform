@@ -1,14 +1,14 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 type JobStatus = "idle" | "pending" | "processing" | "running" | "completed" | "failed";
 
 interface JobResponse {
   jobId?: string;
-  job_id?: string;  // For recommendations job
+  job_id?: string; // For recommendations job
   status: JobStatus;
   error?: string;
   message?: string;
@@ -21,15 +21,19 @@ interface UsePollingJobOptions {
   onStatusChange?: (status: JobStatus, message?: string) => void;
 }
 
-export function usePollingJob({ 
-  startJobEndpoint, 
-  statusEndpoint, 
+export function usePollingJob({
+  startJobEndpoint,
+  statusEndpoint,
   initialJobId,
-  onStatusChange 
+  onStatusChange,
 }: UsePollingJobOptions) {
   const [jobId, setJobId] = useState<string | undefined>(initialJobId);
-  
-  const startMutation = useMutation<JobResponse, Error, { platformId: string; communityId?: string }>({
+
+  const startMutation = useMutation<
+    JobResponse,
+    Error,
+    { platformId: string; communityId?: string }
+  >({
     mutationFn: async ({ platformId, communityId }) => {
       if (!startJobEndpoint) {
         throw new Error("Start job endpoint not provided");
@@ -84,17 +88,8 @@ export function usePollingJob({
   // Handle job status changes
   useEffect(() => {
     if (!jobStatus) return;
-    
-    onStatusChange?.(jobStatus.status, jobStatus.message);
 
-    // Default toast notifications if no callback provided
-    if (!onStatusChange) {
-      if (jobStatus.status === "completed") {
-        toast.success("Job completed successfully");
-      } else if (jobStatus.status === "failed") {
-        toast.error(jobStatus.error || jobStatus.message || "Job failed");
-      }
-    }
+    onStatusChange?.(jobStatus.status, jobStatus.message);
   }, [jobStatus, onStatusChange]);
 
   // Update jobId when initialJobId changes
@@ -112,6 +107,6 @@ export function usePollingJob({
     retry: startJobEndpoint ? startMutation.mutate : undefined,
     isError: startJobEndpoint ? startMutation.isError : false,
     message: jobStatus?.message,
-    setJobId, 
+    setJobId,
   };
-} 
+}

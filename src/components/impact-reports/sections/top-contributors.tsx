@@ -1,19 +1,22 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TopContributor } from "../types";
-import { ExternalLink, MessageSquare, Trophy } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { ImpactReportAvatar } from "./impact-report-avatar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MessageSquare, Trophy } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { TopContributor } from "../types";
+import { ImpactReportAvatar } from "./impact-report-avatar";
 import { ViewAllModal } from "./view-all-modal";
 
 interface TopContributorsProps {
   contributors: TopContributor[];
 }
 
-function ContributorItemComponent({ contributor, rank }: { contributor: TopContributor; rank: number }) {
+function ContributorItemComponent({
+  contributor,
+  rank,
+}: { contributor: TopContributor; rank: number }) {
   const t = useTranslations("ImpactReports.contributors");
 
   return (
@@ -37,7 +40,7 @@ function ContributorItemComponent({ contributor, rank }: { contributor: TopContr
 export function TopContributors({ contributors }: TopContributorsProps) {
   const t = useTranslations("ImpactReports.contributors");
   const [isViewAllOpen, setIsViewAllOpen] = useState(false);
-  
+
   if (contributors.length === 0) return null;
 
   const columns = [
@@ -47,13 +50,13 @@ export function TopContributors({ contributors }: TopContributorsProps) {
       sortable: true,
       render: (contributor: TopContributor) => (
         <div className="flex items-center gap-4">
-          <ImpactReportAvatar 
-            username={contributor.username} 
-            rank={contributors.findIndex(c => c.username === contributor.username) + 1} 
+          <ImpactReportAvatar
+            username={contributor.username}
+            rank={contributors.findIndex((c) => c.username === contributor.username) + 1}
           />
           <span className="font-medium">{contributor.username}</span>
         </div>
-      )
+      ),
     },
     {
       key: "messageCount" as const,
@@ -64,14 +67,14 @@ export function TopContributors({ contributors }: TopContributorsProps) {
           <MessageSquare className="h-4 w-4 text-muted-foreground" />
           <span>{t("messageCount", { count: contributor.messageCount })}</span>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   const topThree = contributors.slice(0, 3);
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Trophy className="h-5 w-5" />
@@ -82,19 +85,16 @@ export function TopContributors({ contributors }: TopContributorsProps) {
         <div className="space-y-4">
           <div className="flex flex-col gap-4">
             {topThree.map((contributor, index) => (
-              <ContributorItemComponent 
-                key={contributor.username} 
-                contributor={contributor} 
+              <ContributorItemComponent
+                key={contributor.username}
+                contributor={contributor}
                 rank={index + 1}
               />
             ))}
           </div>
           {contributors.length > 3 && (
             <div className="flex justify-center pt-[1px]">
-              <Button
-                variant="outline"
-                onClick={() => setIsViewAllOpen(true)}
-              >
+              <Button variant="outline" onClick={() => setIsViewAllOpen(true)}>
                 {t("viewAll")}
               </Button>
             </div>
@@ -112,4 +112,4 @@ export function TopContributors({ contributors }: TopContributorsProps) {
       />
     </Card>
   );
-} 
+}

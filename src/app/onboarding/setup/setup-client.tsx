@@ -72,7 +72,7 @@ export default function SetupClient() {
     {
       key: "platforms",
       icon: <Users className="h-6 w-6" />,
-      title: "Connecting community platforms",
+      title: "Connecting Community Platforms",
       description: "Successfully connected to your community platforms.",
       status: "completed" as JobStatus,
       isJob: false,
@@ -80,16 +80,16 @@ export default function SetupClient() {
     {
       key: "insights",
       icon: <FileText className="h-6 w-6" />,
-      title: "Generating initial insights",
-      description: "Initial community insights generated and ready to view.",
+      title: "Generating Reward Recommendations",
+      description: "Reward recommendations highlight top contributors and help you recognize them.",
       status: recommendationsStatus as JobStatus,
       isJob: true,
     },
     {
       key: "analytics",
       icon: <BarChart2 className="h-6 w-6" />,
-      title: "Setting up analytics",
-      description: "Analytics engine configured to track community engagement.",
+      title: "Generating Community Snapshot",
+      description: "Your community snapshot will give you a quick overview of your community.",
       status: reportStatus as JobStatus,
       isJob: true,
     },
@@ -173,14 +173,14 @@ export default function SetupClient() {
                       : "In progress"}
                 </div>
                 {step.isJob && step.status === "failed" && (
-                  <button
+                  <Button
                     onClick={() =>
                       handleRetry(step.key === "insights" ? "recommendations" : "report")
                     }
                     className="text-xs text-yellow-400 hover:text-yellow-300"
                   >
                     {t("retry")}
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
@@ -203,7 +203,7 @@ export default function SetupClient() {
           <div className="flex justify-end mt-6">
             <Button
               className="rounded-lg bg-yellow-400 text-black font-semibold py-2 px-6 shadow hover:bg-yellow-300 transition-colors duration-150"
-              onClick={() => router.push("/communities")}
+              onClick={() => router.push(`/communities/${searchParams.get("communityId")}`)}
               disabled={isContinueLoading}
             >
               {isContinueLoading ? (

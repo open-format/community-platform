@@ -1,11 +1,12 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { Disc, MessageCircle, Github, Database, Loader2 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect, useCallback, useRef } from "react";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { usePollingJob } from "@/hooks/useJobStatus";
+import { Database, Disc, Github, Loader2, MessageCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import PlatformCard from "./platform-card";
 
 const platforms = [
@@ -15,35 +16,35 @@ const platforms = [
     comingSoon: false,
     connectUrl: "/api/discord/start",
     titleKey: "discord",
-    descriptionKey: "discordDesc"
+    descriptionKey: "discordDesc",
   },
   {
     key: "telegram",
     icon: MessageCircle,
     comingSoon: true,
     titleKey: "telegram",
-    descriptionKey: "telegramDescComingSoon"
+    descriptionKey: "telegramDescComingSoon",
   },
   {
     key: "github",
     icon: Github,
     comingSoon: true,
     titleKey: "github",
-    descriptionKey: "githubDescComingSoon"
+    descriptionKey: "githubDescComingSoon",
   },
   {
     key: "dune",
     icon: Database,
     comingSoon: true,
     titleKey: "dune",
-    descriptionKey: "duneDescComingSoon"
+    descriptionKey: "duneDescComingSoon",
   },
 ];
 
-export default function IntegrationsClient({ 
+export default function IntegrationsClient({
   discordConnected,
   communityId,
-}: { 
+}: {
   discordConnected: boolean;
   communityId?: string;
 }) {
@@ -74,7 +75,7 @@ export default function IntegrationsClient({
       jobsStartedRef.current = true;
       const [reportResponse, recommendationsResponse] = await Promise.all([
         startReportJobAsync?.({ platformId: guildId }),
-        startRecommendationsJobAsync?.({ platformId: guildId, communityId })
+        startRecommendationsJobAsync?.({ platformId: guildId, communityId }),
       ]);
       if (reportResponse?.jobId) {
         setReportJobId(reportResponse.jobId);
@@ -102,7 +103,7 @@ export default function IntegrationsClient({
   }, [error, t]);
 
   const handleRetry = () => {
-    router.push('/onboarding/integrations');
+    router.push("/onboarding/integrations");
   };
 
   // Loading state is true only while we're waiting for job IDs
@@ -123,17 +124,28 @@ export default function IntegrationsClient({
           />
         ))}
       </div>
-      
+
       {/* Show continue button only after connection */}
       {discordConnected && (
         <div className="mt-6 flex justify-end">
-          <button 
-            className={`rounded-lg font-semibold py-2 px-6 shadow transition-colors duration-150 ${
-              isLoading 
-                ? "bg-zinc-800 text-gray-400 cursor-not-allowed" 
-                : "bg-yellow-400 text-black hover:bg-yellow-300"
-            }`}
-            onClick={() => router.push(`/onboarding/setup?guildId=${guildId}&reportJobId=${reportJobId}&recommendationsJobId=${recommendationsJobId}`)}
+          <Button
+            className={`
+              rounded-lg font-semibold py-2 px-6 shadow transition-colors duration-150
+              ${
+                isLoading
+                  ? "bg-zinc-800 text-gray-400 cursor-not-allowed"
+                  : "bg-yellow-400 text-black hover:bg-yellow-300"
+              }
+            `}
+            onClick={() => {
+              const params = new URLSearchParams({
+                guildId: guildId || "",
+                reportJobId: reportJobId || "",
+                recommendationsJobId: recommendationsJobId || "",
+                communityId: communityId || "",
+              });
+              router.push(`/onboarding/setup?${params.toString()}`);
+            }}
             disabled={isLoading}
           >
             {isLoading ? (
@@ -144,23 +156,16 @@ export default function IntegrationsClient({
             ) : (
               t("continue")
             )}
-          </button>
+          </Button>
         </div>
       )}
 
       {error && (
         <div className="mt-6 flex flex-col items-end gap-4">
-          <div className="text-red-400 text-sm">
-            {t("error")}
-          </div>
-          <button 
-            className="rounded-lg bg-zinc-800 text-white font-semibold py-2 px-6 border border-zinc-700 hover:bg-zinc-700 transition-colors duration-150"
-            onClick={handleRetry}
-          >
-            {t("retryConnection")}
-          </button>
+          <div className="text-red-400 text-sm">{t("error")}</div>
+          <Button onClick={handleRetry}>{t("retryConnection")}</Button>
         </div>
       )}
     </div>
   );
-} 
+}
