@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { generateImpactReportTestData } from "@/lib/test-data";
 import { useTranslations } from "next-intl";
 import { ActivityAnalysis } from "@/components/impact-reports/sections/activity-analysis";
 import { TopContributors } from "@/components/impact-reports/sections/top-contributors";
@@ -10,10 +9,9 @@ import { SentimentAnalysis } from "@/components/impact-reports/sections/sentimen
 import { Sparkles } from "lucide-react";
 import { useState } from "react";
 
-export default function ExampleSnapshotClient() {
+export default function ExampleSnapshotClient({ report }: { report: any }) {
   const t = useTranslations("onboarding.example");
   const router = useRouter();
-  const report = generateImpactReportTestData();
   const [step, setStep] = useState(0);
 
   const steps = [
