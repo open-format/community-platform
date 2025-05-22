@@ -4,7 +4,7 @@ import SetupClient from "./setup-client";
 
 function LoadingSkeleton() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 bg-zinc-900">
       <div className="flex flex-col items-center mb-4">
         <Loader2 className="h-12 w-12 text-yellow-400 mb-2 animate-spin" />
         <div className="h-8 w-48 bg-zinc-800 rounded animate-pulse mb-1" />

@@ -7,7 +7,7 @@ import { OnboardingProgressBar } from "@/components/onboarding/onboarding-progre
 function LoadingSkeleton() {
   return (
     <div>
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 bg-zinc-900">
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}

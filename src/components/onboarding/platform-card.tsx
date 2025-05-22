@@ -1,7 +1,7 @@
 "use client";
 
 import { usePrivy } from "@privy-io/react-auth";
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -31,7 +31,7 @@ export default function PlatformCard({
   const { user } = usePrivy();
 
   const getDiscordConnectUrl = () => {
-    return `/api/discord/start?did=${encodeURIComponent(user?.id || "")}`;
+    return `/api/discord/start?did=${encodeURIComponent(user?.id)}`;
   };
 
   const handleInterested = () => {
@@ -84,21 +84,41 @@ export default function PlatformCard({
           </button>
         ) : titleKey === "discord" ? (
           discordConnected ? (
-            <button
-              className="w-full rounded-lg bg-green-500 text-white font-semibold py-2 px-4 border border-green-600 cursor-not-allowed"
-              disabled
-            >
-              {t("connected")}
-            </button>
-          ) : (
-            <Link href={getDiscordConnectUrl()} className="w-full">
+            user?.id ? (
               <button
-                className="w-full rounded-lg bg-zinc-800 text-gray-200 font-semibold py-2 px-4 border border-zinc-700 hover:bg-zinc-700 transition-colors duration-150"
-                onClick={handleConnect}
+                className="w-full rounded-lg bg-green-500 text-white font-semibold py-2 px-4 border border-green-600 cursor-not-allowed"
+                disabled
               >
+                {t("connected")}
+              </button>
+            ) : (
+              <button
+                className="w-full rounded-lg bg-zinc-800 text-gray-200 font-semibold py-2 px-4 border border-zinc-700 cursor-not-allowed flex items-center justify-center"
+                disabled
+              >
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 {t("connect")}
               </button>
-            </Link>
+            )
+          ) : (
+            user?.id ? (
+              <Link href={getDiscordConnectUrl()} className="w-full">
+                <button
+                  className="w-full rounded-lg bg-zinc-800 text-gray-200 font-semibold py-2 px-4 border border-zinc-700 hover:bg-zinc-700 transition-colors duration-150"
+                  onClick={handleConnect}
+                >
+                  {t("connect")}
+                </button>
+              </Link>
+            ) : (
+              <button
+                className="w-full rounded-lg bg-zinc-800 text-gray-200 font-semibold py-2 px-4 border border-zinc-700 cursor-not-allowed flex items-center justify-center"
+                disabled
+              >
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                {t("connect")}
+              </button>
+            )
           )
         ) : (
           connectUrl && (
