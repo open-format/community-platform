@@ -96,12 +96,6 @@ export default function IntegrationsClient({
     }
   }, [discordConnected, communityId, startJobs]);
 
-  useEffect(() => {
-    if (error) {
-      toast.error(t("error"));
-    }
-  }, [error, t]);
-
   const handleRetry = () => {
     router.push("/onboarding/integrations");
   };
