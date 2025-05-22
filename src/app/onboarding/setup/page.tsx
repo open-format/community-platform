@@ -36,7 +36,7 @@ export default async function SetupPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4">
       {/* Main Card */}
-      <div className="w-full max-w-2xl bg-zinc-900 rounded-2xl shadow-lg p-8 border border-zinc-800">
+      <div>
         <Suspense fallback={<LoadingSkeleton />}>
           <SetupClient />
         </Suspense>
