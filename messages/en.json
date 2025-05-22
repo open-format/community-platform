@@ -1254,7 +1254,8 @@
       "errors": {
         "jobStartFailed": "Failed to start community analysis. Please try again.",
         "missingParameters": "Missing required parameters. Please try connecting again."
-      }
+      },
+      "starting": "Starting..."
     },
     "exampleSnapshot": {
       "title": "Community Snapshot Example",

@@ -85,13 +85,6 @@ export function usePollingJob({
     refetchOnWindowFocus: false,
   });
 
-  // Handle job status changes
-  useEffect(() => {
-    if (!jobStatus) return;
-
-    onStatusChange?.(jobStatus.status, jobStatus.message);
-  }, [jobStatus, onStatusChange]);
-
   // Update jobId when initialJobId changes
   useEffect(() => {
     if (initialJobId) {

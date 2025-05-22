@@ -9,7 +9,7 @@ import { useState } from "react";
 
 interface PlatformCardProps {
   key: string;
-  icon: LucideIcon | string;
+  icon: LucideIcon;
   comingSoon: boolean;
   connectUrl?: string;
   titleKey: string;
@@ -51,11 +51,7 @@ export default function PlatformCard({
       <div>
         <div className="flex items-center gap-3 mb-2">
           <span className="text-2xl">
-            {typeof Icon === "string" ? (
-              <img src={Icon} alt="" className="h-6 w-6" />
-            ) : Icon ? (
-              <Icon className="h-6 w-6" />
-            ) : null}
+            <Icon className="h-6 w-6" />
           </span>
           <span className="font-bold text-lg text-white">{t(titleKey)}</span>
           {comingSoon && (

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { usePollingJob } from "@/hooks/useJobStatus";
-import { Database, Disc, Github, Loader2, MessageCircle } from "lucide-react";
+import { Database, Loader2} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -12,7 +12,7 @@ import PlatformCard from "./platform-card";
 const platforms = [
   {
     key: "discord",
-    icon: Disc,
+    icon: "/icons/discord.svg",
     comingSoon: false,
     connectUrl: "/api/discord/start",
     titleKey: "discord",
@@ -20,14 +20,14 @@ const platforms = [
   },
   {
     key: "telegram",
-    icon: MessageCircle,
+    icon: "/icons/telegram.svg",
     comingSoon: true,
     titleKey: "telegram",
     descriptionKey: "telegramDescComingSoon",
   },
   {
     key: "github",
-    icon: Github,
+    icon: "/icons/github.svg",
     comingSoon: true,
     titleKey: "github",
     descriptionKey: "githubDescComingSoon",
