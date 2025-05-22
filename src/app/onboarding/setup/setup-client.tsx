@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 type JobStatus = "idle" | "pending" | "processing" | "completed" | "failed";
 
@@ -18,6 +19,7 @@ export default function SetupClient() {
 
   const [reportJobId, setReportJobId] = useState<string | null>(null);
   const [recommendationsJobId, setRecommendationsJobId] = useState<string | null>(null);
+  const [showLowActivityModal, setShowLowActivityModal] = useState(false);
 
   useEffect(() => {
     const reportId = searchParams.get("reportJobId") || localStorage.getItem("reportJobId");
@@ -34,6 +36,7 @@ export default function SetupClient() {
     status: reportStatus,
     isLoading: isReportLoading,
     message: reportMessage,
+    data: report,
   } = usePollingJob({
     statusEndpoint: (jobId) => `/api/onboarding/report-job-status?jobId=${jobId}`,
     initialJobId: reportJobId || undefined,
@@ -177,6 +180,16 @@ export default function SetupClient() {
     }
   }, [reportStatus, recommendationsStatus, router, searchParams]);
 
+  useEffect(() => {
+    if (
+      reportStatus === "completed" &&
+      (report?.report?.report?.overview?.totalMessages ?? 0) < 20 &&
+      !showLowActivityModal
+    ) {
+      setShowLowActivityModal(true);
+    }
+  }, [reportStatus, report, showLowActivityModal]);
+
   return (
     <>
       <div className="mb-8">
@@ -259,6 +272,28 @@ export default function SetupClient() {
           )}
         </div>
       </div>
+
+      <Dialog open={showLowActivityModal}>
+        <DialogContent
+          hideCloseButton
+          className="bg-zinc-900 border-zinc-800 text-white"
+        >
+          <DialogTitle>Not Enough Activity</DialogTitle>
+          <DialogDescription>
+            There isn't enough activity in this Discord server to generate insights. Please connect a more active server.
+          </DialogDescription>
+          <DialogFooter>
+            <Button
+              className="bg-yellow-400 text-black hover:bg-yellow-300 font-semibold rounded-lg"
+              onClick={() => {
+                router.push("/onboarding/integrations");
+              }}
+            >
+              Connect new Discord Server
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

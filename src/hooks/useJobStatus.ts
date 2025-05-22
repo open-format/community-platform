@@ -101,5 +101,6 @@ export function usePollingJob({
     isError: startJobEndpoint ? startMutation.isError : false,
     message: jobStatus?.message,
     setJobId,
+    data: jobStatus,
   };
 }
