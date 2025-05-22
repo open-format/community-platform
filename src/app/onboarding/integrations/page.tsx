@@ -2,6 +2,7 @@ import { Info } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import IntegrationsClient from "./integrations-client";
+import { OnboardingProgressBar } from "@/components/onboarding/onboarding-progress";
 
 function LoadingSkeleton() {
   return (
@@ -38,15 +39,23 @@ export default async function PlatformsPage({
   const communityId = params.communityId as string | undefined;
   const discordConnected = !!guildId;
 
+  // If we have a guildId but no error, we're either loading jobs or they've started
+  const jobsStarted = discordConnected && !params.error;
+
+  const steps = [
+    { label: "Connect your community" },
+    { label: "Deploying to community" },
+  ];
+
+  let firstBarProgress = 0.33;
+  if (discordConnected) firstBarProgress = 0.66;
+  if (jobsStarted) firstBarProgress = 1;
+  const progresses = [firstBarProgress, 0];
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4">
-      {/* Progress Bar */}
-      <div className="w-full max-w-2xl flex items-center gap-4 mb-8 mt-8">
-        <div className="flex-1 flex gap-0">
-          <div className="h-2 w-1/2 rounded-l bg-yellow-400" />
-          <div className="h-2 w-1/2 rounded-r bg-zinc-800" />
-        </div>
-        {/* Optionally, you can add step indicators here if needed */}
+      <div className="mb-8 w-full max-w-2xl">
+        <OnboardingProgressBar steps={steps} progresses={progresses} />
       </div>
       {/* Main Card */}
       <div className="w-full max-w-2xl bg-zinc-900 rounded-2xl shadow-lg p-8 border border-zinc-800">

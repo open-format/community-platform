@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import PlatformCard from "./platform-card";
+import PlatformCard from "@/components/onboarding/platform-card";
 
 const platforms = [
   {

@@ -3,13 +3,14 @@
 import { usePrivy } from "@privy-io/react-auth";
 import { LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 import Link from "next/link";
 import posthog from "posthog-js";
 import { useState } from "react";
 
 interface PlatformCardProps {
   key: string;
-  icon: LucideIcon;
+  icon: LucideIcon | string;
   comingSoon: boolean;
   connectUrl?: string;
   titleKey: string;
@@ -51,7 +52,11 @@ export default function PlatformCard({
       <div>
         <div className="flex items-center gap-3 mb-2">
           <span className="text-2xl">
-            <Icon className="h-6 w-6" />
+            {typeof Icon === "string" ? (
+              <Image src={Icon} alt="" width={24} height={24} />
+            ) : (
+              <Icon className="h-6 w-6" />
+            )}
           </span>
           <span className="font-bold text-lg text-white">{t(titleKey)}</span>
           {comingSoon && (

@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { OnboardingProgressBar } from "@/components/onboarding/onboarding-progress";
 import { usePollingJob } from "@/hooks/useJobStatus";
 import { AlertCircle, BarChart2, CheckCircle, FileText, Loader2, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -67,8 +68,27 @@ export default function SetupClient() {
     recommendationsStatus === "pending" ||
     recommendationsStatus === "processing";
 
-  // Step data for rendering
-  const steps = [
+  // Calculate progress based on job status
+  const getProgress = () => {
+    if (!reportJobId || !recommendationsJobId) return 0.33;
+    
+    if (reportStatus === "completed" && recommendationsStatus === "completed") return 1;
+    
+    if ((reportStatus === "completed" && recommendationsStatus !== "completed") ||
+        (recommendationsStatus === "completed" && reportStatus !== "completed")) {
+      return 0.66;
+    }
+    return 0.33;
+  };
+
+  // Progress bar steps
+  const progressSteps = [
+    { label: "Connect your community" },
+    { label: "Deploying to community" },
+  ];
+
+  // Status card steps
+  const statusSteps = [
     {
       key: "platforms",
       icon: <Users className="h-6 w-6" />,
@@ -94,6 +114,9 @@ export default function SetupClient() {
       isJob: true,
     },
   ];
+
+  // First bar always filled (1), second bar shows job progress
+  const progresses = [1, getProgress()];
 
   const whatsNext = [
     "View your community snapshot in the dashboard",
@@ -145,79 +168,97 @@ export default function SetupClient() {
     router.push(`/onboarding/integrations?${params.toString()}`);
   };
 
+  useEffect(() => {
+    if (reportStatus && recommendationsStatus) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("reportStatus", reportStatus);
+      params.set("recommendationsStatus", recommendationsStatus);
+      router.replace(`/onboarding/setup?${params.toString()}`, { scroll: false });
+    }
+  }, [reportStatus, recommendationsStatus, router, searchParams]);
+
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col items-center mb-4">
-        <CheckCircle className="h-12 w-12 text-yellow-400 mb-2" />
-        <h2 className="text-2xl font-bold text-white mb-1">Deployment Complete!</h2>
-        <p className="text-gray-400 text-center max-w-md">
-          Your community agent is now active and collecting insights.
-        </p>
+    <>
+      <div className="mb-8">
+        <OnboardingProgressBar steps={progressSteps} progresses={progresses} />
       </div>
-      <div className="flex flex-col gap-4">
-        {steps.map((step, idx) => (
-          <div
-            key={step.key}
-            className={`flex items-start gap-4 rounded-xl border border-zinc-800 px-5 py-4 ${step.status === "completed" ? "opacity-100" : step.status === "failed" ? "border-red-500" : "opacity-90"}`}
-          >
-            <div className="flex-shrink-0 mt-1">{getStatusIcon(step.status as JobStatus)}</div>
-            <div className="flex-1">
-              <div className="font-semibold text-white mb-0.5">{step.title}</div>
-              <div className="text-gray-400 text-sm mb-1">{step.description}</div>
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-gray-500">
-                  {step.isJob
-                    ? getStatusText(step.status as JobStatus)
-                    : step.status === "completed"
-                      ? "Completed"
-                      : "In progress"}
+      <div className="w-full max-w-2xl bg-zinc-900 rounded-2xl shadow-lg p-8 border border-zinc-800">
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col items-center mb-4">
+            <CheckCircle className="h-12 w-12 text-yellow-400 mb-2" />
+            <h2 className="text-2xl font-bold text-white mb-1">Deployment Complete!</h2>
+            <p className="text-gray-400 text-center max-w-md">
+              Your community agent is now active and collecting insights.
+            </p>
+          </div>
+          <div className="flex flex-col gap-4">
+            {statusSteps.map((step) => (
+              <div
+                key={step.key}
+                className={`flex items-start gap-4 rounded-xl border border-zinc-800 px-5 py-4 ${
+                  step.status === "completed" ? "opacity-100" : step.status === "failed" ? "border-red-500" : "opacity-90"
+                }`}
+              >
+                <div className="flex-shrink-0 mt-1">{getStatusIcon(step.status)}</div>
+                <div className="flex-1">
+                  <div className="font-semibold text-white mb-0.5">{step.title}</div>
+                  <div className="text-gray-400 text-sm mb-1">{step.description}</div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-xs text-gray-500">
+                      {step.isJob
+                        ? getStatusText(step.status)
+                        : step.status === "completed"
+                          ? "Completed"
+                          : "In progress"}
+                    </div>
+                    {step.isJob && step.status === "failed" && (
+                      <Button
+                        onClick={() =>
+                          handleRetry(step.key === "insights" ? "recommendations" : "report")
+                        }
+                        className="text-xs text-yellow-400 hover:text-yellow-300"
+                      >
+                        {t("retry")}
+                      </Button>
+                    )}
+                  </div>
                 </div>
-                {step.isJob && step.status === "failed" && (
-                  <Button
-                    onClick={() =>
-                      handleRetry(step.key === "insights" ? "recommendations" : "report")
-                    }
-                    className="text-xs text-yellow-400 hover:text-yellow-300"
-                  >
-                    {t("retry")}
-                  </Button>
-                )}
               </div>
-            </div>
+            ))}
           </div>
-        ))}
+          {isComplete && (
+            <>
+              <div className="bg-zinc-800/70 rounded-xl p-6 mt-4 border border-zinc-700">
+                <div className="font-semibold text-white mb-3">What's Next?</div>
+                <ul className="space-y-2">
+                  {whatsNext.map((item, i) => (
+                    <li key={i} className="flex items-center gap-2 text-gray-300 text-sm">
+                      <CheckCircle className="h-4 w-4 text-yellow-400" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex justify-end mt-6">
+                <Button
+                  className="rounded-lg bg-yellow-400 text-black font-semibold py-2 px-6 shadow hover:bg-yellow-300 transition-colors duration-150"
+                  onClick={() => router.push(`/communities/${searchParams.get("communityId")}`)}
+                  disabled={isContinueLoading}
+                >
+                  {isContinueLoading ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      {t("loading")}
+                    </div>
+                  ) : (
+                    t("continue")
+                  )}
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
-      {isComplete && (
-        <>
-          <div className="bg-zinc-800/70 rounded-xl p-6 mt-4 border border-zinc-700">
-            <div className="font-semibold text-white mb-3">What's Next?</div>
-            <ul className="space-y-2">
-              {whatsNext.map((item, i) => (
-                <li key={i} className="flex items-center gap-2 text-gray-300 text-sm">
-                  <CheckCircle className="h-4 w-4 text-yellow-400" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="flex justify-end mt-6">
-            <Button
-              className="rounded-lg bg-yellow-400 text-black font-semibold py-2 px-6 shadow hover:bg-yellow-300 transition-colors duration-150"
-              onClick={() => router.push(`/communities/${searchParams.get("communityId")}`)}
-              disabled={isContinueLoading}
-            >
-              {isContinueLoading ? (
-                <div className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  {t("loading")}
-                </div>
-              ) : (
-                t("continue")
-              )}
-            </Button>
-          </div>
-        </>
-      )}
-    </div>
+    </>
   );
 }
