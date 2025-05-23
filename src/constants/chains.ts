@@ -43,27 +43,6 @@ export const openFormatChain: ViemChain = {
   },
 };
 
-export const openFormatChain: ViemChain = {
-  id: 1313161576,
-  name: "Open Format",
-  nativeCurrency: {
-    name: "ETH",
-    symbol: "ETH",
-    decimals: 18,
-  },
-  rpcUrls: {
-    default: {
-      http: ["https://rpc-0x4e454168.aurora-cloud.dev"],
-    },
-  },
-  blockExplorers: {
-    default: {
-      name: "TurboChain Explorer",
-      url: "https://explorer.turbo.aurora.dev",
-    },
-  },
-};
-
 export type Chain = {
   APP_FACTORY_ADDRESS: Address;
   SUBGRAPH_URL: string;
