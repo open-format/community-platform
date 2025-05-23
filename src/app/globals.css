@@ -85,8 +85,3 @@ body {
     @apply text-base;
   }
 }
-
-#privy-dialog-backdrop {
-  backdrop-filter: none;
-  filter: none;
-}
