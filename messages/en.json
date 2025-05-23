@@ -543,7 +543,8 @@
     "selectNetwork": "Select Network",
     "mainnets": "Mainnets",
     "testnets": "Testnets",
-    "balance": "Balance: {amount} {symbol}"
+    "balance": "Balance: {amount} {symbol}",
+    "gasSponsored": "Gas sponsored by {sponsor}"
   },
   "profile": {
     "copyAddress": "Copy Address",
@@ -834,7 +835,9 @@
       "validation": {
         "nameRequired": "Name must be at least 3 characters",
         "nameMaxLength": "Name must be less than 32 characters",
-        "symbolRequired": "Symbol must be at least 3 characters"
+        "symbolRequired": "Symbol must be at least 3 characters",
+        "chainNotFound": "No chain found",
+        "nameInUse": "Name already in use"
       },
       "fields": {
         "name": {
@@ -857,6 +860,10 @@
             "points": "Points"
           }
         },
+        "network": {
+          "label": "Network",
+          "description": "Select the blockchain network for your token"
+        },
         "initialSupply": {
           "label": "Initial Supply",
           "placeholder": "0",
@@ -872,6 +879,16 @@
       "buttons": {
         "create": "Create Token",
         "creating": "Creating Token..."
+      },
+      "toast": {
+        "success": {
+          "title": "Success!",
+          "description": "Your token has been created."
+        },
+        "error": {
+          "title": "Error",
+          "description": "Failed to create token. Please try again."
+        }
       }
     },
     "visibleTokens": "Visible Tokens",

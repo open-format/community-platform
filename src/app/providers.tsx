@@ -1,30 +1,29 @@
 "use client";
 
-import { turboChain } from "@/constants/chains";
+import { openFormatChain, turboChain } from "@/constants/chains";
 import config from "@/constants/config";
 import { ConfettiProvider } from "@/contexts/confetti-context";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { WagmiProvider, createConfig } from "@privy-io/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NextIntlClientProvider } from "next-intl";
+import { ThemeProvider } from "next-themes";
 import { usePathname, useSearchParams } from "next/navigation";
-import { usePostHog } from "posthog-js/react";
+import posthog from "posthog-js";
+import { PostHogProvider as PHProvider, usePostHog } from "posthog-js/react";
 import { Suspense, useEffect } from "react";
 import { arbitrumSepolia, aurora, base, matchain } from "viem/chains";
 import { http } from "wagmi";
 
-import { ThemeProvider } from "@/components/theme-provider";
-import posthog from "posthog-js";
-import { PostHogProvider as PHProvider } from "posthog-js/react";
-
 const chainConfig = createConfig({
-  chains: [arbitrumSepolia, aurora, turboChain, base, matchain],
+  chains: [arbitrumSepolia, aurora, turboChain, base, matchain, openFormatChain],
   transports: {
     [arbitrumSepolia.id]: http(),
     [aurora.id]: http(),
     [turboChain.id]: http(),
     [base.id]: http(),
     [matchain.id]: http(),
+    [openFormatChain.id]: http(),
   },
 });
 const queryClient = new QueryClient();
@@ -54,8 +53,8 @@ export default function Providers({
               createOnLogin: "all-users",
             },
             // @TODO: Issue with embedded wallets on Aurora and turboChain - awaiting Privy support
-            supportedChains: [arbitrumSepolia, aurora, turboChain, base, matchain],
-            defaultChain: arbitrumSepolia,
+            supportedChains: [arbitrumSepolia, aurora, turboChain, base, matchain, openFormatChain],
+            defaultChain: openFormatChain,
 
             appearance: {
               walletChainType: "ethereum-only",
