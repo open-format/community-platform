@@ -2,7 +2,6 @@ import { getCommunity } from "@/app/actions/communities/get";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import CommunitySettingsForm from "@/forms/community-settings-form";
-import { fetchUserProfile, generateLeaderboard } from "@/lib/openformat";
 import { cn } from "@/lib/utils";
 import { ExternalLink } from "lucide-react";
 import { getTranslations } from "next-intl/server";
@@ -12,9 +11,6 @@ export default async function CommunitySettings({ params }: { params: Promise<{ 
   const t = await getTranslations("settings");
   const slug = (await params).slug;
   const community = await getCommunity(slug);
-
-  const leaderboard = await generateLeaderboard(community);
-  const profile = await fetchUserProfile(slug);
 
   if (!community) {
     return <div>{t("notFound")}</div>;
@@ -30,7 +26,7 @@ export default async function CommunitySettings({ params }: { params: Promise<{ 
           </div>
           <Link
             className={cn(buttonVariants(), "mx-24")}
-            href={`/${community?.metadata?.slug}`}
+            href={`/${community?.slug}`}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -40,11 +36,7 @@ export default async function CommunitySettings({ params }: { params: Promise<{ 
         </div>
       </CardHeader>
       <CardContent>
-        <CommunitySettingsForm
-          community={community}
-          leaderboard={leaderboard}
-          badges={profile?.badges}
-        />
+        <CommunitySettingsForm community={community} />
       </CardContent>
     </Card>
   );

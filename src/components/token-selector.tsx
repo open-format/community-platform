@@ -16,7 +16,6 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
   CommandSeparator,
@@ -119,14 +118,6 @@ export default function TokenSelector({
       </PopoverTrigger>
       <PopoverContent>
         <Command>
-          <CommandInput
-            placeholder={t("searchPlaceholder")}
-            value={inputValue}
-            onValueChange={(value) => {
-              setInputValue(value);
-              handleCustomInput(value);
-            }}
-          />
           <CommandList>
             <CommandEmpty>
               <div className="flex flex-col items-center justify-center p-4 text-center">

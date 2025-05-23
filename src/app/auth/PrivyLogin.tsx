@@ -13,14 +13,16 @@ export function PrivyLogin() {
   const [error, setError] = useState("");
 
   useLogin({
-    onComplete: async ({ user, isNewUser }) => {
-      if (user.wallet?.address && isNewUser) {
+    onComplete: async ({ user }) => {
+      if (user.wallet?.address) {
         try {
-          await axios.post("/api/users/create", {
+          const res = await axios.post("/api/users/create", {
             did: user.id,
           });
 
-          return router.push("/onboarding");
+          if (res.data.new) {
+            return router.push("/onboarding");
+          }
         } catch (error) {
           console.log(error);
           if (axios.isAxiosError(error)) {

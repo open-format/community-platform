@@ -5,7 +5,6 @@ import Tiers from "./tiers";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import Activity from "./activity";
-import CommunityBadges from "./community-badges";
 import { CommunityBanner } from "./community-banner";
 import CommunityInfo from "./community-info";
 import CommunityProfile from "./community-profile";
@@ -36,12 +35,7 @@ interface CommunityPreviewProps {
   badges: BadgeWithCollectedStatus[];
 }
 
-export default function CommunityPreview({
-  community,
-  previewValues,
-  leaderboard,
-  badges,
-}: CommunityPreviewProps) {
+export default function CommunityPreview({ community, previewValues }: CommunityPreviewProps) {
   const t = useTranslations("community.preview");
 
   return (
@@ -79,16 +73,7 @@ export default function CommunityPreview({
           <TabsTrigger value="activity">{t("tabs.activity")}</TabsTrigger>
         </TabsList>
         <TabsContent value="leaderboard">
-          <Leaderboard
-            data={leaderboard}
-            community={community}
-            showSocialHandles={Boolean(previewValues?.showSocialHandles)}
-            tokens={community.onchainData?.tokens}
-            slug={community.slug}
-          />
-        </TabsContent>
-        <TabsContent value="badges">
-          <CommunityBadges badges={badges} />
+          <Leaderboard community={community} />
         </TabsContent>
         <TabsContent value="activity">
           <Activity rewards={community?.rewards || []} />

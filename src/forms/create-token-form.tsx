@@ -126,7 +126,10 @@ export function CreateTokenForm({ community }: CreateTokenFormProps) {
           address: chain.APP_FACTORY_ADDRESS,
           abi: appFactoryAbi,
           functionName: "create",
-          args: [stringToHex(community.name, { size: 32 }), address as Address],
+          args: [
+            stringToHex(community.name + Math.random().toString(36).substring(2, 7), { size: 32 }),
+            address as Address,
+          ],
         });
 
         const transactionHash = await writeContract(config, request);

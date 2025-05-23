@@ -28,7 +28,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import type { Chain } from "@/constants/chains";
 import { isSlugAvailable } from "@/db/queries/communities";
 import { revalidate } from "@/lib/openformat";
 import { filterVisibleTokens } from "@/lib/utils";
@@ -37,13 +36,8 @@ import { toast } from "sonner";
 
 export default function CommunitySettingsForm({
   community,
-  leaderboard,
-  badges,
 }: {
   community: Community;
-  leaderboard: LeaderboardEntry[];
-  badges: BadgeWithCollectedStatus[];
-  chain: Chain;
 }) {
   const t = useTranslations("settings.form");
 
@@ -516,12 +510,7 @@ export default function CommunitySettingsForm({
         </Form>
       </div>
       <div className="col-span-2">
-        <CommunityPreview
-          community={community}
-          previewValues={previewValues}
-          leaderboard={leaderboard}
-          badges={badges}
-        />
+        <CommunityPreview community={community} previewValues={previewValues} />
       </div>
     </div>
   );

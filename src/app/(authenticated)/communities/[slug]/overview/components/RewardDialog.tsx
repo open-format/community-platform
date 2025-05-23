@@ -33,7 +33,7 @@ import Link from "next/link";
 import { startTransition, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { type Address, BaseError, parseEther, stringToHex } from "viem";
+import { type Address, BaseError, isAddress, parseEther, stringToHex } from "viem";
 import { useConfig } from "wagmi";
 import { z } from "zod";
 
@@ -98,7 +98,9 @@ export default function RewardDialog({
 
   const FormSchema = z.object({
     amount: z.coerce.number().min(1, t("validation.amountMin")).default(recommendation.points),
-    tokenAddress: z.string().min(1, t("validation.tokenAddressRequired")),
+    tokenAddress: z.string().refine((value) => isAddress(value), {
+      message: t("validation.tokenAddressRequired"),
+    }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -273,8 +275,8 @@ export default function RewardDialog({
                     <FormControl>
                       <TokenSelector
                         forceModal={true}
-                        tokens={community.onchainData?.tokens ?? []}
-                        badges={community.onchainData?.badges ?? []}
+                        tokens={community?.onchainData?.tokens ?? []}
+                        badges={community?.onchainData?.badges ?? []}
                         value={field.value}
                         onChange={field.onChange}
                       />

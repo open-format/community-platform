@@ -3,7 +3,8 @@ import Shortcuts from "@/components/shortcuts";
 
 import ImpactReports from "@/components/impact-reports/impact-reports";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Terminal } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+import { ArrowRight, Award } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
@@ -24,19 +25,19 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
 
   return (
     <div className="space-y-6">
-      <Alert variant="success">
-        <Terminal className="h-4 w-4" />
-        <AlertTitle>
-          You have {community.recommendations} reward recommendations to review
+      <Alert className="border-2">
+        <Award className="h-5 w-5" />
+        <AlertTitle className="text-lg font-semibold">
+          {community.recommendations} reward recommendations pending
         </AlertTitle>
-        <AlertDescription>
-          You can view them in the rewards section.
-          <Link href={`/communities/${slug}/rewards`} className="underline">
-            View rewards
+        <AlertDescription className="mt-2">
+          <Link href={`/communities/${slug}/copilot`} className={buttonVariants()}>
+            Review now
+            <ArrowRight className="h-4 w-4" />
           </Link>
         </AlertDescription>
       </Alert>
-      <ImpactReports snapshot={community.snapshot.metadata} />
+      <ImpactReports report={community.snapshot.metadata} />
       <div>
         <Shortcuts community={community} />
       </div>

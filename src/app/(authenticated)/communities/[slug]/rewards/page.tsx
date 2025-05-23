@@ -1,9 +1,9 @@
 import { getCommunity } from "@/app/actions/communities/get";
+import MetricsSection from "@/components/metrics-section";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import BatchRewardsForm from "@/forms/batch-rewards-form";
 import RewardsForm from "@/forms/rewards-form";
 import { getTranslations } from "next-intl/server";
-import RewardRecommendations from "../overview/components/reward-recommendations";
 
 export default async function Rewards({ params }: { params: Promise<{ slug: string }> }) {
   const t = await getTranslations("rewards");
@@ -15,17 +15,9 @@ export default async function Rewards({ params }: { params: Promise<{ slug: stri
   }
 
   return (
-    <div>
-      <Card variant="borderless">
-        <CardHeader>
-          <CardTitle>{t("rewardRecommendations.title")}</CardTitle>
-          <CardDescription>{t("rewardRecommendations.description")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <RewardRecommendations community={community} />
-        </CardContent>
-      </Card>
-      <Card variant="borderless">
+    <div className="space-y-4">
+      {community.communityContractAddress && <MetricsSection community={community} />}
+      <Card>
         <CardHeader>
           <CardTitle>{t("sendReward.title")}</CardTitle>
           <CardDescription>{t("sendReward.description")}</CardDescription>
@@ -34,7 +26,7 @@ export default async function Rewards({ params }: { params: Promise<{ slug: stri
           <RewardsForm community={community} />
         </CardContent>
       </Card>
-      <Card variant="borderless">
+      <Card>
         <CardHeader>
           <CardTitle>{t("sendReward.title")}</CardTitle>
           <CardDescription>{t("sendReward.description")}</CardDescription>

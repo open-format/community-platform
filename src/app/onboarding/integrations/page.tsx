@@ -1,8 +1,9 @@
-import { Info } from "lucide-react";
+import { OnboardingProgressBar } from "@/components/onboarding/onboarding-progress";
+import { ExternalLinkIcon, Info } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 import { Suspense } from "react";
 import IntegrationsClient from "./integrations-client";
-import { OnboardingProgressBar } from "@/components/onboarding/onboarding-progress";
 
 function LoadingSkeleton() {
   return (
@@ -42,10 +43,7 @@ export default async function PlatformsPage({
   // If we have a guildId but no error, we're either loading jobs or they've started
   const jobsStarted = discordConnected && !params.error;
 
-  const steps = [
-    { label: "Connect your community" },
-    { label: "Deploying to community" },
-  ];
+  const steps = [{ label: "Connect your community" }, { label: "Deploying to community" }];
 
   let firstBarProgress = 0.33;
   if (discordConnected) firstBarProgress = 0.66;
@@ -75,6 +73,9 @@ export default async function PlatformsPage({
             <li>Generate insights about engagement and sentiment</li>
             <li>Provide recommendations for rewarding top contributors</li>
           </ul>
+          <Link href="/onboarding/example" className="flex text-primary items-center gap-1 text-sm">
+            <ExternalLinkIcon className="h-4 w-4" /> See an example snapshot
+          </Link>
         </div>
         <Suspense fallback={<LoadingSkeleton />}>
           <IntegrationsClient discordConnected={discordConnected} communityId={communityId} />

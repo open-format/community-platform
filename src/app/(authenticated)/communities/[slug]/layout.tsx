@@ -1,15 +1,6 @@
 import { getCommunity } from "@/app/actions/communities/get";
 import ActiveLink from "@/components/active-link";
-import { createCommunity } from "@/db";
-import { getChainFromCommunityOrCookie } from "@/lib/openformat";
 import { getTranslations } from "next-intl/server";
-
-async function handleCommunityCreation(slug: `0x${string}`) {
-  const chain = await getChainFromCommunityOrCookie(slug);
-  if (chain?.id) {
-    await createCommunity(slug, "New Community", chain.id);
-  }
-}
 
 export default async function Layout({
   children,
@@ -25,17 +16,17 @@ export default async function Layout({
 
   return (
     <div>
-      <nav className="border-b border-gray-200 flex flex-col px-4 -m-lg">
+      <nav className="flex flex-col px-4 -m-lg max">
         <div className="flex">
           <ActiveLink href="overview">{t("overview")}</ActiveLink>
-          {onChainData && <ActiveLink href="settings">{t("settings")}</ActiveLink>}
+          <ActiveLink href="copilot">{t("copilot")}</ActiveLink>
           <ActiveLink href="rewards">{t("rewards")}</ActiveLink>
-          <ActiveLink href="batch-rewards">{t("batchRewards")}</ActiveLink>
           <ActiveLink href="tokens">{t("tokens")}</ActiveLink>
           <ActiveLink href="badges">{t("badges")}</ActiveLink>
+          {onChainData && <ActiveLink href="settings">{t("settings")}</ActiveLink>}
         </div>
       </nav>
-      <main className="m-lg">{children}</main>
+      <main className="m-lg p-lg max-w-7xl mx-auto">{children}</main>
     </div>
   );
 }

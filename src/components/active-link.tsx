@@ -1,8 +1,8 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
 
 interface ActiveLinkProps {
   href: string;
@@ -18,11 +18,9 @@ export default function ActiveLink({ href, children, className }: ActiveLinkProp
     <Link
       href={href}
       className={cn(
-        "px-3 py-4 text-sm transition-colors hover:text-gray-700",
-        isActive 
-          ? "text-primary font-semibold border-b-2 border-primary" 
-          : "text-gray-500",
-        className
+        "px-3 py-4 text-sm transition-colors hover:text-white",
+        isActive ? "text-primary font-semibold border-b-2 border-primary" : "text-gray-500",
+        className,
       )}
     >
       {children}

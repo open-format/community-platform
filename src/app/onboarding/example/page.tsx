@@ -1,12 +1,10 @@
+import { CloseTab } from "@/components/close-tab";
 import { ActivityAnalysis } from "@/components/impact-reports/sections/activity-analysis";
 import { KeyTopics } from "@/components/impact-reports/sections/key-topics";
 import { SentimentAnalysis } from "@/components/impact-reports/sections/sentiment-analysis";
 import { TopContributors } from "@/components/impact-reports/sections/top-contributors";
-import { buttonVariants } from "@/components/ui/button";
 import report from "@/constants/report.json";
-import { cn } from "@/lib/utils";
 import { Sparkles } from "lucide-react";
-import Link from "next/link";
 
 export default async function ExampleSnapshotPage() {
   return (
@@ -15,9 +13,7 @@ export default async function ExampleSnapshotPage() {
       <p className="text-gray-400 text-lg max-w-2xl mx-auto text-center">
         Here's an example of the insights and reports you'll see after connecting your platforms.
       </p>
-      <Link className={cn(buttonVariants(), "w-fit mx-auto")} href="/onboarding/integrations">
-        Continue
-      </Link>
+      <CloseTab />
 
       <div className="grid grid-cols-1 md:grid-cols-6 gap-6 w-full">
         <div className="rounded-xl border border-zinc-800 p-8 flex flex-col items-center shadow-sm col-span-2">

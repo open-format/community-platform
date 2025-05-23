@@ -10,7 +10,7 @@ import { isAxiosError } from "axios";
  *   - A platform-specific ID (e.g. Discord guild ID)
  * @returns The community data from the API response
  */
-export async function getCommunity(id: string) {
+export async function getCommunity(id: string): Promise<Community> {
   try {
     const response = await agentApiClient.get(`/communities/${id}`);
     return response.data;

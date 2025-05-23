@@ -60,7 +60,7 @@ function LeaderboardHeader({
   return (
     <TableRow>
       <TableHead>{t("rank")}</TableHead>
-      <TableHead>{metadata.user_label ?? t("user")}</TableHead>
+      <TableHead>{metadata.userLabel ?? t("user")}</TableHead>
       <TableHead className="text-right capitalize whitespace-nowrap">
         {selectedToken?.token
           ? `${selectedToken.token.name} (${selectedToken.token.symbol})`
@@ -144,7 +144,7 @@ const EmptyState = ({ metadata }: Pick<LeaderboardProps, "metadata">) => {
   );
 };
 
-export default function Leaderboard({ community }: LeaderboardProps) {
+export default function Leaderboard({ community }: { community: Community }) {
   const { user } = usePrivy();
   const t = useTranslations("overview.leaderboard");
 

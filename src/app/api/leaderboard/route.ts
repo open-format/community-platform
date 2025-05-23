@@ -1,5 +1,7 @@
 import { getCommunity } from "@/app/actions/communities/get";
-import { generateLeaderboard } from "@/lib/openformat";
+import { ChainName, getChainById } from "@/constants/chains";
+import { apiClient } from "@/lib/openformat";
+import { getUserHandle } from "@/lib/privy";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -19,7 +21,42 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Community not found" }, { status: 404 });
   }
 
-  const data = await generateLeaderboard(community, tokenId ?? "", startDate ?? "", endDate ?? "");
+  const selectedTokenId = tokenId || community.tokenToDisplay || "";
 
-  return NextResponse.json(data);
+  const chain = getChainById(community.communityContractChainId);
+
+  if (!chain) {
+    return NextResponse.json({ error: "Chain not found" }, { status: 404 });
+  }
+
+  const params = new URLSearchParams();
+  params.set("app_id", community.communityContractAddress);
+  params.set("token_id", selectedTokenId);
+  params.set("start", startDate ?? "");
+  params.set("end", endDate ?? "");
+  params.set(
+    "chain",
+    chain.apiChainName === ChainName.MATCHAIN
+      ? "matchain"
+      : chain.apiChainName === ChainName.AURORA
+        ? "aurora"
+        : chain.apiChainName === ChainName.TURBO
+          ? "turbo"
+          : chain.apiChainName === ChainName.BASE
+            ? "base"
+            : "arbitrum-sepolia",
+  );
+
+  const response = await apiClient.get(`/v1/leaderboard?${params}`);
+
+  // Fetch social handles for each user in the leaderboard
+  const leaderboardWithHandles = await Promise.all(
+    response.data.data.map(async (entry: LeaderboardEntry) => ({
+      ...entry,
+      handle: (await getUserHandle(entry.user))?.username ?? "Anonymous",
+      type: (await getUserHandle(entry.user))?.type ?? "unknown",
+    })),
+  );
+
+  return NextResponse.json(leaderboardWithHandles);
 }

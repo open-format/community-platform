@@ -59,12 +59,13 @@
   "navigation": {
     "menu": {
       "overview": "Overview",
-      "settings": "Community Page",
+      "settings": "Community Hub",
       "rewards": "Rewards",
       "batchRewards": "Batch Rewards",
       "tokens": "Tokens",
       "badges": "Badges",
-      "agents": "Community Agents"
+      "agents": "Community Agents",
+      "copilot": "Copilot"
     },
     "breadcrumbs": {
       "communities": "Communities",
@@ -242,7 +243,7 @@
         "amountMin": "Amount must be at least 1",
         "nameRequired": "Contributor name required",
         "nameMaxLength": "Contributor name exceeds characters limit",
-        "tokenAddressRequired": "Token address is required",
+        "tokenAddressRequired": "Token address is required and must be a valid Ethereum address",
         "invalidAddress": "Invalid address"
       },
       "viewEvidence": "View Evidence",
@@ -276,6 +277,10 @@
     }
   },
   "rewards": {
+    "rewardRecommendations": {
+      "title": "Reward Recommendations",
+      "description": "Review and process AI-generated reward recommendations for your community members' contributions"
+    },
     "form": {
       "user": {
         "label": "User",
@@ -643,6 +648,9 @@
     }
   },
   "badges": {
+    "ariaLabels": {
+      "viewBadge": "View badge on block explorer"
+    },
     "address": "Address:",
     "addressCopied": "Badge address copied to clipboard",
     "createFirst": "Create your first badge to get started",
@@ -1113,7 +1121,7 @@
     }
   },
   "metrics": {
-    "title": "Community insight",
+    "title": "Reward Insights",
     "uniqueUsers": {
       "description": "The number of new users who have received rewards",
       "title": "New Users",
