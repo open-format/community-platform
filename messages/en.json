@@ -32,7 +32,13 @@
 			"title": "Bye Friend! 👋😢",
 			"description": "Hope to see you again soon!"
 		},
-		"loading": "Loading authentication"
+		"loading": "Loading authentication",
+		"connectTitle": "Sign in to your account",
+		"connectDescription": "Choose a login method below.",
+		"connectWallet": "Connect Wallet",
+		"connectDiscord": "Login with Discord",
+		"connectGithub": "Login with GitHub",
+		"connectEmail": "Login with Email"
 	},
 	"validation": {
 		"required": "This field is required",
@@ -538,7 +544,7 @@
 		"mainnets": "Mainnets",
 		"testnets": "Testnets",
 		"balance": "Balance: {amount} {symbol}",
-		"gasSponsored": "Gas sponsored"
+		"gasSponsored": "Gas sponsored by {sponsor}"
 	},
 	"profile": {
 		"copyAddress": "Copy Address",
@@ -829,7 +835,9 @@
 			"validation": {
 				"nameRequired": "Name must be at least 3 characters",
 				"nameMaxLength": "Name must be less than 32 characters",
-				"symbolRequired": "Symbol must be at least 3 characters"
+				"symbolRequired": "Symbol must be at least 3 characters",
+				"chainNotFound": "No chain found",
+				"nameInUse": "Name already in use"
 			},
 			"fields": {
 				"name": {
@@ -852,6 +860,10 @@
 						"points": "Points"
 					}
 				},
+				"network": {
+					"label": "Network",
+					"description": "Select the blockchain network for your token"
+				},
 				"initialSupply": {
 					"label": "Initial Supply",
 					"placeholder": "0",
@@ -867,6 +879,16 @@
 			"buttons": {
 				"create": "Create Token",
 				"creating": "Creating Token..."
+			},
+			"toast": {
+				"success": {
+					"title": "Success!",
+					"description": "Your token has been created."
+				},
+				"error": {
+					"title": "Error",
+					"description": "Failed to create token. Please try again."
+				}
 			}
 		},
 		"visibleTokens": "Visible Tokens",
@@ -1223,6 +1245,77 @@
 					"description": "Get reward suggestions based on the past activity"
 				}
 			}
+		}
+	},
+	"onboarding": {
+		"integrations": {
+			"interestRegistered": "Interest registered",
+			"introTitle": "Connect Your Platforms",
+			"intro": "Connect your community platforms to unlock insights and automations. The Community Agent analyzes your Discord, Telegram, and more to surface valuable contributions and trends.",
+			"discord": "Discord",
+			"telegram": "Telegram",
+			"github": "GitHub",
+			"dune": "Dune",
+			"discordDesc": "Connect your community's Discord to unlock insights.",
+			"telegramDescComingSoon": "Telegram integration coming soon.",
+			"githubDescComingSoon": "GitHub integration coming soon.",
+			"duneDescComingSoon": "Dune integration coming soon.",
+			"connect": "Connect",
+			"connected": "Connected",
+			"comingSoon": "Coming Soon",
+			"imInterested": "I'm Interested",
+			"interested": "Interest Registered",
+			"continue": "Continue",
+			"error": "Error connecting Discord",
+			"loading": "Loading integrations...",
+			"errors": {
+				"jobStartFailed": "Failed to start community analysis. Please try again.",
+				"missingParameters": "Missing required parameters. Please try connecting again."
+			},
+			"starting": "Starting...",
+			"retryConnection": "Retry Connection",
+			"error": "An error occurred. Please try again."
+		},
+		"exampleSnapshot": {
+			"title": "Community Snapshot Example",
+			"intro": "Here's an example of the insights and reports you'll see after connecting your platforms.",
+			"loading": "Loading example report...",
+			"unavailable": "Example report currently unavailable.",
+			"continue": "Continue",
+			"reportTitle": "Impact Report"
+		},
+		"complete": {
+			"title": "Setup Complete!",
+			"intro": "Your community platform is ready to go.",
+			"successTitle": "Welcome to Your Community Platform",
+			"successMessage": "Your community platform is now set up and ready to use. You can start exploring insights, managing rewards, and growing your community.",
+			"continue": "Go to Dashboard"
+		},
+		"setup": {
+			"title": "Setting Up Your Community",
+			"description": "We're preparing your community platform with initial reports and recommendations. This may take a few moments.",
+			"report": {
+				"title": "Impact Report Generation",
+				"description": "Analyzing your community's activity to generate insights and recommendations."
+			},
+			"recommendations": {
+				"title": "Reward Recommendations",
+				"description": "Processing community contributions to suggest appropriate rewards."
+			},
+			"status": {
+				"idle": "Waiting to start",
+				"pending": "Pending",
+				"processing": "Processing",
+				"completed": "Complete",
+				"failed": "Failed",
+				"unknown": "Unknown"
+			},
+			"errors": {
+				"missingCommunityId": "Missing community ID. Please try connecting again.",
+				"setupFailed": "Failed to complete setup. Please try again."
+			},
+			"continue": "Continue to Dashboard",
+			"retry": "Retry Setup"
 		}
 	}
 }
