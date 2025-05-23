@@ -106,7 +106,9 @@ export default function NetworkSelector({
 		if (chainValue === ChainName.OPENFORMAT) {
 			return (
 				<Badge className="hidden md:block bg-green-600">
-					{t("gasSponsored")}
+					{t("gasSponsored", {
+						sponsor: "Open Format",
+					})}
 				</Badge>
 			);
 		}

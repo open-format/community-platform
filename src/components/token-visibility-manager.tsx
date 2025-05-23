@@ -1,9 +1,9 @@
 "use client";
 
+import { updateTokenVisibility } from "@/app/actions/communities/update";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { updateTokenVisibility } from "@/db/queries/tokens";
 import { useCurrentChain } from "@/hooks/useCurrentChain";
 import { timeAgo } from "@/lib/utils";
 import { ExternalLinkIcon } from "lucide-react";
@@ -12,13 +12,13 @@ import Link from "next/link";
 import { toast } from "sonner";
 
 interface TokenVisibilityManagerProps {
-  tokens: any[];
-  communityId: string;
-  hiddenTokens: string[];
+  community: Community;
 }
 
-export function TokenVisibilityManager({ tokens, communityId, hiddenTokens }: TokenVisibilityManagerProps) {
+export function TokenVisibilityManager({ community }: TokenVisibilityManagerProps) {
   const t = useTranslations("tokens");
+  const hiddenTokens = community.hiddenTokens;
+  const tokens = community.onchainData?.tokens || [];
 
   const tokenTypes = {
     Base: "ERC20",
@@ -30,7 +30,7 @@ export function TokenVisibilityManager({ tokens, communityId, hiddenTokens }: To
 
   const handleToggleVisibility = async (tokenId: string, hidden: boolean) => {
     try {
-      const result = await updateTokenVisibility(communityId, tokenId, hidden);
+      const result = await updateTokenVisibility(community, tokenId, hidden);
       if (result.success) {
         toast.success(hidden ? t("tokenHidden") : t("tokenUnhidden"));
       } else {

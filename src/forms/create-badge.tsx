@@ -18,9 +18,11 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 
 import { usePrivy } from "@privy-io/react-auth";
-import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
+import { simulateContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
 
+import { appFactoryAbi } from "@/abis/AppFactory";
 import { badgeFactoryAbi } from "@/abis/ERC721FactoryFacet";
+import { updateCommunity } from "@/app/actions/communities/update";
 import {
   Dialog,
   DialogContent,
@@ -30,13 +32,17 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useConfetti } from "@/contexts/confetti-context";
+import { getEventLog } from "@/helpers/contract";
+import { handleViemError } from "@/helpers/errors";
+import { useCurrentChain } from "@/hooks/useCurrentChain";
 import { useRevalidate } from "@/hooks/useRevalidate";
 import { uploadFileToIPFS, uploadMetadata } from "@/lib/thirdweb";
 import { getAddress } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
-import { stringToHex } from "viem";
-import { useConfig } from "wagmi";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { type Address, BaseError, stringToHex } from "viem";
+import { useConfig, useSwitchChain } from "wagmi";
 
 interface CreateBadgeFormProps {
   community: Community;
@@ -47,8 +53,26 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { triggerConfetti } = useConfetti();
   const [shouldRevalidate, setShouldRevalidate] = useState(false);
+  const { switchChain } = useSwitchChain();
+  const chain = useCurrentChain();
 
-  useRevalidate(shouldRevalidate);
+  const { isRevalidating } = useRevalidate(shouldRevalidate);
+
+  useEffect(() => {
+    let toastId: string | number | undefined;
+
+    if (isRevalidating) {
+      toastId = toast.loading("Fetching latest badges...", {
+        description: "Please wait while we fetch the latest badges...",
+      });
+    } else if (toastId) {
+      toast.dismiss(toastId);
+    }
+
+    return () => {
+      if (toastId) toast.dismiss(toastId);
+    };
+  }, [isRevalidating]);
 
   const toggle = () => setIsOpen((t) => !t);
 
@@ -75,6 +99,40 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
 
   async function handleFormSubmission(data: z.infer<typeof FormSchema>) {
     try {
+      const chainId = community.communityContractChainId;
+      const appId = community.communityContractAddress;
+      let communityId: Address | null = appId || null;
+
+      if (!chain) {
+        throw new Error(t("validation.chainNotFound"));
+      }
+
+      if (!appId) {
+        switchChain({ chainId: chain.id });
+
+        const { request } = await simulateContract(config, {
+          address: chain.APP_FACTORY_ADDRESS,
+          abi: appFactoryAbi,
+          functionName: "create",
+          args: [stringToHex(community.name, { size: 32 }), address as Address],
+        });
+
+        const transactionHash = await writeContract(config, request);
+
+        const transactionReceipt = await waitForTransactionReceipt(config, {
+          hash: transactionHash,
+        });
+
+        communityId = await getEventLog(transactionReceipt, appFactoryAbi, "Created");
+
+        await updateCommunity(community.id, {
+          communityContractAddress: communityId?.toLowerCase() as Address,
+          communityContractChainId: chain.id,
+        });
+      }
+
+      switchChain({ chainId: chainId as number });
+
       const formData = new FormData();
       formData.append("file", data.image);
 
@@ -89,7 +147,7 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
       const metadataURI = await uploadMetadata(metadata);
 
       const transactionHash = await writeContract(config, {
-        address: community.communityContractAddress,
+        address: communityId,
         abi: badgeFactoryAbi,
         functionName: "createERC721WithTokenURI",
         args: [
@@ -104,12 +162,21 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
 
       await waitForTransactionReceipt(config, { hash: transactionHash });
 
+      toast.success(t("toast.success.title"), {
+        description: t("toast.success.description"),
+      });
+
       form.reset();
       toggle();
       triggerConfetti();
       setShouldRevalidate(true);
-    } catch (e: any) {
-      console.log(e.message);
+    } catch (err) {
+      if (err instanceof BaseError) {
+        return handleViemError(err);
+      }
+      toast.error(t("toast.error.title"), {
+        description: t("toast.error.description"),
+      });
     }
   }
 
