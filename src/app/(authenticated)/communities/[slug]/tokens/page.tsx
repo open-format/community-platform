@@ -26,11 +26,7 @@ export default async function Tokens({ params }: { params: Promise<{ slug: strin
         </div>
       </CardHeader>
       <CardContent>
-        <TokenVisibilityManager
-          tokens={community.onchainData?.tokens || []}
-          communityId={community.id}
-          hiddenTokens={community.hiddenTokens || []}
-        />
+        <TokenVisibilityManager community={community} />
       </CardContent>
     </Card>
   );
