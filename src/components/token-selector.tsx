@@ -58,9 +58,6 @@ export default function TokenSelector({
   }, [tokens, badges, value, onChange, includeAllOption]);
 
   const handleSelect = (currentValue: string) => {
-    console.log("HandleSelect - Current:", currentValue);
-    console.log("HandleSelect - Previous:", value);
-
     // Always update with the new value
     onChange(currentValue);
 

@@ -116,7 +116,9 @@ export default function RewardDialog({
 
         try {
           // Check if selected token is a badge or token
-          const isSelectedBadge = community.badges.some((badge) => badge.id === data.tokenAddress);
+          const isSelectedBadge = community.onchainData?.badges.some(
+            (badge) => badge.id === data.tokenAddress,
+          );
 
           // Use different contract function based on token type
           if (isSelectedBadge) {
@@ -141,7 +143,7 @@ export default function RewardDialog({
           } else {
             // Handle ERC20 token minting
             const hash = await writeContract(config, {
-              address: community.id,
+              address: community.onchainData.id,
               abi: rewardFacetAbi,
               functionName: "mintERC20",
               args: [
@@ -271,8 +273,8 @@ export default function RewardDialog({
                     <FormControl>
                       <TokenSelector
                         forceModal={true}
-                        tokens={community.tokens}
-                        badges={community.badges}
+                        tokens={community.onchainData?.tokens ?? []}
+                        badges={community.onchainData?.badges ?? []}
                         value={field.value}
                         onChange={field.onChange}
                       />

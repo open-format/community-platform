@@ -17,47 +17,59 @@ interface CommunityPreviewProps {
   previewValues: {
     title: string;
     description: string;
-    user_label: string;
-    token_label: string;
-    accent_color: string;
-    dark_mode: boolean;
-    banner_url: string;
-    show_social_handles: boolean;
-    token_to_display: string;
+    userLabel: string;
+    tokenLabel: string;
+    accentColor: string;
+    darkMode: boolean;
+    bannerUrl: string;
+    showSocialHandles: boolean;
+    tokenToDisplay: string;
     tiers: {
       name: string;
-      points_required: number;
+      pointsRequired: number;
       color: string;
-      tier_id?: string;
-      community_id?: string;
+      tierId?: string;
+      communityId?: string;
     }[];
   };
   leaderboard: LeaderboardEntry[];
   badges: BadgeWithCollectedStatus[];
 }
 
-export default function CommunityPreview({ community, previewValues, leaderboard, badges }: CommunityPreviewProps) {
+export default function CommunityPreview({
+  community,
+  previewValues,
+  leaderboard,
+  badges,
+}: CommunityPreviewProps) {
   const t = useTranslations("community.preview");
 
   return (
     <div
       className={cn(
         "max-w-prose mx-auto space-y-4 p-5 rounded-xl bg-background sticky top-0",
-        previewValues.dark_mode ? "dark" : "light"
+        previewValues.darkMode ? "dark" : "light",
       )}
     >
       {/* Community Profile */}
       <CommunityProfile />
 
       {/* Community Banner */}
-      <CommunityBanner banner_url={previewValues.banner_url} accent_color={previewValues.accent_color} />
+      <CommunityBanner
+        bannerUrl={previewValues.bannerUrl}
+        accentColor={previewValues.accentColor}
+      />
 
       {/* Community Info */}
       <CommunityInfo title={previewValues.title} description={previewValues.description} />
 
       {/* Tiers */}
       {previewValues.tiers && previewValues.tiers.length > 0 && (
-        <Tiers tiers={previewValues.tiers} currentPoints={25} tokenLabel={previewValues.token_label} />
+        <Tiers
+          tiers={previewValues.tiers}
+          currentPoints={25}
+          tokenLabel={previewValues.tokenLabel}
+        />
       )}
 
       <Tabs defaultValue="leaderboard" className="w-full">
@@ -69,15 +81,10 @@ export default function CommunityPreview({ community, previewValues, leaderboard
         <TabsContent value="leaderboard">
           <Leaderboard
             data={leaderboard}
-            metadata={{
-              ...community.metadata,
-              user_label: previewValues.user_label,
-              token_label: previewValues.token_label,
-              token_to_display: previewValues.token_to_display,
-            }}
-            showSocialHandles={Boolean(previewValues?.show_social_handles)}
-            tokens={community.tokens}
-            slug={community.metadata.slug}
+            community={community}
+            showSocialHandles={Boolean(previewValues?.showSocialHandles)}
+            tokens={community.onchainData?.tokens}
+            slug={community.slug}
           />
         </TabsContent>
         <TabsContent value="badges">

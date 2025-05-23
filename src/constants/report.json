@@ -1,0 +1,152 @@
+{
+  "endDate": 1747842633333,
+  "overview": {
+    "uniqueUsers": 18,
+    "totalMessages": 312,
+    "activeChannels": 5
+  },
+  "keyTopics": [
+    {
+      "topic": "Validator Incentives",
+      "description": "Users are discussing how rewards are distributed among validators and suggesting improvements to staking mechanics.",
+      "evidence": [],
+      "messageCount": 34
+    },
+    {
+      "topic": "Subgraph Indexing Issues",
+      "evidence": [],
+      "description": "Multiple users raised concerns about inconsistencies in indexing due to outdated block references.",
+      "messageCount": 27
+    },
+    {
+      "topic": "Testnet Deployments",
+      "evidence": [],
+      "description": "Builders shared feedback and walkthroughs of deploying smart contracts to the testnet.",
+      "messageCount": 51
+    },
+    {
+      "topic": "General Support",
+      "evidence": [],
+      "description": "Users are helping each other with SDK errors and CLI commands.",
+      "messageCount": 61
+    },
+    {
+      "topic": "Governance Proposal Drafting",
+      "evidence": [],
+      "description": "Discussion around a new governance proposal to adjust gas subsidies and introduce new community roles.",
+      "messageCount": 39
+    }
+  ],
+  "startDate": 1746633033333,
+  "summaryId": "chainforge-activity-may13",
+  "timestamp": 1747842642888,
+  "platformId": "999999999999999999",
+  "dailyActivity": [
+    {
+      "date": "2025-05-07",
+      "uniqueUsers": 10,
+      "messageCount": 42
+    },
+    {
+      "date": "2025-05-08",
+      "uniqueUsers": 20,
+      "messageCount": 47
+    },
+    {
+      "date": "2025-05-09",
+      "uniqueUsers": 17,
+      "messageCount": 54
+    },
+    {
+      "date": "2025-05-10",
+      "uniqueUsers": 33,
+      "messageCount": 99
+    },
+    {
+      "date": "2025-05-11",
+      "uniqueUsers": 14,
+      "messageCount": 44
+    },
+    {
+      "date": "2025-05-12",
+      "uniqueUsers": 23,
+      "messageCount": 87
+    },
+    {
+      "date": "2025-05-13",
+      "uniqueUsers": 47,
+      "messageCount": 102
+    }
+  ],
+  "userSentiment": {
+    "excitement": [
+      {
+        "title": "Rust SDK Alpha Launch",
+        "users": ["devboy.eth", "0xJade", "arcadeBuilder"],
+        "evidence": [],
+        "description": "Multiple users expressed excitement and appreciation for the new Rust SDK alpha. They discussed ease of integration and performance improvements."
+      },
+      {
+        "title": "Validator Rewards Visibility",
+        "users": ["dora_node_runner"],
+        "evidence": [],
+        "description": "Community welcomed the new dashboard feature that allows validators to track reward history and performance metrics in real-time."
+      }
+    ],
+    "frustrations": [
+      {
+        "title": "Slow Subgraph Syncing on Arbitrum",
+        "users": ["0xJade"],
+        "evidence": [],
+        "description": "Subgraph syncing appears delayed, leading to outdated data in the dashboard and testnet inconsistencies."
+      },
+      {
+        "title": "Error on WalletConnect v2 Integration",
+        "users": ["devboy.eth"],
+        "evidence": [],
+        "description": "Developer is hitting authentication errors when trying to integrate WalletConnect v2 into their DApp using ChainForge SDK."
+      }
+    ]
+  },
+  "topContributors": [
+    {
+      "username": "0xJade",
+      "messageCount": 45
+    },
+    {
+      "username": "devboy.eth",
+      "messageCount": 39
+    },
+    {
+      "username": "dora_node_runner",
+      "messageCount": 33
+    }
+  ],
+  "channelBreakdown": [
+    {
+      "channelName": "💬general",
+      "uniqueUsers": 10,
+      "messageCount": 90
+    },
+    {
+      "channelName": "🧪testnet-feedback",
+      "uniqueUsers": 7,
+      "messageCount": 74
+    },
+    {
+      "channelName": "📚dev-support",
+      "uniqueUsers": 12,
+      "messageCount": 82
+    },
+    {
+      "channelName": "🔎indexing-help",
+      "uniqueUsers": 5,
+      "messageCount": 38
+    },
+    {
+      "channelName": "📜governance",
+      "uniqueUsers": 6,
+      "messageCount": 28
+    }
+  ]
+}
