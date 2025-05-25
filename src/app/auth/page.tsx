@@ -6,12 +6,13 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-black text-white">
-      {/* Left: Static content - server rendered */}
-      <div className="flex flex-col justify-center items-start w-full md:w-1/2 px-10 py-16 bg-zinc-900 border-r border-zinc-800 min-h-screen">
-        <h2 className="text-3xl font-bold mb-2">Create an account</h2>
-        <p className="text-gray-400 mb-8">Get started with Open Format</p>
+      <div className="flex flex-col justify-center items-start w-full md:w-1/2 px-10 py-16 bg-zinc-900 border-r border-zinc-800 min-h-screen space-y-6">
+        <div>
+          <h1>Create an account</h1>
+          <p className="text-gray-400 mb-8">Get started with Open Format</p>
+        </div>
         <div className="mb-8 w-full">
-          <h3 className="text-lg font-semibold mb-4">Your onboarding journey</h3>
+          <h2>Your onboarding journey</h2>
           <ol className="space-y-2 text-gray-300">
             <li>
               <span className="font-bold text-white mr-2">1</span> Create an account
@@ -28,7 +29,7 @@ export default function Auth() {
           </ol>
         </div>
         <div className="mb-8 w-full">
-          <h3 className="text-lg font-semibold mb-4">Why Open Format?</h3>
+          <h2>Why Open Format?</h2>
           <ul className="space-y-2 text-gray-300">
             <li className="flex items-start gap-2">
               <span className="text-green-400">✓</span> Track and reward valuable contributions
@@ -48,9 +49,19 @@ export default function Auth() {
             </li>
           </ul>
         </div>
+
+        <div className="w-full space-y-4">
+          <h2>Join other communities using our platform</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-8 gap-y-6 place-items-center">
+            <img src="/images/partners/matchain.avif" alt="Matchain" className="h-8" />
+            <img src="/images/partners/aurora.png" alt="Aurora" className="h-8" />
+            <img src="/images/partners/turbo.avif" alt="Turbo" className="h-8" />
+            <img src="/images/partners/amplify.avif" alt="Amplify" className="h-8" />
+            <img src="/images/partners/dovu.avif" alt="Dovu" className="h-8" />
+          </div>
+        </div>
       </div>
 
-      {/* Right: Client component for Privy login */}
       <PrivyLogin />
     </div>
   );
