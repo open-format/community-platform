@@ -6,7 +6,7 @@ export default async function CopilotPage({ params }: { params: Promise<{ slug: 
   const community = await getCommunity(slug);
 
   return (
-    <div>
+    <div className="space-y-4">
       <h1>Reward Recommendations</h1>
       <RewardRecommendations community={community} />
     </div>
