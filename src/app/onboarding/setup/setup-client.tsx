@@ -1,14 +1,20 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { OnboardingProgressBar } from "@/components/onboarding/onboarding-progress";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { usePollingJob } from "@/hooks/useJobStatus";
-import { AlertCircle, BarChart2, CheckCircle, FileText, Loader2, Users } from "lucide-react";
+import { AlertCircle, BarChart2, CheckCircle, FileText, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 type JobStatus = "idle" | "pending" | "processing" | "completed" | "failed";
 
@@ -16,28 +22,26 @@ export default function SetupClient() {
   const t = useTranslations("onboarding.setup");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const guildId = searchParams.get("guildId");
+  const communityId = searchParams.get("communityId");
 
+  const [messagesJobId, setMessagesJobId] = useState<string | null>(null);
   const [reportJobId, setReportJobId] = useState<string | null>(null);
   const [recommendationsJobId, setRecommendationsJobId] = useState<string | null>(null);
   const [showLowActivityModal, setShowLowActivityModal] = useState(false);
+  const jobsStartedRef = useRef(false);
 
-  useEffect(() => {
-    const reportId = searchParams.get("reportJobId") || localStorage.getItem("reportJobId");
-    const recId =
-      searchParams.get("recommendationsJobId") || localStorage.getItem("recommendationsJobId");
-    setReportJobId(reportId);
-    setRecommendationsJobId(recId);
-    if (reportId) localStorage.setItem("reportJobId", reportId);
-    if (recId) localStorage.setItem("recommendationsJobId", recId);
-  }, [searchParams]);
+  const { status: messagesStatus, data: messagesData } = usePollingJob({
+    statusEndpoint: (jobId) => `/api/onboarding/messages-job-status?jobId=${jobId}`,
+    initialJobId: messagesJobId || undefined,
+    onStatusChange: (status, message) => {
+      if (status === "failed") {
+        toast.error(message || t("errors.messagesFailed"));
+      }
+    },
+  });
 
-  // Report generation job status
-  const {
-    status: reportStatus,
-    isLoading: isReportLoading,
-    message: reportMessage,
-    data: report,
-  } = usePollingJob({
+  const { status: reportStatus } = usePollingJob({
     statusEndpoint: (jobId) => `/api/onboarding/report-job-status?jobId=${jobId}`,
     initialJobId: reportJobId || undefined,
     onStatusChange: (status, message) => {
@@ -47,12 +51,7 @@ export default function SetupClient() {
     },
   });
 
-  // Reward recommendations job status
-  const {
-    status: recommendationsStatus,
-    isLoading: isRecommendationsLoading,
-    message: recommendationsMessage,
-  } = usePollingJob({
+  const { status: recommendationsStatus } = usePollingJob({
     statusEndpoint: (jobId) => `/api/onboarding/recommendations-job-status?jobId=${jobId}`,
     initialJobId: recommendationsJobId || undefined,
     onStatusChange: (status, message) => {
@@ -62,43 +61,125 @@ export default function SetupClient() {
     },
   });
 
-  const isComplete = reportStatus === "completed" && recommendationsStatus === "completed";
+  const { startJobAsync: startMessagesJobAsync } = usePollingJob({
+    startJobEndpoint: "/api/onboarding/start-messages-job",
+    statusEndpoint: (jobId) => `/api/onboarding/messages-job-status?jobId=${jobId}`,
+  });
+
+  const { startJobAsync: startReportJobAsync } = usePollingJob({
+    startJobEndpoint: "/api/onboarding/start-report-job",
+    statusEndpoint: (jobId) => `/api/onboarding/report-job-status?jobId=${jobId}`,
+  });
+
+  const { startJobAsync: startRecommendationsJobAsync } = usePollingJob({
+    startJobEndpoint: "/api/onboarding/start-recommendations-job",
+    statusEndpoint: (jobId) => `/api/onboarding/recommendations-job-status?jobId=${jobId}`,
+  });
+
+  // Start the initial messages job when component mounts
+  useEffect(() => {
+    const startInitialJob = async () => {
+      if (!guildId || jobsStartedRef.current) return;
+
+      try {
+        jobsStartedRef.current = true;
+        const messagesResponse = await startMessagesJobAsync?.({ platformId: guildId });
+        if (messagesResponse?.job_id) {
+          setMessagesJobId(messagesResponse.job_id);
+        }
+      } catch (error) {
+        console.error("Failed to start messages job:", error);
+        toast.error(t("errors.messagesFailed"));
+        jobsStartedRef.current = false;
+      }
+    };
+
+    startInitialJob();
+  }, [guildId, startMessagesJobAsync, t]);
+
+  // Watch for messages job completion and start remaining jobs
+  useEffect(() => {
+    const startRemainingJobs = async () => {
+      if (
+        messagesStatus === "completed" &&
+        guildId &&
+        communityId &&
+        (messagesData?.newMessagesAdded ?? 0) >= 20
+      ) {
+        try {
+          const [reportResponse, recommendationsResponse] = await Promise.all([
+            startReportJobAsync?.({ platformId: guildId }),
+            startRecommendationsJobAsync?.({ platformId: guildId, communityId }),
+          ]);
+
+          if (reportResponse?.job_id) {
+            setReportJobId(reportResponse.job_id);
+          }
+          if (recommendationsResponse?.job_id) {
+            setRecommendationsJobId(recommendationsResponse.job_id);
+          }
+        } catch (error) {
+          console.error("Failed to start remaining jobs:", error);
+          toast.error(t("errors.jobStartFailed"));
+        }
+      } else if (
+        messagesStatus === "completed" &&
+        (messagesData?.newMessagesAdded ?? 0) < 20 &&
+        !showLowActivityModal
+      ) {
+        setShowLowActivityModal(true);
+      }
+    };
+
+    startRemainingJobs();
+  }, [
+    guildId,
+    communityId,
+    startReportJobAsync,
+    startRecommendationsJobAsync,
+    messagesStatus,
+    messagesData,
+    showLowActivityModal,
+  ]);
+
+  const isComplete =
+    reportStatus === "completed" &&
+    recommendationsStatus === "completed" &&
+    messagesStatus === "completed";
 
   // Add loading state for continue button
   const isContinueLoading =
     reportStatus === "pending" ||
     reportStatus === "processing" ||
     recommendationsStatus === "pending" ||
-    recommendationsStatus === "processing";
+    recommendationsStatus === "processing" ||
+    messagesStatus === "pending" ||
+    messagesStatus === "processing";
 
   // Calculate progress based on job status
   const getProgress = () => {
-    if (!reportJobId || !recommendationsJobId) return 0.33;
-    
-    if (reportStatus === "completed" && recommendationsStatus === "completed") return 1;
-    
-    if ((reportStatus === "completed" && recommendationsStatus !== "completed") ||
-        (recommendationsStatus === "completed" && reportStatus !== "completed")) {
-      return 0.66;
-    }
-    return 0.33;
+    if (!reportJobId || !recommendationsJobId || !messagesJobId) return 0.33;
+
+    let completedJobs = 0;
+    if (reportStatus === "completed") completedJobs++;
+    if (recommendationsStatus === "completed") completedJobs++;
+    if (messagesStatus === "completed") completedJobs++;
+
+    return completedJobs / 3;
   };
 
   // Progress bar steps
-  const progressSteps = [
-    { label: "Connect your community" },
-    { label: "Deploying to community" },
-  ];
+  const progressSteps = [{ label: "Connect your community" }, { label: "Deploying to community" }];
 
   // Status card steps
   const statusSteps = [
     {
-      key: "platforms",
-      icon: <Users className="h-6 w-6" />,
-      title: "Connecting Community Platforms",
-      description: "Successfully connected to your community platforms.",
-      status: "completed" as JobStatus,
-      isJob: false,
+      key: "messages",
+      icon: <FileText className="h-6 w-6" />,
+      title: "Fetching Historical Messages",
+      description: "Collecting historical messages from your connected platforms.",
+      status: messagesStatus as JobStatus,
+      isJob: true,
     },
     {
       key: "insights",
@@ -172,23 +253,14 @@ export default function SetupClient() {
   };
 
   useEffect(() => {
-    if (reportStatus && recommendationsStatus) {
+    if (reportStatus && recommendationsStatus && messagesStatus) {
       const params = new URLSearchParams(searchParams.toString());
       params.set("reportStatus", reportStatus);
       params.set("recommendationsStatus", recommendationsStatus);
+      params.set("messagesStatus", messagesStatus);
       router.replace(`/onboarding/setup?${params.toString()}`, { scroll: false });
     }
-  }, [reportStatus, recommendationsStatus, router, searchParams]);
-
-  useEffect(() => {
-    if (
-      reportStatus === "completed" &&
-      (report?.report?.report?.overview?.totalMessages ?? 0) < 20 &&
-      !showLowActivityModal
-    ) {
-      setShowLowActivityModal(true);
-    }
-  }, [reportStatus, report, showLowActivityModal]);
+  }, [reportStatus, recommendationsStatus, messagesStatus, router, searchParams]);
 
   return (
     <>
@@ -209,7 +281,11 @@ export default function SetupClient() {
               <div
                 key={step.key}
                 className={`flex items-start gap-4 rounded-xl border border-zinc-800 px-5 py-4 ${
-                  step.status === "completed" ? "opacity-100" : step.status === "failed" ? "border-red-500" : "opacity-90"
+                  step.status === "completed"
+                    ? "opacity-100"
+                    : step.status === "failed"
+                      ? "border-red-500"
+                      : "opacity-90"
                 }`}
               >
                 <div className="flex-shrink-0 mt-1">{getStatusIcon(step.status)}</div>
@@ -274,13 +350,11 @@ export default function SetupClient() {
       </div>
 
       <Dialog open={showLowActivityModal}>
-        <DialogContent
-          hideCloseButton
-          className="bg-zinc-900 border-zinc-800 text-white"
-        >
+        <DialogContent hideCloseButton className="bg-zinc-900 border-zinc-800 text-white">
           <DialogTitle>Not Enough Activity</DialogTitle>
           <DialogDescription>
-            There isn't enough activity in this Discord server to generate insights. Please connect a more active server.
+            There isn't enough activity in this Discord server to generate insights. Please connect
+            a more active server.
           </DialogDescription>
           <DialogFooter>
             <Button
