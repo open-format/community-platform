@@ -1,12 +1,13 @@
 "use client";
 
 import { usePrivy } from "@privy-io/react-auth";
-import { LucideIcon, Loader2 } from "lucide-react";
+import { Loader2, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import posthog from "posthog-js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Button } from "../ui/button";
 
 interface PlatformCardProps {
   key: string;
@@ -27,20 +28,35 @@ export default function PlatformCard({
   discordConnected,
 }: PlatformCardProps) {
   const t = useTranslations("onboarding.integrations");
-  const [interested, setInterested] = useState(false);
   const { user } = usePrivy();
+  const [interested, setInterested] = useState(false);
+
+  // Fire connect_success_discord when Discord is connected
+  useEffect(() => {
+    if (titleKey === "discord" && discordConnected && user?.id) {
+      posthog.capture?.("connect_success_discord", {
+        userId: user.id,
+      });
+    }
+  }, [titleKey, discordConnected, user?.id]);
 
   const getDiscordConnectUrl = () => {
     return `/api/discord/start?did=${encodeURIComponent(user?.id)}`;
   };
 
   const handleInterested = () => {
-    posthog?.capture && posthog.capture(`im_interested_${titleKey}`);
+    posthog?.capture?.("im_interested_platform", {
+      platform: titleKey,
+      userId: user?.id || null,
+    });
     setInterested(true);
   };
 
   const handleConnect = () => {
-    posthog?.capture && posthog.capture(`connect_initiated_${titleKey}`);
+    posthog?.capture?.("connect_initiated_platform", {
+      platform: titleKey,
+      userId: user?.id || null,
+    });
   };
 
   return (
@@ -69,66 +85,42 @@ export default function PlatformCard({
       </div>
       <div>
         {comingSoon ? (
-          <button
-            className={`w-full rounded-lg font-semibold py-2 px-4 border transition-colors duration-150
-              ${
-                interested
-                  ? "bg-green-500 text-white border-green-600 cursor-not-allowed"
-                  : "bg-zinc-800 text-gray-400 border-zinc-700 hover:bg-zinc-700"
-              }
-            `}
+          <Button
+            variant={interested ? "default" : "outline"}
+            className="w-full disabled:opacity-100 disabled:cursor-not-allowed"
             disabled={interested}
             onClick={handleInterested}
           >
             {interested ? t("interested") : t("imInterested")}
-          </button>
+          </Button>
         ) : titleKey === "discord" ? (
           discordConnected ? (
             user?.id ? (
-              <button
-                className="w-full rounded-lg bg-green-500 text-white font-semibold py-2 px-4 border border-green-600 cursor-not-allowed"
-                disabled
-              >
+              <Button variant="success" className="w-full" disabled>
                 {t("connected")}
-              </button>
+              </Button>
             ) : (
-              <button
-                className="w-full rounded-lg bg-zinc-800 text-gray-200 font-semibold py-2 px-4 border border-zinc-700 cursor-not-allowed flex items-center justify-center"
-                disabled
-              >
+              <Button className="w-full" disabled>
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 {t("connect")}
-              </button>
+              </Button>
             )
+          ) : user?.id ? (
+            <Link href={getDiscordConnectUrl()} className="w-full">
+              <Button className="w-full" onClick={handleConnect}>
+                {t("connect")}
+              </Button>
+            </Link>
           ) : (
-            user?.id ? (
-              <Link href={getDiscordConnectUrl()} className="w-full">
-                <button
-                  className="w-full rounded-lg bg-zinc-800 text-gray-200 font-semibold py-2 px-4 border border-zinc-700 hover:bg-zinc-700 transition-colors duration-150"
-                  onClick={handleConnect}
-                >
-                  {t("connect")}
-                </button>
-              </Link>
-            ) : (
-              <button
-                className="w-full rounded-lg bg-zinc-800 text-gray-200 font-semibold py-2 px-4 border border-zinc-700 cursor-not-allowed flex items-center justify-center"
-                disabled
-              >
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                {t("connect")}
-              </button>
-            )
+            <Button disabled>
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              {t("connect")}
+            </Button>
           )
         ) : (
           connectUrl && (
             <Link href={connectUrl} className="w-full">
-              <button
-                className="w-full rounded-lg bg-zinc-800 text-gray-200 font-semibold py-2 px-4 border border-zinc-700 hover:bg-zinc-700 transition-colors duration-150"
-                onClick={handleConnect}
-              >
-                {t("connect")}
-              </button>
+              <Button onClick={handleConnect}>{t("connect")}</Button>
             </Link>
           )
         )}

@@ -26,10 +26,12 @@ import { Separator } from "@/components/ui/separator";
 import { handleViemError } from "@/helpers/errors";
 import { addressSplitter } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { usePrivy } from "@privy-io/react-auth";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { ExternalLink } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import posthog from "posthog-js";
 import { startTransition, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -91,6 +93,7 @@ export default function RewardDialog({
   const t = useTranslations("overview.rewardRecommendations");
   const [open, setOpen] = useState(false);
   const config = useConfig();
+  const { user } = usePrivy();
 
   function toggle() {
     setOpen(!open);
@@ -142,6 +145,14 @@ export default function RewardDialog({
             });
 
             toast.success(t("form.toast.badgeSuccess"), { id: toastId });
+            // PostHog event for badge reward
+            posthog.capture?.("user_rewarded", {
+              userId: user?.id || null,
+              rewardedUserId: recommendation.wallet_address,
+              communityId: community.id,
+              rewardType: "badge",
+              recommendationId: recommendation.id,
+            });
           } else {
             // Handle ERC20 token minting
             const hash = await writeContract(config, {
@@ -162,8 +173,16 @@ export default function RewardDialog({
             toast.success(t("form.toast.success", { summary: recommendation.summary }), {
               id: toastId,
             });
-
             form.reset();
+            // PostHog event for token reward
+            posthog.capture?.("user_rewarded", {
+              userId: user?.id || null,
+              rewardedUserId: recommendation.wallet_address,
+              communityId: community.id,
+              rewardType: "token",
+              amount: data.amount,
+              recommendationId: recommendation.id,
+            });
           }
 
           deleteRecommendation();

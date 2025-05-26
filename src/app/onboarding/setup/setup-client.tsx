@@ -10,9 +10,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { usePollingJob } from "@/hooks/useJobStatus";
+import { usePrivy } from "@privy-io/react-auth";
 import { AlertCircle, BarChart2, CheckCircle, FileText, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
+import posthog from "posthog-js";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -24,12 +26,19 @@ export default function SetupClient() {
   const searchParams = useSearchParams();
   const guildId = searchParams.get("guildId");
   const communityId = searchParams.get("communityId");
+  const { user } = usePrivy();
 
   const [messagesJobId, setMessagesJobId] = useState<string | null>(null);
   const [reportJobId, setReportJobId] = useState<string | null>(null);
   const [recommendationsJobId, setRecommendationsJobId] = useState<string | null>(null);
   const [showLowActivityModal, setShowLowActivityModal] = useState(false);
   const jobsStartedRef = useRef(false);
+  const eventFiredRef = useRef({
+    fetchHistoricalMessages: false,
+    notEnoughMessages: false,
+    rewardRecommendations: false,
+    communitySnapshot: false,
+  });
 
   const { status: messagesStatus, data: messagesData } = usePollingJob({
     statusEndpoint: (jobId) => `/api/onboarding/messages-job-status?jobId=${jobId}`,
@@ -262,6 +271,50 @@ export default function SetupClient() {
     }
   }, [reportStatus, recommendationsStatus, messagesStatus, router, searchParams]);
 
+  // Fire fetch_historical_messages_complete when messagesStatus transitions to completed
+  useEffect(() => {
+    if (messagesStatus === "completed" && !eventFiredRef.current.fetchHistoricalMessages) {
+      posthog.capture?.("fetch_historical_messages_complete", {
+        userId: user?.id || null,
+        communityId: communityId || null,
+      });
+      eventFiredRef.current.fetchHistoricalMessages = true;
+    }
+  }, [messagesStatus, user?.id, communityId]);
+
+  // Fire not_enough_messages_modal when showLowActivityModal is set to true
+  useEffect(() => {
+    if (showLowActivityModal && !eventFiredRef.current.notEnoughMessages) {
+      posthog.capture?.("not_enough_messages_modal", {
+        userId: user?.id || null,
+        communityId: communityId || null,
+      });
+      eventFiredRef.current.notEnoughMessages = true;
+    }
+  }, [showLowActivityModal, user?.id, communityId]);
+
+  // Fire reward_recommendations_generated when recommendationsStatus transitions to completed
+  useEffect(() => {
+    if (recommendationsStatus === "completed" && !eventFiredRef.current.rewardRecommendations) {
+      posthog.capture?.("reward_recommendations_generated", {
+        userId: user?.id || null,
+        communityId: communityId || null,
+      });
+      eventFiredRef.current.rewardRecommendations = true;
+    }
+  }, [recommendationsStatus, user?.id, communityId]);
+
+  // Fire community_snapshot_generated when reportStatus transitions to completed
+  useEffect(() => {
+    if (reportStatus === "completed" && !eventFiredRef.current.communitySnapshot) {
+      posthog.capture?.("community_snapshot_generated", {
+        userId: user?.id || null,
+        communityId: communityId || null,
+      });
+      eventFiredRef.current.communitySnapshot = true;
+    }
+  }, [reportStatus, user?.id, communityId]);
+
   return (
     <>
       <div className="mb-8">
@@ -331,7 +384,13 @@ export default function SetupClient() {
               <div className="flex justify-end mt-6">
                 <Button
                   className="rounded-lg bg-yellow-400 text-black font-semibold py-2 px-6 shadow hover:bg-yellow-300 transition-colors duration-150"
-                  onClick={() => router.push(`/communities/${searchParams.get("communityId")}`)}
+                  onClick={() => {
+                    posthog.capture?.("onboarding_completed", {
+                      userId: user?.id || null,
+                      communityId: searchParams.get("communityId") || null,
+                    });
+                    router.push(`/communities/${searchParams.get("communityId")}`);
+                  }}
                   disabled={isContinueLoading}
                 >
                   {isContinueLoading ? (

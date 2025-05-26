@@ -39,6 +39,7 @@ import { useRevalidate } from "@/hooks/useRevalidate";
 import { uploadFileToIPFS, uploadMetadata } from "@/lib/thirdweb";
 import { getAddress } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
+import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { type Address, BaseError, stringToHex } from "viem";
@@ -161,6 +162,14 @@ export function CreateBadgeForm({ community }: CreateBadgeFormProps) {
       });
 
       await waitForTransactionReceipt(config, { hash: transactionHash });
+
+      // PostHog event for badge creation
+      posthog.capture?.("badge_created", {
+        name: data.name,
+        description: data.description,
+        communityId: community.id,
+        userId: user?.id || null,
+      });
 
       toast.success(t("toast.success.title"), {
         description: t("toast.success.description"),
