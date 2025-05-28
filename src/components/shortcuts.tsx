@@ -1,8 +1,10 @@
 "use client";
 
+import { usePrivy } from "@privy-io/react-auth";
 import { CopyIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import posthog from "posthog-js";
 import { toast } from "sonner";
 import { Button, buttonVariants } from "./ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
@@ -13,12 +15,22 @@ interface OnboardingProps {
 
 export default function Onboarding({ community }: OnboardingProps) {
   const t = useTranslations("shortcuts");
+  const { user } = usePrivy();
+
+  function handleShortcutClick(type: string) {
+    posthog.capture?.("shortcut_clicked", {
+      type,
+      userId: user?.id || null,
+      communityId: community?.id || null,
+    });
+  }
 
   function copyInviteLink() {
     const baseUrl = window.location.origin;
     const inviteLink = `${baseUrl}/${community?.metadata?.slug}`;
     navigator.clipboard.writeText(inviteLink);
     toast.success(t("configureCommunity.inviteCopied"));
+    handleShortcutClick("copy_invite_link");
   }
   return (
     <div className="space-y-4 py-lg">
@@ -35,6 +47,7 @@ export default function Onboarding({ community }: OnboardingProps) {
             <Link
               className={buttonVariants()}
               href={`/communities/${community?.metadata?.slug}/rewards`}
+              onClick={() => handleShortcutClick("send_reward")}
             >
               {t("rewardCommunity.sendReward")}
             </Link>
@@ -50,7 +63,11 @@ export default function Onboarding({ community }: OnboardingProps) {
               <p>{t("configureCommunity.description")}</p>
             </CardContent>
             <CardFooter className="flex space-x-2">
-              <Link className={buttonVariants()} href={`/communities/${community?.slug}/settings`}>
+              <Link
+                className={buttonVariants()}
+                href={`/communities/${community?.slug}/settings`}
+                onClick={() => handleShortcutClick("configure_community")}
+              >
                 {t("configureCommunity.configure")}
               </Link>
               {community?.slug && (
@@ -72,10 +89,18 @@ export default function Onboarding({ community }: OnboardingProps) {
             <p>{t("createBadgesTokens.description")}</p>
           </CardContent>
           <CardFooter className="flex space-x-2">
-            <Link className={buttonVariants()} href={`/communities/${community?.id}/badges`}>
+            <Link
+              className={buttonVariants()}
+              href={`/communities/${community?.id}/badges`}
+              onClick={() => handleShortcutClick("create_badges")}
+            >
               {t("createBadgesTokens.createBadges")}
             </Link>
-            <Link className={buttonVariants()} href={`/communities/${community?.id}/tokens`}>
+            <Link
+              className={buttonVariants()}
+              href={`/communities/${community?.id}/tokens`}
+              onClick={() => handleShortcutClick("create_tokens")}
+            >
               {t("createBadgesTokens.createTokens")}
             </Link>
           </CardFooter>
