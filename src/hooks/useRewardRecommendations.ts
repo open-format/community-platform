@@ -53,14 +53,6 @@ export function useRewardRecommendations(communityId: string, platformId: string
       queryClient.setQueryData(["recommendations", communityId], (old: RewardRecommendation[]) =>
         old.filter((rec) => rec.id !== recommendation.id),
       );
-
-      toast.success(
-        t("successRejectingRewardRecommendation", {
-          name: recommendation.contributor_name,
-          summary: recommendation.summary,
-        }),
-        { duration: 5000 },
-      );
     },
     onError: (error) => {
       toast.error(

@@ -47,7 +47,7 @@ export default async function RootLayout({
         <Providers messages={messages} locale={locale}>
           <main>{children}</main>
         </Providers>
-        <Toaster position="top-center" />
+        <Toaster position="bottom-right" />
       </body>
     </html>
   );

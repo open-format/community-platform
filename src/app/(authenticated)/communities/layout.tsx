@@ -1,7 +1,6 @@
 "use client";
 
 import Profile from "@/components/profile-header";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from "@/components/ui/breadcrumb";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -22,13 +21,7 @@ export default function CommunitiesLayout({
     <div>
       <nav className="p-5 flex justify-between">
         <div className="flex items-center">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <Image src={OFLogo} alt={t("logo")} width={48} height={48} className="rounded-md" />
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <Image src={OFLogo} alt={t("logo")} width={48} height={48} className="rounded-md" />
         </div>
         <div className="flex items-center space-x-2">
           <Profile logoutAction={handleLogout} />
