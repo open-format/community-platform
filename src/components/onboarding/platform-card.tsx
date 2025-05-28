@@ -1,12 +1,13 @@
 "use client";
 
 import { usePrivy } from "@privy-io/react-auth";
-import { LucideIcon, Loader2 } from "lucide-react";
+import { Loader2, LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import posthog from "posthog-js";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface PlatformCardProps {
   key: string;
@@ -37,6 +38,7 @@ export default function PlatformCard({
   const handleInterested = () => {
     posthog?.capture && posthog.capture(`im_interested_${titleKey}`);
     setInterested(true);
+    toast.success(t("interestRegisteredDescription", { platform: t(titleKey) }));
   };
 
   const handleConnect = () => {
@@ -61,7 +63,7 @@ export default function PlatformCard({
           <span className="font-bold text-lg text-white">{t(titleKey)}</span>
           {comingSoon && (
             <span className="ml-2 px-2 py-0.5 rounded bg-zinc-700 text-xs text-gray-300 font-semibold">
-              Coming Soon
+              {titleKey === "telegram" ? "In Next Release" : t("comingSoon")}
             </span>
           )}
         </div>
@@ -100,25 +102,23 @@ export default function PlatformCard({
                 {t("connect")}
               </button>
             )
-          ) : (
-            user?.id ? (
-              <Link href={getDiscordConnectUrl()} className="w-full">
-                <button
-                  className="w-full rounded-lg bg-zinc-800 text-gray-200 font-semibold py-2 px-4 border border-zinc-700 hover:bg-zinc-700 transition-colors duration-150"
-                  onClick={handleConnect}
-                >
-                  {t("connect")}
-                </button>
-              </Link>
-            ) : (
+          ) : user?.id ? (
+            <Link href={getDiscordConnectUrl()} className="w-full">
               <button
-                className="w-full rounded-lg bg-zinc-800 text-gray-200 font-semibold py-2 px-4 border border-zinc-700 cursor-not-allowed flex items-center justify-center"
-                disabled
+                className="w-full rounded-lg bg-zinc-800 text-gray-200 font-semibold py-2 px-4 border border-zinc-700 hover:bg-zinc-700 transition-colors duration-150"
+                onClick={handleConnect}
               >
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 {t("connect")}
               </button>
-            )
+            </Link>
+          ) : (
+            <button
+              className="w-full rounded-lg bg-zinc-800 text-gray-200 font-semibold py-2 px-4 border border-zinc-700 cursor-not-allowed flex items-center justify-center"
+              disabled
+            >
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              {t("connect")}
+            </button>
           )
         ) : (
           connectUrl && (

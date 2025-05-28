@@ -6,50 +6,37 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-black text-white">
-      <div className="flex flex-col justify-center items-start w-full md:w-1/2 px-10 py-16 bg-zinc-900 border-r border-zinc-800 min-h-screen space-y-6">
-        <div>
-          <h1>Create an account</h1>
-          <p className="text-gray-400 mb-8">Get started with Open Format</p>
-        </div>
-        <div className="mb-8 w-full">
-          <h2>Your onboarding journey</h2>
-          <ol className="space-y-2 text-gray-300">
-            <li>
-              <span className="font-bold text-white mr-2">1</span> Create an account
-            </li>
-            <li>
-              <span className="font-bold text-white mr-2">2</span> Connect to your community
-            </li>
-            <li>
-              <span className="font-bold text-white mr-2">3</span> Deploy the agent to your server
-            </li>
-            <li>
-              <span className="font-bold text-white mr-2">4</span> Access your community dashboard
-            </li>
-          </ol>
-        </div>
-        <div className="mb-8 w-full">
-          <h2>Why Open Format?</h2>
-          <ul className="space-y-2 text-gray-300">
-            <li className="flex items-start gap-2">
-              <span className="text-green-400">✓</span> Track and reward valuable contributions
-              across your community
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-400">✓</span> AI-powered agent analyzes engagement and
-              identifies top contributors
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-400">✓</span> Gain actionable insights to help grow your
-              community
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-400">✓</span> Seamlessly integrate with Discord, GitHub,
-              Telegram and more
-            </li>
-          </ul>
-        </div>
+      <div className="flex flex-col justify-between items-start w-full md:w-1/2 px-10 py-24 bg-zinc-900 border-r border-zinc-800 min-h-screen space-y-6">
+        <div className="space-y-12">
+          <div>
+            <h1 className="text-4xl font-bold">
+              Spin up your <span className="text-primary">Community Copilot</span> in minutes
+            </h1>
+          </div>
 
+          <div className="mb-8 w-full">
+            <ul className="space-y-2 text-gray-300">
+              <li className="flex items-start gap-2">
+                <span className="text-green-400">✓</span> Spot the people actually helping
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-400">✓</span> Get daily reward recommendations based on
+                activity in your community
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-400">✓</span> Receive a weekly insight report of
+                community wins and blockers
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-400">✓</span> Reward your community in one click
+              </li>
+            </ul>
+          </div>
+
+          <blockquote className="text-gray-400">
+            "This will save me 2 days per week!" - Marco Dinis Santos - Community Manager @ Aurora
+          </blockquote>
+        </div>
         <div className="w-full space-y-4">
           <h2>Join other communities using our platform</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-8 gap-y-6 place-items-center">

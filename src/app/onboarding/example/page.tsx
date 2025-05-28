@@ -5,13 +5,15 @@ import { SentimentAnalysis } from "@/components/impact-reports/sections/sentimen
 import { TopContributors } from "@/components/impact-reports/sections/top-contributors";
 import report from "@/constants/report.json";
 import { Sparkles } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 export default async function ExampleSnapshotPage() {
+  const t = await getTranslations("onboarding");
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-bold mb-3 text-center">Community Snapshot Example</h1>
+    <div className="flex flex-col gap-6 items-center">
+      <h1>{t("exampleSnapshot.title")}</h1>
       <p className="text-gray-400 text-lg max-w-2xl mx-auto text-center">
-        Here's an example of the insights and reports you'll see after connecting your platforms.
+        {t("exampleSnapshot.intro")}
       </p>
       <CloseTab />
 

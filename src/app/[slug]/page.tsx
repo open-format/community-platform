@@ -44,7 +44,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
       <CommunityBanner bannerUrl={community.bannerUrl} accentColor={community.accentColor} />
 
       {/* Community Info */}
-      <CommunityInfo title={community.title} description={community.description} />
+      <CommunityInfo title={community.name} description={community.description} />
 
       <Tabs defaultValue="leaderboard" className="w-full">
         <TabsList className="w-full">

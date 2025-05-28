@@ -28,8 +28,8 @@ export default async function Rewards({ params }: { params: Promise<{ slug: stri
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>{t("sendReward.title")}</CardTitle>
-          <CardDescription>{t("sendReward.description")}</CardDescription>
+          <CardTitle>{t("batchRewards.title")}</CardTitle>
+          <CardDescription>{t("batchRewards.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <BatchRewardsForm community={community} />

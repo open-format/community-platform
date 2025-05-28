@@ -13,7 +13,6 @@ interface ImpactReportsProps {
 
 export default function ImpactReports({ report }: ImpactReportsProps) {
   const t = useTranslations("ImpactReports");
-  console.log({ report });
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-6 gap-6 w-full">

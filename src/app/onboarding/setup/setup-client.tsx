@@ -169,7 +169,7 @@ export default function SetupClient() {
   };
 
   // Progress bar steps
-  const progressSteps = [{ label: "Connect your community" }, { label: "Deploying to community" }];
+  const progressSteps = [{ label: "Connect your community" }, { label: "Setting up your Copilot" }];
 
   // Status card steps
   const statusSteps = [
@@ -185,7 +185,7 @@ export default function SetupClient() {
       key: "insights",
       icon: <FileText className="h-6 w-6" />,
       title: "Generating Reward Recommendations",
-      description: "Reward recommendations highlight top contributors and help you recognize them.",
+      description: "Reward recommendations highlight top contributors and help you recognise them.",
       status: recommendationsStatus as JobStatus,
       isJob: true,
     },
@@ -203,10 +203,10 @@ export default function SetupClient() {
   const progresses = [1, getProgress()];
 
   const whatsNext = [
-    "View your community snapshot in the dashboard",
-    "Set up your community token to reward contributions",
-    "Create badges to recognize community achievements",
-    "Configure your community hub for members",
+    "See your first insight report",
+    "Review today's reward recommendations",
+    "Setup your community token to reward contributions",
+    "Ask your Copilot questions about your community in Discord",
   ];
 
   const getStatusIcon = (status: JobStatus) => {
@@ -271,9 +271,13 @@ export default function SetupClient() {
         <div className="flex flex-col gap-8">
           <div className="flex flex-col items-center mb-4">
             <CheckCircle className="h-12 w-12 text-yellow-400 mb-2" />
-            <h2 className="text-2xl font-bold text-white mb-1">Deployment Complete!</h2>
+            <h2 className="text-2xl font-bold text-white mb-1">
+              {isComplete ? "Setup Complete!" : "Setting up your Copilot"}
+            </h2>
             <p className="text-gray-400 text-center max-w-md">
-              Your community agent is now active and collecting insights.
+              {isComplete
+                ? "Your community Copilot is now ready to help you grow your community."
+                : "Your community is now collecting insights. Large communities may take up to 10 minutes to setup."}
             </p>
           </div>
           <div className="flex flex-col gap-4">
@@ -305,7 +309,6 @@ export default function SetupClient() {
                         onClick={() =>
                           handleRetry(step.key === "insights" ? "recommendations" : "report")
                         }
-                        className="text-xs text-yellow-400 hover:text-yellow-300"
                       >
                         {t("retry")}
                       </Button>
@@ -330,7 +333,6 @@ export default function SetupClient() {
               </div>
               <div className="flex justify-end mt-6">
                 <Button
-                  className="rounded-lg bg-yellow-400 text-black font-semibold py-2 px-6 shadow hover:bg-yellow-300 transition-colors duration-150"
                   onClick={() => router.push(`/communities/${searchParams.get("communityId")}`)}
                   disabled={isContinueLoading}
                 >
@@ -354,7 +356,8 @@ export default function SetupClient() {
           <DialogTitle>Not Enough Activity</DialogTitle>
           <DialogDescription>
             There isn't enough activity in this Discord server to generate insights. Please connect
-            a more active server.
+            a more active server. You can check out an example report to see what insights you'll
+            get once you connect a server with sufficient activity.
           </DialogDescription>
           <DialogFooter>
             <Button
@@ -364,6 +367,9 @@ export default function SetupClient() {
               }}
             >
               Connect new Discord Server
+            </Button>
+            <Button variant="outline" onClick={() => router.push("/onboarding/example")}>
+              View example Insight Report
             </Button>
           </DialogFooter>
         </DialogContent>
