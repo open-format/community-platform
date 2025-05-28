@@ -1,11 +1,11 @@
 "use client";
 
-import { TopContributor } from "../types";
+import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import { DetailedViewModal } from "./detailed-view-modal";
 import { useState } from "react";
+import { TopContributor } from "../types";
+import { DetailedViewModal } from "./detailed-view-modal";
 
 interface ContributorItemProps {
   contributor: TopContributor;
@@ -21,7 +21,6 @@ export function ContributorItemComponent({ contributor }: ContributorItemProps) 
         <div className="flex items-center gap-2">
           <h4 className="font-medium">{contributor.username}</h4>
           <Button
-            variant="ghost"
             size="icon"
             className="h-6 w-6"
             title={t("viewDetails")}
@@ -43,4 +42,4 @@ export function ContributorItemComponent({ contributor }: ContributorItemProps) 
       />
     </div>
   );
-} 
+}

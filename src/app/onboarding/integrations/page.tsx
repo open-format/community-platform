@@ -68,10 +68,9 @@ export default async function PlatformsPage({
             <span className="font-semibold text-white">What happens next</span>
           </div>
           <ul className="list-disc list-inside text-gray-300 text-sm space-y-1 mb-2">
-            <li>Monitor activity across your community</li>
-            <li>Identify valuable contributions from members</li>
-            <li>Generate insights about engagement and sentiment</li>
-            <li>Provide recommendations for rewarding top contributors</li>
+            <li>First insights arrive within minutes</li>
+            <li>Daily one-click rewards for top contributors</li>
+            <li>Weekly insight report of community wins and blockers</li>
           </ul>
           <Link href="/onboarding/example" className="flex text-primary items-center gap-1 text-sm">
             <ExternalLinkIcon className="h-4 w-4" /> See an example snapshot

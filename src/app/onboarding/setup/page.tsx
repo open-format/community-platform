@@ -17,7 +17,7 @@ function ProgressBarSkeleton() {
           <div className="w-full mb-2 h-1 rounded bg-zinc-800">
             <div className="h-1 rounded" style={{ width: "0%" }} />
           </div>
-          <span className="font-semibold text-lg text-gray-400">Deploying to community</span>
+          <span className="font-semibold text-lg text-gray-400">Setting up your Copilot</span>
         </div>
       </div>
     </div>
@@ -69,4 +69,3 @@ export default async function SetupPage() {
     </div>
   );
 }
-

@@ -358,6 +358,10 @@
       "title": "Send a reward",
       "description": "Manually reward your community members"
     },
+    "batchRewards": {
+      "title": "Batch Rewards",
+      "description": "Upload a CSV file to reward your community members"
+    },
     "notFound": "Community not found"
   },
   "batchRewards": {
@@ -1258,16 +1262,17 @@
   "onboarding": {
     "integrations": {
       "interestRegistered": "Interest registered",
+      "interestRegisteredDescription": "Thanks for your interest! We'll ping you when our {platform} integration is ready.",
       "introTitle": "Connect Your Platforms",
-      "intro": "Connect your community platforms to unlock insights and automations. The Community Agent analyzes your Discord, Telegram, and more to surface valuable contributions and trends.",
+      "intro": "Link the platforms your community already lives in. The Community Copilot will start listening as soon as you connect your platforms.",
       "discord": "Discord",
       "telegram": "Telegram",
       "github": "GitHub",
-      "dune": "Dune",
-      "discordDesc": "Connect your community's Discord to unlock insights.",
-      "telegramDescComingSoon": "Telegram integration coming soon.",
-      "githubDescComingSoon": "GitHub integration coming soon.",
-      "duneDescComingSoon": "Dune integration coming soon.",
+      "dune": "Onchain",
+      "discordDesc": "Connect your Discord in ~30 sec by adding the copilot to your server.",
+      "telegramDescComingSoon": "Track the whole of your community by deploying to Telegram.",
+      "githubDescComingSoon": "Track code contributions & auto-draft bounties.",
+      "duneDescComingSoon": "Spot on-chain actions and link them to your community wins.",
       "connect": "Connect",
       "connected": "Connected",
       "comingSoon": "Coming Soon",
@@ -1285,8 +1290,8 @@
       "error": "An error occurred. Please try again."
     },
     "exampleSnapshot": {
-      "title": "Community Snapshot Example",
-      "intro": "Here's an example of the insights and reports you'll see after connecting your platforms.",
+      "title": "Community Insight Report",
+      "intro": "Here's an example of a Insight Report you'll see after connecting your platforms.",
       "loading": "Loading example report...",
       "unavailable": "Example report currently unavailable.",
       "continue": "Continue",
@@ -1322,7 +1327,7 @@
         "missingCommunityId": "Missing community ID. Please try connecting again.",
         "setupFailed": "Failed to complete setup. Please try again."
       },
-      "continue": "Continue to Dashboard",
+      "continue": "See your first insight report",
       "retry": "Retry Setup"
     }
   }

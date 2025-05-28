@@ -37,7 +37,7 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
           </Link>
         </AlertDescription>
       </Alert>
-      <ImpactReports report={community.snapshot.metadata} />
+      {community?.snapshot && <ImpactReports report={community?.snapshot?.metadata} />}
       <div>
         <Shortcuts community={community} />
       </div>

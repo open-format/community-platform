@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import posthog from "posthog-js";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "../ui/button";
 
 interface PlatformCardProps {
@@ -50,6 +51,7 @@ export default function PlatformCard({
       userId: user?.id || null,
     });
     setInterested(true);
+    toast.success(t("interestRegisteredDescription", { platform: t(titleKey) }));
   };
 
   const handleConnect = () => {
@@ -77,7 +79,7 @@ export default function PlatformCard({
           <span className="font-bold text-lg text-white">{t(titleKey)}</span>
           {comingSoon && (
             <span className="ml-2 px-2 py-0.5 rounded bg-zinc-700 text-xs text-gray-300 font-semibold">
-              Coming Soon
+              {titleKey === "telegram" ? "In Next Release" : t("comingSoon")}
             </span>
           )}
         </div>

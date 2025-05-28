@@ -1,12 +1,13 @@
 "use client";
 
-import { KeyTopic } from "../types";
-import { Eye, MessageSquare, Hash } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { DetailedViewModal } from "./detailed-view-modal";
+import { buttonVariants } from "@/components/ui/button";
+import { Eye, Hash, MessageSquare } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useState } from "react";
+import { KeyTopic } from "../types";
+import { DetailedViewModal } from "./detailed-view-modal";
 
 interface TopicItemProps {
   topic: KeyTopic;
@@ -32,14 +33,17 @@ export function TopicItemComponent({ topic }: TopicItemProps) {
             <div className="flex items-center gap-2">
               <Hash className="h-5 w-5 text-muted-foreground" />
               <h4 className="font-medium">{topic.topic}</h4>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="h-8 w-8"
-                onClick={handleViewDetails}
-              >
-                <Eye className="h-4 w-4" />
-              </Button>
+              {topic.evidence?.map((evidence) => (
+                <Link
+                  className={buttonVariants({ size: "icon" })}
+                  href={evidence}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  key={evidence.id}
+                >
+                  <Eye className="h-4 w-4" />
+                </Link>
+              ))}
             </div>
             <Badge variant="secondary" className="flex items-center gap-1">
               <MessageSquare className="h-3 w-3" />
@@ -64,4 +68,4 @@ export function TopicItemComponent({ topic }: TopicItemProps) {
       />
     </div>
   );
-} 
+}

@@ -1,14 +1,14 @@
 "use client";
 
-import { KeyTopic } from "../types";
-import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Eye, Hash, MessageSquare } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { KeyTopic } from "../types";
+import { DetailedViewModal } from "./detailed-view-modal";
 import { TopicItemComponent } from "./topic-item";
 import { ViewAllModal } from "./view-all-modal";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Hash, MessageSquare, Eye } from "lucide-react";
-import { DetailedViewModal } from "./detailed-view-modal";
 
 interface KeyTopicsProps {
   topics: KeyTopic[];
@@ -29,9 +29,7 @@ export function KeyTopics({ topics }: KeyTopicsProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg border p-4 text-center">
-            {t("noData")}
-          </div>
+          <div className="rounded-lg border p-4 text-center">{t("noData")}</div>
         </CardContent>
       </Card>
     );
@@ -47,7 +45,7 @@ export function KeyTopics({ topics }: KeyTopicsProps) {
           <Hash className="h-4 w-4 text-muted-foreground" />
           <span className="font-medium">{topic.topic}</span>
         </div>
-      )
+      ),
     },
     {
       key: "messageCount" as const,
@@ -58,29 +56,24 @@ export function KeyTopics({ topics }: KeyTopicsProps) {
           <MessageSquare className="h-4 w-4 text-muted-foreground" />
           <span>{topic.messageCount}</span>
         </div>
-      )
+      ),
     },
     {
       key: "evidence" as const,
       title: t("evidenceCount", { count: undefined }),
       render: (topic: KeyTopic) => (
         <span>{t("evidenceCount", { count: topic.evidence.length })}</span>
-      )
+      ),
     },
     {
       key: "actions" as const,
       title: "",
       render: (topic: KeyTopic) => (
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => setSelectedTopic(topic)}
-        >
+        <Button size="icon" className="h-8 w-8" onClick={() => setSelectedTopic(topic)}>
           <Eye className="h-4 w-4" />
         </Button>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -100,10 +93,7 @@ export function KeyTopics({ topics }: KeyTopicsProps) {
           </div>
           {topics.length > 3 && (
             <div className="flex justify-center">
-              <Button
-                variant="outline"
-                onClick={() => setIsViewAllOpen(true)}
-              >
+              <Button variant="outline" onClick={() => setIsViewAllOpen(true)}>
                 {t("viewAll")}
               </Button>
             </div>
@@ -132,4 +122,4 @@ export function KeyTopics({ topics }: KeyTopicsProps) {
       )}
     </Card>
   );
-} 
+}
