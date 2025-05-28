@@ -28,7 +28,7 @@ export function SentimentItemComponent({ item, type }: SentimentItemProps) {
               href={evidence}
               target="_blank"
               rel="noopener noreferrer"
-              key={evidence.id}
+              key={evidence}
             >
               <Eye className="h-4 w-4" />
             </Link>

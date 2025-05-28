@@ -14,6 +14,7 @@ import CreateCommunityForm from "@/forms/create-community-form";
 import { addressSplitter } from "@/lib/utils";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 export default async function Communities() {
@@ -21,16 +22,7 @@ export default async function Communities() {
   const { communities, error } = await getCommunities();
 
   if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center">
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("errorLoading.title")}</CardTitle>
-            <CardDescription>{t("errorLoading.description")}</CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
+    return redirect("/onboarding");
   }
 
   if (communities.length === 0) {
