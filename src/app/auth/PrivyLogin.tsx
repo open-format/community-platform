@@ -4,6 +4,7 @@ import { useLogin, usePrivy } from "@privy-io/react-auth";
 import axios from "axios";
 import { Disc, Github, Mail, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import { useState } from "react";
 
 export function PrivyLogin() {
@@ -13,7 +14,7 @@ export function PrivyLogin() {
   const [error, setError] = useState("");
 
   useLogin({
-    onComplete: async ({ user }) => {
+    onComplete: async ({ user, loginMethod }) => {
       if (user.wallet?.address) {
         try {
           const res = await axios.post("/api/users/create", {
@@ -21,6 +22,10 @@ export function PrivyLogin() {
           });
 
           if (res.data.new) {
+            posthog.capture?.("user_signed_up", {
+              loginMethod: loginMethod || null,
+              userId: user.id,
+            });
             return router.push("/onboarding");
           }
         } catch (error) {

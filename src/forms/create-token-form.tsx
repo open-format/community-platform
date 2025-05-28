@@ -48,6 +48,7 @@ import { useRevalidate } from "@/hooks/useRevalidate";
 import { getAddress } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
 import { HelpCircle, Loader2 } from "lucide-react";
+import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { type Address, BaseError, parseEther, stringToHex } from "viem";
@@ -161,6 +162,15 @@ export function CreateTokenForm({ community }: CreateTokenFormProps) {
         ],
       });
       await waitForTransactionReceipt(config, { hash: transactionHash });
+
+      // PostHog event for token creation
+      posthog.capture?.("token_created", {
+        name: data.name,
+        symbol: data.symbol,
+        type: data.type,
+        communityId: community.id,
+        userId: user?.id || null,
+      });
 
       toast.success(t("toast.success.title"), {
         description: t("toast.success.description"),

@@ -2,9 +2,11 @@
 
 import PlatformCard from "@/components/onboarding/platform-card";
 import { Button } from "@/components/ui/button";
+import { usePrivy } from "@privy-io/react-auth";
 import { Database } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
+import posthog from "posthog-js";
 
 const platforms = [
   {
@@ -48,10 +50,15 @@ export default function IntegrationsClient({
   const t = useTranslations("onboarding.integrations");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user } = usePrivy();
   const guildId = searchParams.get("guildId");
   const error = searchParams.get("error");
 
   const handleContinue = () => {
+    posthog.capture?.("onboarding_continue_clicked", {
+      userId: user?.id || null,
+      communityId: communityId || null,
+    });
     const params = new URLSearchParams({
       guildId: guildId || "",
       communityId: communityId || "",
