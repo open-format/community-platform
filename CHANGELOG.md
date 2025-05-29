@@ -1,3 +1,10 @@
+## [0.23.1](https://github.com/open-format/community-platform/compare/v0.23.0...v0.23.1) (2025-05-29)
+
+
+### Bug Fixes
+
+* redirect user to onboarding if not added to community ([d39eb22](https://github.com/open-format/community-platform/commit/d39eb22b902aa30468673bddcc98c017e3f5744f))
+
 # [0.23.0](https://github.com/open-format/community-platform/compare/v0.22.0...v0.23.0) (2025-05-29)
 
 
