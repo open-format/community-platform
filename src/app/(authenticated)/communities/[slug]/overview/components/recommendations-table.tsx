@@ -14,8 +14,8 @@ interface RecommendationsTableProps {
   community: Community;
   recommendations: RewardRecommendation[];
   onReward: (recommendation: RewardRecommendation) => void;
-  onReject: (recommendation: RewardRecommendation) => void;
   deleteRecommendation: (recommendation: RewardRecommendation) => void;
+  isDeleting?: boolean;
   isLoading?: boolean;
 }
 
@@ -24,11 +24,11 @@ export default function RecommendationsTable({
   recommendations,
   deleteRecommendation,
   onReward,
-  onReject,
+  isDeleting = false,
   isLoading = false,
 }: RecommendationsTableProps) {
   const t = useTranslations("overview.rewardRecommendations");
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([{ id: "created_at", desc: true }]);
 
   const tableColumns = [
     ...columns(t),
@@ -47,11 +47,11 @@ export default function RecommendationsTable({
             >
               {t("reward")}
             </RewardDialog>
-            <RejectDialog onConfirm={() => onReject(recommendation)}>
+            <RejectDialog onConfirm={() => deleteRecommendation(recommendation)}>
               <Button
                 variant="destructive"
                 className="hover:bg-destructive/90 text-destructive-foreground rounded-full px-6 py-0 h-8 text-sm font-medium"
-                disabled={isLoading}
+                disabled={isDeleting}
               >
                 <Trash2 />
               </Button>

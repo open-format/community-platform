@@ -2,9 +2,11 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { ActivityExportDialog } from "@/dialogs/activity-export-dialog";
-import { fetchPaginatedRewardsByCommunity } from "@/lib/openformat";
 import { fetchRewardDistributionMetrics } from "@/lib/metrics";
+import { fetchPaginatedRewardsByCommunity } from "@/lib/openformat";
+import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
+import { RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import ActivityCard, { ActivityCardSkeleton } from "./activity-card";
@@ -28,17 +30,20 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
     data: rewards,
     isLoading: isLoadingRewards,
     isFetching,
+    refetch: refetchRewards,
   } = useQuery({
-    queryKey: ["rewards", community.id, page],
-    queryFn: () => fetchPaginatedRewardsByCommunity(community.id, PAGE_SIZE, page * PAGE_SIZE),
+    queryKey: ["rewards", community.communityContractAddress, page],
+    queryFn: () =>
+      fetchPaginatedRewardsByCommunity(
+        community.communityContractAddress,
+        PAGE_SIZE,
+        page * PAGE_SIZE,
+      ),
   });
 
-  const {
-    data: rewardDistribution,
-    isLoading: isLoadingDistribution,
-  } = useQuery({
-    queryKey: ["rewardDistribution", community.id],
-    queryFn: () => fetchRewardDistributionMetrics(community.id),
+  const { data: rewardDistribution } = useQuery({
+    queryKey: ["rewardDistribution", community.communityContractAddress],
+    queryFn: () => fetchRewardDistributionMetrics(community.communityContractAddress),
   });
 
   // Check if there might be more data
@@ -56,21 +61,24 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
         {/* Unique Users Card */}
         <Card>
           <CardContent className="pt-6 px-6 pb-3">
-            <UniqueUsersChart appId={community.id} />
+            <UniqueUsersChart appId={community.communityContractAddress} />
           </CardContent>
         </Card>
 
         {/* Total Rewards Card */}
         <Card>
           <CardContent className="pt-6 px-6 pb-3">
-            <TotalRewardsChart appId={community.id} />
+            <TotalRewardsChart appId={community.communityContractAddress} />
           </CardContent>
         </Card>
 
         {/* Reward Distribution Card */}
         <Card>
           <CardContent className="pt-6 px-6 pb-3">
-            <RewardDistributionChart appId={community.id} data={rewardDistribution || null} />
+            <RewardDistributionChart
+              appId={community.communityContractAddress}
+              data={rewardDistribution || null}
+            />
           </CardContent>
         </Card>
       </div>
@@ -82,20 +90,32 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
             <h2 className="text-2xl font-semibold tracking-tight">{t("rewards.title")}</h2>
             <p className="text-sm pb-2 text-muted-foreground">{t("rewards.description")}</p>
           </div>
-          <RewardIdsList appId={community.id} data={rewardDistribution || null} />
+          <RewardIdsList
+            appId={community.communityContractAddress}
+            data={rewardDistribution || null}
+          />
         </div>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight">{t("activity.title")}</h2>
+              <div className="flex items-center">
+                <h2 className="text-2xl font-semibold tracking-tight">{t("activity.title")}</h2>
+                <Button variant="ghost" onClick={() => refetchRewards()}>
+                  <RefreshCw className={cn("w-4 h-4", { "animate-spin": isFetching })} />
+                </Button>
+              </div>
               <p className="text-sm text-muted-foreground">{t("activity.description")}</p>
             </div>
             <ActivityExportDialog community={community} />
           </div>
           <div className="rounded-xl text-card-foreground shadow-sm border bg-card/40">
             <div className="p-6">
-              {isLoadingRewards ? <ActivityCardSkeleton /> : <ActivityCard rewards={rewards || []} />}
+              {isLoadingRewards ? (
+                <ActivityCardSkeleton />
+              ) : (
+                <ActivityCard rewards={rewards || []} />
+              )}
               {rewards && rewards.length > 0 && (page > 0 || rewards.length >= PAGE_SIZE) && (
                 <div className="flex items-center space-x-2 justify-center mt-4">
                   <Button

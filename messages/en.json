@@ -32,7 +32,13 @@
       "title": "Bye Friend! 👋😢",
       "description": "Hope to see you again soon!"
     },
-    "loading": "Loading authentication"
+    "loading": "Loading authentication",
+    "connectTitle": "Sign in to your account",
+    "connectDescription": "Choose a login method below.",
+    "connectWallet": "Connect Wallet",
+    "connectDiscord": "Login with Discord",
+    "connectGithub": "Login with GitHub",
+    "connectEmail": "Login with Email"
   },
   "validation": {
     "required": "This field is required",
@@ -53,12 +59,13 @@
   "navigation": {
     "menu": {
       "overview": "Overview",
-      "settings": "Community Page",
+      "settings": "Community Hub",
       "rewards": "Rewards",
       "batchRewards": "Batch Rewards",
       "tokens": "Tokens",
       "badges": "Badges",
-      "agents": "Community Agents"
+      "agents": "Community Agents",
+      "copilot": "Copilot"
     },
     "breadcrumbs": {
       "communities": "Communities",
@@ -236,7 +243,7 @@
         "amountMin": "Amount must be at least 1",
         "nameRequired": "Contributor name required",
         "nameMaxLength": "Contributor name exceeds characters limit",
-        "tokenAddressRequired": "Token address is required",
+        "tokenAddressRequired": "Token address is required and must be a valid Ethereum address",
         "invalidAddress": "Invalid address"
       },
       "viewEvidence": "View Evidence",
@@ -270,6 +277,10 @@
     }
   },
   "rewards": {
+    "rewardRecommendations": {
+      "title": "Reward Recommendations",
+      "description": "Review and process AI-generated reward recommendations for your community members' contributions"
+    },
     "form": {
       "user": {
         "label": "User",
@@ -346,6 +357,10 @@
     "sendReward": {
       "title": "Send a reward",
       "description": "Manually reward your community members"
+    },
+    "batchRewards": {
+      "title": "Batch Rewards",
+      "description": "Upload a CSV file to reward your community members"
     },
     "notFound": "Community not found"
   },
@@ -537,7 +552,8 @@
     "selectNetwork": "Select Network",
     "mainnets": "Mainnets",
     "testnets": "Testnets",
-    "balance": "Balance: {amount} {symbol}"
+    "balance": "Balance: {amount} {symbol}",
+    "gasSponsored": "Gas sponsored by {sponsor}"
   },
   "profile": {
     "copyAddress": "Copy Address",
@@ -636,6 +652,9 @@
     }
   },
   "badges": {
+    "ariaLabels": {
+      "viewBadge": "View badge on block explorer"
+    },
     "address": "Address:",
     "addressCopied": "Badge address copied to clipboard",
     "createFirst": "Create your first badge to get started",
@@ -828,7 +847,9 @@
       "validation": {
         "nameRequired": "Name must be at least 3 characters",
         "nameMaxLength": "Name must be less than 32 characters",
-        "symbolRequired": "Symbol must be at least 3 characters"
+        "symbolRequired": "Symbol must be at least 3 characters",
+        "chainNotFound": "No chain found",
+        "nameInUse": "Name already in use"
       },
       "fields": {
         "name": {
@@ -851,6 +872,10 @@
             "points": "Points"
           }
         },
+        "network": {
+          "label": "Network",
+          "description": "Select the blockchain network for your token"
+        },
         "initialSupply": {
           "label": "Initial Supply",
           "placeholder": "0",
@@ -866,6 +891,16 @@
       "buttons": {
         "create": "Create Token",
         "creating": "Creating Token..."
+      },
+      "toast": {
+        "success": {
+          "title": "Success!",
+          "description": "Your token has been created."
+        },
+        "error": {
+          "title": "Error",
+          "description": "Failed to create token. Please try again."
+        }
       }
     },
     "visibleTokens": "Visible Tokens",
@@ -1090,7 +1125,7 @@
     }
   },
   "metrics": {
-    "title": "Community insight",
+    "title": "Reward Insights",
     "uniqueUsers": {
       "description": "The number of new users who have received rewards",
       "title": "New Users",
@@ -1227,30 +1262,73 @@
   "onboarding": {
     "integrations": {
       "interestRegistered": "Interest registered",
+      "interestRegisteredDescription": "Thanks for your interest! We'll ping you when our {platform} integration is ready.",
       "introTitle": "Connect Your Platforms",
-      "intro": "Connect your community platforms to unlock insights and automations. The Community Agent analyzes your Discord, Telegram, and more to surface valuable contributions and trends.",
+      "intro": "Link the platforms your community already lives in. The Community Copilot will start listening as soon as you connect your platforms.",
       "discord": "Discord",
       "telegram": "Telegram",
       "github": "GitHub",
-      "dune": "Dune",
-      "discordDesc": "Connect your community's Discord to unlock insights.",
-      "telegramDescComingSoon": "Telegram integration coming soon.",
-      "githubDescComingSoon": "GitHub integration coming soon.",
-      "duneDescComingSoon": "Dune integration coming soon.",
+      "dune": "Onchain",
+      "discordDesc": "Connect your Discord in ~30 sec by adding the copilot to your server.",
+      "telegramDescComingSoon": "Track the whole of your community by deploying to Telegram.",
+      "githubDescComingSoon": "Track code contributions & auto-draft bounties.",
+      "duneDescComingSoon": "Spot on-chain actions and link them to your community wins.",
       "connect": "Connect",
       "connected": "Connected",
       "comingSoon": "Coming Soon",
       "imInterested": "I'm Interested",
+      "interested": "Interest Registered",
       "continue": "Continue",
-      "error": "Error connecting Discord"
+      "error": "Error connecting Discord",
+      "loading": "Loading integrations...",
+      "errors": {
+        "jobStartFailed": "Failed to start community analysis. Please try again.",
+        "missingParameters": "Missing required parameters. Please try connecting again."
+      },
+      "starting": "Starting...",
+      "retryConnection": "Retry Connection",
+      "error": "An error occurred. Please try again."
     },
     "exampleSnapshot": {
-      "title": "Community Snapshot Example",
-      "intro": "Here's an example of the insights and reports you'll see after connecting your platforms.",
+      "title": "Community Insight Report",
+      "intro": "Here's an example of a Insight Report you'll see after connecting your platforms.",
       "loading": "Loading example report...",
       "unavailable": "Example report currently unavailable.",
       "continue": "Continue",
       "reportTitle": "Impact Report"
+    },
+    "complete": {
+      "title": "Setup Complete!",
+      "intro": "Your community platform is ready to go.",
+      "successTitle": "Welcome to Your Community Platform",
+      "successMessage": "Your community platform is now set up and ready to use. You can start exploring insights, managing rewards, and growing your community.",
+      "continue": "Go to Dashboard"
+    },
+    "setup": {
+      "title": "Setting Up Your Community",
+      "description": "We're preparing your community platform with initial reports and recommendations. This may take a few moments.",
+      "report": {
+        "title": "Impact Report Generation",
+        "description": "Analyzing your community's activity to generate insights and recommendations."
+      },
+      "recommendations": {
+        "title": "Reward Recommendations",
+        "description": "Processing community contributions to suggest appropriate rewards."
+      },
+      "status": {
+        "idle": "Waiting to start",
+        "pending": "Pending",
+        "processing": "Processing",
+        "completed": "Complete",
+        "failed": "Failed",
+        "unknown": "Unknown"
+      },
+      "errors": {
+        "missingCommunityId": "Missing community ID. Please try connecting again.",
+        "setupFailed": "Failed to complete setup. Please try again."
+      },
+      "continue": "See your first insight report",
+      "retry": "Retry Setup"
     }
   }
 }

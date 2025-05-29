@@ -1,95 +1,50 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { generateImpactReportTestData } from "@/lib/test-data";
+import { Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 import { ActivityAnalysis } from "./sections/activity-analysis";
 import { KeyTopics } from "./sections/key-topics";
 import { SentimentAnalysis } from "./sections/sentiment-analysis";
 import { TopContributors } from "./sections/top-contributors";
 
-export default function ImpactReports({ communityId, agentId }: ImpactReportsProps) {
+interface ImpactReportsProps {
+  report: any;
+}
+
+export default function ImpactReports({ report }: ImpactReportsProps) {
   const t = useTranslations("ImpactReports");
-  const [report, setReport] = useState<ImpactReport | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        // Use test data generator
-        const data = generateImpactReportTestData();
-        setReport(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : t("errors.loadFailed"));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [communityId, agentId, t]);
-
-  if (isLoading) {
-    return <div>{t("loading")}</div>;
-  }
-
-  if (error) {
-    return <div>{t("errors.error", { error })}</div>;
-  }
-
-  if (!report) {
-    return <div>{t("noData")}</div>;
-  }
 
   return (
-    <div className="space-y-6 p-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="space-y-1">
-              <h3 className="text-sm font-medium text-muted-foreground">
-                {t("overview.totalMessages")}
-              </h3>
-              <p className="text-2xl font-bold">{report.overview.totalMessages}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="space-y-1">
-              <h3 className="text-sm font-medium text-muted-foreground">
-                {t("overview.activeChannels")}
-              </h3>
-              <p className="text-2xl font-bold">{report.overview.activeChannels}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="space-y-1">
-              <h3 className="text-sm font-medium text-muted-foreground">
-                {t("overview.uniqueParticipants")}
-              </h3>
-              <p className="text-2xl font-bold">{report.overview.uniqueUsers}</p>
-            </div>
-          </CardContent>
-        </Card>
+    <div className="grid grid-cols-1 md:grid-cols-6 gap-6 w-full">
+      <Overview title="Total Messages" value={report.overview.totalMessages} />
+      <Overview title="Active Channels" value={report.overview.activeChannels} />
+      <Overview title="Unique Participants" value={report.overview.uniqueUsers} />
+
+      <div className="col-span-full md:col-span-6">
+        <ActivityAnalysis
+          dailyActivity={report.dailyActivity}
+          channelBreakdown={report.channelBreakdown}
+        />
       </div>
-
-      <ActivityAnalysis
-        dailyActivity={report.dailyActivity}
-        channelBreakdown={report.channelBreakdown}
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="col-span-full md:col-span-3">
         <TopContributors contributors={report.topContributors} />
+      </div>
+      <div className="col-span-full md:col-span-3">
         <KeyTopics topics={report.keyTopics} />
       </div>
+      <div className="col-span-full md:col-span-6">
+        <SentimentAnalysis sentiment={report.userSentiment} />
+      </div>
+    </div>
+  );
+}
 
-      <SentimentAnalysis sentiment={report.userSentiment} />
+function Overview({ title, value }: { title: string; value: number }) {
+  return (
+    <div className="rounded-xl border border-zinc-800 p-8 flex flex-col items-center shadow-sm col-span-2">
+      <Sparkles className="h-6 w-6 text-yellow-400 mb-2" />
+      <span className="text-sm text-gray-400 mb-1">{title}</span>
+      <span className="text-4xl font-extrabold text-white">{value}</span>
     </div>
   );
 }

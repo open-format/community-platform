@@ -34,7 +34,7 @@ export default function DatePickerWithPresets({ onDateChange }: DatePickerProps)
 
   function handlePresetChange(value: string) {
     setDate({
-      from: dayjs().subtract(Number.parseInt(value), "day").toDate(),
+      from: dayjs().startOf("day").subtract(Number.parseInt(value), "day").toDate(),
       to: dayjs().endOf("day").toDate(),
     });
   }

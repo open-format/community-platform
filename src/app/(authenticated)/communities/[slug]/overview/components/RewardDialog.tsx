@@ -26,14 +26,16 @@ import { Separator } from "@/components/ui/separator";
 import { handleViemError } from "@/helpers/errors";
 import { addressSplitter } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { usePrivy } from "@privy-io/react-auth";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { ExternalLink } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import posthog from "posthog-js";
 import { startTransition, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { type Address, BaseError, parseEther, stringToHex } from "viem";
+import { type Address, BaseError, isAddress, parseEther, stringToHex } from "viem";
 import { useConfig } from "wagmi";
 import { z } from "zod";
 
@@ -91,6 +93,7 @@ export default function RewardDialog({
   const t = useTranslations("overview.rewardRecommendations");
   const [open, setOpen] = useState(false);
   const config = useConfig();
+  const { user } = usePrivy();
 
   function toggle() {
     setOpen(!open);
@@ -98,7 +101,9 @@ export default function RewardDialog({
 
   const FormSchema = z.object({
     amount: z.coerce.number().min(1, t("validation.amountMin")).default(recommendation.points),
-    tokenAddress: z.string().min(1, t("validation.tokenAddressRequired")),
+    tokenAddress: z.string().refine((value) => isAddress(value), {
+      message: t("validation.tokenAddressRequired"),
+    }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -116,7 +121,9 @@ export default function RewardDialog({
 
         try {
           // Check if selected token is a badge or token
-          const isSelectedBadge = community.badges.some((badge) => badge.id === data.tokenAddress);
+          const isSelectedBadge = community.onchainData?.badges.some(
+            (badge) => badge.id === data.tokenAddress,
+          );
 
           // Use different contract function based on token type
           if (isSelectedBadge) {
@@ -138,10 +145,18 @@ export default function RewardDialog({
             });
 
             toast.success(t("form.toast.badgeSuccess"), { id: toastId });
+            // PostHog event for badge reward
+            posthog.capture?.("user_rewarded", {
+              userId: user?.id || null,
+              rewardedUserId: recommendation.wallet_address,
+              communityId: community.id,
+              rewardType: "badge",
+              recommendationId: recommendation.id,
+            });
           } else {
             // Handle ERC20 token minting
             const hash = await writeContract(config, {
-              address: community.id,
+              address: community.onchainData.id,
               abi: rewardFacetAbi,
               functionName: "mintERC20",
               args: [
@@ -158,8 +173,16 @@ export default function RewardDialog({
             toast.success(t("form.toast.success", { summary: recommendation.summary }), {
               id: toastId,
             });
-
             form.reset();
+            // PostHog event for token reward
+            posthog.capture?.("user_rewarded", {
+              userId: user?.id || null,
+              rewardedUserId: recommendation.wallet_address,
+              communityId: community.id,
+              rewardType: "token",
+              amount: data.amount,
+              recommendationId: recommendation.id,
+            });
           }
 
           deleteRecommendation();
@@ -271,8 +294,8 @@ export default function RewardDialog({
                     <FormControl>
                       <TokenSelector
                         forceModal={true}
-                        tokens={community.tokens}
-                        badges={community.badges}
+                        tokens={community?.onchainData?.tokens ?? []}
+                        badges={community?.onchainData?.badges ?? []}
                         value={field.value}
                         onChange={field.onChange}
                       />

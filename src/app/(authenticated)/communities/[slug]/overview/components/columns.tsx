@@ -28,7 +28,7 @@ export const columns = (
       const rewardRecommendation = row.original;
       return (
         <div className="py-2">
-          <span className="font-bold">{rewardRecommendation.contributor_name}</span>
+          <span className="font-bold text-primary">@{rewardRecommendation.contributor_name}</span>
           &nbsp;
           {rewardRecommendation.summary}
         </div>

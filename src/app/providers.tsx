@@ -1,29 +1,29 @@
 "use client";
 
-import { turboChain } from "@/constants/chains";
+import { openFormatChain, turboChain } from "@/constants/chains";
 import config from "@/constants/config";
 import { ConfettiProvider } from "@/contexts/confetti-context";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { WagmiProvider, createConfig } from "@privy-io/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NextIntlClientProvider } from "next-intl";
+import { ThemeProvider } from "next-themes";
 import { usePathname, useSearchParams } from "next/navigation";
-import { usePostHog } from "posthog-js/react";
+import posthog from "posthog-js";
+import { PostHogProvider as PHProvider, usePostHog } from "posthog-js/react";
 import { Suspense, useEffect } from "react";
 import { arbitrumSepolia, aurora, base, matchain } from "viem/chains";
 import { http } from "wagmi";
 
-import posthog from "posthog-js";
-import { PostHogProvider as PHProvider } from "posthog-js/react";
-
 const chainConfig = createConfig({
-  chains: [arbitrumSepolia, aurora, turboChain, base, matchain],
+  chains: [arbitrumSepolia, aurora, turboChain, base, matchain, openFormatChain],
   transports: {
     [arbitrumSepolia.id]: http(),
     [aurora.id]: http(),
     [turboChain.id]: http(),
     [base.id]: http(),
     [matchain.id]: http(),
+    [openFormatChain.id]: http(),
   },
 });
 const queryClient = new QueryClient();
@@ -38,33 +38,40 @@ export default function Providers({
   locale: string;
 }) {
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
-      <PrivyProvider
-        appId={config.NEXT_PUBLIC_PRIVY_APP_ID as string}
-        config={{
-          // Create embedded wallets for users who don't have a wallet
-          embeddedWallets: {
-            createOnLogin: "all-users",
-          },
-          // @TODO: Issue with embedded wallets on Aurora and turboChain - awaiting Privy support
-          supportedChains: [arbitrumSepolia, aurora, turboChain, base, matchain],
-          defaultChain: arbitrumSepolia,
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="light"
+      disableTransitionOnChange
+      forcedTheme="dark"
+    >
+      <NextIntlClientProvider locale={locale} messages={messages}>
+        <PrivyProvider
+          appId={config.NEXT_PUBLIC_PRIVY_APP_ID as string}
+          config={{
+            // Create embedded wallets for users who don't have a wallet
+            embeddedWallets: {
+              createOnLogin: "all-users",
+            },
+            // @TODO: Issue with embedded wallets on Aurora and turboChain - awaiting Privy support
+            supportedChains: [arbitrumSepolia, aurora, turboChain, base, matchain, openFormatChain],
+            defaultChain: openFormatChain,
 
-          appearance: {
-            walletChainType: "ethereum-only",
-            walletList: ["metamask", "wallet_connect", "rainbow", "rabby_wallet"],
-          },
-        }}
-      >
-        <QueryClientProvider client={queryClient}>
-          <WagmiProvider config={chainConfig}>
-            <PostHogProvider>
-              <ConfettiProvider>{children}</ConfettiProvider>
-            </PostHogProvider>
-          </WagmiProvider>
-        </QueryClientProvider>
-      </PrivyProvider>
-    </NextIntlClientProvider>
+            appearance: {
+              walletChainType: "ethereum-only",
+              walletList: ["metamask", "wallet_connect", "rainbow", "rabby_wallet"],
+            },
+          }}
+        >
+          <QueryClientProvider client={queryClient}>
+            <WagmiProvider config={chainConfig}>
+              <PostHogProvider>
+                <ConfettiProvider>{children}</ConfettiProvider>
+              </PostHogProvider>
+            </WagmiProvider>
+          </QueryClientProvider>
+        </PrivyProvider>
+      </NextIntlClientProvider>
+    </ThemeProvider>
   );
 }
 
