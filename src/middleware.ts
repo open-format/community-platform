@@ -1,9 +1,15 @@
 import { getCurrentUser } from "@/lib/privy";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import getCommunities from "./app/actions/communities";
 
 export async function middleware(request: NextRequest) {
   const user = await getCurrentUser();
+  const { communities, error } = await getCommunities();
+
+  if (user && (error || !communities || communities.length === 0)) {
+    return NextResponse.redirect(new URL("/onboarding/integrations", request.url));
+  }
 
   // Redirect to /communities if user is logged in and on home page or auth page
   if (user && (request.nextUrl.pathname === "/" || request.nextUrl.pathname === "/auth")) {
