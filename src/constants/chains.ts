@@ -71,7 +71,7 @@ export enum ChainName {
 export const chains: Record<ChainName, Chain> = {
   openFormat: {
     APP_FACTORY_ADDRESS: "0x20A9FB49618a10fD7ea79C82ac4e6D9345CB4C97",
-    SUBGRAPH_URL: "https://openformat-graph-node.fly.dev/subgraphs/name/open-format-openformat",
+    SUBGRAPH_URL: "https://openformat-graph-node-staging.fly.dev/subgraphs/name/open-format-openformat",
     BLOCK_EXPLORER_URL: "https://explorer.0x4e454168.aurora-cloud.dev",
     ...openFormatChain,
     apiChainName: "open-format",
