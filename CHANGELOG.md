@@ -1,3 +1,10 @@
+## [0.23.2](https://github.com/open-format/community-platform/compare/v0.23.1...v0.23.2) (2025-05-30)
+
+
+### Bug Fixes
+
+* batch reward transaction processing ([9c36251](https://github.com/open-format/community-platform/commit/9c362510f18a0dd5f031110e8397b83f21755000))
+
 ## [0.23.1](https://github.com/open-format/community-platform/compare/v0.23.0...v0.23.1) (2025-05-29)
 
 
