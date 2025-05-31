@@ -1,3 +1,10 @@
+# [0.24.0](https://github.com/open-format/community-platform/compare/v0.23.2...v0.24.0) (2025-05-31)
+
+
+### Features
+
+* integrate chain switching in batch rewards processing ([a89e897](https://github.com/open-format/community-platform/commit/a89e8972c00c9a184acbdd4067f474a561aa2861))
+
 ## [0.23.2](https://github.com/open-format/community-platform/compare/v0.23.1...v0.23.2) (2025-05-30)
 
 
