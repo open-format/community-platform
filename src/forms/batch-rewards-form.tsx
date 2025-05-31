@@ -22,7 +22,7 @@ import { useState, useTransition } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { BaseError, isAddress } from "viem";
-import { useConfig } from "wagmi";
+import { useConfig, useSwitchChain } from "wagmi";
 import * as z from "zod";
 import { BatchRewardsSettingsForm } from "./batch-rewards-settings-form";
 
@@ -72,6 +72,7 @@ export default function BatchRewardsForm({ community }: { community: Community }
   const config = useConfig();
   const { user } = usePrivy();
   const [isPending, startTransition] = useTransition();
+  const { switchChain } = useSwitchChain();
 
   const rewardSchema = z.object({
     user: z.string().min(1, t("form.validation.user")).max(256, t("form.validation.userMax")),
@@ -253,8 +254,8 @@ export default function BatchRewardsForm({ community }: { community: Community }
             // Search token in community badges and tokens
             const token =
               reward.actionType === "mint-badge"
-                ? community.badges.find((b) => b.name === reward.token)
-                : community.tokens.find((t) => t.token?.name === reward.token);
+                ? community.onchainData.badges.find((b) => b.name === reward.token)
+                : community.onchainData.tokens.find((t) => t.token?.name === reward.token);
             if (token) {
               reward.tokenAddress =
                 reward.actionType === "mint-badge"
@@ -374,6 +375,8 @@ export default function BatchRewardsForm({ community }: { community: Community }
   }
 
   async function processRewards() {
+    switchChain({ chainId: community.communityContractChainId });
+
     setRewardProgressDialog(true);
     setProgressInfo({ total: rewardList.length, success: 0, failed: 0 });
     setRewardState(BatchRewardState.REWARDING);
