@@ -229,9 +229,17 @@ export default function SetupClient() {
     }
   };
 
-  const handleRetry = async (jobType: "report" | "recommendations") => {
+  const handleRetry = async (jobType: "report" | "recommendations" | "messages") => {
     try {
-      if (jobType === "report") {
+      if (jobType === "messages") {
+        if (!guildId) throw new Error("Missing guildId");
+        const messagesResponse = await startMessagesJobAsync?.({ platformId: guildId });
+        if (messagesResponse?.job_id) {
+          setMessagesJobId(messagesResponse.job_id);
+        } else {
+          throw new Error("Failed to start messages job");
+        }
+      } else if (jobType === "report") {
         if (!guildId) throw new Error("Missing guildId");
         const reportResponse = await startReportJobAsync?.({ platformId: guildId });
         if (reportResponse?.job_id) {
@@ -345,7 +353,13 @@ export default function SetupClient() {
                     {step.isJob && step.status === "failed" && (
                       <Button
                         onClick={() =>
-                          handleRetry(step.key === "insights" ? "recommendations" : "report")
+                          handleRetry(
+                            step.key === "insights"
+                              ? "recommendations"
+                              : step.key === "messages"
+                                ? "messages"
+                                : "report",
+                          )
                         }
                       >
                         {t("retry")}
