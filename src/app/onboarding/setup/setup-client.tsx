@@ -2,13 +2,6 @@
 
 import { OnboardingProgressBar } from "@/components/onboarding/onboarding-progress";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { usePollingJob } from "@/hooks/useJobStatus";
 import { usePrivy } from "@privy-io/react-auth";
 import { AlertCircle, BarChart2, CheckCircle, FileText, Loader2 } from "lucide-react";
@@ -31,7 +24,6 @@ export default function SetupClient() {
   const [messagesJobId, setMessagesJobId] = useState<string | null>(null);
   const [reportJobId, setReportJobId] = useState<string | null>(null);
   const [recommendationsJobId, setRecommendationsJobId] = useState<string | null>(null);
-  const [showLowActivityModal, setShowLowActivityModal] = useState(false);
   const jobsStartedRef = useRef(false);
   const eventFiredRef = useRef({
     fetchHistoricalMessages: false,
@@ -109,12 +101,7 @@ export default function SetupClient() {
   // Watch for messages job completion and start remaining jobs
   useEffect(() => {
     const startRemainingJobs = async () => {
-      if (
-        messagesStatus === "completed" &&
-        guildId &&
-        communityId &&
-        (messagesData?.newMessagesAdded ?? 0) >= 20
-      ) {
+      if (messagesStatus === "completed" && guildId && communityId) {
         try {
           const [reportResponse, recommendationsResponse] = await Promise.all([
             startReportJobAsync?.({ platformId: guildId }),
@@ -131,12 +118,6 @@ export default function SetupClient() {
           console.error("Failed to start remaining jobs:", error);
           toast.error(t("errors.jobStartFailed"));
         }
-      } else if (
-        messagesStatus === "completed" &&
-        (messagesData?.newMessagesAdded ?? 0) < 20 &&
-        !showLowActivityModal
-      ) {
-        setShowLowActivityModal(true);
       }
     };
 
@@ -148,7 +129,6 @@ export default function SetupClient() {
     startRecommendationsJobAsync,
     messagesStatus,
     messagesData,
-    showLowActivityModal,
   ]);
 
   const isComplete =
@@ -249,16 +229,40 @@ export default function SetupClient() {
     }
   };
 
-  const handleRetry = (jobType: "report" | "recommendations") => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (jobType === "report") {
-      params.delete("reportJobId");
-      localStorage.removeItem("reportJobId");
-    } else {
-      params.delete("recommendationsJobId");
-      localStorage.removeItem("recommendationsJobId");
+  const handleRetry = async (jobType: "report" | "recommendations" | "messages") => {
+    try {
+      if (jobType === "messages") {
+        if (!guildId) throw new Error("Missing guildId");
+        const messagesResponse = await startMessagesJobAsync?.({ platformId: guildId });
+        if (messagesResponse?.job_id) {
+          setMessagesJobId(messagesResponse.job_id);
+        } else {
+          throw new Error("Failed to start messages job");
+        }
+      } else if (jobType === "report") {
+        if (!guildId) throw new Error("Missing guildId");
+        const reportResponse = await startReportJobAsync?.({ platformId: guildId });
+        if (reportResponse?.job_id) {
+          setReportJobId(reportResponse.job_id);
+        } else {
+          throw new Error("Failed to start report job");
+        }
+      } else {
+        if (!guildId || !communityId) throw new Error("Missing guildId or communityId");
+        const recommendationsResponse = await startRecommendationsJobAsync?.({
+          platformId: guildId,
+          communityId,
+        });
+        if (recommendationsResponse?.job_id) {
+          setRecommendationsJobId(recommendationsResponse.job_id);
+        } else {
+          throw new Error("Failed to start recommendations job");
+        }
+      }
+    } catch (error) {
+      console.error("Retry failed:", error);
+      toast.error(t("errors.jobRetryFailed"));
     }
-    router.push(`/onboarding/integrations?${params.toString()}`);
   };
 
   useEffect(() => {
@@ -281,17 +285,6 @@ export default function SetupClient() {
       eventFiredRef.current.fetchHistoricalMessages = true;
     }
   }, [messagesStatus, user?.id, communityId]);
-
-  // Fire not_enough_messages_modal when showLowActivityModal is set to true
-  useEffect(() => {
-    if (showLowActivityModal && !eventFiredRef.current.notEnoughMessages) {
-      posthog.capture?.("not_enough_messages_modal", {
-        userId: user?.id || null,
-        communityId: communityId || null,
-      });
-      eventFiredRef.current.notEnoughMessages = true;
-    }
-  }, [showLowActivityModal, user?.id, communityId]);
 
   // Fire reward_recommendations_generated when recommendationsStatus transitions to completed
   useEffect(() => {
@@ -360,7 +353,13 @@ export default function SetupClient() {
                     {step.isJob && step.status === "failed" && (
                       <Button
                         onClick={() =>
-                          handleRetry(step.key === "insights" ? "recommendations" : "report")
+                          handleRetry(
+                            step.key === "insights"
+                              ? "recommendations"
+                              : step.key === "messages"
+                                ? "messages"
+                                : "report",
+                          )
                         }
                       >
                         {t("retry")}
@@ -376,8 +375,8 @@ export default function SetupClient() {
               <div className="bg-zinc-800/70 rounded-xl p-6 mt-4 border border-zinc-700">
                 <div className="font-semibold text-white mb-3">What's Next?</div>
                 <ul className="space-y-2">
-                  {whatsNext.map((item, i) => (
-                    <li key={i} className="flex items-center gap-2 text-gray-300 text-sm">
+                  {whatsNext.map((item) => (
+                    <li key={item} className="flex items-center gap-2 text-gray-300 text-sm">
                       <CheckCircle className="h-4 w-4 text-yellow-400" />
                       {item}
                     </li>
@@ -410,30 +409,6 @@ export default function SetupClient() {
           )}
         </div>
       </div>
-
-      <Dialog open={showLowActivityModal}>
-        <DialogContent hideCloseButton className="bg-zinc-900 border-zinc-800 text-white">
-          <DialogTitle>Not Enough Activity</DialogTitle>
-          <DialogDescription>
-            There isn't enough activity in this Discord server to generate insights. Please connect
-            a more active server. You can check out an example report to see what insights you'll
-            get once you connect a server with sufficient activity.
-          </DialogDescription>
-          <DialogFooter>
-            <Button
-              className="bg-yellow-400 text-black hover:bg-yellow-300 font-semibold rounded-lg"
-              onClick={() => {
-                router.push("/onboarding/integrations");
-              }}
-            >
-              Connect new Discord Server
-            </Button>
-            <Button variant="outline" onClick={() => router.push("/onboarding/example")}>
-              View example Insight Report
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
