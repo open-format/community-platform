@@ -12,6 +12,7 @@ interface JobResponse {
   status: JobStatus;
   error?: string;
   message?: string;
+  newMessagesAdded?: number; // Added for messages job status
 }
 
 interface UsePollingJobOptions {

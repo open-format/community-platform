@@ -3,6 +3,7 @@ import { ExternalLinkIcon, Info } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Suspense } from "react";
+import { cookies } from "next/headers";
 import IntegrationsClient from "./integrations-client";
 
 function LoadingSkeleton() {
@@ -36,17 +37,17 @@ export default async function PlatformsPage({
 }) {
   const t = await getTranslations("onboarding");
   const params = await searchParams;
-  const guildId = params.guildId as string | undefined;
+  const cookieStore = await cookies();
   const communityId = params.communityId as string | undefined;
-  const discordConnected = !!guildId;
+  const discordConnected = cookieStore.get("discordConnected")?.value === "true";
+  const telegramConnected = cookieStore.get("telegramConnected")?.value === "true";
 
-  // If we have a guildId but no error, we're either loading jobs or they've started
   const jobsStarted = discordConnected && !params.error;
 
   const steps = [{ label: "Connect your community" }, { label: "Deploying to community" }];
 
   let firstBarProgress = 0.33;
-  if (discordConnected) firstBarProgress = 0.66;
+  if (discordConnected || telegramConnected) firstBarProgress = 0.66;
   if (jobsStarted) firstBarProgress = 1;
   const progresses = [firstBarProgress, 0];
 
@@ -77,7 +78,11 @@ export default async function PlatformsPage({
           </Link>
         </div>
         <Suspense fallback={<LoadingSkeleton />}>
-          <IntegrationsClient discordConnected={discordConnected} communityId={communityId} />
+          <IntegrationsClient
+            discordConnected={discordConnected}
+            telegramConnected={telegramConnected}
+            communityId={communityId}
+          />
         </Suspense>
       </div>
     </div>

@@ -12,7 +12,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Missing Privy DID" }, { status: 400 });
   }
 
-  // Create a state object that includes both the random state and the DID
   const stateObj = {
     state: randomBytes(16).toString("hex"),
     did,

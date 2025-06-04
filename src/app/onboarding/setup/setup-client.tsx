@@ -121,8 +121,9 @@ export default function SetupClient() {
             startRecommendationsJobAsync?.({ platformId: guildId, communityId }),
           ]);
 
-          if (reportResponse?.job_id) {
-            setReportJobId(reportResponse.job_id);
+          const reportJobId = reportResponse?.jobId || reportResponse?.job_id;
+          if (reportJobId) {
+            setReportJobId(reportJobId);
           }
           if (recommendationsResponse?.job_id) {
             setRecommendationsJobId(recommendationsResponse.job_id);
@@ -422,9 +423,7 @@ export default function SetupClient() {
           <DialogFooter>
             <Button
               className="bg-yellow-400 text-black hover:bg-yellow-300 font-semibold rounded-lg"
-              onClick={() => {
-                router.push("/onboarding/integrations");
-              }}
+              onClick={() => router.push("/onboarding/integrations")}
             >
               Connect new Discord Server
             </Button>

@@ -1,38 +1,28 @@
-// src/app/api/discord/callback/route.ts
 import { agentApiClient } from "@/lib/openformat";
+import { getCurrentUser } from "@/lib/privy";
 import { isAxiosError } from "axios";
 import { type NextRequest, NextResponse } from "next/server";
 
-function clearDiscordCookies(response: NextResponse) {
-  response.cookies.delete("discordConnected");
-  response.cookies.delete("guildId");
+function clearTelegramCookies(response: NextResponse) {
+  response.cookies.delete("telegramConnected");
   return response;
 }
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
-  const code = searchParams.get("code");
-  const encodedState = searchParams.get("state");
-  const guildId = searchParams.get("guild_id");
-  const storedEncodedState = req.cookies.get("discord_state")?.value;
+  const platformConnectionId = searchParams.get("platformConnectionId");
   const storedCommunityId = req.cookies.get("communityId")?.value;
+  const user = await getCurrentUser();
+  const did = user?.id;
 
-  if (!code || !guildId || !encodedState || !storedEncodedState || encodedState !== storedEncodedState) {
-    const response = NextResponse.redirect(new URL(`${process.env.PLATFORM_BASE_URL}/onboarding/integrations?error=invalid_state`, req.url));
-    return clearDiscordCookies(response);
+  if (!platformConnectionId) {
+    const response = NextResponse.redirect(new URL(`${process.env.PLATFORM_BASE_URL}/onboarding/integrations?error=missing_platform_connection_id`, req.url));
+    return clearTelegramCookies(response);
   }
 
   try {
-    const stateObj = JSON.parse(Buffer.from(encodedState, "base64").toString());
-    const { did: stateDid } = stateObj;
-
-    if (!stateDid) {
-      throw new Error("Missing DID in state");
-    }
-
     let communityId = storedCommunityId;
     let setCookieResponse = null;
-    console.log("communityIdprint", communityId);
 
     if (communityId) {
       try {
@@ -45,13 +35,13 @@ export async function GET(req: NextRequest) {
 
     if (!communityId) {
       const createRes = await agentApiClient.post("/communities", {
-        name: "TEST COMMUNITY Dorigin",
+        name: "Test Community Torigin",
         description: "A test community for cool people."
       });
       communityId = createRes.data.id;
       if (!communityId || typeof communityId !== "string") {
         const response = NextResponse.redirect(new URL(`${process.env.PLATFORM_BASE_URL}/onboarding/integrations?error=community_creation_failed`, req.url));
-        return clearDiscordCookies(response);
+        return clearTelegramCookies(response);
       }
       setCookieResponse = NextResponse.redirect(new URL(`${process.env.PLATFORM_BASE_URL}/onboarding/integrations?communityId=${communityId}`, req.url));
       setCookieResponse.cookies.set("communityId", communityId, { 
@@ -63,41 +53,42 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-      await agentApiClient.put(`/platform-connections/${guildId}`, { 
+      await agentApiClient.put(`/platform-connections/${platformConnectionId}`, { 
         communityId,
-        status: "active"
+        status: "active" // Set to active since Telegram connection is immediate
       });
     } catch (error) {
       console.error("Failed to update platform connection:", error);
       const response = NextResponse.redirect(new URL(`${process.env.PLATFORM_BASE_URL}/onboarding/integrations?error=platform_connection_failed`, req.url));
-      return clearDiscordCookies(response);
+      return clearTelegramCookies(response);
     }
 
     try {
-      await agentApiClient.get(`/users/${stateDid}`);
+      await agentApiClient.get(`/users/${did}`);
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 404) {
-        await agentApiClient.post("/users", { did: stateDid });
+        await agentApiClient.post("/users", { did });
       }
     }
     
     try {
-      await agentApiClient.get(`/users/${stateDid}/roles/${communityId}`);
+      await agentApiClient.get(`/users/${did}/roles/${communityId}`);
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 404) {
         await agentApiClient.post("/users/assign-role", {
-          did: stateDid,
+          did,
           community_id: communityId,
           role_name: "Admin",
         });
       }
     }
 
-    const isTelegramConnected = req.cookies.get("telegramConnected")?.value === "true";
+    const isDiscordConnected = req.cookies.get("discordConnected")?.value === "true";
+    const guildId = req.cookies.get("guildId")?.value;
 
     const response = NextResponse.redirect(
       new URL(
-        isTelegramConnected
+        isDiscordConnected 
           ? `${process.env.PLATFORM_BASE_URL}/onboarding/setup?guildId=${guildId}&communityId=${communityId}`
           : `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&communityId=${communityId}`,
         req.url
@@ -105,13 +96,7 @@ export async function GET(req: NextRequest) {
     );
 
     const finalResponse = setCookieResponse || response;
-    finalResponse.cookies.set("discordConnected", "true", {
-      path: "/",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax"
-    });
-    finalResponse.cookies.set("guildId", guildId, {
+    finalResponse.cookies.set("telegramConnected", "true", {
       path: "/",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -127,9 +112,9 @@ export async function GET(req: NextRequest) {
         message: error.message,
       });
     } else {
-      console.error("Error in Discord callback:", error);
+      console.error("Error in Telegram callback:", error);
     }
     const response = NextResponse.redirect(new URL(`${process.env.PLATFORM_BASE_URL}/onboarding/integrations?error=true`, req.url));
-    return clearDiscordCookies(response);
+    return clearTelegramCookies(response);
   }
 }

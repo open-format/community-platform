@@ -1270,6 +1270,7 @@
       "github": "GitHub",
       "dune": "Onchain",
       "discordDesc": "Connect your Discord in ~30 sec by adding the copilot to your server.",
+      "telegramDesc": "Connect your Telegram group in ~30 sec by adding the copilot to your group.",
       "telegramDescComingSoon": "Track the whole of your community by deploying to Telegram.",
       "githubDescComingSoon": "Track code contributions & auto-draft bounties.",
       "duneDescComingSoon": "Spot on-chain actions and link them to your community wins.",
