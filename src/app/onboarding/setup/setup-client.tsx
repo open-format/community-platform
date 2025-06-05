@@ -108,8 +108,9 @@ export default function SetupClient() {
             startRecommendationsJobAsync?.({ platformId: guildId, communityId }),
           ]);
 
-          if (reportResponse?.job_id) {
-            setReportJobId(reportResponse.job_id);
+          const reportJobId = reportResponse?.jobId || reportResponse?.job_id;
+          if (reportJobId) {
+            setReportJobId(reportJobId);
           }
           if (recommendationsResponse?.job_id) {
             setRecommendationsJobId(recommendationsResponse.job_id);
@@ -409,6 +410,27 @@ export default function SetupClient() {
           )}
         </div>
       </div>
+      <Dialog open={showLowActivityModal}>
+        <DialogContent hideCloseButton className="bg-zinc-900 border-zinc-800 text-white">
+          <DialogTitle>Not Enough Activity</DialogTitle>
+          <DialogDescription>
+            There isn't enough activity in this Discord server to generate insights. Please connect
+            a more active server. You can check out an example report to see what insights you'll
+            get once you connect a server with sufficient activity.
+          </DialogDescription>
+          <DialogFooter>
+            <Button
+              className="bg-yellow-400 text-black hover:bg-yellow-300 font-semibold rounded-lg"
+              onClick={() => router.push("/onboarding/integrations")}
+            >
+              Connect new Discord Server
+            </Button>
+            <Button variant="outline" onClick={() => router.push("/onboarding/example")}>
+              View example Insight Report
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

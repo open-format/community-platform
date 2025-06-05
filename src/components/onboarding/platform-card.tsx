@@ -18,6 +18,7 @@ interface PlatformCardProps {
   titleKey: string;
   descriptionKey: string;
   discordConnected?: boolean;
+  telegramConnected?: boolean;
 }
 
 export default function PlatformCard({
@@ -27,6 +28,7 @@ export default function PlatformCard({
   titleKey,
   descriptionKey,
   discordConnected,
+  telegramConnected,
 }: PlatformCardProps) {
   const t = useTranslations("onboarding.integrations");
   const { user } = usePrivy();
@@ -42,7 +44,7 @@ export default function PlatformCard({
   }, [titleKey, discordConnected, user?.id]);
 
   const getDiscordConnectUrl = () => {
-    return `/api/discord/start?did=${encodeURIComponent(user?.id)}`;
+    return `/api/discord/start?did=${encodeURIComponent(user?.id ?? "")}`;
   };
 
   const handleInterested = () => {
@@ -60,6 +62,10 @@ export default function PlatformCard({
       userId: user?.id || null,
     });
   };
+
+  const isConnected = titleKey === "discord" ? discordConnected : 
+                     titleKey === "telegram" ? telegramConnected : 
+                     false;
 
   return (
     <div
@@ -95,36 +101,46 @@ export default function PlatformCard({
           >
             {interested ? t("interested") : t("imInterested")}
           </Button>
-        ) : titleKey === "discord" ? (
-          discordConnected ? (
-            user?.id ? (
-              <Button variant="success" className="w-full" disabled>
-                {t("connected")}
-              </Button>
-            ) : (
-              <Button className="w-full" disabled>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                {t("connect")}
-              </Button>
-            )
-          ) : user?.id ? (
+        ) : isConnected ? (
+          user?.id ? (
+            <Button variant="success" className="w-full" disabled>
+              {t("connected")}
+            </Button>
+          ) : (
+            <Button className="w-full" disabled>
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              {t("connect")}
+            </Button>
+          )
+        ) : user?.id ? (
+          titleKey === "telegram" ? (
+            <Button
+              className="w-full"
+              onClick={async () => {
+                try {
+                  const res = await fetch(`/api/telegram/start?did=${encodeURIComponent(user.id)}`);
+                  if (!res.ok) throw new Error("Failed to start Telegram connect flow");
+                  const { addToGroupUrl } = await res.json();
+                  window.open(addToGroupUrl, "_blank");
+                } catch (err) {
+                  toast.error("Failed to start Telegram connect flow");
+                }
+              }}
+            >
+              {t("connect")}
+            </Button>
+          ) : (
             <Link href={getDiscordConnectUrl()} className="w-full">
               <Button className="w-full" onClick={handleConnect}>
                 {t("connect")}
               </Button>
             </Link>
-          ) : (
-            <Button disabled>
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              {t("connect")}
-            </Button>
           )
         ) : (
-          connectUrl && (
-            <Link href={connectUrl} className="w-full">
-              <Button onClick={handleConnect}>{t("connect")}</Button>
-            </Link>
-          )
+          <Button className="w-full" disabled>
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            {t("connect")}
+          </Button>
         )}
       </div>
     </div>
