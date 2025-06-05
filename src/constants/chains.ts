@@ -71,7 +71,8 @@ export enum ChainName {
 export const chains: Record<ChainName, Chain> = {
   openFormat: {
     APP_FACTORY_ADDRESS: "0x20A9FB49618a10fD7ea79C82ac4e6D9345CB4C97",
-    SUBGRAPH_URL: "https://openformat-graph-node.fly.dev/subgraphs/name/open-format-openformat",
+    SUBGRAPH_URL:
+      "https://openformat-graph-node-staging.fly.dev/subgraphs/name/open-format-openformat",
     BLOCK_EXPLORER_URL: "https://explorer.0x4e454168.aurora-cloud.dev",
     ...openFormatChain,
     apiChainName: "open-format",
@@ -82,7 +83,7 @@ export const chains: Record<ChainName, Chain> = {
   arbitrumSepolia: {
     APP_FACTORY_ADDRESS: "0x19781Af95cA4E113D5D1412452225D11A84ce992",
     SUBGRAPH_URL:
-      "https://subgraph.satsuma-prod.com/7238a0e24f3c/openformat--330570/open-format-arbitrum-sepolia/version/v0.2.0/api",
+      "https://subgraph.satsuma-prod.com/7238a0e24f3c/openformat--330570/open-format-arbitrum-sepolia/version/v0.1.1/api",
     BLOCK_EXPLORER_URL: "https://sepolia.arbiscan.io",
     ...arbitrumSepolia,
     apiChainName: "arbitrum-sepolia",

@@ -1329,7 +1329,7 @@
         "setupFailed": "Failed to complete setup. Please try again."
       },
       "continue": "See your first insight report",
-      "retry": "Retry Setup"
+      "retry": "Retry"
     }
   }
 }

@@ -25,19 +25,41 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
 
   return (
     <div className="space-y-6">
-      <Alert className="border-2">
-        <Award className="h-5 w-5" />
-        <AlertTitle className="text-lg font-semibold">
-          {community.recommendations} reward recommendations pending
-        </AlertTitle>
-        <AlertDescription className="mt-2">
-          <Link href={`/communities/${slug}/copilot`} className={buttonVariants()}>
-            Review now
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </AlertDescription>
-      </Alert>
-      {community?.snapshot && <ImpactReports report={community?.snapshot?.metadata} />}
+      {community.recommendations > 0 && (
+        <Alert className="border-2">
+          <Award className="h-5 w-5" />
+          <AlertTitle className="text-lg font-semibold">
+            {community.recommendations} reward recommendations pending
+          </AlertTitle>
+          <AlertDescription className="mt-2">
+            <Link href={`/communities/${slug}/copilot`} className={buttonVariants()}>
+              Review now
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </AlertDescription>
+        </Alert>
+      )}
+      {community?.snapshot ? (
+        <ImpactReports report={community?.snapshot?.metadata} />
+      ) : (
+        <div className="flex flex-col items-center justify-center text-center p-6 max-w-prose mx-auto text-muted-foreground">
+          <p className="text-lg mb-4">
+            There isn't enough data right now to generate your impact report or reward
+            recommendations.
+          </p>
+          <p>
+            Check back soon or{" "}
+            <Link className="text-primary" href={"/onboarding"}>
+              connect a new Discord server
+            </Link>{" "}
+            with more activity or{" "}
+            <Link href="/onboarding/example" className="text-primary">
+              view example impact report
+            </Link>
+            .
+          </p>
+        </div>
+      )}
       <div>
         <Shortcuts community={community} />
       </div>
