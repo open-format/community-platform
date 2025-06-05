@@ -23,6 +23,13 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
     );
   }
 
+  const isDiscordConnected = community.platformConnections.some(
+    (platform) => platform.platformType === "discord",
+  );
+  const isTelegramConnected = community.platformConnections.some(
+    (platform) => platform.platformType === "telegram",
+  );
+
   return (
     <div className="space-y-6">
       {community.recommendations > 0 && (
@@ -43,21 +50,29 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
         <ImpactReports report={community?.snapshot?.metadata} />
       ) : (
         <div className="flex flex-col items-center justify-center text-center p-6 max-w-prose mx-auto text-muted-foreground">
-          <p className="text-lg mb-4">
-            There isn't enough data right now to generate your impact report or reward
-            recommendations.
+          <h1 className="text-2xl font-semibold mb-4">
+            Your agent is busy listening in your platforms.
+          </h1>
+          <p className="mb-4">
+            Impact reports and reward recommendations are updated daily. Check back soon.
           </p>
-          <p>
-            Check back soon or{" "}
-            <Link className="text-primary" href={"/onboarding"}>
-              connect a new Discord server
-            </Link>{" "}
-            with more activity or{" "}
-            <Link href="/onboarding/example" className="text-primary">
-              view example impact report
-            </Link>
-            .
-          </p>
+          {isDiscordConnected && (
+            <p className="mb-4">
+              For Discord, you can either{" "}
+              <Link href="/onboarding" className="text-primary">
+                connect a new Discord server
+              </Link>{" "}
+              with more activity or wait for the agent to gather more data.
+            </p>
+          )}
+          {!isDiscordConnected && !isTelegramConnected && (
+            <p>
+              <Link href="/onboarding" className="text-primary">
+                Connect a platform
+              </Link>{" "}
+              to start generating your impact report.
+            </p>
+          )}
         </div>
       )}
       <div>

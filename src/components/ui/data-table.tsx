@@ -53,7 +53,7 @@ export function DataTable<TData, TValue>({
         <div className="h-24 flex flex-col items-center justify-center text-center px-4 space-y-1">
           <p className="text-lg font-semibold">No recommendations found</p>
           <p className="text-sm text-muted-foreground">
-            Add Copilot to your Discord server to receive daily recommendations at midnight.
+            Reward recommendations are updated daily at midnight. Check back soon.
           </p>
         </div>
       </div>

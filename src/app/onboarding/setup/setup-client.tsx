@@ -104,7 +104,7 @@ export default function SetupClient() {
       if (messagesStatus === "completed" && guildId && communityId) {
         try {
           const [reportResponse, recommendationsResponse] = await Promise.all([
-            startReportJobAsync?.({ platformId: guildId }),
+            startReportJobAsync?.({ communityId: communityId }),
             startRecommendationsJobAsync?.({ platformId: guildId, communityId }),
           ]);
 
@@ -308,6 +308,51 @@ export default function SetupClient() {
       eventFiredRef.current.communitySnapshot = true;
     }
   }, [reportStatus, user?.id, communityId]);
+
+  // only Telegram exists
+  if (!guildId) {
+    return (
+      <>
+        <div className="mb-8">
+          <OnboardingProgressBar steps={progressSteps} progresses={progresses} />
+        </div>
+        <div className="w-full max-w-2xl bg-zinc-900 rounded-2xl shadow-lg p-8 border border-zinc-800">
+          <div className="flex flex-col gap-8">
+            <div className="flex flex-col items-center mb-4">
+              <CheckCircle className="h-12 w-12 text-yellow-400 mb-2" />
+              <h2 className="text-2xl font-bold text-white mb-1">
+                {isComplete ? "Setup Complete!" : "Setting up your Copilot"}
+              </h2>
+              <p className="text-gray-400 text-center max-w-md">
+                Your Copilot is busy listening and learning in your Telegram. Impact reports and
+                reward recommendations are updated daily.
+              </p>
+            </div>
+            <Button
+              className="rounded-lg bg-yellow-400 text-black font-semibold py-2 px-6 shadow hover:bg-yellow-300 transition-colors duration-150"
+              onClick={() => {
+                posthog.capture?.("onboarding_completed", {
+                  userId: user?.id || null,
+                  communityId: searchParams.get("communityId") || null,
+                });
+                router.push(`/communities/${searchParams.get("communityId")}`);
+              }}
+              disabled={isContinueLoading}
+            >
+              {isContinueLoading ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {t("loading")}
+                </div>
+              ) : (
+                t("continueToDashboard")
+              )}
+            </Button>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

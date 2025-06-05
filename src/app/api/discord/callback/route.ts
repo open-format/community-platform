@@ -17,8 +17,19 @@ export async function GET(req: NextRequest) {
   const storedEncodedState = req.cookies.get("discord_state")?.value;
   const storedCommunityId = req.cookies.get("communityId")?.value;
 
-  if (!code || !guildId || !encodedState || !storedEncodedState || encodedState !== storedEncodedState) {
-    const response = NextResponse.redirect(new URL(`${process.env.PLATFORM_BASE_URL}/onboarding/integrations?error=invalid_state`, req.url));
+  if (
+    !code ||
+    !guildId ||
+    !encodedState ||
+    !storedEncodedState ||
+    encodedState !== storedEncodedState
+  ) {
+    const response = NextResponse.redirect(
+      new URL(
+        `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?error=invalid_state`,
+        req.url,
+      ),
+    );
     return clearDiscordCookies(response);
   }
 
@@ -48,25 +59,40 @@ export async function GET(req: NextRequest) {
       });
       communityId = createRes.data.id;
       if (!communityId || typeof communityId !== "string") {
-        const response = NextResponse.redirect(new URL(`${process.env.PLATFORM_BASE_URL}/onboarding/integrations?error=community_creation_failed`, req.url));
+        const response = NextResponse.redirect(
+          new URL(
+            `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?error=community_creation_failed`,
+            req.url,
+          ),
+        );
         return clearDiscordCookies(response);
       }
-      setCookieResponse = NextResponse.redirect(new URL(`${process.env.PLATFORM_BASE_URL}/onboarding/integrations?communityId=${communityId}`, req.url));
-      setCookieResponse.cookies.set("communityId", communityId, { 
-        path: "/", 
+      setCookieResponse = NextResponse.redirect(
+        new URL(
+          `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?communityId=${communityId}`,
+          req.url,
+        ),
+      );
+      setCookieResponse.cookies.set("communityId", communityId, {
+        path: "/",
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax"
+        sameSite: "lax",
       });
     }
 
     try {
-      await agentApiClient.put(`/platform-connections/${guildId}`, { 
+      await agentApiClient.put(`/platform-connections/${guildId}`, {
         communityId,
       });
     } catch (error) {
       console.error("Failed to update platform connection:", error);
-      const response = NextResponse.redirect(new URL(`${process.env.PLATFORM_BASE_URL}/onboarding/integrations?error=platform_connection_failed`, req.url));
+      const response = NextResponse.redirect(
+        new URL(
+          `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?error=platform_connection_failed`,
+          req.url,
+        ),
+      );
       return clearDiscordCookies(response);
     }
 
@@ -77,7 +103,7 @@ export async function GET(req: NextRequest) {
         await agentApiClient.post("/users", { did: stateDid });
       }
     }
-    
+
     try {
       await agentApiClient.get(`/users/${stateDid}/roles/${communityId}`);
     } catch (error) {
@@ -96,9 +122,9 @@ export async function GET(req: NextRequest) {
       new URL(
         isTelegramConnected
           ? `${process.env.PLATFORM_BASE_URL}/onboarding/setup?guildId=${guildId}&communityId=${communityId}`
-          : `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&communityId=${communityId}`,
-        req.url
-      )
+          : `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&guildId=${guildId}&communityId=${communityId}`,
+        req.url,
+      ),
     );
 
     const finalResponse = setCookieResponse || response;
@@ -106,13 +132,13 @@ export async function GET(req: NextRequest) {
       path: "/",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax"
+      sameSite: "lax",
     });
     finalResponse.cookies.set("guildId", guildId, {
       path: "/",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax"
+      sameSite: "lax",
     });
 
     return finalResponse;
@@ -126,7 +152,9 @@ export async function GET(req: NextRequest) {
     } else {
       console.error("Error in Discord callback:", error);
     }
-    const response = NextResponse.redirect(new URL(`${process.env.PLATFORM_BASE_URL}/onboarding/integrations?error=true`, req.url));
+    const response = NextResponse.redirect(
+      new URL(`${process.env.PLATFORM_BASE_URL}/onboarding/integrations?error=true`, req.url),
+    );
     return clearDiscordCookies(response);
   }
 }
