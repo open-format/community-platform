@@ -6,6 +6,7 @@ import { usePollingJob } from "@/hooks/useJobStatus";
 import { usePrivy } from "@privy-io/react-auth";
 import { AlertCircle, BarChart2, CheckCircle, FileText, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
 import { useEffect, useRef, useState } from "react";
@@ -326,6 +327,16 @@ export default function SetupClient() {
               <p className="text-gray-400 text-center max-w-md">
                 Your Copilot is busy listening and learning in your Telegram. Impact reports and
                 reward recommendations are updated daily.
+              </p>
+              <p className="text-muted-foreground">
+                Want to expand your insights?{" "}
+                <Link
+                  href={`/onboarding/integrations?communityId=${communityId}`}
+                  className="text-primary hover:underline"
+                >
+                  Connect your Discord server
+                </Link>{" "}
+                to instantly generate impact reports and reward recommendations!
               </p>
             </div>
             <Button

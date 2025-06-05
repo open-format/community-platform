@@ -14,6 +14,7 @@ interface PlatformCardProps {
   key: string;
   icon: LucideIcon | string;
   comingSoon: boolean;
+  communityId: string;
   connectUrl?: string;
   titleKey: string;
   descriptionKey: string;
@@ -24,7 +25,7 @@ interface PlatformCardProps {
 export default function PlatformCard({
   icon: Icon,
   comingSoon,
-  connectUrl,
+  communityId,
   titleKey,
   descriptionKey,
   discordConnected,
@@ -44,7 +45,7 @@ export default function PlatformCard({
   }, [titleKey, discordConnected, user?.id]);
 
   const getDiscordConnectUrl = () => {
-    return `/api/discord/start?did=${encodeURIComponent(user?.id ?? "")}`;
+    return `/api/discord/start?did=${encodeURIComponent(user?.id ?? "")}&communityId=${communityId}`;
   };
 
   const handleInterested = () => {
@@ -63,9 +64,8 @@ export default function PlatformCard({
     });
   };
 
-  const isConnected = titleKey === "discord" ? discordConnected : 
-                     titleKey === "telegram" ? telegramConnected : 
-                     false;
+  const isConnected =
+    titleKey === "discord" ? discordConnected : titleKey === "telegram" ? telegramConnected : false;
 
   return (
     <div

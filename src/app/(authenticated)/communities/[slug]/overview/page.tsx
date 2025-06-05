@@ -4,7 +4,7 @@ import Shortcuts from "@/components/shortcuts";
 import ImpactReports from "@/components/impact-reports/impact-reports";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
-import { ArrowRight, Award } from "lucide-react";
+import { Activity, ArrowRight, Award } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
@@ -49,32 +49,48 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
       {community?.snapshot ? (
         <ImpactReports report={community?.snapshot?.metadata} />
       ) : (
-        <div className="flex flex-col items-center justify-center text-center p-6 max-w-prose mx-auto text-muted-foreground">
-          <h1 className="text-2xl font-semibold mb-4">
-            Your agent is busy listening in your platforms.
-          </h1>
-          <p className="mb-4">
+        <div className="flex flex-col items-center justify-center text-center p-6 max-w-prose mx-auto">
+          <div className="flex flex-col items-center justify-center gap-3 mb-3">
+            <Activity className="h-8 w-8 text-primary animate-pulse" />
+            <h2 className="text-3xl font-semibold text-foreground">
+              Your Copilot is gathering insights from your community's activity.
+            </h2>
+          </div>
+          <p className="text-lg text-muted-foreground mb-6">
             Impact reports and reward recommendations are updated daily. Check back soon or{" "}
-            <Link href="/onboarding/example" className="text-primary">
+            <Link href="/onboarding/example" className="text-primary hover:underline">
               view an example report
             </Link>{" "}
             to see what to expect.
           </p>
           {isDiscordConnected && (
-            <p className="mb-4">
-              For Discord, you can either{" "}
-              <Link href="/onboarding" className="text-primary">
-                connect a new Discord server
+            <p className="text-muted-foreground mb-4">
+              To get more insights, you can{" "}
+              <Link href="/onboarding" className="text-primary hover:underline">
+                connect another Discord server
               </Link>{" "}
-              with more activity or wait for the agent to gather more data.
+              with higher activity or wait for more data to be gathered.
             </p>
           )}
+          {!isDiscordConnected && isTelegramConnected && (
+            <p className="text-muted-foreground">
+              Want to expand your insights?{" "}
+              <Link
+                href={`/onboarding/integrations?communityId=${community.id}`}
+                className="text-primary hover:underline"
+              >
+                Connect your Discord server
+              </Link>{" "}
+              to instantly generate impact reports and reward recommendations!
+            </p>
+          )}
+
           {!isDiscordConnected && !isTelegramConnected && (
-            <p>
-              <Link href="/onboarding" className="text-primary">
+            <p className="text-muted-foreground">
+              <Link href="/onboarding" className="text-primary hover:underline">
                 Connect a platform
               </Link>{" "}
-              to start generating your impact report.
+              to begin generating your community impact report.
             </p>
           )}
         </div>
