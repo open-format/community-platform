@@ -324,20 +324,22 @@ export default function SetupClient() {
               <h2 className="text-2xl font-bold text-white mb-1">
                 {isComplete ? "Setup Complete!" : "Setting up your Copilot"}
               </h2>
-              <p className="text-gray-400 text-center max-w-md">
-                Your Copilot is busy listening and learning in your Telegram. Impact reports and
-                reward recommendations are updated daily.
-              </p>
-              <p className="text-muted-foreground">
-                Want to expand your insights?{" "}
-                <Link
-                  href={`/onboarding/integrations?communityId=${communityId}`}
-                  className="text-primary hover:underline"
-                >
-                  Connect your Discord server
-                </Link>{" "}
-                to instantly generate impact reports and reward recommendations!
-              </p>
+              <div className="flex flex-col space-y-4 items-center text-center">
+                <p>
+                  Your Copilot is busy listening and learning in your Telegram. Impact reports and
+                  reward recommendations are updated daily.
+                </p>
+                <p>
+                  Want to expand your insights?{" "}
+                  <Link
+                    href={`/onboarding/integrations?communityId=${communityId}`}
+                    className="text-primary hover:underline"
+                  >
+                    Connect your Discord server
+                  </Link>{" "}
+                  to instantly generate impact reports and reward recommendations!
+                </p>
+              </div>
             </div>
             <Button
               className="rounded-lg bg-yellow-400 text-black font-semibold py-2 px-6 shadow hover:bg-yellow-300 transition-colors duration-150"
