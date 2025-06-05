@@ -32,7 +32,6 @@ export async function GET(req: NextRequest) {
 
     let communityId = storedCommunityId;
     let setCookieResponse = null;
-    console.log("communityIdprint", communityId);
 
     if (communityId) {
       try {
@@ -45,8 +44,7 @@ export async function GET(req: NextRequest) {
 
     if (!communityId) {
       const createRes = await agentApiClient.post("/communities", {
-        name: "TEST COMMUNITY Dorigin",
-        description: "A test community for cool people."
+        name: "Community",
       });
       communityId = createRes.data.id;
       if (!communityId || typeof communityId !== "string") {
@@ -65,7 +63,6 @@ export async function GET(req: NextRequest) {
     try {
       await agentApiClient.put(`/platform-connections/${guildId}`, { 
         communityId,
-        status: "active"
       });
     } catch (error) {
       console.error("Failed to update platform connection:", error);

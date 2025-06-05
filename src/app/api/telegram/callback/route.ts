@@ -35,8 +35,7 @@ export async function GET(req: NextRequest) {
 
     if (!communityId) {
       const createRes = await agentApiClient.post("/communities", {
-        name: "Test Community Torigin",
-        description: "A test community for cool people."
+        name: "Community",
       });
       communityId = createRes.data.id;
       if (!communityId || typeof communityId !== "string") {
@@ -55,7 +54,6 @@ export async function GET(req: NextRequest) {
     try {
       await agentApiClient.put(`/platform-connections/${platformConnectionId}`, { 
         communityId,
-        status: "active" // Set to active since Telegram connection is immediate
       });
     } catch (error) {
       console.error("Failed to update platform connection:", error);
