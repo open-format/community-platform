@@ -54,7 +54,11 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
             Your agent is busy listening in your platforms.
           </h1>
           <p className="mb-4">
-            Impact reports and reward recommendations are updated daily. Check back soon.
+            Impact reports and reward recommendations are updated daily. Check back soon or{" "}
+            <Link href="/onboarding/example" className="text-primary">
+              view an example report
+            </Link>{" "}
+            to see what to expect.
           </p>
           {isDiscordConnected && (
             <p className="mb-4">
