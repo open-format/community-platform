@@ -1,3 +1,10 @@
+## [0.24.1](https://github.com/open-format/community-platform/compare/v0.24.0...v0.24.1) (2025-06-05)
+
+
+### Bug Fixes
+
+* Added null check to token search in BatchRewards ([9316221](https://github.com/open-format/community-platform/commit/9316221121edc2c7433b081dd9927588d06ac617))
+
 # [0.24.0](https://github.com/open-format/community-platform/compare/v0.23.2...v0.24.0) (2025-05-31)
 
 
