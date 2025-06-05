@@ -35,13 +35,13 @@ export async function GET(req: NextRequest) {
 
   try {
     const stateObj = JSON.parse(Buffer.from(encodedState, "base64").toString());
-    const { did: stateDid } = stateObj;
+    const { did: stateDid, communityId: stateCommunityId } = stateObj;
 
     if (!stateDid) {
       throw new Error("Missing DID in state");
     }
 
-    let communityId = storedCommunityId;
+    let communityId = stateCommunityId || storedCommunityId;
     let setCookieResponse = null;
 
     if (communityId) {

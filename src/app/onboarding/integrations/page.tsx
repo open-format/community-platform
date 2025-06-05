@@ -1,9 +1,10 @@
+import { getCommunity } from "@/app/actions/communities/get";
 import { OnboardingProgressBar } from "@/components/onboarding/onboarding-progress";
 import { ExternalLinkIcon, Info } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { Suspense } from "react";
-import { cookies } from "next/headers";
 import IntegrationsClient from "./integrations-client";
 
 function LoadingSkeleton() {
@@ -38,9 +39,10 @@ export default async function PlatformsPage({
   const t = await getTranslations("onboarding");
   const params = await searchParams;
   const cookieStore = await cookies();
-  const communityId = params.communityId as string | undefined;
+  const communityId = params.communityId as string;
   const discordConnected = cookieStore.get("discordConnected")?.value === "true";
   const telegramConnected = cookieStore.get("telegramConnected")?.value === "true";
+  const community = communityId ? await getCommunity(communityId) : null;
 
   const jobsStarted = discordConnected && !params.error;
 
@@ -79,9 +81,17 @@ export default async function PlatformsPage({
         </div>
         <Suspense fallback={<LoadingSkeleton />}>
           <IntegrationsClient
-            discordConnected={discordConnected}
-            telegramConnected={telegramConnected}
-            communityId={communityId}
+            discordConnected={
+              community?.platformConnections.some(
+                (platform) => platform.platformType === "discord",
+              ) || discordConnected
+            }
+            telegramConnected={
+              community?.platformConnections.some(
+                (platform) => platform.platformType === "telegram",
+              ) || telegramConnected
+            }
+            community={community}
           />
         </Suspense>
       </div>

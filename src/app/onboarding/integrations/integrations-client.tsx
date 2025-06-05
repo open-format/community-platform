@@ -3,12 +3,12 @@
 import PlatformCard from "@/components/onboarding/platform-card";
 import { Button } from "@/components/ui/button";
 import { usePrivy } from "@privy-io/react-auth";
+import Cookies from "js-cookie";
 import { Database } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
 import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
 
 const platforms = [
   {
@@ -46,11 +46,11 @@ const platforms = [
 export default function IntegrationsClient({
   discordConnected,
   telegramConnected,
-  communityId,
+  community,
 }: {
   discordConnected: boolean;
   telegramConnected: boolean;
-  communityId?: string;
+  community: Community;
 }) {
   const t = useTranslations("onboarding.integrations");
   const router = useRouter();
@@ -58,19 +58,22 @@ export default function IntegrationsClient({
   const { user } = usePrivy();
   const guildId = searchParams.get("guildId");
   const error = searchParams.get("error");
-  const [storedCommunityId, setStoredCommunityId] = useState<string | undefined>(communityId);
+  const [storedCommunityId, setStoredCommunityId] = useState<string | undefined>(community?.id);
 
   useEffect(() => {
     const cookieCommunityId = Cookies.get("communityId");
     if (cookieCommunityId) {
       setStoredCommunityId(cookieCommunityId);
     }
-  }, [communityId]);
+  }, [community?.id]);
 
   const isConnected = (platform: string) => {
-    const connected = platform === "discord" ? discordConnected : 
-                     platform === "telegram" ? telegramConnected : 
-                     false;
+    const connected =
+      platform === "discord"
+        ? discordConnected
+        : platform === "telegram"
+          ? telegramConnected
+          : false;
     console.log(`isConnected(${platform}):`, connected);
     return connected;
   };
@@ -78,11 +81,11 @@ export default function IntegrationsClient({
   const handleContinue = () => {
     posthog.capture?.("onboarding_continue_clicked", {
       userId: user?.id || null,
-      communityId: communityId || null,
+      communityId: community.id || null,
     });
     const params = new URLSearchParams({
       guildId: guildId || "",
-      communityId: communityId || "",
+      communityId: community.id || "",
     });
     router.push(`/onboarding/setup?${params.toString()}`);
   };
@@ -92,6 +95,7 @@ export default function IntegrationsClient({
       <div className="grid gap-6 md:grid-cols-2">
         {platforms.map((platform) => (
           <PlatformCard
+            communityId={community?.id}
             key={platform.key}
             icon={platform.icon}
             comingSoon={platform.comingSoon}
