@@ -254,8 +254,8 @@ export default function BatchRewardsForm({ community }: { community: Community }
             // Search token in community badges and tokens
             const token =
               reward.actionType === "mint-badge"
-                ? community.onchainData.badges.find((b) => b.name === reward.token)
-                : community.onchainData.tokens.find((t) => t.token?.name === reward.token);
+                ? community.onchainData?.badges?.find((b) => b.name === reward.token)
+                : community.onchainData?.tokens?.find((t) => t.token?.name === reward.token);
             if (token) {
               reward.tokenAddress =
                 reward.actionType === "mint-badge"
