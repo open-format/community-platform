@@ -1,3 +1,18 @@
+# [0.25.0](https://github.com/open-format/community-platform/compare/v0.24.1...v0.25.0) (2025-06-07)
+
+
+### Bug Fixes
+
+* removed unused dialog ([21765a6](https://github.com/open-format/community-platform/commit/21765a6589cc4dc5e965050e02c6d53007959572))
+* Update subgraph URLs for openFormat and arbitrumSepolia chains ([1290ad1](https://github.com/open-format/community-platform/commit/1290ad141b44d851bf31dcbe32f77d194e097529))
+
+
+### Features
+
+* Enhance Discord integration by adding communityId handling in callbacks and onboarding flow ([48432b4](https://github.com/open-format/community-platform/commit/48432b41e4e2e07e12a5c7469b571bb352e266fd))
+* Enhance onboarding and community overview experience ([622a85e](https://github.com/open-format/community-platform/commit/622a85e7bba8fd6d99da553a2e94c4804baa2b85))
+* Implement Telegram integration and enhance Discord callback handling ([1b69fad](https://github.com/open-format/community-platform/commit/1b69fad6f9a3cb09ea78ac78db923debc9e40613))
+
 ## [0.24.1](https://github.com/open-format/community-platform/compare/v0.24.0...v0.24.1) (2025-06-05)
 
 
