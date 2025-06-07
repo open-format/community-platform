@@ -7,15 +7,20 @@ import { randomBytes } from "node:crypto";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const did = searchParams.get("did");
+  const communityId = searchParams.get("communityId");
 
   if (!did) {
     return NextResponse.json({ error: "Missing Privy DID" }, { status: 400 });
   }
 
-  // Create a state object that includes both the random state and the DID
+  if (!communityId) {
+    return NextResponse.json({ error: "Missing communityId" }, { status: 400 });
+  }
+
   const stateObj = {
     state: randomBytes(16).toString("hex"),
     did,
+    communityId,
   };
 
   const state = Buffer.from(JSON.stringify(stateObj)).toString("base64");

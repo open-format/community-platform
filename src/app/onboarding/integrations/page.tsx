@@ -1,3 +1,4 @@
+import { getCommunity } from "@/app/actions/communities/get";
 import { OnboardingProgressBar } from "@/components/onboarding/onboarding-progress";
 import { ExternalLinkIcon, Info } from "lucide-react";
 import { getTranslations } from "next-intl/server";
@@ -36,17 +37,22 @@ export default async function PlatformsPage({
 }) {
   const t = await getTranslations("onboarding");
   const params = await searchParams;
-  const guildId = params.guildId as string | undefined;
-  const communityId = params.communityId as string | undefined;
-  const discordConnected = !!guildId;
+  const communityId = params.communityId as string;
+  const community = communityId ? await getCommunity(communityId) : null;
 
-  // If we have a guildId but no error, we're either loading jobs or they've started
+  const discordConnected = community?.platformConnections.some(
+    (platform) => platform.platformType === "discord",
+  );
+  const telegramConnected = community?.platformConnections.some(
+    (platform) => platform.platformType === "telegram",
+  );
+
   const jobsStarted = discordConnected && !params.error;
 
   const steps = [{ label: "Connect your community" }, { label: "Deploying to community" }];
 
   let firstBarProgress = 0.33;
-  if (discordConnected) firstBarProgress = 0.66;
+  if (discordConnected || telegramConnected) firstBarProgress = 0.66;
   if (jobsStarted) firstBarProgress = 1;
   const progresses = [firstBarProgress, 0];
 
@@ -77,7 +83,19 @@ export default async function PlatformsPage({
           </Link>
         </div>
         <Suspense fallback={<LoadingSkeleton />}>
-          <IntegrationsClient discordConnected={discordConnected} communityId={communityId} />
+          <IntegrationsClient
+            discordConnected={
+              community?.platformConnections.some(
+                (platform) => platform.platformType === "discord",
+              ) || discordConnected
+            }
+            telegramConnected={
+              community?.platformConnections.some(
+                (platform) => platform.platformType === "telegram",
+              ) || telegramConnected
+            }
+            community={community}
+          />
         </Suspense>
       </div>
     </div>

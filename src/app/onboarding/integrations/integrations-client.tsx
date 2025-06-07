@@ -3,10 +3,12 @@
 import PlatformCard from "@/components/onboarding/platform-card";
 import { Button } from "@/components/ui/button";
 import { usePrivy } from "@privy-io/react-auth";
+import Cookies from "js-cookie";
 import { Database } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
+import { useEffect, useState } from "react";
 
 const platforms = [
   {
@@ -20,9 +22,10 @@ const platforms = [
   {
     key: "telegram",
     icon: "/icons/telegram.svg",
-    comingSoon: true,
+    comingSoon: false,
+    connectUrl: "/api/telegram/start",
     titleKey: "telegram",
-    descriptionKey: "telegramDescComingSoon",
+    descriptionKey: "telegramDesc",
   },
   {
     key: "github",
@@ -42,10 +45,12 @@ const platforms = [
 
 export default function IntegrationsClient({
   discordConnected,
-  communityId,
+  telegramConnected,
+  community,
 }: {
   discordConnected: boolean;
-  communityId?: string;
+  telegramConnected: boolean;
+  community: Community;
 }) {
   const t = useTranslations("onboarding.integrations");
   const router = useRouter();
@@ -53,15 +58,34 @@ export default function IntegrationsClient({
   const { user } = usePrivy();
   const guildId = searchParams.get("guildId");
   const error = searchParams.get("error");
+  const [storedCommunityId, setStoredCommunityId] = useState<string | undefined>(community?.id);
+
+  useEffect(() => {
+    const cookieCommunityId = Cookies.get("communityId");
+    if (cookieCommunityId) {
+      setStoredCommunityId(cookieCommunityId);
+    }
+  }, [community?.id]);
+
+  const isConnected = (platform: string) => {
+    const connected =
+      platform === "discord"
+        ? discordConnected
+        : platform === "telegram"
+          ? telegramConnected
+          : false;
+    console.log(`isConnected(${platform}):`, connected);
+    return connected;
+  };
 
   const handleContinue = () => {
     posthog.capture?.("onboarding_continue_clicked", {
       userId: user?.id || null,
-      communityId: communityId || null,
+      communityId: community.id || null,
     });
     const params = new URLSearchParams({
       guildId: guildId || "",
-      communityId: communityId || "",
+      communityId: community.id || "",
     });
     router.push(`/onboarding/setup?${params.toString()}`);
   };
@@ -71,19 +95,20 @@ export default function IntegrationsClient({
       <div className="grid gap-6 md:grid-cols-2">
         {platforms.map((platform) => (
           <PlatformCard
+            communityId={community?.id}
             key={platform.key}
             icon={platform.icon}
             comingSoon={platform.comingSoon}
             connectUrl={platform.connectUrl}
             titleKey={platform.titleKey}
             descriptionKey={platform.descriptionKey}
-            discordConnected={platform.key === "discord" ? discordConnected : undefined}
+            discordConnected={platform.key === "discord" ? isConnected("discord") : undefined}
+            telegramConnected={platform.key === "telegram" ? isConnected("telegram") : undefined}
           />
         ))}
       </div>
 
-      {/* Show continue button only after connection */}
-      {discordConnected && (
+      {(discordConnected || telegramConnected) && (
         <div className="mt-6 flex justify-end">
           <Button
             className="rounded-lg bg-yellow-400 text-black font-semibold py-2 px-6 shadow hover:bg-yellow-300 transition-colors duration-150"

@@ -1,21 +1,15 @@
-// src/app/api/discord/callback/route.ts
 import { agentApiClient } from "@/lib/openformat";
+import { getCurrentUser } from "@/lib/privy";
 import { isAxiosError } from "axios";
 import { type NextRequest, NextResponse } from "next/server";
 
-interface StateObject {
-  did: string;
-  communityId?: string;
-}
-
-function clearDiscordCookies(response: NextResponse) {
-  response.cookies.delete("discordConnected");
-  response.cookies.delete("guildId");
+function clearTelegramCookies(response: NextResponse) {
+  response.cookies.delete("telegramConnected");
   return response;
 }
 
 function createErrorRedirect(error: string, req: NextRequest) {
-  return clearDiscordCookies(
+  return clearTelegramCookies(
     NextResponse.redirect(
       new URL(`${process.env.PLATFORM_BASE_URL}/onboarding/integrations?error=${error}`, req.url),
     ),
@@ -71,47 +65,33 @@ async function setupUserAndRole(did: string, communityId: string) {
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
-  const code = searchParams.get("code");
-  const encodedState = searchParams.get("state");
-  const guildId = searchParams.get("guild_id");
-  const storedEncodedState = req.cookies.get("discord_state")?.value;
+  const platformConnectionId = searchParams.get("platformConnectionId");
   const storedCommunityId = req.cookies.get("communityId")?.value;
+  const user = await getCurrentUser();
+  const did = user?.id;
 
-  // Validate required parameters
-  if (
-    !code ||
-    !guildId ||
-    !encodedState ||
-    !storedEncodedState ||
-    encodedState !== storedEncodedState
-  ) {
-    return createErrorRedirect("invalid_state", req);
+  if (!platformConnectionId) {
+    return createErrorRedirect("missing_platform_connection_id", req);
+  }
+
+  if (!did) {
+    return createErrorRedirect("user_not_authenticated", req);
   }
 
   try {
-    // Parse state
-    const stateObj: StateObject = JSON.parse(Buffer.from(encodedState, "base64").toString());
-    const { did: stateDid, communityId: stateCommunityId } = stateObj;
-
-    if (!stateDid) {
-      throw new Error("Missing DID in state");
-    }
-
     // Get or create community
-    const { community, communityId } = await getOrCreateCommunity(
-      stateCommunityId || storedCommunityId,
-    );
+    const { community, communityId } = await getOrCreateCommunity(storedCommunityId);
 
     // Update platform connection
     try {
-      await agentApiClient.put(`/platform-connections/${guildId}`, { communityId });
+      await agentApiClient.put(`/platform-connections/${platformConnectionId}`, { communityId });
     } catch (error) {
       console.error("Failed to update platform connection:", error);
       return createErrorRedirect("platform_connection_failed", req);
     }
 
     // Setup user and role
-    await setupUserAndRole(stateDid, communityId);
+    await setupUserAndRole(did, communityId);
 
     // Get final community state
     const finalCommunity = await agentApiClient
@@ -122,28 +102,20 @@ export async function GET(req: NextRequest) {
         return community;
       });
 
-    // Determine redirect URL based on Telegram connection
-    const isTelegramConnected = finalCommunity?.platformConnections?.some(
-      (platform) => platform.platformType === "telegram",
+    // Determine redirect URL based on Discord connection
+    const isDiscordConnected = finalCommunity?.platformConnections?.some(
+      (platform) => platform.platformType === "discord",
     );
+    const guildId = req.cookies.get("guildId")?.value;
 
-    const redirectUrl = isTelegramConnected
+    const redirectUrl = isDiscordConnected
       ? `${process.env.PLATFORM_BASE_URL}/onboarding/setup?guildId=${guildId}&communityId=${communityId}`
-      : `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&guildId=${guildId}&communityId=${communityId}`;
+      : `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&communityId=${communityId}`;
 
     const response = NextResponse.redirect(new URL(redirectUrl, req.url));
 
     // Set community cookie
     response.cookies.set("communityId", communityId, {
-      path: "/",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-    });
-
-    // set guildId cookie
-    response.cookies.set("guildId", guildId, {
       path: "/",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -161,7 +133,7 @@ export async function GET(req: NextRequest) {
         endpoint: error.config?.url,
       });
     } else {
-      console.error("Error in Discord callback:", error);
+      console.error("Error in Telegram callback:", error);
     }
     return createErrorRedirect("true", req);
   }

@@ -46,7 +46,7 @@ export default function Onboarding({ community }: OnboardingProps) {
           <CardFooter className="flex space-x-2">
             <Link
               className={buttonVariants()}
-              href={`/communities/${community?.metadata?.slug}/rewards`}
+              href={`/communities/${community?.id}/copilot`}
               onClick={() => handleShortcutClick("send_reward")}
             >
               {t("rewardCommunity.sendReward")}
