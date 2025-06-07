@@ -183,8 +183,8 @@ export default function SetupClient() {
     {
       key: "analytics",
       icon: <BarChart2 className="h-6 w-6" />,
-      title: "Generating Community Snapshot",
-      description: "Your community snapshot will give you a quick overview of your community.",
+      title: "Generating Community Impact Report",
+      description: "Your community impact report will give you a quick overview of your community.",
       status: reportStatus as JobStatus,
       isJob: true,
     },

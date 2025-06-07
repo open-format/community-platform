@@ -79,7 +79,7 @@ export default async function PlatformsPage({
             <li>Weekly insight report of community wins and blockers</li>
           </ul>
           <Link href="/onboarding/example" className="flex text-primary items-center gap-1 text-sm">
-            <ExternalLinkIcon className="h-4 w-4" /> See an example snapshot
+            <ExternalLinkIcon className="h-4 w-4" /> See an example impact report
           </Link>
         </div>
         <Suspense fallback={<LoadingSkeleton />}>

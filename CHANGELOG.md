@@ -1,3 +1,71 @@
+## [0.24.1](https://github.com/open-format/community-platform/compare/v0.24.0...v0.24.1) (2025-06-05)
+
+
+### Bug Fixes
+
+* Added null check to token search in BatchRewards ([9316221](https://github.com/open-format/community-platform/commit/9316221121edc2c7433b081dd9927588d06ac617))
+
+# [0.24.0](https://github.com/open-format/community-platform/compare/v0.23.2...v0.24.0) (2025-05-31)
+
+
+### Features
+
+* integrate chain switching in batch rewards processing ([a89e897](https://github.com/open-format/community-platform/commit/a89e8972c00c9a184acbdd4067f474a561aa2861))
+
+## [0.23.2](https://github.com/open-format/community-platform/compare/v0.23.1...v0.23.2) (2025-05-30)
+
+
+### Bug Fixes
+
+* batch reward transaction processing ([9c36251](https://github.com/open-format/community-platform/commit/9c362510f18a0dd5f031110e8397b83f21755000))
+
+## [0.23.1](https://github.com/open-format/community-platform/compare/v0.23.0...v0.23.1) (2025-05-29)
+
+
+### Bug Fixes
+
+* redirect user to onboarding if not added to community ([d39eb22](https://github.com/open-format/community-platform/commit/d39eb22b902aa30468673bddcc98c017e3f5744f))
+
+# [0.23.0](https://github.com/open-format/community-platform/compare/v0.22.0...v0.23.0) (2025-05-29)
+
+
+### Bug Fixes
+
+* added missing suspense boundry for searchparams ([08da9e5](https://github.com/open-format/community-platform/commit/08da9e5056fc7280e533dcbf47ac89c5408e613a))
+* added missing translations and resolved build warn ([5007eb0](https://github.com/open-format/community-platform/commit/5007eb05ce9a519a8e7b12f495f8f5bcedfd15b2))
+* correct OpenFormat API chain name for consistency ([fe0e92e](https://github.com/open-format/community-platform/commit/fe0e92ea054d84695e99f3717c2d8a2515e073d8))
+* improve error handling in PrivyLogin component ([e874312](https://github.com/open-format/community-platform/commit/e874312740dbdb7f7894100173efcb2b16349559))
+* improve job handling and error feedback in onboarding integrations ([cfc1dca](https://github.com/open-format/community-platform/commit/cfc1dcad3084af2a69e4f356c34652ffc811b355))
+* Update community error handling and metadata fetching ([4e1b446](https://github.com/open-format/community-platform/commit/4e1b446a0589aac965a8883a59aa70f6b8253105))
+* update Discord authorization redirect URI handling ([d7191f7](https://github.com/open-format/community-platform/commit/d7191f777358c78d551dcac5b2791b2a88c9f75b))
+* update Discord callback redirects and handle success state in integrations ([dddee50](https://github.com/open-format/community-platform/commit/dddee500280209f7148c5d23db85e9dda03543d4))
+* update Discord OAuth2 redirect URI handling ([60dc7c2](https://github.com/open-format/community-platform/commit/60dc7c240ee97acb30b7ec6afa3f9f74fc19305a))
+* update OpenFormat chain name and enhance network selector component ([61455ca](https://github.com/open-format/community-platform/commit/61455ca17f1d9434e366f628f2351edf2d197681))
+* update subgraph URL for arbitrumSepolia chain configuration ([fc69c5d](https://github.com/open-format/community-platform/commit/fc69c5dfe0706385edf604db2adc31eb724061c4))
+
+
+### Features
+
+* Add new partner images and update styling in auth page ([6a60a77](https://github.com/open-format/community-platform/commit/6a60a7739c9a6042e0d47ad5fd40498d79f42609))
+* Add onboarding API routes for job status and starting messages ([5d7e5be](https://github.com/open-format/community-platform/commit/5d7e5be1cc346d51a6c05115aaea06ea32599881))
+* add OpenFormat chain support ([b025614](https://github.com/open-format/community-platform/commit/b025614bc54964844168b32676f55d2b9e09fbae))
+* enhance authentication page with multiple login options ([86eb52d](https://github.com/open-format/community-platform/commit/86eb52df65b24994fe4e42f0f7398d7d5305af0f))
+* Enhance community copilot and onboarding experience ([0f6f995](https://github.com/open-format/community-platform/commit/0f6f9959ae9dc966b2d745960c86e06a11855623))
+* enhance community fetching and update functionality ([b107269](https://github.com/open-format/community-platform/commit/b1072699b5ed833dd9926d02629f47072a076538))
+* enhance community overview and recommendations functionality ([f5969d7](https://github.com/open-format/community-platform/commit/f5969d7ccdbbc293d7c69f34f55b6eb2e140354d))
+* Enhance community overview and rewards pages with alerts and recommendations ([989218c](https://github.com/open-format/community-platform/commit/989218c1f14365eb29a6d85494a9353c26e9dee4))
+* enhance Discord onboarding flow with state handling and API integration ([20513e2](https://github.com/open-format/community-platform/commit/20513e22eb2c1866c2dc603e531088f3ebfc21ba))
+* enhance loading states and user feedback in onboarding components ([e2d1ed8](https://github.com/open-format/community-platform/commit/e2d1ed8586ac24291d3c4c727dac6de5a3eb359a))
+* enhance onboarding example snapshot with improved UI and data presentation ([61c7f46](https://github.com/open-format/community-platform/commit/61c7f4669a4b76e74ecf311d3b39ec61fe459c0e))
+* enhance onboarding process with job status tracking and setup ([7b09f00](https://github.com/open-format/community-platform/commit/7b09f0010c25eeefd6abaa1b3824ee750e32c700))
+* implement leaderboard API and refactor leaderboard component ([89977df](https://github.com/open-format/community-platform/commit/89977df13fed143e2c9ffa3c7c87b86f092a400f))
+* Integrate PostHog analytics for user interactions and events ([aa350a3](https://github.com/open-format/community-platform/commit/aa350a353aa8c62a0c0a13e603e7c457ad20da47))
+* Introduce onboarding layout and example snapshot page ([7f20ab3](https://github.com/open-format/community-platform/commit/7f20ab3c08854998f1dc0b28e8e28c7bd411609c))
+* refactor community data structure and enhance fetching logic ([c2871bd](https://github.com/open-format/community-platform/commit/c2871bd7849382dfeda418f5bb134f1982891260))
+* Update community settings and rewards features ([7e0303b](https://github.com/open-format/community-platform/commit/7e0303b29c6dfe18cc0f04b78d86d1749f47a06e))
+* update onboarding example snapshot to fetch report data from API ([8eb830f](https://github.com/open-format/community-platform/commit/8eb830fa16185e9ba138704f11f3035001571ce1))
+* updated modal positioning ([cf366b5](https://github.com/open-format/community-platform/commit/cf366b5e7ac9a62bbbf7e49ff23401ad642f0ff0))
+
 # [0.22.0](https://github.com/open-format/community-platform/compare/v0.21.0...v0.22.0) (2025-05-14)
 
 
