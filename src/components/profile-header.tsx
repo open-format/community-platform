@@ -55,12 +55,7 @@ export default function Profile({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
-            <img
-              src={`https://api.dicebear.com/7.x/identicon/svg?seed=${address}`}
-              alt="Avatar"
-            />
-          </Avatar>
+          <Avatar seed={address || ""}/>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
