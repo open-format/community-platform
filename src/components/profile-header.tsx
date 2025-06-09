@@ -41,7 +41,6 @@ export default function Profile({
     logout();
     logoutAction();
   };
-  }, [pathname]);
 
   if (!user) {
     return (

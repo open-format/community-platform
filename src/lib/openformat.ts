@@ -467,7 +467,7 @@ export async function fundAccount() {
   }
 }
 
-  communityId: string,
+export async function getAllRewardsByCommunity(communityId: string,
   startTimestamp: number,
   endTimestamp: number,
   tokenAddress: string | null,
