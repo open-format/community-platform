@@ -5,7 +5,7 @@ import {usePathname} from "next/navigation";
 import {Avatar} from "@/components/ui/avatar";
 import {addressSplitter, getAddress} from "@/lib/utils";
 import {usePrivy} from "@privy-io/react-auth";
-import {CopyIcon, ExternalLink, KeySquare, LogOut} from "lucide-react";
+import {CopyIcon, ExternalLink, LogOut} from "lucide-react";
 import {useTranslations} from "next-intl";
 import {toast} from "sonner";
 import {Button} from "./ui/button";
@@ -17,88 +17,86 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import {Skeleton} from "./ui/skeleton";
-import {useApiKey} from "@/hooks/useApikey";
 
 export default function Profile({
   logoutAction,
 }: {
   logoutAction: () => void;
 }) {
-  const {user, ready, exportWallet, authenticated, login} = usePrivy();
-  const t = useTranslations("profile");
-  const address = getAddress(user);
-  const {generateNewApiKey, apiKey, copyApiKeyToClipboard} = useApiKey();
-  const [showCreateApiKey, setShowCreateApiKey] = useState<boolean>(false);
+  const {user, logout} = usePrivy();
+  const t = useTranslations();
   const pathname = usePathname();
 
-  function copyAddress() {
-    navigator.clipboard.writeText(address || "");
-    toast.success(t("addressCopied"));
-  }
 
-  useEffect(() => {
-    if (apiKey) {
-      toast.success(t("apiKey.yourNewApiKey", {apiKey}), {
-        duration: Number.POSITIVE_INFINITY,
-        dismissible: true,
-        action: {
-          label: <CopyIcon className="h-4 w-4 cursor-copy"/>,
-          onClick: () => copyApiKeyToClipboard(),
-        },
-      });
-    }
-  }, [apiKey, copyApiKeyToClipboard, t]);
+  const address = getAddress(user);
 
-  useEffect(() => {
-    if (pathname.includes("communities")) {
-      setShowCreateApiKey(true);
+  const copyAddressToClipboard = () => {
+    if (address) {
+      navigator.clipboard.writeText(address);
+      toast.success(t("profile.addressCopied"));
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    logoutAction();
+  };
   }, [pathname]);
 
-  const exportEnabled = user?.wallet?.walletClientType === "privy";
-
-  if (!ready) {
-    return <Skeleton className="h-12 w-12 rounded-full"/>;
+  if (!user) {
+    return (
+      <div className="flex items-center space-x-2">
+        <Skeleton className="h-8 w-8 rounded-full"/>
+        <Skeleton className="h-4 w-[100px]"/>
+      </div>
+    );
   }
 
-  return authenticated ? (
+  return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        {ready ? (
-          <Avatar seed={address || ""}/>
-        ) : (
-          <Skeleton className="h-12 w-12 rounded-full"/>
-        )}
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+          <Avatar className="h-8 w-8">
+            <img
+              src={`https://api.dicebear.com/7.x/identicon/svg?seed=${address}`}
+              alt="Avatar"
+            />
+          </Avatar>
+        </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem onClick={copyAddress} className="font-bold">
-          <span>{addressSplitter(address || "")}</span>
+      <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuItem
+          onClick={copyAddressToClipboard}
+          className="cursor-pointer"
+        >
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">
+              {addressSplitter(address)}
+            </p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {user.email?.address}
+            </p>
+          </div>
           <CopyIcon className="ml-auto"/>
         </DropdownMenuItem>
         <DropdownMenuSeparator/>
-        {exportEnabled && (
-          <DropdownMenuItem onClick={exportWallet} className="font-bold">
-            <span>{t("exportWallet")}</span>
+        <DropdownMenuItem asChild>
+          <a
+            href={`https://polygonscan.com/address/${address}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cursor-pointer"
+          >
+            {t("profile.settings")}
             <ExternalLink className="ml-auto"/>
-          </DropdownMenuItem>
-        )}
-        {exportEnabled && (<DropdownMenuSeparator/>)}
-        {
-          showCreateApiKey && (
-            <DropdownMenuItem className="font-bold" onClick={generateNewApiKey}>
-              <span>{t("apiKey.createApiKey")}</span>
-              <KeySquare className="ml-auto"/>
-            </DropdownMenuItem>
-          )
-        }
-        {showCreateApiKey && (<DropdownMenuSeparator/>)}
-        <DropdownMenuItem onClick={logoutAction} className="font-bold">
-          <span>{t("logout")}</span>
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator/>
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+          {t("profile.logout")}
           <LogOut className="ml-auto"/>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  ) : (
-    <Button onClick={login}>{t("login")}</Button>
   );
 }

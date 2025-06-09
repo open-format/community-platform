@@ -467,35 +467,6 @@ export async function fundAccount() {
   }
 }
 
-export async function generateChallenge(address: string) {
-  try {
-    const data = { public_address: address };
-    const response = await apiClient.post("/key/challenge", data);
-
-    if (response.status === 200) {
-      return response.data;
-    }
-    return null;
-  } catch (error) {
-    return null;
-  }
-}
-
-export async function verifyChallenge(address: string, signature: string) {
-  try {
-    const data = { public_address: address, signature: signature };
-    const response = await apiClient.post("/key/verify", data);
-
-    if (response.status === 200) {
-      return response.data;
-    }
-    return null;
-  } catch (error) {
-    return null;
-  }
-}
-
-export async function getAllRewardsByCommunity(
   communityId: string,
   startTimestamp: number,
   endTimestamp: number,
