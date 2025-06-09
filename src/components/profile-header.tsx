@@ -23,74 +23,52 @@ export default function Profile({
 }: {
   logoutAction: () => void;
 }) {
-  const {user, logout} = usePrivy();
-  const t = useTranslations();
+  const {user, ready, exportWallet, authenticated, login} = usePrivy();
+  const t = useTranslations("profile");
+  const address = getAddress(user);
   const pathname = usePathname();
 
-
-  const address = getAddress(user);
-
-  const copyAddressToClipboard = () => {
-    if (address) {
-      navigator.clipboard.writeText(address);
-      toast.success(t("profile.addressCopied"));
-    }
-  };
-
-  const handleLogout = () => {
-    logout();
-    logoutAction();
-  };
-
-  if (!user) {
-    return (
-      <div className="flex items-center space-x-2">
-        <Skeleton className="h-8 w-8 rounded-full"/>
-        <Skeleton className="h-4 w-[100px]"/>
-      </div>
-    );
+  function copyAddress() {
+    navigator.clipboard.writeText(address || "");
+    toast.success(t("addressCopied"));
   }
 
-  return (
+  const exportEnabled = user?.wallet?.walletClientType === "privy";
+
+  if (!ready) {
+    return <Skeleton className="h-12 w-12 rounded-full"/>;
+  }
+
+  return authenticated ? (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+      <DropdownMenuTrigger>
+        {ready ? (
           <Avatar seed={address || ""}/>
-        </Button>
+        ) : (
+          <Skeleton className="h-12 w-12 rounded-full"/>
+        )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
-        <DropdownMenuItem
-          onClick={copyAddressToClipboard}
-          className="cursor-pointer"
-        >
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {addressSplitter(address)}
-            </p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user.email?.address}
-            </p>
-          </div>
+      <DropdownMenuContent>
+        <DropdownMenuItem onClick={copyAddress} className="font-bold">
+          <span>{addressSplitter(address || "")}</span>
           <CopyIcon className="ml-auto"/>
         </DropdownMenuItem>
         <DropdownMenuSeparator/>
-        <DropdownMenuItem asChild>
-          <a
-            href={`https://polygonscan.com/address/${address}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="cursor-pointer"
-          >
-            {t("profile.settings")}
+        {exportEnabled && (
+          <DropdownMenuItem onClick={exportWallet} className="font-bold">
+            <span>{t("exportWallet")}</span>
             <ExternalLink className="ml-auto"/>
-          </a>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator/>
-        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
-          {t("profile.logout")}
+          </DropdownMenuItem>
+        )}
+        {exportEnabled && (<DropdownMenuSeparator/>)}
+        <DropdownMenuItem onClick={logoutAction} className="font-bold">
+          <span>{t("logout")}</span>
           <LogOut className="ml-auto"/>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  ) : (
+    <Button onClick={login}>{t("login")}</Button>
   );
 }
+
