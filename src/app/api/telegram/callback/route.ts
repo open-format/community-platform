@@ -3,6 +3,13 @@ import { getCurrentUser } from "@/lib/privy";
 import { isAxiosError } from "axios";
 import { type NextRequest, NextResponse } from "next/server";
 
+interface PlatformConnection {
+  id: string;
+  communityId?: string;
+  platformId: string;
+  platformType: string;
+}
+
 function clearTelegramCookies(response: NextResponse) {
   response.cookies.delete("telegramConnected");
   return response;
@@ -16,13 +23,21 @@ function createErrorRedirect(error: string, req: NextRequest) {
   );
 }
 
-async function getOrCreateCommunity(communityId: string | undefined) {
+async function getOrCreateCommunity(communityId: string | undefined, existingPlatformConnection: PlatformConnection | null = null) {
+  if (existingPlatformConnection && existingPlatformConnection.communityId) {
+    console.log("Found existing community for platform connection, communityId:", existingPlatformConnection.communityId);
+    const community = await agentApiClient
+      .get(`/communities/${existingPlatformConnection.communityId}`)
+      .then((res) => res.data);
+    return { community, communityId: existingPlatformConnection.communityId, isNewCommunity: false };
+  }
+
   if (communityId) {
     try {
       const community = await agentApiClient
         .get(`/communities/${communityId}`)
         .then((res) => res.data);
-      return { community, communityId };
+      return { community, communityId, isNewCommunity: false };
     } catch (error) {
       console.warn("Stored community not found, creating new community");
     }
@@ -36,7 +51,7 @@ async function getOrCreateCommunity(communityId: string | undefined) {
     throw new Error("Community creation failed");
   }
 
-  return { community, communityId: community.id };
+  return { community, communityId: community.id, isNewCommunity: true };
 }
 
 async function setupUserAndRole(did: string, communityId: string) {
@@ -79,12 +94,35 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    let existingPlatformConnection: PlatformConnection | null = null;
+    try {
+      const platformConnection = await agentApiClient.get(`/platform-connections/${platformConnectionId}`);
+      const platformId = platformConnection.data.platformId;
+      
+      const platformResponse = await agentApiClient.get(`/platform-connections/by-platform-id/telegram/${platformId}`);
+      existingPlatformConnection = platformResponse.data;
+    } catch (error) {
+      if (isAxiosError(error) && error.response?.status === 404) {
+        console.log("No existing platform connection found for Telegram platform");
+      } else {
+        console.error("Error checking for existing platform connection:", {
+          platformConnectionId,
+          error: error instanceof Error ? error.message : String(error),
+          status: isAxiosError(error) ? error.response?.status : 'unknown'
+        });
+      }
+    }
+
     // Get or create community
-    const { community, communityId } = await getOrCreateCommunity(storedCommunityId);
+    const { community, communityId, isNewCommunity } = await getOrCreateCommunity(storedCommunityId, existingPlatformConnection);
 
     // Update platform connection
     try {
-      await agentApiClient.put(`/platform-connections/${platformConnectionId}`, { communityId });
+      if (existingPlatformConnection) {
+        await agentApiClient.put(`/platform-connections/${existingPlatformConnection.id}`, { communityId });
+      } else {
+        await agentApiClient.put(`/platform-connections/${platformConnectionId}`, { communityId });
+      }
     } catch (error) {
       console.error("Failed to update platform connection:", error);
       return createErrorRedirect("platform_connection_failed", req);
@@ -102,15 +140,7 @@ export async function GET(req: NextRequest) {
         return community;
       });
 
-    // Determine redirect URL based on Discord connection
-    const isDiscordConnected = finalCommunity?.platformConnections?.some(
-      (platform) => platform.platformType === "discord",
-    );
-    const guildId = req.cookies.get("guildId")?.value;
-
-    const redirectUrl = isDiscordConnected
-      ? `${process.env.PLATFORM_BASE_URL}/onboarding/setup?guildId=${guildId}&communityId=${communityId}`
-      : `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&communityId=${communityId}`;
+    const redirectUrl = `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&communityId=${communityId}&isNew=${isNewCommunity}`;
 
     const response = NextResponse.redirect(new URL(redirectUrl, req.url));
 
@@ -135,6 +165,6 @@ export async function GET(req: NextRequest) {
     } else {
       console.error("Error in Telegram callback:", error);
     }
-    return createErrorRedirect("true", req);
+    return createErrorRedirect("callback_error", req);
   }
 }

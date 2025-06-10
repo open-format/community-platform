@@ -58,6 +58,7 @@ export default function IntegrationsClient({
   const { user } = usePrivy();
   const guildId = searchParams.get("guildId");
   const error = searchParams.get("error");
+  const isNew = searchParams.get("isNew") === "true";
   const [storedCommunityId, setStoredCommunityId] = useState<string | undefined>(community?.id);
 
   useEffect(() => {
@@ -83,6 +84,12 @@ export default function IntegrationsClient({
       userId: user?.id || null,
       communityId: community.id || null,
     });
+
+    if (!isNew) {
+      router.push(`/communities/${community.id}/overview`);
+      return;
+    }
+
     const params = new URLSearchParams({
       guildId: guildId || "",
       communityId: community.id || "",
