@@ -12,11 +12,31 @@ import {
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
+  totalCount?: number;
 }
 
-export function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) {
+export function DataTablePagination<TData>({ 
+  table, 
+  totalCount 
+}: DataTablePaginationProps<TData>) {
+  const pageCount = table.getPageCount();
+  const currentPage = table.getState().pagination.pageIndex + 1;
+  
+  // Use totalCount for display if available (server-side pagination)
+  const displayTotalCount = totalCount ?? table.getFilteredRowModel().rows.length;
+  const pageSize = table.getState().pagination.pageSize;
+  const startRow = table.getState().pagination.pageIndex * pageSize + 1;
+  const endRow = Math.min(startRow + pageSize - 1, displayTotalCount);
+
   return (
-    <div className="flex items-center justify-end p-4">
+    <div className="flex items-center justify-between p-4">
+      <div className="flex-1 text-sm text-muted-foreground">
+        {displayTotalCount > 0 && (
+          <>
+            Showing {startRow} to {endRow} of {displayTotalCount} results
+          </>
+        )}
+      </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Rows per page</p>
@@ -39,7 +59,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
           </Select>
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+          Page {currentPage} of {pageCount}
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -83,3 +103,4 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
     </div>
   );
 }
+

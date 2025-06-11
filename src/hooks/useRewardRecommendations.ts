@@ -7,29 +7,41 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-export function useRewardRecommendations(communityId: string, platformId: string) {
+interface PaginatedRecommendationsResponse {
+  rewards: RewardRecommendation[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export function useRewardRecommendations(
+  communityId: string, 
+  platformId: string,
+  limit: number = 10,
+  offset: number = 0
+) {
   const t = useTranslations("overview.rewardRecommendations");
   const queryClient = useQueryClient();
 
   // Query for fetching recommendations
   const {
-    data: recommendations = [],
+    data,
     isLoading,
     error: fetchError,
   } = useQuery({
-    queryKey: ["recommendations", communityId],
-    queryFn: async () => {
+    queryKey: ["recommendations", communityId, limit, offset],
+    queryFn: async (): Promise<PaginatedRecommendationsResponse> => {
       const response = await fetch(
-        `/api/recommendations/get?communityId=${communityId}&platformId=${platformId}`,
+        `/api/recommendations/get?communityId=${communityId}&platformId=${platformId}&limit=${limit}&offset=${offset}`,
       );
 
       if (!response.ok) {
         throw new Error("Failed to fetch recommendations");
       }
 
-      const data = await response.json();
+      const responseData = await response.json();
 
-      return data.data.rewards;
+      return responseData.data;
     },
     // Refetch every 30 seconds to keep data fresh
     refetchInterval: 30000,
@@ -38,6 +50,10 @@ export function useRewardRecommendations(communityId: string, platformId: string
     // Keep data fresh for 1 minute
     staleTime: 60000,
   });
+
+  // Extract recommendations and pagination info from response
+  const recommendations = data?.rewards || [];
+  const total = data?.total || 0;
 
   // Mutation for deleting recommendations
   const deleteMutation = useMutation({
@@ -49,10 +65,10 @@ export function useRewardRecommendations(communityId: string, platformId: string
       return response;
     },
     onSuccess: (_, recommendation) => {
-      // Optimistically update the UI
-      queryClient.setQueryData(["recommendations", communityId], (old: RewardRecommendation[]) =>
-        old.filter((rec) => rec.id !== recommendation.id),
-      );
+      // Invalidate all recommendation queries to refetch data
+      queryClient.invalidateQueries({
+        queryKey: ["recommendations", communityId],
+      });
     },
     onError: (error) => {
       toast.error(
@@ -65,6 +81,7 @@ export function useRewardRecommendations(communityId: string, platformId: string
   return {
     // Data
     recommendations,
+    total,
     // Loading states
     isLoading,
     isDeleting: deleteMutation.isPending,
@@ -79,3 +96,4 @@ export function useRewardRecommendations(communityId: string, platformId: string
       }),
   };
 }
+

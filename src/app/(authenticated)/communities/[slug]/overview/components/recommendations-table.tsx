@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import type { SortingState } from "@tanstack/react-table";
+import type { PaginationState, SortingState } from "@tanstack/react-table";
 import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -17,6 +17,10 @@ interface RecommendationsTableProps {
   deleteRecommendation: (recommendation: RewardRecommendation) => void;
   isDeleting?: boolean;
   isLoading?: boolean;
+  // Pagination props
+  pagination: PaginationState;
+  onPaginationChange: (pagination: PaginationState) => void;
+  totalCount: number;
 }
 
 export default function RecommendationsTable({
@@ -26,6 +30,9 @@ export default function RecommendationsTable({
   onReward,
   isDeleting = false,
   isLoading = false,
+  pagination,
+  onPaginationChange,
+  totalCount,
 }: RecommendationsTableProps) {
   const t = useTranslations("overview.rewardRecommendations");
   const [sorting, setSorting] = useState<SortingState>([{ id: "created_at", desc: true }]);
@@ -68,6 +75,10 @@ export default function RecommendationsTable({
       data={recommendations}
       sorting={sorting}
       onSortingChange={setSorting}
+      pagination={pagination}
+      onPaginationChange={onPaginationChange}
+      totalCount={totalCount}
+      manualPagination={true}
     />
   );
 }
