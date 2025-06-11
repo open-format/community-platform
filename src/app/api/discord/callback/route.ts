@@ -8,6 +8,13 @@ interface StateObject {
   communityId?: string;
 }
 
+interface PlatformConnection {
+  id: string;
+  communityId?: string;
+  platformId: string;
+  platformType: string;
+}
+
 function clearDiscordCookies(response: NextResponse) {
   response.cookies.delete("discordConnected");
   response.cookies.delete("guildId");
@@ -22,13 +29,20 @@ function createErrorRedirect(error: string, req: NextRequest) {
   );
 }
 
-async function getOrCreateCommunity(communityId: string | undefined) {
+async function getOrCreateCommunity(communityId: string | undefined, existingPlatformConnection: PlatformConnection | null = null) {
+  if (existingPlatformConnection?.communityId) {
+    const community = await agentApiClient
+      .get(`/communities/${existingPlatformConnection.communityId}`)
+      .then((res) => res.data);
+    return { community, communityId: existingPlatformConnection.communityId, isNewCommunity: false };
+  }
+
   if (communityId) {
     try {
       const community = await agentApiClient
         .get(`/communities/${communityId}`)
         .then((res) => res.data);
-      return { community, communityId };
+      return { community, communityId, isNewCommunity: false };
     } catch (error) {
       console.warn("Stored community not found, creating new community");
     }
@@ -42,7 +56,7 @@ async function getOrCreateCommunity(communityId: string | undefined) {
     throw new Error("Community creation failed");
   }
 
-  return { community, communityId: community.id };
+  return { community, communityId: community.id, isNewCommunity: true };
 }
 
 async function setupUserAndRole(did: string, communityId: string) {
@@ -97,14 +111,35 @@ export async function GET(req: NextRequest) {
       throw new Error("Missing DID in state");
     }
 
+    let existingPlatformConnection: PlatformConnection | null = null;
+    try {
+      const platformResponse = await agentApiClient.get(`/platform-connections/by-platform-id/discord/${guildId}`);
+      existingPlatformConnection = platformResponse.data;
+    } catch (error) {
+      if (isAxiosError(error) && error.response?.status === 404) {
+        console.log("No existing platform connection found for guild:", guildId);
+      } else {
+        console.error("Error checking for existing platform connection:", {
+          guildId,
+          error: error instanceof Error ? error.message : String(error),
+          status: isAxiosError(error) ? error.response?.status : 'unknown'
+        });
+      }
+    }
+
     // Get or create community
-    const { community, communityId } = await getOrCreateCommunity(
+    const { community, communityId, isNewCommunity } = await getOrCreateCommunity(
       stateCommunityId || storedCommunityId,
+      existingPlatformConnection
     );
 
     // Update platform connection
     try {
-      await agentApiClient.put(`/platform-connections/${guildId}`, { communityId });
+      if (existingPlatformConnection) {
+        await agentApiClient.put(`/platform-connections/${existingPlatformConnection.id}`, { communityId });
+      } else {
+        await agentApiClient.put(`/platform-connections/${guildId}`, { communityId });
+      }
     } catch (error) {
       console.error("Failed to update platform connection:", error);
       return createErrorRedirect("platform_connection_failed", req);
@@ -122,14 +157,7 @@ export async function GET(req: NextRequest) {
         return community;
       });
 
-    // Determine redirect URL based on Telegram connection
-    const isTelegramConnected = finalCommunity?.platformConnections?.some(
-      (platform) => platform.platformType === "telegram",
-    );
-
-    const redirectUrl = isTelegramConnected
-      ? `${process.env.PLATFORM_BASE_URL}/onboarding/setup?guildId=${guildId}&communityId=${communityId}`
-      : `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&guildId=${guildId}&communityId=${communityId}`;
+    const redirectUrl = `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&guildId=${guildId}&communityId=${communityId}&isNew=${isNewCommunity}`;
 
     const response = NextResponse.redirect(new URL(redirectUrl, req.url));
 
@@ -163,6 +191,6 @@ export async function GET(req: NextRequest) {
     } else {
       console.error("Error in Discord callback:", error);
     }
-    return createErrorRedirect("true", req);
+    return createErrorRedirect("callback_error", req);
   }
 }
