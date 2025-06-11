@@ -31,7 +31,6 @@ function createErrorRedirect(error: string, req: NextRequest) {
 
 async function getOrCreateCommunity(communityId: string | undefined, existingPlatformConnection: PlatformConnection | null = null) {
   if (existingPlatformConnection && existingPlatformConnection.communityId) {
-    console.log("Found existing community for platform connection, communityId:", existingPlatformConnection.communityId);
     const community = await agentApiClient
       .get(`/communities/${existingPlatformConnection.communityId}`)
       .then((res) => res.data);
