@@ -5,7 +5,7 @@ import {usePathname} from "next/navigation";
 import {Avatar} from "@/components/ui/avatar";
 import {addressSplitter, getAddress} from "@/lib/utils";
 import {usePrivy} from "@privy-io/react-auth";
-import {CopyIcon, ExternalLink, KeySquare, LogOut} from "lucide-react";
+import {CopyIcon, ExternalLink, LogOut} from "lucide-react";
 import {useTranslations} from "next-intl";
 import {toast} from "sonner";
 import {Button} from "./ui/button";
@@ -17,7 +17,6 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import {Skeleton} from "./ui/skeleton";
-import {useApiKey} from "@/hooks/useApikey";
 
 export default function Profile({
   logoutAction,
@@ -27,33 +26,12 @@ export default function Profile({
   const {user, ready, exportWallet, authenticated, login} = usePrivy();
   const t = useTranslations("profile");
   const address = getAddress(user);
-  const {generateNewApiKey, apiKey, copyApiKeyToClipboard} = useApiKey();
-  const [showCreateApiKey, setShowCreateApiKey] = useState<boolean>(false);
   const pathname = usePathname();
 
   function copyAddress() {
     navigator.clipboard.writeText(address || "");
     toast.success(t("addressCopied"));
   }
-
-  useEffect(() => {
-    if (apiKey) {
-      toast.success(t("apiKey.yourNewApiKey", {apiKey}), {
-        duration: Number.POSITIVE_INFINITY,
-        dismissible: true,
-        action: {
-          label: <CopyIcon className="h-4 w-4 cursor-copy"/>,
-          onClick: () => copyApiKeyToClipboard(),
-        },
-      });
-    }
-  }, [apiKey, copyApiKeyToClipboard, t]);
-
-  useEffect(() => {
-    if (pathname.includes("communities")) {
-      setShowCreateApiKey(true);
-    }
-  }, [pathname]);
 
   const exportEnabled = user?.wallet?.walletClientType === "privy";
 
@@ -83,15 +61,6 @@ export default function Profile({
           </DropdownMenuItem>
         )}
         {exportEnabled && (<DropdownMenuSeparator/>)}
-        {
-          showCreateApiKey && (
-            <DropdownMenuItem className="font-bold" onClick={generateNewApiKey}>
-              <span>{t("apiKey.createApiKey")}</span>
-              <KeySquare className="ml-auto"/>
-            </DropdownMenuItem>
-          )
-        }
-        {showCreateApiKey && (<DropdownMenuSeparator/>)}
         <DropdownMenuItem onClick={logoutAction} className="font-bold">
           <span>{t("logout")}</span>
           <LogOut className="ml-auto"/>
@@ -102,3 +71,4 @@ export default function Profile({
     <Button onClick={login}>{t("login")}</Button>
   );
 }
+

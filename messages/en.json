@@ -562,17 +562,7 @@
     "addressCopied": "Address copied to clipboard",
     "exportWallet": "Export Wallet",
     "logout": "Logout",
-    "login": "Login",
-    "apiKey": {
-      "apiKey": "API Key",
-      "apiKeyCopied": "API Key copied to clipboard",
-      "createApiKey": "Create new API Key",
-      "creatingApiKey": "Creating new API Key",
-      "newApiKey": "New API Key",
-      "description": "Please be careful, as creating a new API key will override any existing keys, disabling them. For your security, we only display your API key once at the time of creation.",
-      "error": "Something went wrong. Please try again.",
-      "yourNewApiKey": "Your new API Key is: {apiKey}"
-    }
+    "login": "Login"
   },
   "errors": {
     "general": "Something went wrong",
