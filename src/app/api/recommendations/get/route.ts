@@ -6,6 +6,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const communityId = searchParams.get("communityId");
     const platformId = searchParams.get("platformId");
+    const limit = searchParams.get("limit");
+    const offset = searchParams.get("offset");
 
     if (!communityId && !platformId) {
       return NextResponse.json(
@@ -14,13 +16,23 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Build params object with pagination parameters
+    const params: Record<string, string> = {};
+    if (platformId) {
+      params.platform_id = platformId;
+    }
+    if (limit) {
+      params.limit = limit;
+    }
+    if (offset) {
+      params.offset = offset;
+    }
+
     const response = await agentApiClient.get("/rewards/recommendations", {
       headers: {
         "X-Community-ID": communityId ?? "",
       },
-      params: {
-        platform_id: platformId,
-      },
+      params,
     });
 
     return NextResponse.json({
@@ -31,3 +43,4 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+
