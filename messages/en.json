@@ -1185,10 +1185,12 @@
     },
     "sentiment": {
       "excited": {
-        "title": "What are users excited about?"
+        "title": "What are users excited about?",
+        "viewAllTitle": "All Excitement Items"
       },
       "frustrated": {
-        "title": "What are users frustrated about?"
+        "title": "What are users frustrated about?",
+        "viewAllTitle": "All Frustration Items"
       },
       "userCount": "{count} user{count, plural, one {} other {s}}",
       "viewEvidence": "View evidence",
