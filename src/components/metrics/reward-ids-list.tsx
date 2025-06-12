@@ -119,9 +119,24 @@ export default function RewardIdsList({ appId, chainId, data }: RewardIdsListPro
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="flex flex-col items-center justify-center h-[200px]">
-            <p className="text-muted-foreground">{t('noData')}</p>
-          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t('rank')}</TableHead>
+                <TableHead>{t('rewardId')}</TableHead>
+                <TableHead>{t('totalCount')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={3}>
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <p className="text-muted-foreground">{t('noData')}</p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     );
