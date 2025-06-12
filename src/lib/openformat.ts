@@ -137,9 +137,17 @@ export async function fetchAllCommunities() {
 export const fetchCommunity = cache(async (slugOrId: string) => {
   const communityFromDb = await getCommunity(slugOrId);
 
-  const chain = await getChainFromCommunityOrCookie(slugOrId);
-
   if (!communityFromDb) {
+    return null;
+  }
+
+  if (!communityFromDb.communityContractChainId || !communityFromDb.communityContractAddress) {
+    return null;
+  }
+
+  const chain = getChainById(communityFromDb.communityContractChainId);
+
+  if (!chain) {
     return null;
   }
 
@@ -179,9 +187,9 @@ query ($app: ID!) {
         badges: { id: string }[];
         tokens: Token[];
       };
-    }>(chain.SUBGRAPH_URL, query, { app: communityFromDb.id });
+    }>(chain.SUBGRAPH_URL, query, { app: communityFromDb.communityContractAddress });
 
-    const rewards = await fetchAllRewardsByCommunity(communityFromDb.id);
+    const rewards = await fetchAllRewardsByCommunity(communityFromDb.communityContractAddress, communityFromDb.communityContractChainId);
 
     return {
       ...data.app,
@@ -194,8 +202,8 @@ query ($app: ID!) {
   }
 });
 
-async function fetchAllRewardsByCommunity(communityId: string): Promise<Reward[] | null> {
-  const chain = await getChainFromCommunityOrCookie();
+async function fetchAllRewardsByCommunity(communityId: string, chainId: number): Promise<Reward[] | null> {
+  const chain = getChainById(chainId);
 
   if (!chain) {
     return null;
@@ -404,10 +412,14 @@ export async function generateLeaderboard(
       return { data: [], error: "Community not found" };
     }
 
-    const selectedTokenId = tokenId || communityFromDb.token_to_display || "";
+    if (!communityFromDb.communityContractAddress) {
+      return { data: [], error: "Community contract address not found" };
+    }
+
+    const selectedTokenId = tokenId || communityFromDb.tokenToDisplay || "";
 
     const params = new URLSearchParams();
-    params.set("app_id", communityFromDb.id);
+    params.set("app_id", communityFromDb.communityContractAddress);
     params.set("token_id", selectedTokenId);
     params.set("start", startDate);
     params.set("end", endDate);
