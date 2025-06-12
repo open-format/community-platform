@@ -3,7 +3,20 @@
 import { SentimentItem } from "../types";
 import { useTranslations } from "next-intl";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { SentimentItemComponent } from "./sentiment-item";
+import { Button } from "@/components/ui/button";
+import { Eye, Users, ArrowUpDown } from "lucide-react";
+import { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { DetailedViewModal } from "./detailed-view-modal";
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
 
 interface SentimentViewAllModalProps {
   isOpen: boolean;
@@ -19,25 +32,142 @@ export function SentimentViewAllModal({
   type
 }: SentimentViewAllModalProps) {
   const t = useTranslations("ImpactReports.sentiment");
+  const [sortField, setSortField] = useState<keyof SentimentItem>("title");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [selectedItem, setSelectedItem] = useState<SentimentItem | null>(null);
   
   const title = type === "excited" 
     ? t("excited.viewAllTitle") 
     : t("frustrated.viewAllTitle");
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-6 max-h-[60vh] overflow-y-auto">
-          {items.map((item) => (
-            <div key={item.title} className="border-b border-border pb-4 last:border-b-0">
-              <SentimentItemComponent item={item} type={type} />
-            </div>
+  const sortedItems = [...items].sort((a, b) => {
+    const aValue = a[sortField];
+    const bValue = b[sortField];
+    
+    if (sortField === "users") {
+      const aCount = Array.isArray(aValue) ? aValue.length : 0;
+      const bCount = Array.isArray(bValue) ? bValue.length : 0;
+      return sortDirection === "asc" ? aCount - bCount : bCount - aCount;
+    }
+    
+    return sortDirection === "asc"
+      ? String(aValue).localeCompare(String(bValue))
+      : String(bValue).localeCompare(String(aValue));
+  });
+
+  const handleSort = (field: keyof SentimentItem) => {
+    if (field === sortField) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const columns = [
+    {
+      key: "title" as const,
+      title: type === "excited" ? "Excitement" : "Frustration",
+      sortable: true,
+      render: (item: SentimentItem) => (
+        <div className="space-y-1">
+          <div className="font-medium">{item.title}</div>
+          <div className="text-sm text-muted-foreground line-clamp-2">{item.description}</div>
+        </div>
+      ),
+    },
+    {
+      key: "users" as const,
+      title: t("userCount", { count: undefined }),
+      sortable: true,
+      render: (item: SentimentItem) => (
+        <div className="flex items-center gap-2">
+          <Users className="h-4 w-4 text-muted-foreground" />
+          <span>{t("userCount", { count: item.users.length })}</span>
+        </div>
+      ),
+    },
+    {
+      key: "evidence" as const,
+      title: "evidence links",
+      render: (item: SentimentItem) => (
+        <div className="flex items-center gap-1">
+          {item.evidence.map((evidence, index) => (
+            <Link
+              key={evidence}
+              className={buttonVariants({ size: "icon", variant: "outline" })}
+              href={evidence}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Eye className="h-4 w-4" />
+            </Link>
           ))}
         </div>
-      </DialogContent>
-    </Dialog>
+      ),
+    },
+    {
+      key: "actions" as const,
+      title: "",
+      render: (item: SentimentItem) => (
+        <Button size="icon" className="h-8 w-8" onClick={() => setSelectedItem(item)}>
+          <Eye className="h-4 w-4" />
+        </Button>
+      ),
+    },
+  ];
+
+  return (
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableHead
+                      key={String(column.key)}
+                      className={column.sortable ? "cursor-pointer" : undefined}
+                      onClick={column.sortable ? () => handleSort(column.key as keyof SentimentItem) : undefined}
+                    >
+                      <div className="flex items-center gap-1">
+                        {column.title}
+                        {column.sortable && <ArrowUpDown className="h-4 w-4" />}
+                      </div>
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sortedItems.map((item) => (
+                  <TableRow key={item.title}>
+                    {columns.map((column) => (
+                      <TableCell key={String(column.key)}>
+                        {column.render ? column.render(item) : String(item[column.key as keyof SentimentItem])}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {selectedItem && (
+        <DetailedViewModal
+          isOpen={!!selectedItem}
+          onClose={() => setSelectedItem(null)}
+          title={selectedItem.title}
+          description={selectedItem.description}
+          evidence={selectedItem.evidence}
+          translationKey="sentiment"
+        />
+      )}
+    </>
   );
 }
