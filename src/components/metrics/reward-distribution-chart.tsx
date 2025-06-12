@@ -15,6 +15,7 @@ import { desanitizeString } from "@/lib/utils";
 
 interface RewardDistributionChartProps {
   appId: string;
+  chainId: number;
   data: Record<string, RewardIdStats[]> | null;
 }
 
@@ -52,7 +53,7 @@ function getColor(index: number): string {
   return `hsl(${hue}, 85%, 55%)`;
 }
 
-export default function RewardDistributionChart({ appId, data }: RewardDistributionChartProps) {
+export default function RewardDistributionChart({ appId, chainId, data }: RewardDistributionChartProps) {
   const t = useTranslations('metrics.rewardDistribution');
   const [chartData, setChartData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState(true);

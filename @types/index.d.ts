@@ -65,7 +65,7 @@ type Community = {
     };
   };
   communityContractAddress: Address;
-  communityContractChainId: Chain;
+  communityContractChainId: number;
   description: string;
   title: string;
   accentColor: string;

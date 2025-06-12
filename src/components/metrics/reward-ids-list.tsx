@@ -27,12 +27,13 @@ interface RewardData {
 
 interface RewardIdsListProps {
   appId: string;
+  chainId: number;
   data: Record<string, RewardIdStats[]> | null;
 }
 
 const ITEMS_PER_PAGE = 5;
 
-export default function RewardIdsList({ appId, data }: RewardIdsListProps) {
+export default function RewardIdsList({ appId, chainId, data }: RewardIdsListProps) {
   const t = useTranslations('metrics.rewards');
   const [formattedData, setFormattedData] = useState<RewardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);

@@ -17,6 +17,7 @@ import { startOfWeek, endOfWeek, format, isWithinInterval } from 'date-fns';
 
 interface TotalRewardsChartProps {
   appId: string;
+  chainId: number;
 }
 
 interface ChartData {
@@ -32,7 +33,7 @@ const TIME_RANGES = {
 
 type TimeRange = keyof typeof TIME_RANGES;
 
-export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
+export default function TotalRewardsChart({ appId, chainId }: TotalRewardsChartProps) {
   const t = useTranslations('metrics.totalRewards');
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -48,7 +49,7 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
         const endTime = (now * 1000000).toString();
         const startTime = ((now - (TIME_RANGES[timeRange].days * 24 * 60 * 60)) * 1000000).toString();
         
-        const result = await fetchTotalRewardsMetricsWrapped(appId, startTime, endTime);
+        const result = await fetchTotalRewardsMetricsWrapped(appId, chainId, startTime, endTime);
         if (result) {
           let formattedData: { [key: string]: { value: number; displayName: string } } = {};
 
@@ -199,14 +200,17 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
           setPercentageChange(0);
         }
       } catch (error) {
-        console.error('Error fetching total rewards data:', error);
+        console.error("Error fetching total rewards data:", error);
+        setData([]);
+        setTotalRewards(0);
+        setPercentageChange(0);
       } finally {
         setIsLoading(false);
       }
     }
 
     fetchData();
-  }, [appId, timeRange]);
+  }, [appId, chainId, timeRange]);
 
   if (isLoading) {
     return (

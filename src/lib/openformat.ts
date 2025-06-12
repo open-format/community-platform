@@ -238,11 +238,12 @@ async function fetchAllRewardsByCommunity(communityId: string): Promise<Reward[]
 }
 
 export async function fetchPaginatedRewardsByCommunity(
-  communityId: string,
+  appId: string,
+  chainId: number,
   first: number,
   skip: number,
 ): Promise<Reward[] | null> {
-  const chain = await getChainFromCommunityOrCookie();
+  const chain = getChainById(chainId);
 
   if (!chain) {
     return null;
@@ -289,7 +290,7 @@ export async function fetchPaginatedRewardsByCommunity(
 
   const data = await request<{
     rewards: Reward[];
-  }>(chain.SUBGRAPH_URL, query, { first, skip, appId: communityId });
+  }>(chain.SUBGRAPH_URL, query, { first, skip, appId });
 
   return data.rewards;
 }
