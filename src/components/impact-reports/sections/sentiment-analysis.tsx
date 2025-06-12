@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ExternalLink, ThumbsDown, ThumbsUp } from "lucide-react";
+import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { SentimentItem, UserSentiment } from "../types";
@@ -39,7 +39,6 @@ function SentimentList({
         <div className="pt-4">
           <Button variant="outline" size="sm" className="w-full" onClick={onViewAll}>
             {t("viewAll", { type: type === "excited" ? "Excitement" : "Frustrations" })}
-            <ExternalLink className="ml-2 h-4 w-4" />
           </Button>
         </div>
       )}
