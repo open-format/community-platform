@@ -1186,11 +1186,11 @@
     "sentiment": {
       "excited": {
         "title": "What are users excited about?",
-        "viewAllTitle": "All Excitement Items"
+        "viewAllTitle": "All Excitement"
       },
       "frustrated": {
         "title": "What are users frustrated about?",
-        "viewAllTitle": "All Frustration Items"
+        "viewAllTitle": "All Frustration"
       },
       "userCount": "{count} user{count, plural, one {} other {s}}",
       "viewEvidence": "View evidence",

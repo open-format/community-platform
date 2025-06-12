@@ -1,11 +1,7 @@
 "use client";
 
-import { SentimentItem } from "../types";
-import { useTranslations } from "next-intl";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Eye, Users, ArrowUpDown } from "lucide-react";
-import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -14,9 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ArrowUpDown, Eye, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import type { SentimentItem } from "../types";
 import { DetailedViewModal } from "./detailed-view-modal";
-import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
 
 interface SentimentViewAllModalProps {
   isOpen: boolean;
@@ -25,31 +23,29 @@ interface SentimentViewAllModalProps {
   type: "excited" | "frustrated";
 }
 
-export function SentimentViewAllModal({ 
-  isOpen, 
-  onClose, 
+export function SentimentViewAllModal({
+  isOpen,
+  onClose,
   items,
-  type
+  type,
 }: SentimentViewAllModalProps) {
   const t = useTranslations("ImpactReports.sentiment");
   const [sortField, setSortField] = useState<keyof SentimentItem>("title");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [selectedItem, setSelectedItem] = useState<SentimentItem | null>(null);
-  
-  const title = type === "excited" 
-    ? t("excited.viewAllTitle") 
-    : t("frustrated.viewAllTitle");
+
+  const title = type === "excited" ? t("excited.viewAllTitle") : t("frustrated.viewAllTitle");
 
   const sortedItems = [...items].sort((a, b) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
+
     if (sortField === "users") {
       const aCount = Array.isArray(aValue) ? aValue.length : 0;
       const bCount = Array.isArray(bValue) ? bValue.length : 0;
       return sortDirection === "asc" ? aCount - bCount : bCount - aCount;
     }
-    
+
     return sortDirection === "asc"
       ? String(aValue).localeCompare(String(bValue))
       : String(bValue).localeCompare(String(aValue));
@@ -83,26 +79,7 @@ export function SentimentViewAllModal({
       render: (item: SentimentItem) => (
         <div className="flex items-center gap-2">
           <Users className="h-4 w-4 text-muted-foreground" />
-          <span>{t("userCount", { count: item.users.length })}</span>
-        </div>
-      ),
-    },
-    {
-      key: "evidence" as const,
-      title: "evidence links",
-      render: (item: SentimentItem) => (
-        <div className="flex items-center gap-1">
-          {item.evidence.map((evidence, index) => (
-            <Link
-              key={evidence}
-              className={buttonVariants({ size: "icon", variant: "outline" })}
-              href={evidence}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Eye className="h-4 w-4" />
-            </Link>
-          ))}
+          <span className="whitespace-nowrap">{t("userCount", { count: item.users.length })}</span>
         </div>
       ),
     },
@@ -132,7 +109,11 @@ export function SentimentViewAllModal({
                     <TableHead
                       key={String(column.key)}
                       className={column.sortable ? "cursor-pointer" : undefined}
-                      onClick={column.sortable ? () => handleSort(column.key as keyof SentimentItem) : undefined}
+                      onClick={
+                        column.sortable
+                          ? () => handleSort(column.key as keyof SentimentItem)
+                          : undefined
+                      }
                     >
                       <div className="flex items-center gap-1">
                         {column.title}
@@ -143,11 +124,13 @@ export function SentimentViewAllModal({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sortedItems.map((item) => (
-                  <TableRow key={item.title}>
+                {sortedItems.map((item, index) => (
+                  <TableRow key={`${item.title}-${index}`}>
                     {columns.map((column) => (
                       <TableCell key={String(column.key)}>
-                        {column.render ? column.render(item) : String(item[column.key as keyof SentimentItem])}
+                        {column.render
+                          ? column.render(item)
+                          : String(item[column.key as keyof SentimentItem])}
                       </TableCell>
                     ))}
                   </TableRow>
