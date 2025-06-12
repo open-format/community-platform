@@ -1,5 +1,5 @@
 import { getCommunity } from "@/app/actions/communities/get";
-import { ChainName, getChainById } from "@/constants/chains";
+import { getChainById } from "@/constants/chains";
 import { apiClient } from "@/lib/openformat";
 import { getUserHandle } from "@/lib/privy";
 import { type NextRequest, NextResponse } from "next/server";
@@ -34,18 +34,7 @@ export async function GET(req: NextRequest) {
   params.set("token_id", selectedTokenId);
   params.set("start", startDate ?? "");
   params.set("end", endDate ?? "");
-  params.set(
-    "chain",
-    chain.apiChainName === ChainName.MATCHAIN
-      ? "matchain"
-      : chain.apiChainName === ChainName.AURORA
-        ? "aurora"
-        : chain.apiChainName === ChainName.TURBO
-          ? "turbo"
-          : chain.apiChainName === ChainName.BASE
-            ? "base"
-            : "arbitrum-sepolia",
-  );
+  params.set("chain", chain.apiChainName);
 
   const response = await apiClient.get(`/v1/leaderboard?${params}`);
 

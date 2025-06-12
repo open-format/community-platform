@@ -410,18 +410,7 @@ export async function generateLeaderboard(
     params.set("token_id", selectedTokenId);
     params.set("start", startDate);
     params.set("end", endDate);
-    params.set(
-      "chain",
-      chain.apiChainName === ChainName.MATCHAIN
-        ? "matchain"
-        : chain.apiChainName === ChainName.AURORA
-          ? "aurora"
-          : chain.apiChainName === ChainName.TURBO
-            ? "turbo"
-            : chain.apiChainName === ChainName.BASE
-              ? "base"
-              : "arbitrum-sepolia",
-    );
+    params.set("chain", chain.apiChainName);
 
     const response = await apiClient.get(`/v1/leaderboard?${params}`);
 
