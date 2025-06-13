@@ -189,7 +189,10 @@ query ($app: ID!) {
       };
     }>(chain.SUBGRAPH_URL, query, { app: communityFromDb.communityContractAddress });
 
-    const rewards = await fetchAllRewardsByCommunity(communityFromDb.communityContractAddress, communityFromDb.communityContractChainId);
+    const rewards = await fetchAllRewardsByCommunity(
+      communityFromDb.communityContractAddress,
+      communityFromDb.communityContractChainId,
+    );
 
     return {
       ...data.app,
@@ -202,7 +205,10 @@ query ($app: ID!) {
   }
 });
 
-async function fetchAllRewardsByCommunity(communityId: string, chainId: number): Promise<Reward[] | null> {
+async function fetchAllRewardsByCommunity(
+  communityId: string,
+  chainId: number,
+): Promise<Reward[] | null> {
   const chain = getChainById(chainId);
 
   if (!chain) {
@@ -469,20 +475,21 @@ export async function fundAccount() {
   }
 }
 
-export async function getAllRewardsByCommunity(communityId: string,
+export async function getAllRewardsByCommunity(
+  community: Community,
   startTimestamp: number,
   endTimestamp: number,
   tokenAddress: string | null,
   rewardType: string | null,
 ): Promise<string> {
-  const chain = await getChainFromCommunityOrCookie();
+  const chain = getChainById(community.communityContractChainId);
   if (!chain) {
     throw new Error("Chain not found");
   }
   let last_reward_created_at: string | null = null;
   let paginate = true;
   const options = {
-    appId: communityId,
+    appId: community.communityContractAddress,
     start: startTimestamp.toString(),
     end: endTimestamp.toString(),
     tokenId: tokenAddress,

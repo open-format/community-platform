@@ -315,8 +315,29 @@ export default function TotalRewardsChart({ appId, chainId }: TotalRewardsChartP
               tickFormatter={(value) => value.toLocaleString()}
             />
             <Tooltip
-              formatter={(value: number) => [value.toLocaleString(), t('rewards')]}
-              labelFormatter={(label) => label}
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  return (
+                    <div 
+                      className="rounded-lg border bg-background p-2 shadow-sm" 
+                      role="tooltip" 
+                      aria-label={`${label}: ${payload[0]?.value?.toLocaleString()} ${t('rewards')}`}
+                    >
+                      <div className="grid gap-2">
+                        <div className="flex flex-col">
+                          <span className="text-[0.70rem] uppercase text-muted-foreground">
+                            {label}
+                          </span>
+                          <span className="font-bold">
+                            {payload[0]?.value?.toLocaleString()} {t('rewards')}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              }}
             />
             <Bar 
               dataKey="value" 
