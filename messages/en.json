@@ -236,7 +236,7 @@
         }
       },
       "successConfirmingRewardRecommendation": "Confirmed reward successfully",
-      "successRejectingRewardRecommendation": "Rejected reward recommendation: {summary}.",
+      "successRejectingRewardRecommendation": "Deleted reward recommendation: {summary}.",
       "suggestedReward": "Suggested reward",
       "platform": "Platform",
       "title": "Reward Recommendations",

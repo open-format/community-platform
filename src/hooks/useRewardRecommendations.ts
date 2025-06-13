@@ -15,10 +15,10 @@ interface PaginatedRecommendationsResponse {
 }
 
 export function useRewardRecommendations(
-  communityId: string, 
+  communityId: string,
   platformId: string,
-  limit: number = 10,
-  offset: number = 0
+  limit = 10,
+  offset = 0,
 ) {
   const t = useTranslations("overview.rewardRecommendations");
   const queryClient = useQueryClient();
@@ -65,6 +65,7 @@ export function useRewardRecommendations(
       return response;
     },
     onSuccess: (_, recommendation) => {
+      toast.success(t("successRejectingRewardRecommendation", { summary: recommendation.summary }));
       // Invalidate all recommendation queries to refetch data
       queryClient.invalidateQueries({
         queryKey: ["recommendations", communityId],
@@ -96,4 +97,3 @@ export function useRewardRecommendations(
       }),
   };
 }
-
