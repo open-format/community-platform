@@ -1,3 +1,10 @@
+## [0.25.1](https://github.com/open-format/community-platform/compare/v0.25.0...v0.25.1) (2025-06-13)
+
+
+### Bug Fixes
+
+* Add delete reward recommendation toast message ([7e4c499](https://github.com/open-format/community-platform/commit/7e4c499a3afd652be80deb6f41e27e35fa521263))
+
 # [0.25.0](https://github.com/open-format/community-platform/compare/v0.24.1...v0.25.0) (2025-06-07)
 
 
