@@ -29,6 +29,7 @@ import { useRevalidate } from "@/hooks/useRevalidate";
 import { getAllRewardsByCommunity } from "@/lib/openformat";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import dayjs from "dayjs";
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -65,9 +66,9 @@ export function ActivityExportForm({ community }: ActivityExportFormProps) {
       setIsLoading(true);
 
       const rewards = await getAllRewardsByCommunity(
-        community.id,
-        data.startDate ? data.startDate.getTime() / 1000 : 0,
-        data.endDate ? data.endDate.getTime() / 1000 : 99999999999,
+        community,
+        data.startDate ? dayjs(data.startDate).startOf("day").unix() : 0,
+        data.endDate ? dayjs(data.endDate).endOf("day").unix() : 99999999999,
         data.tokenAddress === "All" ? null : data.tokenAddress,
         data.rewardType === "All" ? null : data.rewardType,
       );
@@ -203,7 +204,7 @@ export function ActivityExportForm({ community }: ActivityExportFormProps) {
               </FormLabel>
               <FormControl>
                 <Select
-                  key={"custom-key" + field.value}
+                  key={`custom-key-${field.value}`}
                   onValueChange={(value) => {
                     field.onChange(value);
                     form.setValue("tokenAddress", "All");
