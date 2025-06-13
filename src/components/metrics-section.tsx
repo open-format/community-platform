@@ -52,9 +52,12 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
 
   return (
     <div className="space-y-8 pt-6">
-      <div className="flex items-center space-x-2">
-        <h2 className="text-2xl font-semibold tracking-tight">{t("title")}</h2>
-        <RefreshButton />
+      <div className="space-y-2">
+        <div className="flex items-center space-x-2">
+          <h2 className="text-2xl font-semibold tracking-tight">{t("title")}</h2>
+          <RefreshButton />
+        </div>
+        <p className="text-sm text-muted-foreground">Reward insights are updated every 24 hours</p>
       </div>
 
       {/* Metrics Grid */}
