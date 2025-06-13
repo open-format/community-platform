@@ -16,6 +16,7 @@ import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "rec
 
 interface UniqueUsersChartProps {
   appId: string;
+  chainId: number;
 }
 
 const TIME_RANGES = {
@@ -26,7 +27,7 @@ const TIME_RANGES = {
 
 type TimeRange = keyof typeof TIME_RANGES;
 
-export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
+export default function UniqueUsersChart({ appId, chainId }: UniqueUsersChartProps) {
   const t = useTranslations("metrics.uniqueUsers");
   const [data, setData] = useState<any[]>([]);
   const [totalUsers, setTotalUsers] = useState(0);
@@ -43,7 +44,7 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
 
     const fetchData = async () => {
       setIsLoading(true);
-      const result = await fetchUniqueUsersMetricsWrapped(appId, startTime, endTime);
+      const result = await fetchUniqueUsersMetricsWrapped(appId, chainId, startTime, endTime);
       if (result) {
         let formattedData: { [key: string]: { users: number; displayName: string } } = {};
 
@@ -189,7 +190,7 @@ export default function UniqueUsersChart({ appId }: UniqueUsersChartProps) {
     };
 
     fetchData();
-  }, [appId, timeRange]);
+  }, [appId, chainId, timeRange]);
 
   if (isLoading) {
     return (
