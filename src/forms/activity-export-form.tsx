@@ -98,8 +98,8 @@ export function ActivityExportForm({ community }: ActivityExportFormProps) {
   const startDateWatch = form.watch("startDate");
   const endDateWatch = form.watch("endDate");
 
-  const hasTokens = community.onchainData?.tokens && community.onchainData.tokens.length > 0;
-  const hasBadges = community.onchainData?.badges && community.onchainData.badges.length > 0;
+  const hasTokens = Boolean(community.onchainData?.tokens?.length);
+  const hasBadges = Boolean(community.onchainData?.badges?.length);
   const hasData = hasTokens || hasBadges;
 
   return (
