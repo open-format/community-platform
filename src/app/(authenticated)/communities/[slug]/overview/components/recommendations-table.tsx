@@ -14,7 +14,7 @@ interface RecommendationsTableProps {
   community: Community;
   recommendations: RewardRecommendation[];
   onReward: (recommendation: RewardRecommendation) => void;
-  deleteRecommendation: (recommendation: RewardRecommendation) => void;
+  deleteRecommendation: (recommendation: RewardRecommendation, showToast?: boolean) => void;
   isDeleting?: boolean;
   isLoading?: boolean;
   // Pagination props
@@ -49,7 +49,7 @@ export default function RecommendationsTable({
             <RewardDialog
               community={community}
               recommendation={recommendation}
-              deleteRecommendation={() => deleteRecommendation(recommendation)}
+              deleteRecommendation={() => deleteRecommendation(recommendation, false)}
               onConfirm={() => onReward(recommendation)}
             >
               {t("reward")}

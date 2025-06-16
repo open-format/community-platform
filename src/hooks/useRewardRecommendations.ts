@@ -65,7 +65,6 @@ export function useRewardRecommendations(
       return response;
     },
     onSuccess: (_, recommendation) => {
-      toast.success(t("successRejectingRewardRecommendation", { summary: recommendation.summary }));
       // Invalidate all recommendation queries to refetch data
       queryClient.invalidateQueries({
         queryKey: ["recommendations", communityId],
@@ -89,7 +88,17 @@ export function useRewardRecommendations(
     // Error states
     error: fetchError,
     // Actions
-    deleteRecommendation: deleteMutation.mutate,
+    deleteRecommendation: (recommendation: RewardRecommendation, showToast = true) => {
+      deleteMutation.mutate(recommendation, {
+        onSuccess: (_, recommendation) => {
+          if (showToast) {
+            toast.success(
+              t("successRejectingRewardRecommendation", { summary: recommendation.summary }),
+            );
+          }
+        },
+      });
+    },
     // Refetch function
     refetch: () =>
       queryClient.invalidateQueries({
