@@ -26,8 +26,6 @@ function SentimentList({
 
   if (items.length === 0) return null;
 
-  console.log(items.length);
-
   const topFive = items.slice(0, 5);
 
   return (
