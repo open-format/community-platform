@@ -32,18 +32,19 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
     isFetching,
     refetch: refetchRewards,
   } = useQuery({
-    queryKey: ["rewards", community.communityContractAddress, page],
+    queryKey: ["rewards", community.communityContractAddress, community.communityContractChainId, page],
     queryFn: () =>
       fetchPaginatedRewardsByCommunity(
         community.communityContractAddress,
+        community.communityContractChainId,
         PAGE_SIZE,
         page * PAGE_SIZE,
       ),
   });
 
   const { data: rewardDistribution } = useQuery({
-    queryKey: ["rewardDistribution", community.communityContractAddress],
-    queryFn: () => fetchRewardDistributionMetrics(community.communityContractAddress),
+    queryKey: ["rewardDistribution", community.communityContractAddress, community.communityContractChainId],
+    queryFn: () => fetchRewardDistributionMetrics(community.communityContractAddress, community.communityContractChainId),
   });
 
   // Check if there might be more data
@@ -51,9 +52,12 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
 
   return (
     <div className="space-y-8 pt-6">
-      <div className="flex items-center space-x-2">
-        <h2 className="text-2xl font-semibold tracking-tight">{t("title")}</h2>
-        <RefreshButton />
+      <div className="space-y-2">
+        <div className="flex items-center space-x-2">
+          <h2 className="text-2xl font-semibold tracking-tight">{t("title")}</h2>
+          <RefreshButton />
+        </div>
+        <p className="text-sm text-muted-foreground">Reward insights are updated every 24 hours</p>
       </div>
 
       {/* Metrics Grid */}
@@ -61,14 +65,20 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
         {/* Unique Users Card */}
         <Card>
           <CardContent className="pt-6 px-6 pb-3">
-            <UniqueUsersChart appId={community.communityContractAddress} />
+            <UniqueUsersChart 
+              appId={community.communityContractAddress} 
+              chainId={community.communityContractChainId} 
+            />
           </CardContent>
         </Card>
 
         {/* Total Rewards Card */}
         <Card>
           <CardContent className="pt-6 px-6 pb-3">
-            <TotalRewardsChart appId={community.communityContractAddress} />
+            <TotalRewardsChart 
+              appId={community.communityContractAddress} 
+              chainId={community.communityContractChainId} 
+            />
           </CardContent>
         </Card>
 
@@ -77,6 +87,7 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
           <CardContent className="pt-6 px-6 pb-3">
             <RewardDistributionChart
               appId={community.communityContractAddress}
+              chainId={community.communityContractChainId}
               data={rewardDistribution || null}
             />
           </CardContent>
@@ -92,6 +103,7 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
           </div>
           <RewardIdsList
             appId={community.communityContractAddress}
+            chainId={community.communityContractChainId}
             data={rewardDistribution || null}
           />
         </div>

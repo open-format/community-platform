@@ -17,6 +17,7 @@ import { startOfWeek, endOfWeek, format, isWithinInterval } from 'date-fns';
 
 interface TotalRewardsChartProps {
   appId: string;
+  chainId: number;
 }
 
 interface ChartData {
@@ -32,7 +33,7 @@ const TIME_RANGES = {
 
 type TimeRange = keyof typeof TIME_RANGES;
 
-export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
+export default function TotalRewardsChart({ appId, chainId }: TotalRewardsChartProps) {
   const t = useTranslations('metrics.totalRewards');
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -48,7 +49,7 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
         const endTime = (now * 1000000).toString();
         const startTime = ((now - (TIME_RANGES[timeRange].days * 24 * 60 * 60)) * 1000000).toString();
         
-        const result = await fetchTotalRewardsMetricsWrapped(appId, startTime, endTime);
+        const result = await fetchTotalRewardsMetricsWrapped(appId, chainId, startTime, endTime);
         if (result) {
           let formattedData: { [key: string]: { value: number; displayName: string } } = {};
 
@@ -199,14 +200,17 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
           setPercentageChange(0);
         }
       } catch (error) {
-        console.error('Error fetching total rewards data:', error);
+        console.error("Error fetching total rewards data:", error);
+        setData([]);
+        setTotalRewards(0);
+        setPercentageChange(0);
       } finally {
         setIsLoading(false);
       }
     }
 
     fetchData();
-  }, [appId, timeRange]);
+  }, [appId, chainId, timeRange]);
 
   if (isLoading) {
     return (
@@ -311,8 +315,29 @@ export default function TotalRewardsChart({ appId }: TotalRewardsChartProps) {
               tickFormatter={(value) => value.toLocaleString()}
             />
             <Tooltip
-              formatter={(value: number) => [value.toLocaleString(), t('rewards')]}
-              labelFormatter={(label) => label}
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  return (
+                    <div 
+                      className="rounded-lg border bg-background p-2 shadow-sm" 
+                      role="tooltip" 
+                      aria-label={`${label}: ${payload[0]?.value?.toLocaleString()} ${t('rewards')}`}
+                    >
+                      <div className="grid gap-2">
+                        <div className="flex flex-col">
+                          <span className="text-[0.70rem] uppercase text-muted-foreground">
+                            {label}
+                          </span>
+                          <span className="font-bold">
+                            {payload[0]?.value?.toLocaleString()} {t('rewards')}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              }}
             />
             <Bar 
               dataKey="value" 

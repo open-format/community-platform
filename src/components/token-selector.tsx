@@ -55,7 +55,7 @@ export default function TokenSelector({
       value &&
       !(includeAllOption && value === "All") &&
       !tokens.some((token) => token.token.id === value) &&
-      !badges.some((badge) => badge.id === value)
+      !(badges && badges.some((badge) => badge.id === value))
     ) {
       onChange("");
     }
@@ -66,7 +66,7 @@ export default function TokenSelector({
     onChange(currentValue);
 
     if (onTokenTypeChange) {
-      const isBadge = badges.some((badge) => badge.id === currentValue);
+      const isBadge = badges && badges.some((badge) => badge.id === currentValue);
       console.log("Is Badge:", isBadge);
       onTokenTypeChange(isBadge, currentValue);
     }
@@ -86,7 +86,7 @@ export default function TokenSelector({
 
   const getDisplayValue = () => {
     // Debug the display value calculation
-    const selectedBadge = badges.find((badge) => badge.id === value);
+    const selectedBadge = badges && badges.find((badge) => badge.id === value);
     const selectedToken = tokens.find((item) => item.token?.id === value);
 
     if (selectedBadge) {
@@ -174,7 +174,7 @@ export default function TokenSelector({
               ))}
             </CommandGroup>
             <CommandSeparator />
-            {badges.length > 0 && (
+            {badges && badges.length > 0 && (
               <CommandGroup heading={t("badges")}>
                 {badges.map((item) => (
                   <CommandItem

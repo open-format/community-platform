@@ -29,6 +29,7 @@ import { useRevalidate } from "@/hooks/useRevalidate";
 import { getAllRewardsByCommunity } from "@/lib/openformat";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import dayjs from "dayjs";
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -65,9 +66,9 @@ export function ActivityExportForm({ community }: ActivityExportFormProps) {
       setIsLoading(true);
 
       const rewards = await getAllRewardsByCommunity(
-        community.id,
-        data.startDate ? data.startDate.getTime() / 1000 : 0,
-        data.endDate ? data.endDate.getTime() / 1000 : 99999999999,
+        community,
+        data.startDate ? dayjs(data.startDate).startOf("day").unix() : 0,
+        data.endDate ? dayjs(data.endDate).endOf("day").unix() : 99999999999,
         data.tokenAddress === "All" ? null : data.tokenAddress,
         data.rewardType === "All" ? null : data.rewardType,
       );
@@ -97,6 +98,10 @@ export function ActivityExportForm({ community }: ActivityExportFormProps) {
 
   const startDateWatch = form.watch("startDate");
   const endDateWatch = form.watch("endDate");
+
+  const hasTokens = Boolean(community.onchainData?.tokens?.length);
+  const hasBadges = Boolean(community.onchainData?.badges?.length);
+  const hasData = hasTokens || hasBadges;
 
   return (
     <Form {...form}>
@@ -199,7 +204,7 @@ export function ActivityExportForm({ community }: ActivityExportFormProps) {
               </FormLabel>
               <FormControl>
                 <Select
-                  key={"custom-key" + field.value}
+                  key={`custom-key-${field.value}`}
                   onValueChange={(value) => {
                     field.onChange(value);
                     form.setValue("tokenAddress", "All");
@@ -231,8 +236,8 @@ export function ActivityExportForm({ community }: ActivityExportFormProps) {
               <FormControl>
                 <TokenSelector
                   forceModal={true}
-                  tokens={community.tokens}
-                  badges={community.badges}
+                  tokens={community.onchainData?.tokens || []}
+                  badges={community.onchainData?.badges || []}
                   value={field.value ?? ""}
                   includeAllOption={true}
                   onChange={field.onChange}
@@ -251,7 +256,7 @@ export function ActivityExportForm({ community }: ActivityExportFormProps) {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={isLoading || !hasData}>
           {isLoading ? t("exportingLabel") : t("exportLabel")}
         </Button>
       </form>

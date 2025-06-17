@@ -1,6 +1,6 @@
 import { request } from "graphql-request";
 import { cache } from "react";
-import { getChainFromCommunityOrCookie } from "./openformat";
+import { getChainById } from "@/constants/chains";
 
 interface MetricDataPoint {
   timestamp: string;
@@ -28,10 +28,11 @@ interface RewardStatsResponse {
 export const fetchUniqueUsersMetrics = cache(
   async (
     appId: string,
+    chainId: number,
     startTime?: string,
     endTime?: string,
   ): Promise<MetricDataPoint[] | null> => {
-    const chain = await getChainFromCommunityOrCookie(appId);
+    const chain = getChainById(chainId);
     if (!chain) return null;
 
     const query = `
@@ -72,10 +73,11 @@ export const fetchUniqueUsersMetrics = cache(
 export const fetchTotalRewardsMetrics = cache(
   async (
     appId: string,
+    chainId: number,
     startTime?: string,
     endTime?: string,
   ): Promise<MetricDataPoint[] | null> => {
-    const chain = await getChainFromCommunityOrCookie(appId);
+    const chain = getChainById(chainId);
     if (!chain) return null;
 
     // @TODO: Add pagination to get all data
@@ -115,8 +117,8 @@ export const fetchTotalRewardsMetrics = cache(
 );
 
 export const fetchRewardDistributionMetrics = cache(
-  async (appId: string): Promise<Record<string, RewardIdStats[]> | null> => {
-    const chain = await getChainFromCommunityOrCookie(appId);
+  async (appId: string, chainId: number): Promise<Record<string, RewardIdStats[]> | null> => {
+    const chain = getChainById(chainId);
     if (!chain) return null;
 
     const rewardIdsQuery = `
@@ -292,23 +294,25 @@ const shouldUseTestData = process.env.NEXT_PUBLIC_USE_TEST_DATA === "true";
 export const fetchTotalRewardsMetricsWrapped = cache(
   async (
     appId: string,
+    chainId: number,
     startTime?: string,
     endTime?: string,
   ): Promise<MetricDataPoint[] | null> => {
     return shouldUseTestData
       ? fetchTotalRewardsMetricsTest(appId, startTime, endTime)
-      : fetchTotalRewardsMetrics(appId, startTime, endTime);
+      : fetchTotalRewardsMetrics(appId, chainId, startTime, endTime);
   },
 );
 
 export const fetchUniqueUsersMetricsWrapped = cache(
   async (
     appId: string,
+    chainId: number,
     startTime?: string,
     endTime?: string,
   ): Promise<MetricDataPoint[] | null> => {
     return shouldUseTestData
       ? fetchUniqueUsersMetricsTest(appId, startTime, endTime)
-      : fetchUniqueUsersMetrics(appId, startTime, endTime);
+      : fetchUniqueUsersMetrics(appId, chainId, startTime, endTime);
   },
 );
