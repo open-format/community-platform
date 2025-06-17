@@ -1,3 +1,11 @@
+## [0.25.2](https://github.com/open-format/community-platform/compare/v0.25.1...v0.25.2) (2025-06-17)
+
+
+### Bug Fixes
+
+* handle optional badges and tokens in TokenSelector and ActivityExportForm ([6fb1543](https://github.com/open-format/community-platform/commit/6fb15437e6c43ccc73c40d424353798d5039ce49))
+* update styling for hover state on rewards issued graph ([01a879d](https://github.com/open-format/community-platform/commit/01a879d0618cd805243d5123209c1dc3d243e91a))
+
 ## [0.25.1](https://github.com/open-format/community-platform/compare/v0.25.0...v0.25.1) (2025-06-13)
 
 
