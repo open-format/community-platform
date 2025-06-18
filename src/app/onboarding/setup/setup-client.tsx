@@ -2,6 +2,7 @@
 
 import { OnboardingProgressBar } from "@/components/onboarding/onboarding-progress";
 import { Button } from "@/components/ui/button";
+import config from "@/constants/config";
 import { usePollingJob } from "@/hooks/useJobStatus";
 import { usePrivy } from "@privy-io/react-auth";
 import {
@@ -34,6 +35,8 @@ export default function SetupClient() {
 	const guildId = searchParams.get("guildId");
 	const communityId = searchParams.get("communityId");
 	const { user } = usePrivy();
+
+	const { LOW_ACTIVITY_THRESHOLD } = config;
 
 	const [messagesJobId, setMessagesJobId] = useState<string | null>(null);
 	const [reportJobId, setReportJobId] = useState<string | null>(null);
@@ -128,7 +131,7 @@ export default function SetupClient() {
 		const startRemainingJobs = async () => {
 			if (messagesStatus === "completed" && guildId && communityId) {
 				// Check if we have enough messages
-				if ((messagesData?.newMessagesAdded ?? 0) < 20) {
+				if ((messagesData?.newMessagesAdded ?? 0) < LOW_ACTIVITY_THRESHOLD) {
 					setHasLowActivity(true);
 					return;
 				}
@@ -164,6 +167,7 @@ export default function SetupClient() {
 		startRecommendationsJobAsync,
 		messagesStatus,
 		messagesData,
+		LOW_ACTIVITY_THRESHOLD,
 		t,
 	]);
 
