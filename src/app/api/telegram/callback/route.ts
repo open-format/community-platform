@@ -97,89 +97,94 @@ export async function GET(req: NextRequest) {
 
 	if (stateParam) {
 		try {
-			const compressedState = stateParam;
+			const verificationCode = stateParam;
+			const verificationResponse = await agentApiClient.get(
+				`/communities/telegram/verify/${verificationCode}`,
+			);
 
-			try {
-				const stateString = compressedState;
-				const parts = stateString.split("_");
+			const verificationData = verificationResponse.data;
+			const { did: stateDid, communityId: stateCommunityId } = verificationData;
 
-				const stateDid = `did:privy:${parts[0]}`;
-				const stateCommunityId =
-					parts[1] === "null"
-						? null
-						: `${parts[1].slice(0, 8)}-${parts[1].slice(8, 12)}-${parts[1].slice(12, 16)}-${parts[1].slice(16, 20)}-${parts[1].slice(20, 32)}`;
-
-				if (!stateDid) {
-					return createErrorRedirect("invalid_state", req);
-				}
-
-				const { community, communityId, isNewCommunity } =
-					await getOrCreateCommunity(stateCommunityId || undefined, null);
-
-				// Find the platform connection by platformId
-				let existingPlatformConnection: PlatformConnection | null = null;
-				if (platformConnectionId) {
-					try {
-						const platformConnection = await agentApiClient.get(
-							`/platform-connections/${platformConnectionId}`,
-						);
-						const platformId = platformConnection.data.platformId;
-
-						const platformResponse = await agentApiClient.get(
-							`/platform-connections/by-platform-id/telegram/${platformId}`,
-						);
-						existingPlatformConnection = platformResponse.data;
-					} catch (error) {
-						if (isAxiosError(error) && error.response?.status === 404) {
-						} else {
-							console.error(
-								"Error checking for existing platform connection:",
-								error,
-							);
-						}
-					}
-				}
-
-				// Update platform connection
-				try {
-					if (existingPlatformConnection) {
-						await agentApiClient.put(
-							`/platform-connections/${existingPlatformConnection.id}`,
-							{ communityId },
-						);
-					} else if (platformConnectionId) {
-						await agentApiClient.put(
-							`/platform-connections/${platformConnectionId}`,
-							{ communityId },
-						);
-					}
-				} catch (error) {
-					console.error("Failed to update platform connection:", error);
-					return createErrorRedirect("platform_connection_failed", req);
-				}
-
-				await setupUserAndRole(stateDid, communityId);
-
-				const redirectUrl = `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&platformId=${existingPlatformConnection?.platformId || platformConnectionId}&communityId=${communityId}&isNew=${isNewCommunity}`;
-
-				const response = NextResponse.redirect(new URL(redirectUrl, req.url));
-
-				// Set community cookie
-				response.cookies.set("communityId", communityId, {
-					path: "/",
-					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
-					sameSite: "lax",
-					maxAge: 60 * 60 * 24 * 30,
-				});
-
-				return response;
-			} catch (parseError) {
-				console.error("[Telegram] Error parsing state data:", parseError);
+			if (!stateDid) {
+				console.error(
+					"[Telegram] Missing DID in verification data:",
+					verificationData,
+				);
 				return createErrorRedirect("invalid_state", req);
 			}
+
+			const { community, communityId, isNewCommunity } =
+				await getOrCreateCommunity(stateCommunityId || undefined, null);
+
+			// Find the platform connection by platformId
+			let existingPlatformConnection: PlatformConnection | null = null;
+			if (platformConnectionId) {
+				try {
+					const platformConnection = await agentApiClient.get(
+						`/platform-connections/${platformConnectionId}`,
+					);
+					const platformId = platformConnection.data.platformId;
+
+					const platformResponse = await agentApiClient.get(
+						`/platform-connections/by-platform-id/telegram/${platformId}`,
+					);
+					existingPlatformConnection = platformResponse.data;
+				} catch (error) {
+					if (isAxiosError(error) && error.response?.status === 404) {
+					} else {
+						console.error(
+							"Error checking for existing platform connection:",
+							error,
+						);
+					}
+				}
+			}
+
+			// Update platform connection
+			try {
+				if (existingPlatformConnection) {
+					await agentApiClient.put(
+						`/platform-connections/${existingPlatformConnection.id}`,
+						{ communityId },
+					);
+				} else if (platformConnectionId) {
+					await agentApiClient.put(
+						`/platform-connections/${platformConnectionId}`,
+						{ communityId },
+					);
+				}
+			} catch (error) {
+				console.error("Failed to update platform connection:", error);
+				return createErrorRedirect("platform_connection_failed", req);
+			}
+
+			await setupUserAndRole(stateDid, communityId);
+
+			// Mark the verification code as used after successful processing
+			try {
+				await agentApiClient.post(
+					`/communities/telegram/mark-used/${verificationCode}`,
+				);
+			} catch (error) {
+				console.error("Failed to mark verification code as used:", error);
+			}
+
+			const redirectUrl = `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&platformId=${existingPlatformConnection?.platformId || platformConnectionId}&communityId=${communityId}&isNew=${isNewCommunity}`;
+
+			const nextResponse = NextResponse.redirect(new URL(redirectUrl, req.url));
+
+			// Set community cookie
+			nextResponse.cookies.set("communityId", communityId, {
+				path: "/",
+				httpOnly: true,
+				secure: process.env.NODE_ENV === "production",
+				sameSite: "lax",
+				maxAge: 60 * 60 * 24 * 30,
+			});
+
+			return nextResponse;
 		} catch (error) {
-			console.error("Error processing state parameter:", error);
+			console.error("Error processing verification code:", error);
 			return createErrorRedirect("invalid_state", req);
 		}
 	}

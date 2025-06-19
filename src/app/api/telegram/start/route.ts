@@ -2,31 +2,7 @@
 
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-
-function encodeStateCompressed(
-	did: string,
-	communityId: string | null,
-): string {
-	const didSuffix = did.replace("did:privy:", "");
-	const cleanCommunityId = communityId ? communityId.replace(/-/g, "") : null;
-
-	const stateString = cleanCommunityId
-		? `${didSuffix}_${cleanCommunityId}`
-		: `${didSuffix}_null`;
-	return stateString;
-}
-
-export function decodeStateCompressed(encoded: string): {
-	did: string;
-	communityId: string | null;
-} {
-	const parts = encoded.split("_");
-
-	return {
-		did: `did:privy:${parts[0]}`,
-		communityId: parts[1] === "null" ? null : parts[1],
-	};
-}
+import { agentApiClient } from "@/lib/api";
 
 export async function GET(request: Request) {
 	const { searchParams } = new URL(request.url);
@@ -38,7 +14,16 @@ export async function GET(request: Request) {
 	}
 
 	try {
-		const compressedState = encodeStateCompressed(did, communityId || null);
+		// Call the backend API to generate a verification code using the authenticated client
+		const response = await agentApiClient.post(
+			"/communities/telegram/generate-code",
+			{
+				did,
+				community_id: communityId || undefined,
+			},
+		);
+
+		const { code } = response.data;
 
 		const headersList = await headers();
 		const host = headersList.get("host") || "localhost:3000";
@@ -52,8 +37,9 @@ export async function GET(request: Request) {
 			);
 		}
 
-		const dmLink = `https://t.me/${process.env.TELEGRAM_BOT_USERNAME}?start=${compressedState}`;
-		const callbackUrl = `${protocol}://${host}/api/telegram/callback?state=${encodeURIComponent(compressedState)}`;
+		// Use the verification code as the state parameter
+		const dmLink = `https://t.me/${process.env.TELEGRAM_BOT_USERNAME}?start=${code}`;
+		const callbackUrl = `${protocol}://${host}/api/telegram/callback?state=${encodeURIComponent(code)}`;
 
 		return NextResponse.json({
 			dmLink,
