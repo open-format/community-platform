@@ -7,11 +7,20 @@ import { buttonVariants } from "@/components/ui/button";
 import { Activity, ArrowRight, Award } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import { getCommunityImpactReports } from "@/app/actions/communities/reports";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Discord from "../../../../../../public/icons/discord.svg";
+import Github from "../../../../../../public/icons/github.svg";
+import Telegram from "../../../../../../public/icons/telegram.svg";
+import Image from "next/image";
 
 export default async function Overview({ params }: { params: Promise<{ slug: string }> }) {
   const t = await getTranslations("overview");
   const slug = (await params).slug as `0x${string}`;
-  const community = await getCommunity(slug);
+  const [community, communityImpactReports]: [Community, ImpactReport[]] = await Promise.all([
+    getCommunity(slug),
+    getCommunityImpactReports(slug),
+  ]);
 
   if (!community) {
     return (
@@ -46,8 +55,38 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
           </AlertDescription>
         </Alert>
       )}
-      {community?.snapshot ? (
-        <ImpactReports report={community?.snapshot?.metadata} />
+      {communityImpactReports && communityImpactReports.length > 0 ? (
+        <Tabs defaultValue="combined-0" className="w-full">
+          <TabsList className="space-x-6 bg-transparent">
+            {communityImpactReports.filter( r => r.isCombined ).map( (r, idx) => (
+                <TabsTrigger className="gap-1 border-gray-400 border text-base data-[state=active]:bg-yellow-300 data-[state=active]:text-black text-white" value={`combined-${idx}`} key={`trc-${r.communityId}`}>
+                  All
+                </TabsTrigger>
+            ))}
+            {communityImpactReports.filter( r => !r.isCombined ).map( (r, idx) => (
+                <TabsTrigger className="gap-2 border-gray-400 border text-base data-[state=active]:bg-yellow-300 data-[state=active]:text-black  text-white" value={`platform-${idx}`} key={`trp-${r.platformId!}`}>
+                  { r.platformType === "discord" ? 
+                    <Image src={Discord} alt="Discord" width={20} height={20} /> :
+                     r.platformType === "telegram" ?
+                      <Image src={Telegram} alt="Telegram" width={20} height={20} /> :
+                        <Image src={Github} alt="Github" width={20} height={20} /> }
+                    <span>›</span>
+                    <span>{r.platformName}</span>
+                </TabsTrigger>
+            ))}
+          </TabsList>
+          {communityImpactReports.filter( r => r.isCombined ).map( (r, idx) => (
+            <TabsContent value={`combined-${idx}`} key={`tvc-${r.communityId}`}>
+              <ImpactReports report={r} />
+            </TabsContent>
+          ))}
+          {communityImpactReports.filter( r => !r.isCombined ).map( (r, idx) => (
+            <TabsContent value={`platform-${idx}`} key={`trp-${r.platformId!}`}>
+              <ImpactReports report={r} />
+            </TabsContent>
+          ))}
+
+        </Tabs>
       ) : (
         <div className="flex flex-col items-center justify-center text-center p-6 max-w-prose mx-auto">
           <div className="flex flex-col items-center justify-center gap-3 mb-3">
