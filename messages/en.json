@@ -699,6 +699,16 @@
       "buttons": {
         "create": "Create Badge",
         "creating": "Creating Badge..."
+      },
+      "toast": {
+        "success": {
+          "title": "Success!",
+          "description": "Your badge has been created."
+        },
+        "error": {
+          "title": "Error",
+          "description": "Failed to create badge. Please try again."
+        }
       }
     },
     "update": {
@@ -1272,7 +1282,6 @@
       "imInterested": "I'm Interested",
       "interested": "Interest Registered",
       "continue": "Continue",
-      "error": "Error connecting Discord",
       "loading": "Loading integrations...",
       "errors": {
         "jobStartFailed": "Failed to start community analysis. Please try again.",
