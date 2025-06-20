@@ -29,12 +29,19 @@ function createErrorRedirect(error: string, req: NextRequest) {
   );
 }
 
-async function getOrCreateCommunity(communityId: string | undefined, existingPlatformConnection: PlatformConnection | null = null) {
+async function getOrCreateCommunity(
+  communityId: string | undefined,
+  existingPlatformConnection: PlatformConnection | null = null,
+) {
   if (existingPlatformConnection?.communityId) {
     const community = await agentApiClient
       .get(`/communities/${existingPlatformConnection.communityId}`)
       .then((res) => res.data);
-    return { community, communityId: existingPlatformConnection.communityId, isNewCommunity: false };
+    return {
+      community,
+      communityId: existingPlatformConnection.communityId,
+      isNewCommunity: false,
+    };
   }
 
   if (communityId) {
@@ -113,7 +120,9 @@ export async function GET(req: NextRequest) {
 
     let existingPlatformConnection: PlatformConnection | null = null;
     try {
-      const platformResponse = await agentApiClient.get(`/platform-connections/by-platform-id/discord/${guildId}`);
+      const platformResponse = await agentApiClient.get(
+        `/platform-connections/by-platform-id/discord/${guildId}`,
+      );
       existingPlatformConnection = platformResponse.data;
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 404) {
@@ -122,7 +131,7 @@ export async function GET(req: NextRequest) {
         console.error("Error checking for existing platform connection:", {
           guildId,
           error: error instanceof Error ? error.message : String(error),
-          status: isAxiosError(error) ? error.response?.status : 'unknown'
+          status: isAxiosError(error) ? error.response?.status : "unknown",
         });
       }
     }
@@ -130,13 +139,15 @@ export async function GET(req: NextRequest) {
     // Get or create community
     const { community, communityId, isNewCommunity } = await getOrCreateCommunity(
       stateCommunityId || storedCommunityId,
-      existingPlatformConnection
+      existingPlatformConnection,
     );
 
     // Update platform connection
     try {
       if (existingPlatformConnection) {
-        await agentApiClient.put(`/platform-connections/${existingPlatformConnection.id}`, { communityId });
+        await agentApiClient.put(`/platform-connections/${existingPlatformConnection.id}`, {
+          communityId,
+        });
       } else {
         await agentApiClient.put(`/platform-connections/${guildId}`, { communityId });
       }
@@ -157,7 +168,7 @@ export async function GET(req: NextRequest) {
         return community;
       });
 
-    const redirectUrl = `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&guildId=${guildId}&communityId=${communityId}&isNew=${isNewCommunity}`;
+    const redirectUrl = `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&guildId=${guildId}&communityId=${communityId}&isNew=${isNewCommunity}&firstConnection=${!existingPlatformConnection?.communityId}`;
 
     const response = NextResponse.redirect(new URL(redirectUrl, req.url));
 
