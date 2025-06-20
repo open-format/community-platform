@@ -118,10 +118,12 @@ export default function PlatformCard({
               className="w-full"
               onClick={async () => {
                 try {
-                  const res = await fetch(`/api/telegram/start?did=${encodeURIComponent(user.id)}`);
+                  const res = await fetch(
+                    `/api/telegram/start?did=${encodeURIComponent(user.id)}&communityId=${communityId || ""}`,
+                  );
                   if (!res.ok) throw new Error("Failed to start Telegram connect flow");
-                  const { addToGroupUrl } = await res.json();
-                  window.open(addToGroupUrl, "_blank");
+                  const { dmLink } = await res.json();
+                  window.open(dmLink, "_blank");
                 } catch (err) {
                   toast.error("Failed to start Telegram connect flow");
                 }

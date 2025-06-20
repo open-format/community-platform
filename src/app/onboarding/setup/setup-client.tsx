@@ -85,7 +85,9 @@ export default function SetupClient() {
 
       try {
         jobsStartedRef.current = true;
-        const messagesResponse = await startMessagesJobAsync?.({ platformId: guildId });
+        const messagesResponse = await startMessagesJobAsync?.({
+          platformId: guildId,
+        });
         if (messagesResponse?.job_id) {
           setMessagesJobId(messagesResponse.job_id);
         }
@@ -106,7 +108,10 @@ export default function SetupClient() {
         try {
           const [reportResponse, recommendationsResponse] = await Promise.all([
             startReportJobAsync?.({ communityId: communityId }),
-            startRecommendationsJobAsync?.({ platformId: guildId, communityId }),
+            startRecommendationsJobAsync?.({
+              platformId: guildId,
+              communityId,
+            }),
           ]);
 
           const reportJobId = reportResponse?.jobId || reportResponse?.job_id;
@@ -235,7 +240,9 @@ export default function SetupClient() {
     try {
       if (jobType === "messages") {
         if (!guildId) throw new Error("Missing guildId");
-        const messagesResponse = await startMessagesJobAsync?.({ platformId: guildId });
+        const messagesResponse = await startMessagesJobAsync?.({
+          platformId: guildId,
+        });
         if (messagesResponse?.job_id) {
           setMessagesJobId(messagesResponse.job_id);
         } else {
@@ -243,7 +250,9 @@ export default function SetupClient() {
         }
       } else if (jobType === "report") {
         if (!guildId) throw new Error("Missing guildId");
-        const reportResponse = await startReportJobAsync?.({ platformId: guildId });
+        const reportResponse = await startReportJobAsync?.({
+          platformId: guildId,
+        });
         if (reportResponse?.job_id) {
           setReportJobId(reportResponse.job_id);
         } else {
@@ -273,7 +282,9 @@ export default function SetupClient() {
       params.set("reportStatus", reportStatus);
       params.set("recommendationsStatus", recommendationsStatus);
       params.set("messagesStatus", messagesStatus);
-      router.replace(`/onboarding/setup?${params.toString()}`, { scroll: false });
+      router.replace(`/onboarding/setup?${params.toString()}`, {
+        scroll: false,
+      });
     }
   }, [reportStatus, recommendationsStatus, messagesStatus, router, searchParams]);
 

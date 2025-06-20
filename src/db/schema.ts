@@ -186,7 +186,9 @@ export const pendingRewards = pgTable(
     evidence: text("evidence").array(),
     reasoning: text("reasoning"),
     metadata_uri: text("metadata_uri").notNull(),
-    status: text("status", { enum: ["pending", "processed", "failed"] }).default("pending"),
+    status: text("status", {
+      enum: ["pending", "processed", "failed"],
+    }).default("pending"),
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
     updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
     processed_at: timestamp("processed_at", { withTimezone: true }),
