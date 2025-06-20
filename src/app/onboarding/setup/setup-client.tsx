@@ -226,7 +226,7 @@ export default function SetupClient() {
   const progresses = [1, getProgress()];
 
   const whatsNext = [
-    "See your first insight report",
+    "See your first impact report",
     "Review today's reward recommendations",
     "Setup your community token to reward contributions",
     "Ask your Copilot questions about your community in Discord",
@@ -372,7 +372,7 @@ export default function SetupClient() {
                   reward recommendations are updated daily.
                 </p>
                 <p>
-                  Want to expand your insights?{" "}
+                  Want to expand your data collection?{" "}
                   <Link
                     href={`/onboarding/integrations?communityId=${communityId}`}
                     className="text-primary hover:underline"
@@ -424,7 +424,7 @@ export default function SetupClient() {
             <p className="text-gray-400 text-center max-w-md">
               {isComplete
                 ? "Your community Copilot is now ready to help you grow your community."
-                : "Your community is now collecting insights. Large communities may take up to 10 minutes to setup."}
+                : "Your community is now collecting data. Large communities may take up to 10 minutes to setup."}
             </p>
           </div>
           <div className="flex flex-col gap-4">

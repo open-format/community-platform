@@ -24,7 +24,7 @@ export default function Auth() {
                 activity in your community
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-green-400">✓</span> Receive a weekly insight report of
+                <span className="text-green-400">✓</span> Receive a weekly impact report of
                 community wins and blockers
               </li>
               <li className="flex items-start gap-2">

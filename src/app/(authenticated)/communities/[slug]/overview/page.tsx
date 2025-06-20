@@ -92,7 +92,7 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
           <div className="flex flex-col items-center justify-center gap-3 mb-3">
             <Activity className="h-8 w-8 text-primary animate-pulse" />
             <h2 className="text-3xl font-semibold text-foreground">
-              Your Copilot is gathering insights from your community's activity.
+              Your Copilot is gathering data from your community's activity.
             </h2>
           </div>
           <p className="text-lg text-muted-foreground mb-6">
@@ -104,7 +104,7 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
           </p>
           {isDiscordConnected && (
             <p className="text-muted-foreground mb-4">
-              To get more insights, you can{" "}
+              To get more data, you can{" "}
               <Link href="/onboarding" className="text-primary hover:underline">
                 connect another Discord server
               </Link>{" "}
@@ -113,7 +113,7 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
           )}
           {!isDiscordConnected && isTelegramConnected && (
             <p className="text-muted-foreground">
-              Want to expand your insights?{" "}
+              Want to expand your data collection?{" "}
               <Link
                 href={`/onboarding/integrations?communityId=${community.id}`}
                 className="text-primary hover:underline"

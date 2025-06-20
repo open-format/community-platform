@@ -57,7 +57,7 @@ export default function MetricsSection({ community }: MetricsSectionProps) {
           <h2 className="text-2xl font-semibold tracking-tight">{t("title")}</h2>
           <RefreshButton />
         </div>
-        <p className="text-sm text-muted-foreground">Reward insights are updated every 24 hours</p>
+        <p className="text-sm text-muted-foreground">Reward metrics are updated every 24 hours</p>
       </div>
 
       {/* Metrics Grid */}

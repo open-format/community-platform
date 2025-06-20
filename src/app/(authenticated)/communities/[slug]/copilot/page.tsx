@@ -17,7 +17,7 @@ export default async function CopilotPage({ params }: { params: Promise<{ slug: 
             <CardTitle className="text-xl">Ask Your Community Copilot</CardTitle>
           </div>
           <CardDescription className="text-zinc-400">
-            Get instant insights about your community by asking questions in Discord
+            Get instant information about your community by asking questions in Discord
           </CardDescription>
         </CardHeader>
         <CardContent>
