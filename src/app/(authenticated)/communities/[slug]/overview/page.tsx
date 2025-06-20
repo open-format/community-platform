@@ -59,12 +59,12 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
         <Tabs defaultValue="combined-0" className="w-full">
           <TabsList className="space-x-6 bg-transparent">
             {communityImpactReports.filter( r => r.isCombined ).map( (r, idx) => (
-                <TabsTrigger className="gap-1 border-gray-400 border text-base data-[state=active]:bg-yellow-300 data-[state=active]:text-black text-white" value={`combined-${idx}`} key={`trc-${r.communityId}`}>
+                <TabsTrigger className="gap-1 border-gray-400 border text-base data-[state=active]:bg-primary data-[state=active]:text-black text-white" value={`combined-${idx}`} key={`trc-${r.communityId}`}>
                   All
                 </TabsTrigger>
             ))}
             {communityImpactReports.filter( r => !r.isCombined ).map( (r, idx) => (
-                <TabsTrigger className="gap-2 border-gray-400 border text-base data-[state=active]:bg-yellow-300 data-[state=active]:text-black  text-white" value={`platform-${idx}`} key={`trp-${r.platformId!}`}>
+                <TabsTrigger className="gap-2 border-gray-400 border text-base data-[state=active]:bg-primary data-[state=active]:text-black  text-white" value={`platform-${idx}`} key={`trp-${r.platformId!}`}>
                   { r.platformType === "discord" ? 
                     <Image src={Discord} alt="Discord" width={20} height={20} /> :
                      r.platformType === "telegram" ?
