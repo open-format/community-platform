@@ -29,34 +29,41 @@ function createErrorRedirect(error: string, req: NextRequest) {
   );
 }
 
-async function getOrCreateCommunity(communityId: string | undefined, existingPlatformConnection: PlatformConnection | null = null) {
-  if (existingPlatformConnection?.communityId) {
-    const community = await agentApiClient
-      .get(`/communities/${existingPlatformConnection.communityId}`)
-      .then((res) => res.data);
-    return { community, communityId: existingPlatformConnection.communityId, isNewCommunity: false };
-  }
+async function getOrCreateCommunity(
+	communityId: string | undefined,
+	existingPlatformConnection: PlatformConnection | null = null,
+) {
+	if (existingPlatformConnection?.communityId) {
+		const community = await agentApiClient
+			.get(`/communities/${existingPlatformConnection.communityId}`)
+			.then((res) => res.data);
+		return {
+			community,
+			communityId: existingPlatformConnection.communityId,
+			isNewCommunity: false,
+		};
+	}
 
-  if (communityId) {
-    try {
-      const community = await agentApiClient
-        .get(`/communities/${communityId}`)
-        .then((res) => res.data);
-      return { community, communityId, isNewCommunity: false };
-    } catch (error) {
-      console.warn("Stored community not found, creating new community");
-    }
-  }
+	if (communityId) {
+		try {
+			const community = await agentApiClient
+				.get(`/communities/${communityId}`)
+				.then((res) => res.data);
+			return { community, communityId, isNewCommunity: false };
+		} catch (error) {
+			console.warn("Stored community not found, creating new community");
+		}
+	}
 
-  const community = await agentApiClient
-    .post("/communities", { name: "Community" })
-    .then((res) => res.data);
+	const community = await agentApiClient
+		.post("/communities", { name: "Community" })
+		.then((res) => res.data);
 
-  if (!community.id || typeof community.id !== "string") {
-    throw new Error("Community creation failed");
-  }
+	if (!community.id || typeof community.id !== "string") {
+		throw new Error("Community creation failed");
+	}
 
-  return { community, communityId: community.id, isNewCommunity: true };
+	return { community, communityId: community.id, isNewCommunity: true };
 }
 
 async function setupUserAndRole(did: string, communityId: string) {
@@ -113,30 +120,40 @@ export async function GET(req: NextRequest) {
 
     let existingPlatformConnection: PlatformConnection | null = null;
     try {
-      const platformResponse = await agentApiClient.get(`/platform-connections/by-platform-id/discord/${guildId}`);
+      const platformResponse = await agentApiClient.get(
+							`/platform-connections/by-platform-id/discord/${guildId}`,
+						);
       existingPlatformConnection = platformResponse.data;
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 404) {
         console.log("No existing platform connection found for guild:", guildId);
       } else {
         console.error("Error checking for existing platform connection:", {
-          guildId,
-          error: error instanceof Error ? error.message : String(error),
-          status: isAxiosError(error) ? error.response?.status : 'unknown'
-        });
+									guildId,
+									error: error instanceof Error ? error.message : String(error),
+									status: isAxiosError(error)
+										? error.response?.status
+										: "unknown",
+								});
       }
     }
 
     // Get or create community
-    const { community, communityId, isNewCommunity } = await getOrCreateCommunity(
-      stateCommunityId || storedCommunityId,
-      existingPlatformConnection
-    );
+				const { community, communityId, isNewCommunity } =
+					await getOrCreateCommunity(
+						stateCommunityId || storedCommunityId,
+						existingPlatformConnection,
+					);
 
     // Update platform connection
     try {
       if (existingPlatformConnection) {
-        await agentApiClient.put(`/platform-connections/${existingPlatformConnection.id}`, { communityId });
+        await agentApiClient.put(
+									`/platform-connections/${existingPlatformConnection.id}`,
+									{
+										communityId,
+									},
+								);
       } else {
         await agentApiClient.put(`/platform-connections/${guildId}`, { communityId });
       }
@@ -157,7 +174,7 @@ export async function GET(req: NextRequest) {
         return community;
       });
 
-    const redirectUrl = `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&guildId=${guildId}&communityId=${communityId}&isNew=${isNewCommunity}`;
+    const redirectUrl = `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&guildId=${guildId}&communityId=${communityId}&isNew=${isNewCommunity}&firstConnection=${!existingPlatformConnection?.communityId}`;
 
     const response = NextResponse.redirect(new URL(redirectUrl, req.url));
 
