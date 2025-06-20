@@ -74,9 +74,9 @@ export default async function PlatformsPage({
             <span className="font-semibold text-white">What happens next</span>
           </div>
           <ul className="list-disc list-inside text-gray-300 text-sm space-y-1 mb-2">
-            <li>First insights arrive within minutes</li>
+            <li>First impact reports arrive within minutes</li>
             <li>Daily one-click rewards for top contributors</li>
-            <li>Weekly insight report of community wins and blockers</li>
+            <li>Weekly impact report of community wins and blockers</li>
           </ul>
           <Link href="/onboarding/example" className="flex text-primary items-center gap-1 text-sm">
             <ExternalLinkIcon className="h-4 w-4" /> See an example impact report

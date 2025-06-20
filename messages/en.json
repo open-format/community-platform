@@ -1125,7 +1125,7 @@
     }
   },
   "metrics": {
-    "title": "Reward Insights",
+    "title": "Reward Metrics",
     "uniqueUsers": {
       "description": "The number of new users who have received rewards",
       "title": "New Users",
@@ -1292,8 +1292,8 @@
       "retryConnection": "Retry Connection"
     },
     "exampleSnapshot": {
-      "title": "Community Insight Report",
-      "intro": "Here's an example of a Insight Report you'll see after connecting your platforms.",
+      "title": "Community Impact Report",
+      "intro": "Here's an example of an Impact Report you'll see after connecting your platforms.",
       "loading": "Loading example report...",
       "unavailable": "Example report currently unavailable.",
       "continue": "Continue",
@@ -1303,7 +1303,7 @@
       "title": "Setup Complete!",
       "intro": "Your community platform is ready to go.",
       "successTitle": "Welcome to Your Community Platform",
-      "successMessage": "Your community platform is now set up and ready to use. You can start exploring insights, managing rewards, and growing your community.",
+      "successMessage": "Your community platform is now set up and ready to use. You can start exploring impact reports, managing rewards, and growing your community.",
       "continue": "Go to Dashboard"
     },
     "setup": {
@@ -1311,7 +1311,7 @@
       "description": "We're preparing your community platform with initial reports and recommendations. This may take a few moments.",
       "report": {
         "title": "Generate Report",
-        "description": "Analyzing community activity and generating insights...",
+        "description": "Analyzing community activity and generating impact reports...",
         "lowActivityDescription": "Skipped report generation due to insufficient message history"
       },
       "recommendations": {
@@ -1337,7 +1337,7 @@
         "missingCommunityId": "Missing community ID. Please try connecting again.",
         "setupFailed": "Failed to complete setup. Please try again."
       },
-      "continue": "See your first insight report",
+      "continue": "See your first impact report",
       "continueToDashboard": "Continue to Dashboard",
       "retry": "Retry"
     }
