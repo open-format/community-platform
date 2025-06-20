@@ -1285,11 +1285,11 @@
       "loading": "Loading integrations...",
       "errors": {
         "jobStartFailed": "Failed to start community analysis. Please try again.",
-        "missingParameters": "Missing required parameters. Please try connecting again."
+        "missingParameters": "Missing required parameters. Please try connecting again.",
+        "connectionFailed": "An error occurred. Please try again."
       },
       "starting": "Starting...",
-      "retryConnection": "Retry Connection",
-      "error": "An error occurred. Please try again."
+      "retryConnection": "Retry Connection"
     },
     "exampleSnapshot": {
       "title": "Community Insight Report",
@@ -1310,19 +1310,27 @@
       "title": "Setting Up Your Community",
       "description": "We're preparing your community platform with initial reports and recommendations. This may take a few moments.",
       "report": {
-        "title": "Impact Report Generation",
-        "description": "Analyzing your community's activity to generate insights and recommendations."
+        "title": "Generate Report",
+        "description": "Analyzing community activity and generating insights...",
+        "lowActivityDescription": "Skipped report generation due to insufficient message history"
       },
       "recommendations": {
         "title": "Reward Recommendations",
-        "description": "Processing community contributions to suggest appropriate rewards."
+        "description": "Analyzing community activity to suggest rewards...",
+        "lowActivityDescription": "Skipped recommendations due to insufficient message history"
+      },
+      "messages": {
+        "title": "Historical Messages",
+        "description": "Fetching historical messages from your community...",
+        "lowActivityDescription": "No historical messages found in your community. This is normal for new communities!"
       },
       "status": {
-        "idle": "Waiting to start",
+        "idle": "Idle",
         "pending": "Pending",
         "processing": "Processing",
         "completed": "Complete",
         "failed": "Failed",
+        "skipped": "Skipped",
         "unknown": "Unknown"
       },
       "errors": {
