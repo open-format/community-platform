@@ -12,7 +12,7 @@ const config = {
   COMMUNITY_AGENT_AUTH_TOKEN: process.env.COMMUNITY_AGENT_AUTH_TOKEN,
   COMMUNITY_AGENT_API_URL: process.env.COMMUNITY_AGENT_API_URL,
   DISCORD_BOT_GUIDE_URL: "https://openformat.notion.site/discord-copilot-guide",
-  LOW_ACTIVITY_THRESHOLD: Number.parseInt(process.env.NEXT_PUBLIC_LOW_ACTIVITY_THRESHOLD ?? "10"),
+  LOW_ACTIVITY_THRESHOLD: Number.parseInt(process.env.NEXT_PUBLIC_LOW_ACTIVITY_THRESHOLD ?? "10", 10),
 } as const;
 
 export default config;
