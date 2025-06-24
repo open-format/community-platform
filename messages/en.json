@@ -204,12 +204,13 @@
       "noEvidence": "No evidence provided",
       "openMenu": "Open menu",
       "reject": "Reject",
-      "reward": "Reward",
+      "reward": "View Reward",
       "rewardAmount": "Reward Amount",
       "rewardDescription": "Reward a community member for their contribution",
       "form": {
         "confirmRewardRecommendation": "Confirm Reward",
         "confirmingRewardRecommendation": "Confirming Reward...",
+        "rejectRewardRecommendation": "Reject Reward",
         "token": {
           "label": "Token",
           "placeholder": "Select token"
@@ -235,7 +236,7 @@
         }
       },
       "successConfirmingRewardRecommendation": "Confirmed reward successfully",
-      "successRejectingRewardRecommendation": "Rejected reward recommendation: {summary}.",
+      "successRejectingRewardRecommendation": "Deleted reward recommendation: {summary}.",
       "suggestedReward": "Suggested reward",
       "platform": "Platform",
       "title": "Reward Recommendations",

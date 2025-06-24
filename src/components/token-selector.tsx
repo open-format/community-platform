@@ -46,6 +46,11 @@ export default function TokenSelector({
   const t = useTranslations("tokenSelector");
 
   React.useEffect(() => {
+    // If badges is null/empty and only one token, set default value
+    if ((badges == null || badges.length === 0) && tokens.length === 1 && !value) {
+      onChange(tokens[0].token.id);
+      return;
+    }
     if (
       value &&
       !(includeAllOption && value === "All") &&
