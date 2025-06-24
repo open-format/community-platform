@@ -1,3 +1,10 @@
+## [0.25.3](https://github.com/open-format/community-platform/compare/v0.25.2...v0.25.3) (2025-06-24)
+
+
+### Bug Fixes
+
+* Ensure PostHog initialization only occurs with valid environment variables ([42c6be8](https://github.com/open-format/community-platform/commit/42c6be8c8b8d5a9b593563c0c0007298540ee483))
+
 ## [0.25.2](https://github.com/open-format/community-platform/compare/v0.25.1...v0.25.2) (2025-06-17)
 
 
