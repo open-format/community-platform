@@ -234,6 +234,7 @@ interface DailyActivity {
 }
 
 interface ChannelBreakdown {
+  platform: "telegram" | "discord" | "github",
   channelName: string;
   uniqueUsers: number;
   messageCount: number;
@@ -265,6 +266,7 @@ interface UserSentiment {
 }
 
 interface TopContributor {
+  platform: "telegram" | "discord" | "github",
   username: string;
   messageCount: number;
 }
@@ -276,7 +278,11 @@ interface ImpactReport {
   startDate: number;
   summaryId: string;
   timestamp: number;
-  platformId: string;
+  isCombined: boolean,
+  platformId?: string;
+  platformName?: string;
+  platformType?: "telegram" | "discord" | "github";
+  communityId: string;
   messageCount: number;
   dailyActivity: DailyActivity[];
   userSentiment: UserSentiment;

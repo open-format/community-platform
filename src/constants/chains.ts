@@ -37,8 +37,8 @@ export const openFormatChain: ViemChain = {
   },
   blockExplorers: {
     default: {
-      name: "TurboChain Explorer",
-      url: "https://explorer.turbo.aurora.dev",
+      name: "Open Format Explorer",
+      url: "https://explorer.0x4e454168.aurora-cloud.dev",
     },
   },
 };

@@ -1,7 +1,6 @@
 "use server";
 
-import { agentApiClient } from "@/lib/api";
-import { isAxiosError } from "axios";
+import { agentApiClient, throwHTTPErrors } from "@/lib/api";
 
 /**
  * Fetches a community by its identifier
@@ -17,24 +16,8 @@ export async function getCommunity(id: string): Promise<Community> {
   } catch (error) {
     // Log the full error for debugging
     console.error("Failed to fetch community:", error);
-
-    // Check if it's an Axios error with a response
-    if (isAxiosError(error) && error.response) {
-      // Handle specific HTTP error codes
-      switch (error.response.status) {
-        case 404:
-          throw new Error(`Community with ID ${id} not found`);
-        case 403:
-          throw new Error("You don't have permission to access this community");
-        case 401:
-          throw new Error("Unauthorized access to community");
-        default:
-          throw new Error(
-            `Failed to fetch community: ${error.response.data.message || "Unknown error"}`,
-          );
-      }
-    }
-
+    // Handle HTTP errors
+    throwHTTPErrors(`Get Community with ID ${id}`, error);
     // Handle network errors or other non-HTTP errors
     throw new Error("Failed to connect to community service");
   }

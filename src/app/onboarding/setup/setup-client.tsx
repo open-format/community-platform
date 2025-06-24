@@ -2,9 +2,10 @@
 
 import { OnboardingProgressBar } from "@/components/onboarding/onboarding-progress";
 import { Button } from "@/components/ui/button";
+import config from "@/constants/config";
 import { usePollingJob } from "@/hooks/useJobStatus";
 import { usePrivy } from "@privy-io/react-auth";
-import { AlertCircle, BarChart2, CheckCircle, FileText, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle, Loader2, SkipForward, FileText, BarChart2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -12,7 +13,7 @@ import posthog from "posthog-js";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
-type JobStatus = "idle" | "pending" | "processing" | "completed" | "failed";
+type JobStatus = "idle" | "pending" | "processing" | "completed" | "failed" | "skipped";
 
 export default function SetupClient() {
   const t = useTranslations("onboarding.setup");
@@ -21,6 +22,8 @@ export default function SetupClient() {
   const guildId = searchParams.get("guildId");
   const communityId = searchParams.get("communityId");
   const { user } = usePrivy();
+
+  const { LOW_ACTIVITY_THRESHOLD } = config;
 
   const [messagesJobId, setMessagesJobId] = useState<string | null>(null);
   const [reportJobId, setReportJobId] = useState<string | null>(null);
@@ -32,6 +35,7 @@ export default function SetupClient() {
     rewardRecommendations: false,
     communitySnapshot: false,
   });
+  const [hasLowActivity, setHasLowActivity] = useState(false);
 
   const { status: messagesStatus, data: messagesData } = usePollingJob({
     statusEndpoint: (jobId) => `/api/onboarding/messages-job-status?jobId=${jobId}`,
@@ -85,7 +89,9 @@ export default function SetupClient() {
 
       try {
         jobsStartedRef.current = true;
-        const messagesResponse = await startMessagesJobAsync?.({ platformId: guildId });
+        const messagesResponse = await startMessagesJobAsync?.({
+          platformId: guildId,
+        });
         if (messagesResponse?.job_id) {
           setMessagesJobId(messagesResponse.job_id);
         }
@@ -103,10 +109,19 @@ export default function SetupClient() {
   useEffect(() => {
     const startRemainingJobs = async () => {
       if (messagesStatus === "completed" && guildId && communityId) {
+        // Check if we have enough messages
+        if ((messagesData?.newMessagesAdded ?? 0) < LOW_ACTIVITY_THRESHOLD) {
+          setHasLowActivity(true);
+          return;
+        }
+
         try {
           const [reportResponse, recommendationsResponse] = await Promise.all([
-            startReportJobAsync?.({ communityId: communityId }),
-            startRecommendationsJobAsync?.({ platformId: guildId, communityId }),
+            startReportJobAsync?.({ platformId: guildId, communityId }),
+            startRecommendationsJobAsync?.({
+              platformId: guildId,
+              communityId,
+            }),
           ]);
 
           const reportJobId = reportResponse?.jobId || reportResponse?.job_id;
@@ -131,12 +146,13 @@ export default function SetupClient() {
     startRecommendationsJobAsync,
     messagesStatus,
     messagesData,
+    LOW_ACTIVITY_THRESHOLD,
+    t,
   ]);
 
   const isComplete =
-    reportStatus === "completed" &&
-    recommendationsStatus === "completed" &&
-    messagesStatus === "completed";
+    messagesStatus === "completed" &&
+    (hasLowActivity ? true : reportStatus === "completed" && recommendationsStatus === "completed");
 
   // Add loading state for continue button
   const isContinueLoading =
@@ -168,7 +184,9 @@ export default function SetupClient() {
       key: "messages",
       icon: <FileText className="h-6 w-6" />,
       title: "Fetching Historical Messages",
-      description: "Collecting historical messages from your connected platforms.",
+      description: hasLowActivity
+        ? t("messages.lowActivityDescription")
+        : "Collecting historical messages from your connected platforms.",
       status: messagesStatus as JobStatus,
       isJob: true,
     },
@@ -176,16 +194,30 @@ export default function SetupClient() {
       key: "insights",
       icon: <FileText className="h-6 w-6" />,
       title: "Generating Reward Recommendations",
-      description: "Reward recommendations highlight top contributors and help you recognise them.",
-      status: recommendationsStatus as JobStatus,
+      description: hasLowActivity
+        ? t("recommendations.lowActivityDescription")
+        : "Reward recommendations highlight top contributors and help you recognise them.",
+      status:
+        messagesStatus === "completed"
+          ? hasLowActivity
+            ? "skipped"
+            : (recommendationsStatus as JobStatus)
+          : "idle",
       isJob: true,
     },
     {
       key: "analytics",
       icon: <BarChart2 className="h-6 w-6" />,
       title: "Generating Community Impact Report",
-      description: "Your community impact report will give you a quick overview of your community.",
-      status: reportStatus as JobStatus,
+      description: hasLowActivity
+        ? t("report.lowActivityDescription")
+        : "Your community impact report will give you a quick overview of your community.",
+      status:
+        messagesStatus === "completed"
+          ? hasLowActivity
+            ? "skipped"
+            : (reportStatus as JobStatus)
+          : "idle",
       isJob: true,
     },
   ];
@@ -209,6 +241,8 @@ export default function SetupClient() {
         return <CheckCircle className="h-5 w-5 text-green-500" />;
       case "failed":
         return <AlertCircle className="h-5 w-5 text-destructive" />;
+      case "skipped":
+        return <SkipForward className="h-5 w-5 text-yellow-500" />;
       default:
         return <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />;
     }
@@ -226,6 +260,8 @@ export default function SetupClient() {
         return t("status.completed");
       case "failed":
         return t("status.failed");
+      case "skipped":
+        return t("status.skipped");
       default:
         return t("status.unknown");
     }
@@ -235,7 +271,9 @@ export default function SetupClient() {
     try {
       if (jobType === "messages") {
         if (!guildId) throw new Error("Missing guildId");
-        const messagesResponse = await startMessagesJobAsync?.({ platformId: guildId });
+        const messagesResponse = await startMessagesJobAsync?.({
+          platformId: guildId,
+        });
         if (messagesResponse?.job_id) {
           setMessagesJobId(messagesResponse.job_id);
         } else {
@@ -243,7 +281,9 @@ export default function SetupClient() {
         }
       } else if (jobType === "report") {
         if (!guildId) throw new Error("Missing guildId");
-        const reportResponse = await startReportJobAsync?.({ platformId: guildId });
+        const reportResponse = await startReportJobAsync?.({
+          platformId: guildId,
+        });
         if (reportResponse?.job_id) {
           setReportJobId(reportResponse.job_id);
         } else {
@@ -273,7 +313,9 @@ export default function SetupClient() {
       params.set("reportStatus", reportStatus);
       params.set("recommendationsStatus", recommendationsStatus);
       params.set("messagesStatus", messagesStatus);
-      router.replace(`/onboarding/setup?${params.toString()}`, { scroll: false });
+      router.replace(`/onboarding/setup?${params.toString()}`, {
+        scroll: false,
+      });
     }
   }, [reportStatus, recommendationsStatus, messagesStatus, router, searchParams]);
 
@@ -409,7 +451,7 @@ export default function SetupClient() {
                           ? "Completed"
                           : "In progress"}
                     </div>
-                    {step.isJob && step.status === "failed" && (
+                    {step.status === "failed" && (
                       <Button
                         onClick={() =>
                           handleRetry(
@@ -421,7 +463,7 @@ export default function SetupClient() {
                           )
                         }
                       >
-                        {t("retry")}
+                        {t("setup.retry")}
                       </Button>
                     )}
                   </div>

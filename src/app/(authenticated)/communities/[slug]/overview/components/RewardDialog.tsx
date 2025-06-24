@@ -101,6 +101,7 @@ export default function RewardDialog({
   }
 
   const FormSchema = z.object({
+    rewardId: z.string().min(3, t("validation.rewardIdMin")).max(32, t("validation.rewardIdMax")),
     amount: z.coerce.number().min(1, t("validation.amountMin")).default(recommendation.points),
     tokenAddress: z.string().refine((value) => isAddress(value), {
       message: t("validation.tokenAddressRequired"),
@@ -110,6 +111,7 @@ export default function RewardDialog({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
+      rewardId: recommendation.reward_id,
       contributorName: recommendation.contributor_name,
       amount: recommendation.points,
     },
@@ -135,7 +137,7 @@ export default function RewardDialog({
               args: [
                 data.tokenAddress as Address,
                 recommendation.wallet_address as Address,
-                stringToHex(recommendation.reward_id, { size: 32 }),
+                stringToHex(data.rewardId, { size: 32 }),
                 stringToHex("MISSION", { size: 32 }),
                 stringToHex(recommendation.metadata_uri ?? ""),
               ],
@@ -164,7 +166,7 @@ export default function RewardDialog({
                 data.tokenAddress as Address,
                 recommendation.wallet_address as Address,
                 parseEther(data.amount.toString()),
-                stringToHex(recommendation.reward_id, { size: 32 }),
+                stringToHex(data.rewardId, { size: 32 }),
                 stringToHex("MISSION", { size: 32 }),
                 stringToHex(recommendation.metadata_uri ?? ""),
               ],
@@ -211,7 +213,7 @@ export default function RewardDialog({
         </DialogHeader>
         <Form {...form}>
           <form
-            className="w-full space-y-4 overflow-y-auto max-h-[calc(85vh-120px)]"
+            className="w-full space-y-4 overflow-y-auto max-h-[calc(85vh)]"
             onSubmit={form.handleSubmit(handleFormSubmission)}
           >
             {/* Receiver Name  */}
@@ -265,6 +267,25 @@ export default function RewardDialog({
             )}
 
             <Separator className="my-lg" />
+            {/* Reward Id */}
+            <FormField
+              control={form.control}
+              name="rewardId"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>{t("form.rewardId.label")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder={t("form.rewardId.placeholder")}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* Reward Amount */}
             <FormField
               control={form.control}
