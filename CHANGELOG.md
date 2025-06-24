@@ -1,3 +1,17 @@
+# [0.26.0](https://github.com/open-format/community-platform/compare/v0.25.3...v0.26.0) (2025-06-24)
+
+
+### Bug Fixes
+
+* add success and error toast messages for badge creation ([659bf43](https://github.com/open-format/community-platform/commit/659bf43a1db7c89f4b30cf2002dcdbbc15497cbf))
+* Changed active tab colour ([05c6022](https://github.com/open-format/community-platform/commit/05c602262251241024591587c15dee6cd81dadff))
+
+
+### Features
+
+* Added impact reports tabs in community overview ([ff0b449](https://github.com/open-format/community-platform/commit/ff0b449c01cf56977af77c74e60f4b59b56e949f))
+* enhance OnboardingLayout with navigation and profile header ([60e2df5](https://github.com/open-format/community-platform/commit/60e2df542d67cd3a6e069934075502c19da85501))
+
 ## [0.25.3](https://github.com/open-format/community-platform/compare/v0.25.2...v0.25.3) (2025-06-24)
 
 
