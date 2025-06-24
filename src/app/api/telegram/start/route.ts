@@ -2,23 +2,26 @@
 
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { randomBytes } from "node:crypto";
+import { agentApiClient } from "@/lib/api";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const did = searchParams.get("did");
+  const communityId = searchParams.get("communityId");
 
   if (!did) {
     return NextResponse.json({ error: "Missing Privy DID" }, { status: 400 });
   }
 
   try {
-    const stateObj = {
-      state: randomBytes(16).toString("hex"),
+    // Call the backend API to generate a verification code using the authenticated client
+    const response = await agentApiClient.post("/communities/telegram/generate-code", {
       did,
-    };
+      community_id: communityId || undefined,
+    });
 
-    const state = Buffer.from(JSON.stringify(stateObj)).toString("base64");
+    const { code } = response.data;
+
     const headersList = await headers();
     const host = headersList.get("host") || "localhost:3000";
     const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
@@ -28,19 +31,22 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Missing TELEGRAM_BOT_USERNAME" }, { status: 500 });
     }
 
-    const addToGroupUrl = `https://t.me/${process.env.TELEGRAM_BOT_USERNAME}?startgroup=connect_group`;
-    const callbackUrl = `${protocol}://${host}/api/telegram/callback?state=${encodeURIComponent(state)}`;
+    // Use the verification code as the state parameter
+    const dmLink = `https://t.me/${process.env.TELEGRAM_BOT_USERNAME}?start=${code}`;
+    const callbackUrl = `${protocol}://${host}/api/telegram/callback?state=${encodeURIComponent(code)}`;
 
     return NextResponse.json({
-      addToGroupUrl,
+      dmLink,
       callbackUrl,
-      state,
     });
   } catch (error) {
     console.error("Error in Telegram start:", error);
-    return NextResponse.json({ 
-      error: "Failed to initialize Telegram connection",
-      details: error instanceof Error ? error.message : "Unknown error"
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "Failed to initialize Telegram connection",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 },
+    );
   }
 }

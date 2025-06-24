@@ -1,6 +1,6 @@
 import { getCommunity } from "@/app/actions/communities/get";
 import { OnboardingProgressBar } from "@/components/onboarding/onboarding-progress";
-import { ExternalLinkIcon, Info } from "lucide-react";
+import { ExternalLinkIcon, Info, Gift, TrendingUp } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -40,10 +40,10 @@ export default async function PlatformsPage({
   const communityId = params.communityId as string;
   const community = communityId ? await getCommunity(communityId) : null;
 
-  const discordConnected = community?.platformConnections.some(
+  const discordConnected = !!community?.platformConnections.some(
     (platform) => platform.platformType === "discord",
   );
-  const telegramConnected = community?.platformConnections.some(
+  const telegramConnected = !!community?.platformConnections.some(
     (platform) => platform.platformType === "telegram",
   );
 
@@ -71,29 +71,29 @@ export default async function PlatformsPage({
         <div className="bg-zinc-800/70 rounded-xl p-6 mb-8 border border-zinc-700">
           <div className="flex items-center gap-2 mb-3">
             <Info className="h-5 w-5 text-yellow-300" />
-            <span className="font-semibold text-white">What happens next</span>
+            <span className="font-semibold text-white">{t("integrations.whatHappensNext")}</span>
           </div>
-          <ul className="list-disc list-inside text-gray-300 text-sm space-y-1 mb-2">
-            <li>First insights arrive within minutes</li>
-            <li>Daily one-click rewards for top contributors</li>
-            <li>Weekly insight report of community wins and blockers</li>
-          </ul>
-          <Link href="/onboarding/example" className="flex text-primary items-center gap-1 text-sm">
-            <ExternalLinkIcon className="h-4 w-4" /> See an example impact report
+          <div className="space-y-2 text-gray-300 text-sm">
+            <div className="flex items-center gap-2">
+              <Gift className="h-4 w-4 text-primary" />
+              <span>{t("integrations.dailyRewards")}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-primary" />
+              <span>{t("integrations.weeklyInsights")}</span>
+            </div>
+          </div>
+          <Link
+            href="/onboarding/example"
+            className="flex text-primary items-center gap-1 text-sm mt-4"
+          >
+            <ExternalLinkIcon className="h-4 w-4" /> {t("integrations.seeExampleReport")}
           </Link>
         </div>
         <Suspense fallback={<LoadingSkeleton />}>
           <IntegrationsClient
-            discordConnected={
-              community?.platformConnections.some(
-                (platform) => platform.platformType === "discord",
-              ) || discordConnected
-            }
-            telegramConnected={
-              community?.platformConnections.some(
-                (platform) => platform.platformType === "telegram",
-              ) || telegramConnected
-            }
+            discordConnected={discordConnected}
+            telegramConnected={telegramConnected}
             community={community}
           />
         </Suspense>

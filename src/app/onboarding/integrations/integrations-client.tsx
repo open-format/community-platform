@@ -18,6 +18,7 @@ const platforms = [
     connectUrl: "/api/discord/start",
     titleKey: "discord",
     descriptionKey: "discordDesc",
+    insightTimingKey: "instantInsights",
   },
   {
     key: "telegram",
@@ -26,6 +27,7 @@ const platforms = [
     connectUrl: "/api/telegram/start",
     titleKey: "telegram",
     descriptionKey: "telegramDesc",
+    insightTimingKey: "dailyInsights",
   },
   {
     key: "github",
@@ -33,6 +35,7 @@ const platforms = [
     comingSoon: true,
     titleKey: "github",
     descriptionKey: "githubDescComingSoon",
+    insightTimingKey: undefined,
   },
   {
     key: "dune",
@@ -40,6 +43,7 @@ const platforms = [
     comingSoon: true,
     titleKey: "dune",
     descriptionKey: "duneDescComingSoon",
+    insightTimingKey: undefined,
   },
 ];
 
@@ -50,7 +54,7 @@ export default function IntegrationsClient({
 }: {
   discordConnected: boolean;
   telegramConnected: boolean;
-  community: Community;
+  community: Community | null;
 }) {
   const t = useTranslations("onboarding.integrations");
   const router = useRouter();
@@ -66,7 +70,7 @@ export default function IntegrationsClient({
     if (cookieCommunityId) {
       setStoredCommunityId(cookieCommunityId);
     }
-  }, [community?.id]);
+  }, []);
 
   const isConnected = (platform: string) => {
     const connected =
@@ -82,17 +86,17 @@ export default function IntegrationsClient({
   const handleContinue = () => {
     posthog.capture?.("onboarding_continue_clicked", {
       userId: user?.id || null,
-      communityId: community.id || null,
+      communityId: community?.id || null,
     });
 
     if (!isNew) {
-      router.push(`/communities/${community.id}/overview`);
+      router.push(`/communities/${community?.id}/overview`);
       return;
     }
 
     const params = new URLSearchParams({
       guildId: guildId || "",
-      communityId: community.id || "",
+      communityId: community?.id || "",
     });
     router.push(`/onboarding/setup?${params.toString()}`);
   };
@@ -109,6 +113,7 @@ export default function IntegrationsClient({
             connectUrl={platform.connectUrl}
             titleKey={platform.titleKey}
             descriptionKey={platform.descriptionKey}
+            insightTimingKey={platform.insightTimingKey}
             discordConnected={platform.key === "discord" ? isConnected("discord") : undefined}
             telegramConnected={platform.key === "telegram" ? isConnected("telegram") : undefined}
           />
