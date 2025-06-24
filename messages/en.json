@@ -1289,7 +1289,13 @@
         "connectionFailed": "An error occurred. Please try again."
       },
       "starting": "Starting...",
-      "retryConnection": "Retry Connection"
+      "retryConnection": "Retry Connection",
+      "instantInsights": "Instant Insights",
+      "dailyInsights": "Daily Insights",
+      "whatHappensNext": "What happens next",
+      "dailyRewards": "Daily one-click rewards for top contributors",
+      "weeklyInsights": "Weekly insight report of community wins and blockers",
+      "seeExampleReport": "See an example impact report"
     },
     "exampleSnapshot": {
       "title": "Community Insight Report",
