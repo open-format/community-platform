@@ -218,6 +218,10 @@
           "label": "Receiver Name",
           "placeholder": "Enter receiver name"
         },
+        "rewardId": {
+          "label": "Reward Identifier",
+          "placeholder": "Enter reward id"
+        },
         "rewardAmount": {
           "label": "Reward Amount",
           "placeholder": "Enter reward amount"
@@ -244,7 +248,9 @@
         "nameRequired": "Contributor name required",
         "nameMaxLength": "Contributor name exceeds characters limit",
         "tokenAddressRequired": "Token address is required and must be a valid Ethereum address",
-        "invalidAddress": "Invalid address"
+        "invalidAddress": "Invalid address",
+        "rewardIdMin": "Reward ID must be at least 3 characters",
+        "rewardIdMax": "Reward ID can not be longer than 32 characters"
       },
       "viewEvidence": "View Evidence",
       "whatHappened": "What happened?"
