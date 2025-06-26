@@ -48,6 +48,15 @@ export function KeyTopics({ topics }: KeyTopicsProps) {
       ),
     },
     {
+      key: "description" as const,
+      title: t("description"),
+      render: (topic: KeyTopic) => (
+        <div className="max-w-md">
+          <p className="text-sm text-muted-foreground">{topic.description}</p>
+        </div>
+      ),
+    },
+    {
       key: "messageCount" as const,
       title: t("messageCount", { count: undefined }),
       sortable: true,

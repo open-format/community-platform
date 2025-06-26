@@ -1216,6 +1216,7 @@
     },
     "topics": {
       "title": "Key Topics",
+      "description": "Description",
       "viewDetails": "View Details",
       "messageCount": "{count} messages",
       "evidenceCount": "{count} evidence links",
