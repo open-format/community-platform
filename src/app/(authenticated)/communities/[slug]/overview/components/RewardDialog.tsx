@@ -28,7 +28,7 @@ import { addressSplitter } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePrivy } from "@privy-io/react-auth";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import posthog from "posthog-js";
@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import { type Address, BaseError, isAddress, parseEther, stringToHex } from "viem";
 import { useConfig } from "wagmi";
 import { z } from "zod";
+import RejectDialog from "./RejectDialog";
 
 type EvidenceItem = {
   title: string;
@@ -328,6 +329,12 @@ export default function RewardDialog({
             </div>
             <div className="flex justify-between gap-2 pt-2">
               <Button type="submit">{t("form.confirmRewardRecommendation")}</Button>
+              <RejectDialog onConfirm={deleteRecommendation}>
+                <Button variant="destructive">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t("form.rejectRewardRecommendation")}
+                </Button>
+              </RejectDialog>
             </div>
           </form>
         </Form>
