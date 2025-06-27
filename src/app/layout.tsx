@@ -11,27 +11,32 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Intelligent Communities | Your Scary Smart Community Co-pilot",
-  description:
-    "No more guesswork. No more firefighting. Just the tools, speed and insight you need to build communities that don't just launch - but last.",
-  openGraph: {
-    title: "Intelligent Communities | Your Scary Smart Community Co-pilot",
-    description:
-      "No more guesswork. No more firefighting. Just the tools, speed and insight you need to build communities that don't just launch - but last.",
-    images: [
-      {
-        url: "/images/og-image.png",
-        alt: "Intelligent Communities",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Intelligent Communities | Your Scary Smart Community Co-pilot",
-    description:
-      "No more guesswork. No more firefighting. Just the tools, speed and insight you need to build communities that don't just launch - but last.",
-    images: ["/images/og-image.png"],
-  },
+	title: "Open Format - Your Web3 CommunityOS",
+	description:
+		"See everything. Reward what matters. Save hours each day. Open Format is your Web3 CommunityOS that provides actionable insights, data-driven recommendations, and one-click rewards for Discord and Telegram communities.",
+	openGraph: {
+		title: "Open Format - Your Web3 CommunityOS",
+		description:
+			"See everything. Reward what matters. Save hours each day. Open Format is your Web3 CommunityOS that provides actionable insights, data-driven recommendations, and one-click rewards for Discord and Telegram communities.",
+		url: "https://www.openformat.tech/",
+		type: "website",
+		images: [
+			{
+				url: "https://openformat.tech/assets/socialPreview.jpg",
+				width: 1200,
+				height: 630,
+				alt: "Open Format Social Preview",
+			},
+		],
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: "Open Format - Your Web3 CommunityOS",
+		description:
+			"See everything. Reward what matters. Save hours each day. Open Format is your Web3 CommunityOS that provides actionable insights, data-driven recommendations, and one-click rewards for Discord and Telegram communities.",
+		images: ["https://openformat.tech/assets/socialPreview.jpg"],
+		site: "@openformat",
+	},
 };
 
 export default async function RootLayout({
