@@ -1,7 +1,6 @@
 "use server";
 
-import { agentApiClient } from "@/lib/api";
-import { isAxiosError } from "axios";
+import { agentApiClient, throwHTTPErrors } from "@/lib/api";
 import { revalidatePath } from "next/cache";
 import type { Address } from "viem";
 
@@ -17,9 +16,7 @@ export async function updateCommunity(id: string, data: UpdateCommunityData) {
 
     return response.data;
   } catch (error) {
-    if (isAxiosError(error)) {
-      throw new Error(error.response?.data.message);
-    }
+    throwHTTPErrors(`Update Community with ID ${id}`, error)
     throw error;
   }
 }

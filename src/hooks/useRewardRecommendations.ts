@@ -15,10 +15,10 @@ interface PaginatedRecommendationsResponse {
 }
 
 export function useRewardRecommendations(
-  communityId: string, 
+  communityId: string,
   platformId: string,
-  limit: number = 10,
-  offset: number = 0
+  limit = 10,
+  offset = 0,
 ) {
   const t = useTranslations("overview.rewardRecommendations");
   const queryClient = useQueryClient();
@@ -88,7 +88,17 @@ export function useRewardRecommendations(
     // Error states
     error: fetchError,
     // Actions
-    deleteRecommendation: deleteMutation.mutate,
+    deleteRecommendation: (recommendation: RewardRecommendation, showToast = true) => {
+      deleteMutation.mutate(recommendation, {
+        onSuccess: (_, recommendation) => {
+          if (showToast) {
+            toast.success(
+              t("successRejectingRewardRecommendation", { summary: recommendation.summary }),
+            );
+          }
+        },
+      });
+    },
     // Refetch function
     refetch: () =>
       queryClient.invalidateQueries({
@@ -96,4 +106,3 @@ export function useRewardRecommendations(
       }),
   };
 }
-

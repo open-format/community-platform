@@ -1,3 +1,40 @@
+## [0.25.3](https://github.com/open-format/community-platform/compare/v0.25.2...v0.25.3) (2025-06-24)
+
+
+### Bug Fixes
+
+* Ensure PostHog initialization only occurs with valid environment variables ([42c6be8](https://github.com/open-format/community-platform/commit/42c6be8c8b8d5a9b593563c0c0007298540ee483))
+
+## [0.25.2](https://github.com/open-format/community-platform/compare/v0.25.1...v0.25.2) (2025-06-17)
+
+
+### Bug Fixes
+
+* handle optional badges and tokens in TokenSelector and ActivityExportForm ([6fb1543](https://github.com/open-format/community-platform/commit/6fb15437e6c43ccc73c40d424353798d5039ce49))
+* update styling for hover state on rewards issued graph ([01a879d](https://github.com/open-format/community-platform/commit/01a879d0618cd805243d5123209c1dc3d243e91a))
+
+## [0.25.1](https://github.com/open-format/community-platform/compare/v0.25.0...v0.25.1) (2025-06-13)
+
+
+### Bug Fixes
+
+* Add delete reward recommendation toast message ([7e4c499](https://github.com/open-format/community-platform/commit/7e4c499a3afd652be80deb6f41e27e35fa521263))
+
+# [0.25.0](https://github.com/open-format/community-platform/compare/v0.24.1...v0.25.0) (2025-06-07)
+
+
+### Bug Fixes
+
+* removed unused dialog ([21765a6](https://github.com/open-format/community-platform/commit/21765a6589cc4dc5e965050e02c6d53007959572))
+* Update subgraph URLs for openFormat and arbitrumSepolia chains ([1290ad1](https://github.com/open-format/community-platform/commit/1290ad141b44d851bf31dcbe32f77d194e097529))
+
+
+### Features
+
+* Enhance Discord integration by adding communityId handling in callbacks and onboarding flow ([48432b4](https://github.com/open-format/community-platform/commit/48432b41e4e2e07e12a5c7469b571bb352e266fd))
+* Enhance onboarding and community overview experience ([622a85e](https://github.com/open-format/community-platform/commit/622a85e7bba8fd6d99da553a2e94c4804baa2b85))
+* Implement Telegram integration and enhance Discord callback handling ([1b69fad](https://github.com/open-format/community-platform/commit/1b69fad6f9a3cb09ea78ac78db923debc9e40613))
+
 ## [0.24.1](https://github.com/open-format/community-platform/compare/v0.24.0...v0.24.1) (2025-06-05)
 
 

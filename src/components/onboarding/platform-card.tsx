@@ -1,7 +1,7 @@
 "use client";
 
 import { usePrivy } from "@privy-io/react-auth";
-import { Loader2, type LucideIcon } from "lucide-react";
+import { Loader2, type LucideIcon, Zap, Clock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,6 +20,7 @@ interface PlatformCardProps {
   descriptionKey: string;
   discordConnected?: boolean;
   telegramConnected?: boolean;
+  insightTimingKey?: string;
 }
 
 export default function PlatformCard({
@@ -30,6 +31,7 @@ export default function PlatformCard({
   descriptionKey,
   discordConnected,
   telegramConnected,
+  insightTimingKey,
 }: PlatformCardProps) {
   const t = useTranslations("onboarding.integrations");
   const { user } = usePrivy();
@@ -83,6 +85,24 @@ export default function PlatformCard({
             )}
           </span>
           <span className="font-bold text-lg text-white">{t(titleKey)}</span>
+          {!comingSoon && insightTimingKey && (
+            <div className="mt-1">
+              <span
+                className={`inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-semibold ${
+                  titleKey === "discord"
+                    ? "bg-green-700 text-green-100"
+                    : "bg-blue-900 text-blue-100"
+                }`}
+              >
+                {titleKey === "discord" ? (
+                  <Zap className="h-3 w-3" />
+                ) : (
+                  <Clock className="h-3 w-3" />
+                )}
+                {t(insightTimingKey)}
+              </span>
+            </div>
+          )}
           {comingSoon && (
             <span className="ml-2 px-2 py-0.5 rounded bg-zinc-700 text-xs text-gray-300 font-semibold">
               {titleKey === "telegram" ? "In Next Release" : t("comingSoon")}

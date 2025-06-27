@@ -28,7 +28,7 @@ import { addressSplitter } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePrivy } from "@privy-io/react-auth";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import posthog from "posthog-js";
@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import { type Address, BaseError, isAddress, parseEther, stringToHex } from "viem";
 import { useConfig } from "wagmi";
 import { z } from "zod";
+import RejectDialog from "./RejectDialog";
 
 type EvidenceItem = {
   title: string;
@@ -100,6 +101,7 @@ export default function RewardDialog({
   }
 
   const FormSchema = z.object({
+    rewardId: z.string().min(3, t("validation.rewardIdMin")).max(32, t("validation.rewardIdMax")),
     amount: z.coerce.number().min(1, t("validation.amountMin")).default(recommendation.points),
     tokenAddress: z.string().refine((value) => isAddress(value), {
       message: t("validation.tokenAddressRequired"),
@@ -109,6 +111,7 @@ export default function RewardDialog({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
+      rewardId: recommendation.reward_id,
       contributorName: recommendation.contributor_name,
       amount: recommendation.points,
     },
@@ -134,7 +137,7 @@ export default function RewardDialog({
               args: [
                 data.tokenAddress as Address,
                 recommendation.wallet_address as Address,
-                stringToHex(recommendation.reward_id, { size: 32 }),
+                stringToHex(data.rewardId, { size: 32 }),
                 stringToHex("MISSION", { size: 32 }),
                 stringToHex(recommendation.metadata_uri ?? ""),
               ],
@@ -163,7 +166,7 @@ export default function RewardDialog({
                 data.tokenAddress as Address,
                 recommendation.wallet_address as Address,
                 parseEther(data.amount.toString()),
-                stringToHex(recommendation.reward_id, { size: 32 }),
+                stringToHex(data.rewardId, { size: 32 }),
                 stringToHex("MISSION", { size: 32 }),
                 stringToHex(recommendation.metadata_uri ?? ""),
               ],
@@ -210,7 +213,7 @@ export default function RewardDialog({
         </DialogHeader>
         <Form {...form}>
           <form
-            className="w-full space-y-4 overflow-y-auto max-h-[calc(85vh-120px)]"
+            className="w-full space-y-4 overflow-y-auto max-h-[calc(85vh)]"
             onSubmit={form.handleSubmit(handleFormSubmission)}
           >
             {/* Receiver Name  */}
@@ -264,6 +267,25 @@ export default function RewardDialog({
             )}
 
             <Separator className="my-lg" />
+            {/* Reward Id */}
+            <FormField
+              control={form.control}
+              name="rewardId"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>{t("form.rewardId.label")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder={t("form.rewardId.placeholder")}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* Reward Amount */}
             <FormField
               control={form.control}
@@ -307,6 +329,12 @@ export default function RewardDialog({
             </div>
             <div className="flex justify-between gap-2 pt-2">
               <Button type="submit">{t("form.confirmRewardRecommendation")}</Button>
+              <RejectDialog onConfirm={deleteRecommendation}>
+                <Button variant="destructive">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t("form.rejectRewardRecommendation")}
+                </Button>
+              </RejectDialog>
             </div>
           </form>
         </Form>

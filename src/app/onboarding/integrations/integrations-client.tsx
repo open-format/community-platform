@@ -16,6 +16,7 @@ const platforms = [
     connectUrl: "/api/discord/start",
     titleKey: "discord",
     descriptionKey: "discordDesc",
+    insightTimingKey: "instantInsights",
   },
   {
     key: "telegram",
@@ -24,6 +25,7 @@ const platforms = [
     connectUrl: "/api/telegram/start",
     titleKey: "telegram",
     descriptionKey: "telegramDesc",
+    insightTimingKey: "dailyInsights",
   },
   {
     key: "github",
@@ -31,6 +33,7 @@ const platforms = [
     comingSoon: true,
     titleKey: "github",
     descriptionKey: "githubDescComingSoon",
+    insightTimingKey: undefined,
   },
   {
     key: "dune",
@@ -38,6 +41,7 @@ const platforms = [
     comingSoon: true,
     titleKey: "dune",
     descriptionKey: "duneDescComingSoon",
+    insightTimingKey: undefined,
   },
 ];
 
@@ -48,7 +52,7 @@ export default function IntegrationsClient({
 }: {
   discordConnected: boolean;
   telegramConnected: boolean;
-  community: Community;
+  community: Community | null;
 }) {
   const t = useTranslations("onboarding.integrations");
   const router = useRouter();
@@ -57,6 +61,14 @@ export default function IntegrationsClient({
   const guildId = searchParams.get("guildId");
   const error = searchParams.get("error");
   const isNew = searchParams.get("isNew") === "true";
+  const [storedCommunityId, setStoredCommunityId] = useState<string | undefined>(community?.id);
+
+  useEffect(() => {
+    const cookieCommunityId = Cookies.get("communityId");
+    if (cookieCommunityId) {
+      setStoredCommunityId(cookieCommunityId);
+    }
+  }, []);
 
   const isConnected = (platform: string) => {
     const connected =
@@ -71,7 +83,7 @@ export default function IntegrationsClient({
   const handleContinue = () => {
     posthog.capture?.("onboarding_continue_clicked", {
       userId: user?.id || null,
-      communityId: community.id || null,
+      communityId: community?.id || null,
     });
 
     const firstConnection = searchParams.get("firstConnection") === "true";
@@ -114,6 +126,7 @@ export default function IntegrationsClient({
             telegramConnected={
               platform.key === "telegram" ? isConnected("telegram") : undefined
             }
+            insightTimingKey={platform.insightTimingKey}
           />
         ))}
       </div>
