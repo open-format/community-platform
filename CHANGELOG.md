@@ -1,3 +1,10 @@
+## [0.26.1](https://github.com/open-format/community-platform/compare/v0.26.0...v0.26.1) (2025-07-01)
+
+
+### Bug Fixes
+
+* updated discord callback route formatting ([cb476e4](https://github.com/open-format/community-platform/commit/cb476e4d9d3b13a040e127922b64b75057cb0bca))
+
 # [0.26.0](https://github.com/open-format/community-platform/compare/v0.25.3...v0.26.0) (2025-06-24)
 
 
