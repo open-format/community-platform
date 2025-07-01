@@ -65,7 +65,7 @@
       "tokens": "Tokens",
       "badges": "Badges",
       "agents": "Community Agents",
-      "copilot": "Copilot"
+      "copilot": "Assistant"
     },
     "breadcrumbs": {
       "communities": "Communities",
@@ -204,13 +204,12 @@
       "noEvidence": "No evidence provided",
       "openMenu": "Open menu",
       "reject": "Reject",
-      "reward": "View Reward",
+      "reward": "Reward",
       "rewardAmount": "Reward Amount",
       "rewardDescription": "Reward a community member for their contribution",
       "form": {
         "confirmRewardRecommendation": "Confirm Reward",
         "confirmingRewardRecommendation": "Confirming Reward...",
-        "rejectRewardRecommendation": "Reject Reward",
         "token": {
           "label": "Token",
           "placeholder": "Select token"
@@ -240,7 +239,7 @@
         }
       },
       "successConfirmingRewardRecommendation": "Confirmed reward successfully",
-      "successRejectingRewardRecommendation": "Deleted reward recommendation: {summary}.",
+      "successRejectingRewardRecommendation": "Rejected reward recommendation: {summary}.",
       "suggestedReward": "Suggested reward",
       "platform": "Platform",
       "title": "Reward Recommendations",
@@ -496,9 +495,9 @@
   },
   "shortcuts": {
     "inviteDiscordBot": {
-      "title": "Add Community Copilot",
+      "title": "Add Community Assistant",
       "description": "Start reward recomendations based on your community members' contributions in Discord.",
-      "invite": "Add Copilot to Discord",
+      "invite": "Add Assistant to Discord",
       "docs": "View Docs"
     },
     "configureCommunity": {
@@ -1273,13 +1272,13 @@
       "interestRegistered": "Interest registered",
       "interestRegisteredDescription": "Thanks for your interest! We'll ping you when our {platform} integration is ready.",
       "introTitle": "Connect Your Platforms",
-      "intro": "Link the platforms your community already lives in. The Community Copilot will start listening as soon as you connect your platforms.",
+      "intro": "Link the platforms your community already lives in. The Community Assistant will start listening as soon as you connect your platforms.",
       "discord": "Discord",
       "telegram": "Telegram",
       "github": "GitHub",
       "dune": "Onchain",
-      "discordDesc": "Connect your Discord in ~30 sec by adding the copilot to your server.",
-      "telegramDesc": "Connect your Telegram group in ~30 sec by adding the copilot to your group.",
+      "discordDesc": "Connect your Discord in ~30 sec by adding the assistant to your server.",
+      "telegramDesc": "Connect your Telegram group in ~30 sec by adding the assistant to your group.",
       "telegramDescComingSoon": "Track the whole of your community by deploying to Telegram.",
       "githubDescComingSoon": "Track code contributions & auto-draft bounties.",
       "duneDescComingSoon": "Spot on-chain actions and link them to your community wins.",
@@ -1301,12 +1300,12 @@
       "dailyInsights": "Daily Insights",
       "whatHappensNext": "What happens next",
       "dailyRewards": "Daily one-click rewards for top contributors",
-      "weeklyInsights": "Weekly insight report of community wins and blockers",
+      "weeklyInsights": "Weekly impact report of community wins and blockers",
       "seeExampleReport": "See an example impact report"
     },
     "exampleSnapshot": {
       "title": "Community Insight Report",
-      "intro": "Here's an example of a Insight Report you'll see after connecting your platforms.",
+      "intro": "Here's an example of an Impact Report you'll see after connecting your platforms.",
       "loading": "Loading example report...",
       "unavailable": "Example report currently unavailable.",
       "continue": "Continue",
@@ -1350,7 +1349,7 @@
         "missingCommunityId": "Missing community ID. Please try connecting again.",
         "setupFailed": "Failed to complete setup. Please try again."
       },
-      "continue": "See your first insight report",
+      "continue": "See your first impact report",
       "continueToDashboard": "Continue to Dashboard",
       "retry": "Retry"
     }

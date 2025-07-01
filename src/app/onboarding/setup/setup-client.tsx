@@ -5,7 +5,14 @@ import { Button } from "@/components/ui/button";
 import config from "@/constants/config";
 import { usePollingJob } from "@/hooks/useJobStatus";
 import { usePrivy } from "@privy-io/react-auth";
-import { AlertCircle, CheckCircle, Loader2, SkipForward, FileText, BarChart2 } from "lucide-react";
+import {
+  AlertCircle,
+  BarChart2,
+  CheckCircle,
+  FileText,
+  Loader2,
+  SkipForward,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -13,7 +20,13 @@ import posthog from "posthog-js";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
-type JobStatus = "idle" | "pending" | "processing" | "completed" | "failed" | "skipped";
+type JobStatus =
+  | "idle"
+  | "pending"
+  | "processing"
+  | "completed"
+  | "failed"
+  | "skipped";
 
 export default function SetupClient() {
   const t = useTranslations("onboarding.setup");
@@ -27,7 +40,9 @@ export default function SetupClient() {
 
   const [messagesJobId, setMessagesJobId] = useState<string | null>(null);
   const [reportJobId, setReportJobId] = useState<string | null>(null);
-  const [recommendationsJobId, setRecommendationsJobId] = useState<string | null>(null);
+  const [recommendationsJobId, setRecommendationsJobId] = useState<
+    string | null
+  >(null);
   const jobsStartedRef = useRef(false);
   const eventFiredRef = useRef({
     fetchHistoricalMessages: false,
@@ -38,7 +53,8 @@ export default function SetupClient() {
   const [hasLowActivity, setHasLowActivity] = useState(false);
 
   const { status: messagesStatus, data: messagesData } = usePollingJob({
-    statusEndpoint: (jobId) => `/api/onboarding/messages-job-status?jobId=${jobId}`,
+    statusEndpoint: (jobId) =>
+      `/api/onboarding/messages-job-status?jobId=${jobId}`,
     initialJobId: messagesJobId || undefined,
     onStatusChange: (status, message) => {
       if (status === "failed") {
@@ -48,7 +64,8 @@ export default function SetupClient() {
   });
 
   const { status: reportStatus } = usePollingJob({
-    statusEndpoint: (jobId) => `/api/onboarding/report-job-status?jobId=${jobId}`,
+    statusEndpoint: (jobId) =>
+      `/api/onboarding/report-job-status?jobId=${jobId}`,
     initialJobId: reportJobId || undefined,
     onStatusChange: (status, message) => {
       if (status === "failed") {
@@ -58,7 +75,8 @@ export default function SetupClient() {
   });
 
   const { status: recommendationsStatus } = usePollingJob({
-    statusEndpoint: (jobId) => `/api/onboarding/recommendations-job-status?jobId=${jobId}`,
+    statusEndpoint: (jobId) =>
+      `/api/onboarding/recommendations-job-status?jobId=${jobId}`,
     initialJobId: recommendationsJobId || undefined,
     onStatusChange: (status, message) => {
       if (status === "failed") {
@@ -69,17 +87,20 @@ export default function SetupClient() {
 
   const { startJobAsync: startMessagesJobAsync } = usePollingJob({
     startJobEndpoint: "/api/onboarding/start-messages-job",
-    statusEndpoint: (jobId) => `/api/onboarding/messages-job-status?jobId=${jobId}`,
+    statusEndpoint: (jobId) =>
+      `/api/onboarding/messages-job-status?jobId=${jobId}`,
   });
 
   const { startJobAsync: startReportJobAsync } = usePollingJob({
     startJobEndpoint: "/api/onboarding/start-report-job",
-    statusEndpoint: (jobId) => `/api/onboarding/report-job-status?jobId=${jobId}`,
+    statusEndpoint: (jobId) =>
+      `/api/onboarding/report-job-status?jobId=${jobId}`,
   });
 
   const { startJobAsync: startRecommendationsJobAsync } = usePollingJob({
     startJobEndpoint: "/api/onboarding/start-recommendations-job",
-    statusEndpoint: (jobId) => `/api/onboarding/recommendations-job-status?jobId=${jobId}`,
+    statusEndpoint: (jobId) =>
+      `/api/onboarding/recommendations-job-status?jobId=${jobId}`,
   });
 
   // Start the initial messages job when component mounts
@@ -152,7 +173,10 @@ export default function SetupClient() {
 
   const isComplete =
     messagesStatus === "completed" &&
-    (hasLowActivity ? true : reportStatus === "completed" && recommendationsStatus === "completed");
+    (hasLowActivity
+      ? true
+      : reportStatus === "completed" &&
+        recommendationsStatus === "completed");
 
   // Add loading state for continue button
   const isContinueLoading =
@@ -176,7 +200,10 @@ export default function SetupClient() {
   };
 
   // Progress bar steps
-  const progressSteps = [{ label: "Connect your community" }, { label: "Setting up your Copilot" }];
+  const progressSteps = [
+    { label: "Connect your community" },
+    { label: "Setting up your Assistant" },
+  ];
 
   // Status card steps
   const statusSteps = [
@@ -226,10 +253,10 @@ export default function SetupClient() {
   const progresses = [1, getProgress()];
 
   const whatsNext = [
-    "See your first insight report",
+    "See your first impact report",
     "Review today's reward recommendations",
     "Setup your community token to reward contributions",
-    "Ask your Copilot questions about your community in Discord",
+    "Ask your Assistant questions about your community in Discord",
   ];
 
   const getStatusIcon = (status: JobStatus) => {
@@ -244,7 +271,9 @@ export default function SetupClient() {
       case "skipped":
         return <SkipForward className="h-5 w-5 text-yellow-500" />;
       default:
-        return <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />;
+        return (
+          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+        );
     }
   };
 
@@ -267,7 +296,9 @@ export default function SetupClient() {
     }
   };
 
-  const handleRetry = async (jobType: "report" | "recommendations" | "messages") => {
+  const handleRetry = async (
+    jobType: "report" | "recommendations" | "messages",
+  ) => {
     try {
       if (jobType === "messages") {
         if (!guildId) throw new Error("Missing guildId");
@@ -290,7 +321,8 @@ export default function SetupClient() {
           throw new Error("Failed to start report job");
         }
       } else {
-        if (!guildId || !communityId) throw new Error("Missing guildId or communityId");
+        if (!guildId || !communityId)
+          throw new Error("Missing guildId or communityId");
         const recommendationsResponse = await startRecommendationsJobAsync?.({
           platformId: guildId,
           communityId,
@@ -317,11 +349,20 @@ export default function SetupClient() {
         scroll: false,
       });
     }
-  }, [reportStatus, recommendationsStatus, messagesStatus, router, searchParams]);
+  }, [
+    reportStatus,
+    recommendationsStatus,
+    messagesStatus,
+    router,
+    searchParams,
+  ]);
 
   // Fire fetch_historical_messages_complete when messagesStatus transitions to completed
   useEffect(() => {
-    if (messagesStatus === "completed" && !eventFiredRef.current.fetchHistoricalMessages) {
+    if (
+      messagesStatus === "completed" &&
+      !eventFiredRef.current.fetchHistoricalMessages
+    ) {
       posthog.capture?.("fetch_historical_messages_complete", {
         userId: user?.id || null,
         communityId: communityId || null,
@@ -332,7 +373,10 @@ export default function SetupClient() {
 
   // Fire reward_recommendations_generated when recommendationsStatus transitions to completed
   useEffect(() => {
-    if (recommendationsStatus === "completed" && !eventFiredRef.current.rewardRecommendations) {
+    if (
+      recommendationsStatus === "completed" &&
+      !eventFiredRef.current.rewardRecommendations
+    ) {
       posthog.capture?.("reward_recommendations_generated", {
         userId: user?.id || null,
         communityId: communityId || null,
@@ -343,7 +387,10 @@ export default function SetupClient() {
 
   // Fire community_snapshot_generated when reportStatus transitions to completed
   useEffect(() => {
-    if (reportStatus === "completed" && !eventFiredRef.current.communitySnapshot) {
+    if (
+      reportStatus === "completed" &&
+      !eventFiredRef.current.communitySnapshot
+    ) {
       posthog.capture?.("community_snapshot_generated", {
         userId: user?.id || null,
         communityId: communityId || null,
@@ -352,24 +399,28 @@ export default function SetupClient() {
     }
   }, [reportStatus, user?.id, communityId]);
 
-  // only Telegram exists
   if (!guildId) {
+    // only Telegram exists
     return (
       <>
         <div className="mb-8">
-          <OnboardingProgressBar steps={progressSteps} progresses={progresses} />
+          <OnboardingProgressBar
+            steps={progressSteps}
+            progresses={progresses}
+          />
         </div>
         <div className="w-full max-w-2xl bg-zinc-900 rounded-2xl shadow-lg p-8 border border-zinc-800">
           <div className="flex flex-col gap-8">
             <div className="flex flex-col items-center mb-4">
               <CheckCircle className="h-12 w-12 text-yellow-400 mb-2" />
               <h2 className="text-2xl font-bold text-white mb-1">
-                {isComplete ? "Setup Complete!" : "Setting up your Copilot"}
+                {isComplete ? "Setup Complete!" : "Setting up your Assistant"}
               </h2>
               <div className="flex flex-col space-y-4 items-center text-center">
                 <p>
-                  Your Copilot is busy listening and learning in your Telegram. Impact reports and
-                  reward recommendations are updated daily.
+                  Your Assistant is busy listening and learning in your
+                  Telegram. Impact reports and reward recommendations are
+                  updated daily.
                 </p>
                 <p>
                   Want to expand your insights?{" "}
@@ -379,7 +430,8 @@ export default function SetupClient() {
                   >
                     Connect your Discord server
                   </Link>{" "}
-                  to instantly generate impact reports and reward recommendations!
+                  to instantly generate impact reports and reward
+                  recommendations!
                 </p>
               </div>
             </div>
@@ -390,7 +442,9 @@ export default function SetupClient() {
                   userId: user?.id || null,
                   communityId: searchParams.get("communityId") || null,
                 });
-                router.push(`/communities/${searchParams.get("communityId")}`);
+                router.push(
+                  `/communities/${searchParams.get("communityId")}`,
+                );
               }}
               disabled={isContinueLoading}
             >
@@ -412,18 +466,21 @@ export default function SetupClient() {
   return (
     <>
       <div className="mb-8">
-        <OnboardingProgressBar steps={progressSteps} progresses={progresses} />
+        <OnboardingProgressBar
+          steps={progressSteps}
+          progresses={progresses}
+        />
       </div>
       <div className="w-full max-w-2xl bg-zinc-900 rounded-2xl shadow-lg p-8 border border-zinc-800">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col items-center mb-4">
             <CheckCircle className="h-12 w-12 text-yellow-400 mb-2" />
             <h2 className="text-2xl font-bold text-white mb-1">
-              {isComplete ? "Setup Complete!" : "Setting up your Copilot"}
+              {isComplete ? "Setup Complete!" : "Setting up your Assistant"}
             </h2>
             <p className="text-gray-400 text-center max-w-md">
               {isComplete
-                ? "Your community Copilot is now ready to help you grow your community."
+                ? "Your community Assistant is now ready to help you grow your community."
                 : "Your community is now collecting insights. Large communities may take up to 10 minutes to setup."}
             </p>
           </div>
@@ -439,10 +496,16 @@ export default function SetupClient() {
                       : "opacity-90"
                 }`}
               >
-                <div className="flex-shrink-0 mt-1">{getStatusIcon(step.status)}</div>
+                <div className="flex-shrink-0 mt-1">
+                  {getStatusIcon(step.status)}
+                </div>
                 <div className="flex-1">
-                  <div className="font-semibold text-white mb-0.5">{step.title}</div>
-                  <div className="text-gray-400 text-sm mb-1">{step.description}</div>
+                  <div className="font-semibold text-white mb-0.5">
+                    {step.title}
+                  </div>
+                  <div className="text-gray-400 text-sm mb-1">
+                    {step.description}
+                  </div>
                   <div className="flex items-center justify-between">
                     <div className="text-xs text-gray-500">
                       {step.isJob
@@ -474,10 +537,15 @@ export default function SetupClient() {
           {isComplete && (
             <>
               <div className="bg-zinc-800/70 rounded-xl p-6 mt-4 border border-zinc-700">
-                <div className="font-semibold text-white mb-3">What's Next?</div>
+                <div className="font-semibold text-white mb-3">
+                  What's Next?
+                </div>
                 <ul className="space-y-2">
                   {whatsNext.map((item) => (
-                    <li key={item} className="flex items-center gap-2 text-gray-300 text-sm">
+                    <li
+                      key={item}
+                      className="flex items-center gap-2 text-gray-300 text-sm"
+                    >
                       <CheckCircle className="h-4 w-4 text-yellow-400" />
                       {item}
                     </li>
@@ -492,7 +560,9 @@ export default function SetupClient() {
                       userId: user?.id || null,
                       communityId: searchParams.get("communityId") || null,
                     });
-                    router.push(`/communities/${searchParams.get("communityId")}`);
+                    router.push(
+                      `/communities/${searchParams.get("communityId")}`,
+                    );
                   }}
                   disabled={isContinueLoading}
                 >

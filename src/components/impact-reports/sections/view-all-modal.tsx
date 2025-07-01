@@ -71,11 +71,11 @@ export function ViewAllModal<T extends KeyTopic | TopContributor>({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-6xl">
           <DialogHeader>
             <DialogTitle>{t("title")}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -121,4 +121,4 @@ export function ViewAllModal<T extends KeyTopic | TopContributor>({
       )}
     </>
   );
-} 
+}

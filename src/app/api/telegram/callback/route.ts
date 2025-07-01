@@ -158,7 +158,7 @@ export async function GET(req: NextRequest) {
         console.error("Failed to mark verification code as used:", error);
       }
 
-      const redirectUrl = `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&platformId=${existingPlatformConnection?.platformId || platformConnectionId}&communityId=${communityId}&isNew=${isNewCommunity}`;
+      const redirectUrl = `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&platformId=${existingPlatformConnection?.platformId || platformConnectionId}&communityId=${communityId}&isNew=${isNewCommunity}&firstConnection=${!existingPlatformConnection?.communityId}`;
 
       const nextResponse = NextResponse.redirect(new URL(redirectUrl, req.url));
 
@@ -241,7 +241,7 @@ export async function GET(req: NextRequest) {
         return community;
       });
 
-    const redirectUrl = `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&platformId=${existingPlatformConnection?.platformId || platformConnectionId}&communityId=${communityId}&isNew=${isNewCommunity}`;
+    const redirectUrl = `${process.env.PLATFORM_BASE_URL}/onboarding/integrations?success=true&platformId=${existingPlatformConnection?.platformId || platformConnectionId}&communityId=${communityId}&isNew=${isNewCommunity}&firstConnection=${!existingPlatformConnection?.communityId}`;
 
     const response = NextResponse.redirect(new URL(redirectUrl, req.url));
 
