@@ -4,7 +4,7 @@ import Profile from "@/components/profile-header";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import OFLogo from "../../../public/images/of-logo.png";
+import OFLogo from "../../../public/images/of-logo.jpg";
 
 export default function OnboardingLayout({
 	children,

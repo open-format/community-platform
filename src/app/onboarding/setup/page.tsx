@@ -3,25 +3,32 @@ import SetupClient from "./setup-client";
 
 function ProgressBarSkeleton() {
   return (
-    <div className="mb-8">
-      <div className="flex w-full max-w-3xl mx-auto gap-16 mt-8">
-        {/* Step 1: filled */}
-        <div className="flex-1 flex flex-col items-start">
-          <div className="w-full mb-2 h-1 rounded bg-zinc-800">
-            <div className="h-1 rounded bg-yellow-400" style={{ width: "100%" }} />
-          </div>
-          <span className="font-semibold text-lg text-yellow-400">Connect your community</span>
-        </div>
-        {/* Step 2: empty */}
-        <div className="flex-1 flex flex-col items-start">
-          <div className="w-full mb-2 h-1 rounded bg-zinc-800">
-            <div className="h-1 rounded" style={{ width: "0%" }} />
-          </div>
-          <span className="font-semibold text-lg text-gray-400">Setting up your Copilot</span>
-        </div>
-      </div>
-    </div>
-  );
+			<div className="mb-8">
+				<div className="flex w-full max-w-3xl mx-auto gap-16 mt-8">
+					{/* Step 1: filled */}
+					<div className="flex-1 flex flex-col items-start">
+						<div className="w-full mb-2 h-1 rounded bg-zinc-800">
+							<div
+								className="h-1 rounded bg-yellow-400"
+								style={{ width: "100%" }}
+							/>
+						</div>
+						<span className="font-semibold text-lg text-yellow-400">
+							Connect your community
+						</span>
+					</div>
+					{/* Step 2: empty */}
+					<div className="flex-1 flex flex-col items-start">
+						<div className="w-full mb-2 h-1 rounded bg-zinc-800">
+							<div className="h-1 rounded" style={{ width: "0%" }} />
+						</div>
+						<span className="font-semibold text-lg text-gray-400">
+							Setting up your Assistant
+						</span>
+					</div>
+				</div>
+			</div>
+		);
 }
 
 function LoadingSkeleton() {

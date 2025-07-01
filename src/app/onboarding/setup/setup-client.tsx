@@ -7,11 +7,11 @@ import { usePollingJob } from "@/hooks/useJobStatus";
 import { usePrivy } from "@privy-io/react-auth";
 import {
   AlertCircle,
+  BarChart2,
   CheckCircle,
+  FileText,
   Loader2,
   SkipForward,
-  FileText,
-  BarChart2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -138,10 +138,7 @@ export default function SetupClient() {
 
         try {
           const [reportResponse, recommendationsResponse] = await Promise.all([
-            startReportJobAsync?.({
-              platformId: guildId,
-              communityId,
-            }),
+            startReportJobAsync?.({ platformId: guildId, communityId }),
             startRecommendationsJobAsync?.({
               platformId: guildId,
               communityId,
@@ -178,7 +175,8 @@ export default function SetupClient() {
     messagesStatus === "completed" &&
     (hasLowActivity
       ? true
-      : reportStatus === "completed" && recommendationsStatus === "completed");
+      : reportStatus === "completed" &&
+        recommendationsStatus === "completed");
 
   // Add loading state for continue button
   const isContinueLoading =
@@ -204,7 +202,7 @@ export default function SetupClient() {
   // Progress bar steps
   const progressSteps = [
     { label: "Connect your community" },
-    { label: "Setting up your Copilot" },
+    { label: "Setting up your Assistant" },
   ];
 
   // Status card steps
@@ -255,10 +253,10 @@ export default function SetupClient() {
   const progresses = [1, getProgress()];
 
   const whatsNext = [
-    "See your first insight report",
+    "See your first impact report",
     "Review today's reward recommendations",
     "Setup your community token to reward contributions",
-    "Ask your Copilot questions about your community in Discord",
+    "Ask your Assistant questions about your community in Discord",
   ];
 
   const getStatusIcon = (status: JobStatus) => {
@@ -401,8 +399,8 @@ export default function SetupClient() {
     }
   }, [reportStatus, user?.id, communityId]);
 
-  // only Telegram exists
   if (!guildId) {
+    // only Telegram exists
     return (
       <>
         <div className="mb-8">
@@ -416,12 +414,13 @@ export default function SetupClient() {
             <div className="flex flex-col items-center mb-4">
               <CheckCircle className="h-12 w-12 text-yellow-400 mb-2" />
               <h2 className="text-2xl font-bold text-white mb-1">
-                {isComplete ? "Setup Complete!" : "Setting up your Copilot"}
+                {isComplete ? "Setup Complete!" : "Setting up your Assistant"}
               </h2>
               <div className="flex flex-col space-y-4 items-center text-center">
                 <p>
-                  Your Copilot is busy listening and learning in your Telegram.
-                  Impact reports and reward recommendations are updated daily.
+                  Your Assistant is busy listening and learning in your
+                  Telegram. Impact reports and reward recommendations are
+                  updated daily.
                 </p>
                 <p>
                   Want to expand your insights?{" "}
@@ -443,7 +442,9 @@ export default function SetupClient() {
                   userId: user?.id || null,
                   communityId: searchParams.get("communityId") || null,
                 });
-                router.push(`/communities/${searchParams.get("communityId")}`);
+                router.push(
+                  `/communities/${searchParams.get("communityId")}`,
+                );
               }}
               disabled={isContinueLoading}
             >
@@ -465,18 +466,21 @@ export default function SetupClient() {
   return (
     <>
       <div className="mb-8">
-        <OnboardingProgressBar steps={progressSteps} progresses={progresses} />
+        <OnboardingProgressBar
+          steps={progressSteps}
+          progresses={progresses}
+        />
       </div>
       <div className="w-full max-w-2xl bg-zinc-900 rounded-2xl shadow-lg p-8 border border-zinc-800">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col items-center mb-4">
             <CheckCircle className="h-12 w-12 text-yellow-400 mb-2" />
             <h2 className="text-2xl font-bold text-white mb-1">
-              {isComplete ? "Setup Complete!" : "Setting up your Copilot"}
+              {isComplete ? "Setup Complete!" : "Setting up your Assistant"}
             </h2>
             <p className="text-gray-400 text-center max-w-md">
               {isComplete
-                ? "Your community Copilot is now ready to help you grow your community."
+                ? "Your community Assistant is now ready to help you grow your community."
                 : "Your community is now collecting insights. Large communities may take up to 10 minutes to setup."}
             </p>
           </div>
