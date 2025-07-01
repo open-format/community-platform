@@ -3,12 +3,10 @@
 import PlatformCard from "@/components/onboarding/platform-card";
 import { Button } from "@/components/ui/button";
 import { usePrivy } from "@privy-io/react-auth";
-import Cookies from "js-cookie";
 import { Database } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
-import { useEffect, useState } from "react";
 
 const platforms = [
   {
@@ -79,7 +77,6 @@ export default function IntegrationsClient({
         : platform === "telegram"
           ? telegramConnected
           : false;
-    console.log(`isConnected(${platform}):`, connected);
     return connected;
   };
 
@@ -89,16 +86,26 @@ export default function IntegrationsClient({
       communityId: community?.id || null,
     });
 
-    if (!isNew) {
-      router.push(`/communities/${community?.id}/overview`);
+    const firstConnection = searchParams.get("firstConnection") === "true";
+
+    // Get Discord guildId from community platform connections
+    const discordConnection = community.platformConnections?.find(
+      (conn) => conn.platformType === "discord",
+    );
+    const discordGuildId = discordConnection?.platformId;
+
+    if (isNew || firstConnection) {
+      // If it's a new community OR this is the first platform connection, go to setup
+      const params = new URLSearchParams({
+        guildId: guildId || discordGuildId || "",
+        communityId: community.id || "",
+      });
+      router.push(`/onboarding/setup?${params.toString()}`);
       return;
     }
 
-    const params = new URLSearchParams({
-      guildId: guildId || "",
-      communityId: community?.id || "",
-    });
-    router.push(`/onboarding/setup?${params.toString()}`);
+    // If community already exists and this isn't the first connection, go to overview
+    router.push(`/communities/${community.id}/overview`);
   };
 
   return (
@@ -113,9 +120,13 @@ export default function IntegrationsClient({
             connectUrl={platform.connectUrl}
             titleKey={platform.titleKey}
             descriptionKey={platform.descriptionKey}
+            discordConnected={
+              platform.key === "discord" ? isConnected("discord") : undefined
+            }
+            telegramConnected={
+              platform.key === "telegram" ? isConnected("telegram") : undefined
+            }
             insightTimingKey={platform.insightTimingKey}
-            discordConnected={platform.key === "discord" ? isConnected("discord") : undefined}
-            telegramConnected={platform.key === "telegram" ? isConnected("telegram") : undefined}
           />
         ))}
       </div>
