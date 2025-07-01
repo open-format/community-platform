@@ -1,18 +1,18 @@
 import { getCommunity } from "@/app/actions/communities/get";
 import Shortcuts from "@/components/shortcuts";
 
+import { getCommunityImpactReports } from "@/app/actions/communities/reports";
 import ImpactReports from "@/components/impact-reports/impact-reports";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Activity, ArrowRight, Award } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import Image from "next/image";
 import Link from "next/link";
-import { getCommunityImpactReports } from "@/app/actions/communities/reports";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Discord from "../../../../../../public/icons/discord.svg";
 import Github from "../../../../../../public/icons/github.svg";
 import Telegram from "../../../../../../public/icons/telegram.svg";
-import Image from "next/image";
 
 export default async function Overview({ params }: { params: Promise<{ slug: string }> }) {
   const t = await getTranslations("overview");
@@ -39,6 +39,13 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
     (platform) => platform.platformType === "telegram",
   );
 
+  // Determine the default tab value based on the first report
+  let defaultTabValue = "combined-0";
+  if (communityImpactReports && communityImpactReports.length > 0) {
+    const firstReport = communityImpactReports[0];
+    defaultTabValue = firstReport.isCombined ? "combined-0" : "platform-0";
+  }
+
   return (
     <div className="space-y-6">
       {community.recommendations > 0 && (
@@ -56,32 +63,32 @@ export default async function Overview({ params }: { params: Promise<{ slug: str
         </Alert>
       )}
       {communityImpactReports && communityImpactReports.length > 0 ? (
-        <Tabs defaultValue="combined-0" className="w-full">
+        <Tabs defaultValue={defaultTabValue} className="w-full">
           <TabsList className="space-x-6 bg-transparent">
-            {communityImpactReports.filter( r => r.isCombined ).map( (r, idx) => (
-                <TabsTrigger className="gap-1 border-gray-400 border text-base data-[state=active]:bg-primary data-[state=active]:text-black text-white" value={`combined-${idx}`} key={`trc-${r.communityId}`}>
-                  All
-                </TabsTrigger>
+            {communityImpactReports.filter(r => r.isCombined).map((r, idx) => (
+              <TabsTrigger className="gap-1 border-gray-400 border text-base data-[state=active]:bg-primary data-[state=active]:text-black text-white" value={`combined-${idx}`} key={`trc-${r.communityId}`}>
+                All
+              </TabsTrigger>
             ))}
-            {communityImpactReports.filter( r => !r.isCombined ).map( (r, idx) => (
-                <TabsTrigger className="gap-2 border-gray-400 border text-base data-[state=active]:bg-primary data-[state=active]:text-black  text-white" value={`platform-${idx}`} key={`trp-${r.platformId!}`}>
-                  { r.platformType === "discord" ? 
-                    <Image src={Discord} alt="Discord" width={20} height={20} /> :
-                     r.platformType === "telegram" ?
-                      <Image src={Telegram} alt="Telegram" width={20} height={20} /> :
-                        <Image src={Github} alt="Github" width={20} height={20} /> }
-                    <span>›</span>
-                    <span>{r.platformName}</span>
-                </TabsTrigger>
+            {communityImpactReports.filter(r => !r.isCombined).map((r, idx) => (
+              <TabsTrigger className="gap-2 border-gray-400 border text-base data-[state=active]:bg-primary data-[state=active]:text-black  text-white" value={`platform-${idx}`} key={`trp-${r.platformId ?? idx}`}>
+                {r.platformType === "discord" ?
+                  <Image src={Discord} alt="Discord" width={20} height={20} /> :
+                  r.platformType === "telegram" ?
+                    <Image src={Telegram} alt="Telegram" width={20} height={20} /> :
+                    <Image src={Github} alt="Github" width={20} height={20} />}
+                <span>›</span>
+                <span>{r.platformName}</span>
+              </TabsTrigger>
             ))}
           </TabsList>
-          {communityImpactReports.filter( r => r.isCombined ).map( (r, idx) => (
+          {communityImpactReports.filter(r => r.isCombined).map((r, idx) => (
             <TabsContent value={`combined-${idx}`} key={`tvc-${r.communityId}`}>
               <ImpactReports report={r} />
             </TabsContent>
           ))}
-          {communityImpactReports.filter( r => !r.isCombined ).map( (r, idx) => (
-            <TabsContent value={`platform-${idx}`} key={`trp-${r.platformId!}`}>
+          {communityImpactReports.filter(r => !r.isCombined).map((r, idx) => (
+            <TabsContent value={`platform-${idx}`} key={`trp-${r.platformId ?? idx}`}>
               <ImpactReports report={r} />
             </TabsContent>
           ))}
