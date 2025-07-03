@@ -1293,7 +1293,8 @@
       "errors": {
         "jobStartFailed": "Failed to start community analysis. Please try again.",
         "missingParameters": "Missing required parameters. Please try connecting again.",
-        "connectionFailed": "An error occurred. Please try again."
+        "connectionFailed": "An error occurred. Please try again.",
+        "error": "An unexpected error occurred. Please try again."
       },
       "starting": "Starting...",
       "retryConnection": "Retry Connection",

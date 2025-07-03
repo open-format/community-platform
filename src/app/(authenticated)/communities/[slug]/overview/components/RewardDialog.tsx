@@ -147,6 +147,42 @@ export default function RewardDialog({
               hash: badgeTransaction,
             });
 
+            // Send notification to the user
+												try {
+													const response = await fetch(
+														"/api/notifications/send-reward",
+														{
+															method: "POST",
+															headers: {
+																"Content-Type": "application/json",
+															},
+															body: JSON.stringify({
+																rewardId: data.rewardId,
+																communityId: community.id,
+																contributorName:
+																	recommendation.contributor_name,
+																platform: recommendation.platform,
+																points: data.amount,
+																summary:
+																	recommendation.summary ||
+																	`Received ${data.amount} tokens`,
+																description:
+																	recommendation.description ||
+																	`You received ${data.amount} tokens for: ${data.rewardId}`,
+																transactionHash: badgeTransaction,
+															}),
+														},
+													);
+													if (!response.ok) {
+														console.error("Failed to send notification");
+													}
+												} catch (notificationError) {
+													console.error(
+														"Failed to send notification:",
+														notificationError,
+													);
+												}
+
             toast.success(t("form.toast.badgeSuccess"), { id: toastId });
             // PostHog event for badge reward
             posthog.capture?.("user_rewarded", {
@@ -173,6 +209,44 @@ export default function RewardDialog({
             });
 
             await waitForTransactionReceipt(config, { hash });
+
+            // Send notification to the user
+												try {
+													const notificationData = {
+														rewardId: data.rewardId,
+														communityId: community.id,
+														contributorName: recommendation.contributor_name,
+														platform: recommendation.platform,
+														points: data.amount,
+														summary:
+															recommendation.summary ||
+															`Received ${data.amount} tokens`,
+														description:
+															recommendation.description ||
+															`You received ${data.amount} tokens for: ${data.rewardId}`,
+														transactionHash: hash,
+													};
+
+													const response = await fetch(
+														"/api/notifications/send-reward",
+														{
+															method: "POST",
+															headers: {
+																"Content-Type": "application/json",
+															},
+															body: JSON.stringify(notificationData),
+														},
+													);
+													if (!response.ok) {
+														console.error("Failed to send notification");
+													}
+												} catch (notificationError) {
+													console.error(
+														"Failed to send notification:",
+														notificationError,
+													);
+												}
+
             toast.success(t("form.toast.success", { summary: recommendation.summary }), {
               id: toastId,
             });
@@ -202,143 +276,155 @@ export default function RewardDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={toggle}>
-      <DialogTrigger className={buttonVariants()} onClick={toggle}>
-        {children}
-      </DialogTrigger>
-      <DialogContent className="max-w-xl">
-        <DialogHeader>
-          <DialogTitle>{t("reward")}</DialogTitle>
-          <DialogDescription>{t("rewardDescription")}</DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form
-            className="w-full space-y-4 overflow-y-auto max-h-[calc(85vh)]"
-            onSubmit={form.handleSubmit(handleFormSubmission)}
-          >
-            {/* Receiver Name  */}
-            <Label>{t("form.receiverName.label")}</Label>
-            <div className={inputVariants({ variant: "disabled" })}>
-              {`${recommendation.contributor_name} (${addressSplitter(recommendation.wallet_address)})`}
-            </div>
-            {/* Evidence Details */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium">{t("form.evidence.label")}</h3>
-              <EvidenceDetails evidence={recommendation.evidence} />
-            </div>
-            {/* Impact Description */}
-            {recommendation.impact && (
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium">{t("form.impact.label")}</h3>
-                <p className="text-sm text-muted-foreground">{recommendation.impact}</p>
-              </div>
-            )}
+			<Dialog open={open} onOpenChange={toggle}>
+				<DialogTrigger className={buttonVariants()} onClick={toggle}>
+					{children}
+				</DialogTrigger>
+				<DialogContent className="max-w-xl">
+					<DialogHeader>
+						<DialogTitle>{t("reward")}</DialogTitle>
+						<DialogDescription>{t("rewardDescription")}</DialogDescription>
+					</DialogHeader>
+					<Form {...form}>
+						<form
+							className="w-full space-y-4 overflow-y-auto max-h-[calc(85vh)]"
+							onSubmit={form.handleSubmit(handleFormSubmission)}
+						>
+							{/* Receiver Name  */}
+							<Label>{t("form.receiverName.label")}</Label>
+							<div className={inputVariants({ variant: "disabled" })}>
+								{`${recommendation.contributor_name} (${addressSplitter(recommendation.wallet_address)})`}
+							</div>
+							{/* Evidence Details */}
+							<div className="space-y-2">
+								<h3 className="text-sm font-medium">
+									{t("form.evidence.label")}
+								</h3>
+								<EvidenceDetails evidence={recommendation.evidence} />
+							</div>
+							{/* Impact Description */}
+							{recommendation.impact && (
+								<div className="space-y-2">
+									<h3 className="text-sm font-medium">
+										{t("form.impact.label")}
+									</h3>
+									<p className="text-sm text-muted-foreground">
+										{recommendation.impact}
+									</p>
+								</div>
+							)}
 
-            {/* Recommendation Context */}
-            {recommendation.metadata_uri && (
-              <div className="space-y-2">
-                <Label>Recommendation Context</Label>
-                <div className="space-y-3 rounded-lg border border-border p-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        This context will be stored on-chain to help improve future reward
-                        recommendations and maintain transparency.
-                      </p>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="shrink-0"
-                      type="button"
-                      onClick={() =>
-                        window.open(
-                          recommendation.metadata_uri?.replace("ipfs://", "https://ipfs.io/ipfs/"),
-                          "_blank",
-                        )
-                      }
-                    >
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      View Details
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
+							{/* Recommendation Context */}
+							{recommendation.metadata_uri && (
+								<div className="space-y-2">
+									<Label>Recommendation Context</Label>
+									<div className="space-y-3 rounded-lg border border-border p-4">
+										<div className="flex items-start justify-between">
+											<div>
+												<p className="text-xs text-muted-foreground mt-1">
+													This context will be stored on-chain to help improve
+													future reward recommendations and maintain
+													transparency.
+												</p>
+											</div>
+											<Button
+												variant="outline"
+												size="sm"
+												className="shrink-0"
+												type="button"
+												onClick={() =>
+													window.open(
+														recommendation.metadata_uri?.replace(
+															"ipfs://",
+															"https://ipfs.io/ipfs/",
+														),
+														"_blank",
+													)
+												}
+											>
+												<ExternalLink className="h-4 w-4 mr-2" />
+												View Details
+											</Button>
+										</div>
+									</div>
+								</div>
+							)}
 
-            <Separator className="my-lg" />
-            {/* Reward Id */}
-            <FormField
-              control={form.control}
-              name="rewardId"
-              render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel>{t("form.rewardId.label")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder={t("form.rewardId.placeholder")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+							<Separator className="my-lg" />
+							{/* Reward Id */}
+							<FormField
+								control={form.control}
+								name="rewardId"
+								render={({ field }) => (
+									<FormItem className="flex-1">
+										<FormLabel>{t("form.rewardId.label")}</FormLabel>
+										<FormControl>
+											<Input
+												type="text"
+												placeholder={t("form.rewardId.placeholder")}
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 
-            {/* Reward Amount */}
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel>{t("form.rewardAmount.label")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder={t("form.rewardAmount.placeholder")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+							{/* Reward Amount */}
+							<FormField
+								control={form.control}
+								name="amount"
+								render={({ field }) => (
+									<FormItem className="flex-1">
+										<FormLabel>{t("form.rewardAmount.label")}</FormLabel>
+										<FormControl>
+											<Input
+												type="number"
+												placeholder={t("form.rewardAmount.placeholder")}
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 
-            {/* Token and Action Type */}
-            <div>
-              <FormField
-                control={form.control}
-                name="tokenAddress"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col gap-2">
-                    <FormLabel>{t("form.token.label")}</FormLabel>
-                    <FormControl>
-                      <TokenSelector
-                        forceModal={true}
-                        tokens={community?.onchainData?.tokens ?? []}
-                        badges={community?.onchainData?.badges ?? []}
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex justify-between gap-2 pt-2">
-              <Button type="submit">{t("form.confirmRewardRecommendation")}</Button>
-              <RejectDialog onConfirm={deleteRecommendation}>
-                <Button variant="destructive">
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  {t("form.rejectRewardRecommendation")}
-                </Button>
-              </RejectDialog>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
+							{/* Token and Action Type */}
+							<div>
+								<FormField
+									control={form.control}
+									name="tokenAddress"
+									render={({ field }) => (
+										<FormItem className="flex flex-col gap-2">
+											<FormLabel>{t("form.token.label")}</FormLabel>
+											<FormControl>
+												<TokenSelector
+													forceModal={true}
+													tokens={community?.onchainData?.tokens ?? []}
+													badges={community?.onchainData?.badges ?? []}
+													value={field.value}
+													onChange={field.onChange}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+							</div>
+							<div className="flex justify-between gap-2 pt-2">
+								<Button type="submit">
+									{t("form.confirmRewardRecommendation")}
+								</Button>
+								<RejectDialog onConfirm={deleteRecommendation}>
+									<Button variant="destructive">
+										<Trash2 className="h-4 w-4 mr-2" />
+										{t("form.rejectRewardRecommendation")}
+									</Button>
+								</RejectDialog>
+							</div>
+						</form>
+					</Form>
+				</DialogContent>
+			</Dialog>
+		);
 }

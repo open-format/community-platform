@@ -9,7 +9,13 @@ import { agentApiClient, throwHTTPErrors } from "@/lib/api";
  *   - A platform-specific ID (e.g. Discord guild ID)
  * @returns The community data from the API response
  */
-export async function getCommunity(id: string): Promise<Community> {
+export async function getCommunity(id: string): Promise<Community | null> {
+  // Prevent API calls with invalid IDs like "login"
+  if (!id || id === "login" || id.length < 3) {
+    console.warn(`Invalid community ID provided: "${id}"`);
+    return null;
+  }
+
   try {
     const response = await agentApiClient.get(`/communities/${id}`);
     return response.data;

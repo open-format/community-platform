@@ -4,7 +4,7 @@ import config from "@/constants/config";
 import { PrivyClient } from "@privy-io/server-auth";
 import { cookies } from "next/headers";
 import type { Address } from "viem";
-import pMap from 'p-map';
+import pMap from "p-map";
 
 if (!config.NEXT_PUBLIC_PRIVY_APP_ID || !config.PRIVY_APP_SECRET) {
   throw new Error("Privy app ID or secret is not set");
@@ -39,10 +39,9 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
 
 export async function findAllUsersByHandle(handles: string[]) {
   return pMap(handles, findAllSocialsByHandle, {
-    concurrency: PRIVY_FIND_USER_CONCURRENCY_LIMIT,
-    stopOnError: true,
-  });
-
+			concurrency: PRIVY_FIND_USER_CONCURRENCY_LIMIT,
+			stopOnError: true,
+		});
 }
 
 async function findAllSocialsByHandle(handle: string) {
@@ -66,46 +65,65 @@ async function findAllSocialsByHandle(handle: string) {
 }
 
 export async function findUserByHandle(handle: string): Promise<{
-  type: "discord" | "github";
-  username: string | null;
-  wallet: string | null;
-} | null> {
-  if (!handle || typeof handle !== "string") {
-    return null;
-  }
+		type: "discord" | "telegram" | "github";
+		username: string | null;
+		wallet: string | null;
+		discordUserId?: string | null;
+	} | null> {
+		if (!handle || typeof handle !== "string") {
+			return null;
+		}
 
-  try {
-    const [discordUser, githubUser] = await Promise.all([
-      privyClient.getUserByDiscordUsername(handle).catch(() => null),
-      privyClient.getUserByGithubUsername(handle).catch(() => null),
-    ]);
+		try {
+			const [discordUser, telegramUser, githubUser] = await Promise.all([
+				privyClient.getUserByDiscordUsername(handle).catch(() => null),
+				privyClient.getUserByTelegramUsername(handle).catch(() => null),
+				privyClient.getUserByGithubUsername(handle).catch(() => null),
+			]);
 
-    // Return the first non-null user found
-    if (discordUser) {
-      return {
-        type: "discord",
-        username: discordUser.discord?.username ?? null,
-        wallet: discordUser.wallet?.address ?? null,
-      };
-    }
+			// Return the first non-null user found (prioritize Discord, then Telegram, then GitHub)
+			if (discordUser) {
+				const discordUsername = discordUser.discord?.username ?? null;
+				// Strip discriminator
+				const cleanUsername = discordUsername
+					? discordUsername.split("#")[0]
+					: null;
 
-    if (githubUser) {
-      return {
-        type: "github",
-        username: githubUser.github?.username ?? null,
-        wallet: githubUser.wallet?.address ?? null,
-      };
-    }
+				return {
+					type: "discord",
+					username: cleanUsername,
+					wallet: discordUser.wallet?.address ?? null,
+					discordUserId: discordUser.discord?.subject ?? null,
+				};
+			}
 
-    return null;
-  } catch (error) {
-    console.error("Error searching for user:", {
-      handle,
-      error: error instanceof Error ? error.message : String(error),
-    });
-    return null;
-  }
-}
+			if (telegramUser) {
+				return {
+					type: "telegram",
+					username: telegramUser.telegram?.username ?? null,
+					wallet: telegramUser.wallet?.address ?? null,
+					discordUserId: telegramUser.discord?.subject ?? null,
+				};
+			}
+
+			if (githubUser) {
+				return {
+					type: "github",
+					username: githubUser.github?.username ?? null,
+					wallet: githubUser.wallet?.address ?? null,
+					discordUserId: githubUser.discord?.subject ?? null,
+				};
+			}
+
+			return null;
+		} catch (error) {
+			console.error("Error searching for user:", {
+				handle,
+				error: error instanceof Error ? error.message : String(error),
+			});
+			return null;
+		}
+	}
 
 export async function getUserHandle(wallet: Address): Promise<{
   type: "discord" | "telegram" | "github";

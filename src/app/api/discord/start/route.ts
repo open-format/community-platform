@@ -36,8 +36,8 @@ export async function GET(request: Request) {
 
   const redirectUrl = new URL("https://discord.com/oauth2/authorize");
   redirectUrl.searchParams.set("client_id", process.env.DISCORD_CLIENT_ID);
-  redirectUrl.searchParams.set("permissions", "84992");
-  redirectUrl.searchParams.set("scope", "bot");
+  redirectUrl.searchParams.set("permissions", "151552");
+  redirectUrl.searchParams.set("scope", "bot guilds.members.read");
   redirectUrl.searchParams.set("response_type", "code");
   redirectUrl.searchParams.set("redirect_uri", redirectUri);
   redirectUrl.searchParams.set("state", state);

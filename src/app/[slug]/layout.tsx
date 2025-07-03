@@ -2,13 +2,23 @@ import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { getCommunity } from "../actions/communities/get";
+import { notFound } from "next/navigation";
 
 export async function generateMetadata({
   params,
-}: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const t = await getTranslations("community");
   const slug = (await params).slug;
   const community = await getCommunity(slug);
+
+  if (!community) {
+    return {
+      title: t("notFound.title"),
+      description: t("notFound.description"),
+    };
+  }
 
   // Use VERCEL_URL in production, fallback to localhost in development
   const baseUrl = process.env.VERCEL_URL
@@ -55,6 +65,10 @@ export default async function ProfileLayout({
 }) {
   const slug = (await params).slug;
   const community = await getCommunity(slug);
+
+  if (!community) {
+    notFound();
+  }
 
   return (
     <div
