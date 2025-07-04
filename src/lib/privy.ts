@@ -68,7 +68,7 @@ export async function findUserByHandle(handle: string): Promise<{
 		type: "discord" | "telegram" | "github";
 		username: string | null;
 		wallet: string | null;
-		discordUserId?: string | null;
+		platformUserId?: string | null;
 	} | null> {
 		if (!handle || typeof handle !== "string") {
 			return null;
@@ -93,7 +93,7 @@ export async function findUserByHandle(handle: string): Promise<{
 					type: "discord",
 					username: cleanUsername,
 					wallet: discordUser.wallet?.address ?? null,
-					discordUserId: discordUser.discord?.subject ?? null,
+					platformUserId: discordUser.discord?.subject ?? null,
 				};
 			}
 
@@ -102,7 +102,7 @@ export async function findUserByHandle(handle: string): Promise<{
 					type: "telegram",
 					username: telegramUser.telegram?.username ?? null,
 					wallet: telegramUser.wallet?.address ?? null,
-					discordUserId: telegramUser.discord?.subject ?? null,
+					platformUserId: telegramUser.telegram?.username ?? null,
 				};
 			}
 
@@ -111,7 +111,7 @@ export async function findUserByHandle(handle: string): Promise<{
 					type: "github",
 					username: githubUser.github?.username ?? null,
 					wallet: githubUser.wallet?.address ?? null,
-					discordUserId: githubUser.discord?.subject ?? null,
+					platformUserId: githubUser.github?.subject ?? null,
 				};
 			}
 
