@@ -18,6 +18,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import UserSelector from "@/components/user-selector";
 import RewardSuccessDialog from "@/dialogs/reward-success-dialog";
 import { handleViemError } from "@/helpers/errors";
+import { sendRewardNotification } from "@/helpers/notifications";
 import { revalidate } from "@/lib/openformat";
 import { uploadMetadata } from "@/lib/thirdweb";
 import { sanitizeString } from "@/lib/utils";
@@ -188,39 +189,20 @@ export default function RewardsForm({ community }: { community: Community }) {
 												// Send notification for badge
 												const platform = getPlatformForNotifications();
 												if (platform) {
-													try {
-														const notificationData = {
+													await sendRewardNotification(
+														{
 															rewardId: data.rewardId,
 															communityId: community.id,
 															contributorName: discordUsername || data.user,
-															platform: platform,
+															platform,
 															platformUserId: discordUserId,
 															points: 1, // Badges are always 1 point
 															summary: `Received badge: ${data.rewardId}`,
 															description: `You received a badge for: ${data.rewardId}`,
 															transactionHash: receipt.transactionHash,
-														};
-
-														const response = await fetch(
-															"/api/notifications/send-reward",
-															{
-																method: "POST",
-																headers: { "Content-Type": "application/json" },
-																body: JSON.stringify(notificationData),
-															},
-														);
-
-														if (!response.ok) {
-															console.error(
-																"Failed to send badge notification",
-															);
-														} 
-													} catch (notificationError) {
-														console.error(
-															"Failed to send badge notification:",
-															notificationError,
-														);
-													}
+														},
+														"badge",
+													);
 												}
           } else if (data.actionType === "mint") {
             // Handle ERC20 token minting
@@ -251,37 +233,20 @@ export default function RewardsForm({ community }: { community: Community }) {
 												// Send notification for token mint
 												const platform = getPlatformForNotifications();
 												if (platform) {
-													try {
-														const notificationData = {
+													await sendRewardNotification(
+														{
 															rewardId: data.rewardId,
 															communityId: community.id,
 															contributorName: discordUsername || data.user,
-															platform: platform,
+															platform,
 															platformUserId: discordUserId,
 															points: data.amount,
 															summary: `Received ${data.amount} tokens`,
 															description: `You received ${data.amount} tokens for: ${data.rewardId}`,
 															transactionHash: receipt.transactionHash,
-														};
-
-														const response = await fetch(
-															"/api/notifications/send-reward",
-															{
-																method: "POST",
-																headers: { "Content-Type": "application/json" },
-																body: JSON.stringify(notificationData),
-															},
-														);
-
-														if (!response.ok) {
-															console.error("Failed to send token mint notification");
-														}
-													} catch (notificationError) {
-														console.error(
-															"Failed to send token mint notification:",
-															notificationError,
-														);
-													}
+														},
+														"mint",
+													);
 												}
           } else {
             const allowance = await readContract(config, {
@@ -336,37 +301,20 @@ export default function RewardsForm({ community }: { community: Community }) {
 												// Send notification for token transfer
 												const platform = getPlatformForNotifications();
 												if (platform) {
-													try {
-														const notificationData = {
+													await sendRewardNotification(
+														{
 															rewardId: data.rewardId,
 															communityId: community.id,
 															contributorName: discordUsername || data.user,
-															platform: platform,
+															platform,
 															platformUserId: discordUserId,
 															points: data.amount,
 															summary: `Received ${data.amount} tokens`,
 															description: `You received ${data.amount} tokens for: ${data.rewardId}`,
 															transactionHash: receipt.transactionHash,
-														};
-
-														const response = await fetch(
-															"/api/notifications/send-reward",
-															{
-																method: "POST",
-																headers: { "Content-Type": "application/json" },
-																body: JSON.stringify(notificationData),
-															},
-														);
-
-														if (!response.ok) {
-															console.error("Failed to send token transfer notification");
-														}
-													} catch (notificationError) {
-														console.error(
-															"Failed to send token transfer notification:",
-															notificationError,
-														);
-													}
+														},
+														"transfer",
+													);
 												}
           }
 
@@ -403,7 +351,7 @@ export default function RewardsForm({ community }: { community: Community }) {
 									<UserSelector
 										field={field}
 										onUserFound={(userData) => {
-											setDiscordUserId(userData.discordUserId);
+											setDiscordUserId(userData.platformUserId);
 											setDiscordUsername(userData.discordUsername);
 											setUserPlatform(userData.platform);
 										}}

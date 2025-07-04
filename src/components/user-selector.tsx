@@ -12,16 +12,16 @@ import { Input } from "./ui/input";
 
 interface User {
 	type?: "discord" | "telegram" | "github";
-	wallet: string;
-	username: string;
-	discordUserId?: string;
+	wallet: string | null;
+	username: string | null;
+	platformUserId?: string | null;
 }
 
 interface UserSelectorProps {
 	field: ControllerRenderProps<Record<string, unknown>, "user">;
 	onUserFound?: (userData: {
 		wallet: string;
-		discordUserId?: string;
+		platformUserId?: string;
 		discordUsername?: string;
 		platform?: "discord" | "telegram" | "github";
 	}) => void;
@@ -31,33 +31,47 @@ export default function UserSelector({
 	field,
 	onUserFound,
 }: UserSelectorProps) {
-	const [displayValue, setDisplayValue] = useState<string>(field.value || "");
+	const [displayValue, setDisplayValue] = useState<string>(
+		(field.value as string) || "",
+	);
 	const [userState, setUserState] = useState<{
 		status: "idle" | "loading" | "exists" | "not_found";
 		data: User | null;
 	}>({ status: "idle", data: null });
 	const t = useTranslations("userSelector");
 
-	// @TODO Add more icons when we support more platforms in getUserByHandle
 	function renderIcon(type: "discord" | "telegram" | "github") {
-		if (type === "discord") {
-			return (
-				<Image
-					src="/icons/discord.svg"
-					alt={t("icons.discord")}
-					width={20}
-					height={20}
-				/>
-			);
+		switch (type) {
+			case "discord":
+				return (
+					<Image
+						src="/icons/discord.svg"
+						alt={t("icons.discord")}
+						width={20}
+						height={20}
+					/>
+				);
+			case "telegram":
+				return (
+					<Image
+						src="/icons/telegram.svg"
+						alt={t("icons.telegram")}
+						width={20}
+						height={20}
+					/>
+				);
+			case "github":
+				return (
+					<Image
+						src="/icons/github.svg"
+						alt={t("icons.github")}
+						width={20}
+						height={20}
+					/>
+				);
+			default:
+				return null;
 		}
-		return (
-			<Image
-				src="/icons/discord.svg"
-				alt={t("icons.telegram")}
-				width={20}
-				height={20}
-			/>
-		);
 	}
 
 	return (
@@ -111,7 +125,7 @@ export default function UserSelector({
 					setUserState({ status: "loading", data: null });
 					const user = await findUserByHandle(handle);
 
-					if (user && user.wallet && user.username) {
+					if (user?.wallet && user?.username) {
 						setUserState({ status: "exists", data: user });
 						field.onChange(user.wallet);
 						setDisplayValue(`${user.username} (${user.wallet})`);
@@ -119,8 +133,8 @@ export default function UserSelector({
 						// Call the callback with user data for notifications
 						if (onUserFound) {
 							const userData = {
-								wallet: user.wallet,
-								discordUserId: user.discordUserId || undefined,
+								wallet: user.wallet || "",
+								platformUserId: user.platformUserId || undefined,
 								discordUsername:
 									user.type === "discord" ? user.username : undefined,
 								platform: user.type,
