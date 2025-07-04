@@ -77,6 +77,9 @@ type Community = {
   tokenToDisplay: `0x${string}`;
   showSocialHandles: boolean;
   darkMode: boolean;
+  discordNotificationsEnabled: boolean;
+  telegramNotificationsEnabled: boolean;
+  discordRewardsChannel?: string;
   tiers: Tier[];
   rewards?: Reward[] | null;
   hiddenTokens: Address[];
@@ -234,7 +237,7 @@ interface DailyActivity {
 }
 
 interface ChannelBreakdown {
-  platform: "telegram" | "discord" | "github",
+  platform: "telegram" | "discord" | "github";
   channelName: string;
   uniqueUsers: number;
   messageCount: number;
@@ -266,7 +269,7 @@ interface UserSentiment {
 }
 
 interface TopContributor {
-  platform: "telegram" | "discord" | "github",
+  platform: "telegram" | "discord" | "github";
   username: string;
   messageCount: number;
 }
@@ -278,7 +281,7 @@ interface ImpactReport {
   startDate: number;
   summaryId: string;
   timestamp: number;
-  isCombined: boolean,
+  isCombined: boolean;
   platformId?: string;
   platformName?: string;
   platformType?: "telegram" | "discord" | "github";

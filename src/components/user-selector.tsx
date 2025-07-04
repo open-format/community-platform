@@ -2,7 +2,7 @@
 import { findUserByHandle } from "@/lib/privy";
 import { cn } from "@/lib/utils";
 import { CheckIcon, XIcon } from "lucide-react";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useState } from "react";
 import type { ControllerRenderProps } from "react-hook-form";
@@ -10,24 +10,42 @@ import { isAddress } from "viem";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
-interface UserSelectorProps {
-  field: ControllerRenderProps<any, "user">;
+interface User {
+  type?: "discord" | "telegram" | "github";
+  wallet: string | null;
+  username: string | null;
+  platformUserId?: string | null;
 }
 
-export default function UserSelector({ field }: UserSelectorProps) {
-  const [displayValue, setDisplayValue] = useState<string>(field.value || "");
+interface UserSelectorProps {
+  field: ControllerRenderProps<Record<string, unknown>, "user">;
+  onUserFound?: (userData: {
+    wallet: string;
+    platformUserId?: string;
+    discordUsername?: string;
+    platform?: "discord" | "telegram" | "github";
+  }) => void;
+}
+
+export default function UserSelector({ field, onUserFound }: UserSelectorProps) {
+  const [displayValue, setDisplayValue] = useState<string>((field.value as string) || "");
   const [userState, setUserState] = useState<{
     status: "idle" | "loading" | "exists" | "not_found";
     data: User | null;
   }>({ status: "idle", data: null });
-  const t = useTranslations('userSelector');
+  const t = useTranslations("userSelector");
 
-  // @TODO Add more icons when we support more platforms in getUserByHandle
-  function renderIcon(type: "discord" | "telegram") {
-    if (type === "discord") {
-      return <Image src="/icons/discord.svg" alt={t('icons.discord')} width={20} height={20} />;
+  function renderIcon(type: "discord" | "telegram" | "github") {
+    switch (type) {
+      case "discord":
+        return <Image src="/icons/discord.svg" alt={t("icons.discord")} width={20} height={20} />;
+      case "telegram":
+        return <Image src="/icons/telegram.svg" alt={t("icons.telegram")} width={20} height={20} />;
+      case "github":
+        return <Image src="/icons/github.svg" alt={t("icons.github")} width={20} height={20} />;
+      default:
+        return null;
     }
-    return <Image src="/icons/discord.svg" alt={t('icons.telegram')} width={20} height={20} />;
   }
 
   return (
@@ -39,8 +57,8 @@ export default function UserSelector({ field }: UserSelectorProps) {
         <Input
           {...field}
           value={displayValue}
-          className={cn({ "pl-2xl": userState.data?.type })}
-          placeholder={t('inputPlaceholder')}
+          className={cn("", { "pl-2xl": userState.data?.type })}
+          placeholder={t("inputPlaceholder")}
           onChange={(e) => {
             setDisplayValue(e.target.value);
             field.onChange(e.target.value);
@@ -59,8 +77,12 @@ export default function UserSelector({ field }: UserSelectorProps) {
           }}
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2">
-          {userState.status === "exists" && <CheckIcon className="text-green-600" aria-label={t('ariaLabels.userFound')} />}
-          {userState.status === "not_found" && <XIcon className="text-red-600" aria-label={t('ariaLabels.userNotFound')} />}
+          {userState.status === "exists" && (
+            <CheckIcon className="text-green-600" aria-label={t("ariaLabels.userFound")} />
+          )}
+          {userState.status === "not_found" && (
+            <XIcon className="text-red-600" aria-label={t("ariaLabels.userNotFound")} />
+          )}
         </div>
       </div>
       <Button
@@ -70,18 +92,28 @@ export default function UserSelector({ field }: UserSelectorProps) {
           const handle = displayValue;
           setUserState({ status: "loading", data: null });
           const user = await findUserByHandle(handle);
-          if (user) {
+
+          if (user?.wallet && user?.username) {
             setUserState({ status: "exists", data: user });
-            if (user.wallet && user.username) {
-              field.onChange(user.wallet);
-              setDisplayValue(`${user.username} (${user.wallet})`);
+            field.onChange(user.wallet);
+            setDisplayValue(`${user.username} (${user.wallet})`);
+
+            // Call the callback with user data for notifications
+            if (onUserFound) {
+              const userData = {
+                wallet: user.wallet || "",
+                platformUserId: user.platformUserId || undefined,
+                discordUsername: user.type === "discord" ? user.username : undefined,
+                platform: user.type,
+              };
+              onUserFound(userData);
             }
           } else {
             setUserState({ status: "not_found", data: null });
           }
         }}
       >
-        {userState.status === "loading" ? t('finding') : t('findUser')}
+        {userState.status === "loading" ? t("finding") : t("findUser")}
       </Button>
     </div>
   );

@@ -8,6 +8,9 @@ type UpdateCommunityData = {
   communityContractAddress?: Address;
   communityContractChainId?: number;
   hiddenTokens?: Address[];
+  discordNotificationsEnabled?: boolean;
+  telegramNotificationsEnabled?: boolean;
+  tokenLabel?: string;
 };
 
 export async function updateCommunity(id: string, data: UpdateCommunityData) {
@@ -16,7 +19,7 @@ export async function updateCommunity(id: string, data: UpdateCommunityData) {
 
     return response.data;
   } catch (error) {
-    throwHTTPErrors(`Update Community with ID ${id}`, error)
+    throwHTTPErrors(`Update Community with ID ${id}`, error);
     throw error;
   }
 }

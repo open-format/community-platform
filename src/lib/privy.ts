@@ -4,7 +4,7 @@ import config from "@/constants/config";
 import { PrivyClient } from "@privy-io/server-auth";
 import { cookies } from "next/headers";
 import type { Address } from "viem";
-import pMap from 'p-map';
+import pMap from "p-map";
 
 if (!config.NEXT_PUBLIC_PRIVY_APP_ID || !config.PRIVY_APP_SECRET) {
   throw new Error("Privy app ID or secret is not set");
@@ -42,7 +42,6 @@ export async function findAllUsersByHandle(handles: string[]) {
     concurrency: PRIVY_FIND_USER_CONCURRENCY_LIMIT,
     stopOnError: true,
   });
-
 }
 
 async function findAllSocialsByHandle(handle: string) {
@@ -66,26 +65,42 @@ async function findAllSocialsByHandle(handle: string) {
 }
 
 export async function findUserByHandle(handle: string): Promise<{
-  type: "discord" | "github";
+  type: "discord" | "telegram" | "github";
   username: string | null;
   wallet: string | null;
+  platformUserId?: string | null;
 } | null> {
   if (!handle || typeof handle !== "string") {
     return null;
   }
 
   try {
-    const [discordUser, githubUser] = await Promise.all([
+    const [discordUser, telegramUser, githubUser] = await Promise.all([
       privyClient.getUserByDiscordUsername(handle).catch(() => null),
+      privyClient.getUserByTelegramUsername(handle).catch(() => null),
       privyClient.getUserByGithubUsername(handle).catch(() => null),
     ]);
 
-    // Return the first non-null user found
+    // Return the first non-null user found (prioritize Discord, then Telegram, then GitHub)
     if (discordUser) {
+      const discordUsername = discordUser.discord?.username ?? null;
+      // Strip discriminator
+      const cleanUsername = discordUsername ? discordUsername.split("#")[0] : null;
+
       return {
         type: "discord",
-        username: discordUser.discord?.username ?? null,
+        username: cleanUsername,
         wallet: discordUser.wallet?.address ?? null,
+        platformUserId: discordUser.discord?.subject ?? null,
+      };
+    }
+
+    if (telegramUser) {
+      return {
+        type: "telegram",
+        username: telegramUser.telegram?.username ?? null,
+        wallet: telegramUser.wallet?.address ?? null,
+        platformUserId: telegramUser.telegram?.username ?? null,
       };
     }
 
@@ -94,6 +109,7 @@ export async function findUserByHandle(handle: string): Promise<{
         type: "github",
         username: githubUser.github?.username ?? null,
         wallet: githubUser.wallet?.address ?? null,
+        platformUserId: githubUser.github?.subject ?? null,
       };
     }
 

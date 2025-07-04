@@ -86,6 +86,9 @@ export default function CommunitySettingsForm({
         community_id: z.string().optional(),
       }),
     ),
+    discordNotificationsEnabled: z.boolean().optional(),
+    telegramNotificationsEnabled: z.boolean().optional(),
+    discordRewardsChannel: z.string().optional(),
   });
 
   type FormValues = z.infer<typeof FormSchema>;
@@ -111,6 +114,9 @@ export default function CommunitySettingsForm({
           tier_id: tier.id,
           community_id: tier.community_id,
         })) ?? [],
+      discordNotificationsEnabled: community.discordNotificationsEnabled ?? false,
+      telegramNotificationsEnabled: community.telegramNotificationsEnabled ?? false,
+      discordRewardsChannel: community.discordRewardsChannel ?? "",
     },
   });
 
@@ -126,6 +132,13 @@ export default function CommunitySettingsForm({
   function handleFormSubmission(data: FormValues) {
     startTransition(async () => {
       try {
+        if (
+          data.discordNotificationsEnabled &&
+          (!data.discordRewardsChannel || data.discordRewardsChannel.trim() === "")
+        ) {
+          toast.error("Discord rewards channel is required when Discord notifications are enabled");
+          return;
+        }
         // Track deleted tiers
         const originalTierIds = new Set(community.metadata?.tiers?.map((tier) => tier.id) || []);
         const currentTierIds = new Set(
@@ -382,6 +395,63 @@ export default function CommunitySettingsForm({
                 </AccordionContent>
               </AccordionItem>
 
+              <AccordionItem value="notifications">
+                <AccordionTrigger>Notifications</AccordionTrigger>
+                <AccordionContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="discordNotificationsEnabled"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">Discord Notifications</FormLabel>
+                          <FormDescription>
+                            Send notifications to users on Discord when rewards are processed
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="telegramNotificationsEnabled"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">Telegram Notifications</FormLabel>
+                          <FormDescription>
+                            Send notifications to users on Telegram when rewards are processed
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="discordRewardsChannel"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Discord Rewards Channel</FormLabel>
+                        <FormControl>
+                          <Input placeholder="rewards" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Channel name where public reward notifications will be sent (e.g.,
+                          "rewards")
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </AccordionContent>
+              </AccordionItem>
+
               <AccordionItem value="tiers">
                 <AccordionTrigger>{t("sections.tiers.title")}</AccordionTrigger>
                 <AccordionContent className="space-y-4">
@@ -458,7 +528,13 @@ export default function CommunitySettingsForm({
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => append({ name: "", points_required: 0, color: "#000000" })}
+                    onClick={() =>
+                      append({
+                        name: "",
+                        points_required: 0,
+                        color: "#000000",
+                      })
+                    }
                   >
                     {t("buttons.addTier")}
                   </Button>

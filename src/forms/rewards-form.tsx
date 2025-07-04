@@ -18,6 +18,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import UserSelector from "@/components/user-selector";
 import RewardSuccessDialog from "@/dialogs/reward-success-dialog";
 import { handleViemError } from "@/helpers/errors";
+import { sendRewardNotification } from "@/helpers/notifications";
 import { revalidate } from "@/lib/openformat";
 import { uploadMetadata } from "@/lib/thirdweb";
 import { sanitizeString } from "@/lib/utils";
@@ -50,6 +51,9 @@ export default function RewardsForm({ community }: { community: Community }) {
   const [rewardSuccessDialog, setRewardSuccessDialog] = useState(false);
   const [transactionHash, setTransactionHash] = useState<string | undefined>(undefined);
   const [tokenBalance, setTokenBalance] = useState<bigint | undefined>(undefined);
+  const [discordUserId, setDiscordUserId] = useState<string | undefined>();
+  const [discordUsername, setDiscordUsername] = useState<string | undefined>();
+  const [userPlatform, setUserPlatform] = useState<"discord" | "telegram" | "github" | undefined>();
 
   const rewardsFormSchema = z.object({
     user: z.string().min(1, t("form.validation.userRequired")),
@@ -102,6 +106,14 @@ export default function RewardsForm({ community }: { community: Community }) {
   const isSelectedBadge = (tokenAddress: string) =>
     community.onchainData?.badges.some((badge) => badge.id === tokenAddress);
 
+  const getPlatformForNotifications = (): "discord" | "telegram" | null => {
+    // Use the user's platform if available, otherwise no notification
+    if (userPlatform === "discord" || userPlatform === "telegram") {
+      return userPlatform;
+    }
+    return null; // No notification for users without Discord/Telegram
+  };
+
   useEffect(() => {
     async function fetchTokenBalance() {
       const tokenAddress = form.watch("tokenAddress");
@@ -142,7 +154,6 @@ export default function RewardsForm({ community }: { community: Community }) {
           // upload the metadata to IPFS
           if (Object.keys(data.metadata).length > 0) {
             ipfsHash = await uploadMetadata(data.metadata);
-            console.log({ ipfsHash });
           }
 
           // Use different contract function based on token type
@@ -164,7 +175,28 @@ export default function RewardsForm({ community }: { community: Community }) {
               hash: badgeTransaction,
             });
             setTransactionHash(receipt.transactionHash);
-            toast.success(t("form.toast.badgeSuccess"), { id: toastId });
+            toast.success(t("form.toast.badgeSuccess"), {
+              id: toastId,
+            });
+
+            // Send notification for badge
+            const platform = getPlatformForNotifications();
+            if (platform) {
+              await sendRewardNotification(
+                {
+                  rewardId: data.rewardId,
+                  communityId: community.id,
+                  contributorName: discordUsername || data.user,
+                  platform,
+                  platformUserId: discordUserId,
+                  points: 1, // Badges are always 1 point
+                  summary: `Received badge: ${data.rewardId}`,
+                  description: `You received a badge for: ${data.rewardId}`,
+                  transactionHash: receipt.transactionHash,
+                },
+                "badge",
+              );
+            }
           } else if (data.actionType === "mint") {
             // Handle ERC20 token minting
             const hash = await writeContract(config, {
@@ -182,9 +214,30 @@ export default function RewardsForm({ community }: { community: Community }) {
             });
 
             const receipt = await waitForTransactionReceipt(config, { hash });
-            toast.success(t("form.toast.tokensSuccess"), { id: toastId });
+            toast.success(t("form.toast.tokensSuccess"), {
+              id: toastId,
+            });
             setTransactionHash(receipt.transactionHash);
             form.reset();
+
+            // Send notification for token mint
+            const platform = getPlatformForNotifications();
+            if (platform) {
+              await sendRewardNotification(
+                {
+                  rewardId: data.rewardId,
+                  communityId: community.id,
+                  contributorName: discordUsername || data.user,
+                  platform,
+                  platformUserId: discordUserId,
+                  points: data.amount,
+                  summary: `Received ${data.amount} tokens`,
+                  description: `You received ${data.amount} tokens for: ${data.rewardId}`,
+                  transactionHash: receipt.transactionHash,
+                },
+                "mint",
+              );
+            }
           } else {
             const allowance = await readContract(config, {
               address: data.tokenAddress as Address,
@@ -220,9 +273,30 @@ export default function RewardsForm({ community }: { community: Community }) {
             const receipt = await waitForTransactionReceipt(config, {
               hash: transferHash,
             });
-            toast.success(t("form.toast.transferSuccess"), { id: toastId });
+            toast.success(t("form.toast.transferSuccess"), {
+              id: toastId,
+            });
             setTransactionHash(receipt.transactionHash);
             form.reset();
+
+            // Send notification for token transfer
+            const platform = getPlatformForNotifications();
+            if (platform) {
+              await sendRewardNotification(
+                {
+                  rewardId: data.rewardId,
+                  communityId: community.id,
+                  contributorName: discordUsername || data.user,
+                  platform,
+                  platformUserId: discordUserId,
+                  points: data.amount,
+                  summary: `Received ${data.amount} tokens`,
+                  description: `You received ${data.amount} tokens for: ${data.rewardId}`,
+                  transactionHash: receipt.transactionHash,
+                },
+                "transfer",
+              );
+            }
           }
 
           // After successful transaction
@@ -255,7 +329,14 @@ export default function RewardsForm({ community }: { community: Community }) {
             <FormItem>
               <FormLabel>{t("form.user.label")}</FormLabel>
               <FormControl>
-                <UserSelector field={field} />
+                <UserSelector
+                  field={field}
+                  onUserFound={(userData) => {
+                    setDiscordUserId(userData.platformUserId);
+                    setDiscordUsername(userData.discordUsername);
+                    setUserPlatform(userData.platform);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -309,7 +390,10 @@ export default function RewardsForm({ community }: { community: Community }) {
                             field.onChange(value);
                             // Clear amount when action type changes
                             form.setValue("amount", undefined);
-                            form.setError("amount", { type: "manual", message: "" });
+                            form.setError("amount", {
+                              type: "manual",
+                              message: "",
+                            });
                           }}
                           defaultValue={field.value}
                           disabled={

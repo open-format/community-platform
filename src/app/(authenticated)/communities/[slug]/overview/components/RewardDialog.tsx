@@ -147,6 +147,33 @@ export default function RewardDialog({
               hash: badgeTransaction,
             });
 
+            // Send notification to the user
+            try {
+              const response = await fetch("/api/notifications/send-reward", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  rewardId: data.rewardId,
+                  communityId: community.id,
+                  contributorName: recommendation.contributor_name,
+                  platform: recommendation.platform,
+                  points: data.amount,
+                  summary: recommendation.summary || `Received ${data.amount} tokens`,
+                  description:
+                    recommendation.description ||
+                    `You received ${data.amount} tokens for: ${data.rewardId}`,
+                  transactionHash: badgeTransaction,
+                }),
+              });
+              if (!response.ok) {
+                console.error("Failed to send notification");
+              }
+            } catch (notificationError) {
+              console.error("Failed to send notification:", notificationError);
+            }
+
             toast.success(t("form.toast.badgeSuccess"), { id: toastId });
             // PostHog event for badge reward
             posthog.capture?.("user_rewarded", {
@@ -173,6 +200,36 @@ export default function RewardDialog({
             });
 
             await waitForTransactionReceipt(config, { hash });
+
+            // Send notification to the user
+            try {
+              const notificationData = {
+                rewardId: data.rewardId,
+                communityId: community.id,
+                contributorName: recommendation.contributor_name,
+                platform: recommendation.platform,
+                points: data.amount,
+                summary: recommendation.summary || `Received ${data.amount} tokens`,
+                description:
+                  recommendation.description ||
+                  `You received ${data.amount} tokens for: ${data.rewardId}`,
+                transactionHash: hash,
+              };
+
+              const response = await fetch("/api/notifications/send-reward", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(notificationData),
+              });
+              if (!response.ok) {
+                console.error("Failed to send notification");
+              }
+            } catch (notificationError) {
+              console.error("Failed to send notification:", notificationError);
+            }
+
             toast.success(t("form.toast.success", { summary: recommendation.summary }), {
               id: toastId,
             });
@@ -275,11 +332,7 @@ export default function RewardDialog({
                 <FormItem className="flex-1">
                   <FormLabel>{t("form.rewardId.label")}</FormLabel>
                   <FormControl>
-                    <Input
-                      type="text"
-                      placeholder={t("form.rewardId.placeholder")}
-                      {...field}
-                    />
+                    <Input type="text" placeholder={t("form.rewardId.placeholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
