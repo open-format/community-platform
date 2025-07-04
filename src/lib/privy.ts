@@ -39,9 +39,9 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
 
 export async function findAllUsersByHandle(handles: string[]) {
   return pMap(handles, findAllSocialsByHandle, {
-			concurrency: PRIVY_FIND_USER_CONCURRENCY_LIMIT,
-			stopOnError: true,
-		});
+    concurrency: PRIVY_FIND_USER_CONCURRENCY_LIMIT,
+    stopOnError: true,
+  });
 }
 
 async function findAllSocialsByHandle(handle: string) {
@@ -65,65 +65,63 @@ async function findAllSocialsByHandle(handle: string) {
 }
 
 export async function findUserByHandle(handle: string): Promise<{
-		type: "discord" | "telegram" | "github";
-		username: string | null;
-		wallet: string | null;
-		platformUserId?: string | null;
-	} | null> {
-		if (!handle || typeof handle !== "string") {
-			return null;
-		}
+  type: "discord" | "telegram" | "github";
+  username: string | null;
+  wallet: string | null;
+  platformUserId?: string | null;
+} | null> {
+  if (!handle || typeof handle !== "string") {
+    return null;
+  }
 
-		try {
-			const [discordUser, telegramUser, githubUser] = await Promise.all([
-				privyClient.getUserByDiscordUsername(handle).catch(() => null),
-				privyClient.getUserByTelegramUsername(handle).catch(() => null),
-				privyClient.getUserByGithubUsername(handle).catch(() => null),
-			]);
+  try {
+    const [discordUser, telegramUser, githubUser] = await Promise.all([
+      privyClient.getUserByDiscordUsername(handle).catch(() => null),
+      privyClient.getUserByTelegramUsername(handle).catch(() => null),
+      privyClient.getUserByGithubUsername(handle).catch(() => null),
+    ]);
 
-			// Return the first non-null user found (prioritize Discord, then Telegram, then GitHub)
-			if (discordUser) {
-				const discordUsername = discordUser.discord?.username ?? null;
-				// Strip discriminator
-				const cleanUsername = discordUsername
-					? discordUsername.split("#")[0]
-					: null;
+    // Return the first non-null user found (prioritize Discord, then Telegram, then GitHub)
+    if (discordUser) {
+      const discordUsername = discordUser.discord?.username ?? null;
+      // Strip discriminator
+      const cleanUsername = discordUsername ? discordUsername.split("#")[0] : null;
 
-				return {
-					type: "discord",
-					username: cleanUsername,
-					wallet: discordUser.wallet?.address ?? null,
-					platformUserId: discordUser.discord?.subject ?? null,
-				};
-			}
+      return {
+        type: "discord",
+        username: cleanUsername,
+        wallet: discordUser.wallet?.address ?? null,
+        platformUserId: discordUser.discord?.subject ?? null,
+      };
+    }
 
-			if (telegramUser) {
-				return {
-					type: "telegram",
-					username: telegramUser.telegram?.username ?? null,
-					wallet: telegramUser.wallet?.address ?? null,
-					platformUserId: telegramUser.telegram?.username ?? null,
-				};
-			}
+    if (telegramUser) {
+      return {
+        type: "telegram",
+        username: telegramUser.telegram?.username ?? null,
+        wallet: telegramUser.wallet?.address ?? null,
+        platformUserId: telegramUser.telegram?.username ?? null,
+      };
+    }
 
-			if (githubUser) {
-				return {
-					type: "github",
-					username: githubUser.github?.username ?? null,
-					wallet: githubUser.wallet?.address ?? null,
-					platformUserId: githubUser.github?.subject ?? null,
-				};
-			}
+    if (githubUser) {
+      return {
+        type: "github",
+        username: githubUser.github?.username ?? null,
+        wallet: githubUser.wallet?.address ?? null,
+        platformUserId: githubUser.github?.subject ?? null,
+      };
+    }
 
-			return null;
-		} catch (error) {
-			console.error("Error searching for user:", {
-				handle,
-				error: error instanceof Error ? error.message : String(error),
-			});
-			return null;
-		}
-	}
+    return null;
+  } catch (error) {
+    console.error("Error searching for user:", {
+      handle,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return null;
+  }
+}
 
 export async function getUserHandle(wallet: Address): Promise<{
   type: "discord" | "telegram" | "github";

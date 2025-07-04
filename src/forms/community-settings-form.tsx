@@ -132,35 +132,25 @@ export default function CommunitySettingsForm({
   function handleFormSubmission(data: FormValues) {
     startTransition(async () => {
       try {
-        
         if (
-									data.discordNotificationsEnabled &&
-									(!data.discordRewardsChannel ||
-										data.discordRewardsChannel.trim() === "")
-								) {
-									toast.error(
-										"Discord rewards channel is required when Discord notifications are enabled",
-									);
-									return;
-								}
-								// Track deleted tiers
-								const originalTierIds = new Set(
-									community.metadata?.tiers?.map((tier) => tier.id) || [],
-								);
-								const currentTierIds = new Set(
-									data.tiers
-										.map((tier) => tier.tier_id)
-										.filter((id): id is string => id !== undefined),
-								);
+          data.discordNotificationsEnabled &&
+          (!data.discordRewardsChannel || data.discordRewardsChannel.trim() === "")
+        ) {
+          toast.error("Discord rewards channel is required when Discord notifications are enabled");
+          return;
+        }
+        // Track deleted tiers
+        const originalTierIds = new Set(community.metadata?.tiers?.map((tier) => tier.id) || []);
+        const currentTierIds = new Set(
+          data.tiers.map((tier) => tier.tier_id).filter((id): id is string => id !== undefined),
+        );
 
-								const deletedTierIds = Array.from(originalTierIds).filter(
-									(id) => !currentTierIds.has(id),
-								);
+        const deletedTierIds = Array.from(originalTierIds).filter((id) => !currentTierIds.has(id));
 
-								await updateCommunity(community.id, data);
+        await updateCommunity(community.id, data);
 
-								toast.success(t("messages.updateSuccess"));
-								await revalidate();
+        toast.success(t("messages.updateSuccess"));
+        await revalidate();
       } catch (err) {
         console.error(err);
         toast.error(t("messages.updateError"));
